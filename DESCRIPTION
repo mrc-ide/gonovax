@@ -1,0 +1,20 @@
+Package: gonovax
+Title: Stochastic SIR Model for gonorrhoea with vaccination
+Version: 0.0.1
+Authors@R:
+    c( person(given = "Lilith",
+           family = "Whittles",
+           role = c("aut", "cre"),
+           email = "l.whittles@imperial.ac.uk"))
+Description: Model for gonorrhoea vaccination, using odin.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Language: en-GB
+Imports: 
+    odin
+Suggests:
+    testthat,
+    knitr
+RoxygenNote: 7.1.0
+VignetteBuilder: knitr
