@@ -6,7 +6,7 @@ gonovax_parameters <- function() {
        enr = 12000 * c(ql, 1- ql),
        exr = 1/50
   )
-  gono_params <- gono_params()[1, ]
+  gono_params <- gono_params()
   c(ret, gono_params)
 }
 

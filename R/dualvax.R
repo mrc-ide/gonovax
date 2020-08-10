@@ -36,11 +36,13 @@ dualvax_parameters <- function(gono_params = NULL,
 ##' @export
 ##' 
 dualvax_initial <- function(pars) {
+  n_par <- length(pars$beta)
+  N0 <- matrix(pars$N0 * c(pars$ql, 1 - pars$ql), byrow = TRUE, 
+               nrow = n_par, ncol = 2 )
+  A0 <- round(cbind(N0[, 1] * pars$prev_Asl, N0[, 2] * pars$prev_Ash))
 
-  N0 <- round(pars$N0 * c(pars$ql, 1- pars$ql))
-  A0 <- round(N0 * c(pars$prev_Asl, pars$prev_Ash))
-  I0 <- S0 <- T0 <- c(0, 0)
-  
+  I0 <- S0 <- T0 <- matrix(0, nrow = nrow(A0), ncol = ncol(A0))
+
   list(U0 = N0 - A0,
        I0 = I0,
        A0 = A0,
