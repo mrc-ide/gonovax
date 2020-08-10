@@ -1,2 +1,2 @@
 #!/usr/bin/env Rscript
-odin::odin_package(here::here())
+  odin::odin_package(here::here())
