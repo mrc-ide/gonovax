@@ -39,7 +39,7 @@ test_that("there are no infections when A0 = 0", {
 test_that("the foi is calculated correctly", {
   params <- dualvax_parameters()
   mod <- dualvax(user = params)
-  tt <- seq(0, 10/136, 1/365)
+  tt <- seq(0, 10/365, 1/365)
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   
