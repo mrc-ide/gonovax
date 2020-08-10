@@ -5,16 +5,20 @@
 #include <stdbool.h>
 #include <R_ext/Rdynload.h>
 typedef struct dualvax_internal {
+  double *A0;
   double beta;
   double *C;
   int dim_A;
+  int dim_A0;
   int dim_C;
+  int dim_cum_incid;
   int dim_enr;
   int dim_foi;
+  int dim_foi_1;
+  int dim_foi_2;
   int dim_I;
-  int dim_lambda;
-  int dim_lambda_1;
-  int dim_lambda_2;
+  int dim_I0;
+  int dim_incid;
   int dim_m;
   int dim_m_1;
   int dim_m_2;
@@ -22,33 +26,41 @@ typedef struct dualvax_internal {
   int dim_Np;
   int dim_p;
   int dim_S;
+  int dim_S0;
   int dim_T;
+  int dim_T0;
   int dim_U;
+  int dim_U0;
   double *enr;
   double epsilon;
   double eta;
   double exr;
   double *foi;
+  double *I0;
+  double *incid;
   double *initial_A;
+  double *initial_cum_incid;
   double *initial_I;
   double *initial_S;
   double *initial_T;
   double *initial_U;
-  double *lambda;
   double *m;
   double mu;
   double *N;
   int n_group;
   double *Np;
   double nu;
-  int offset_output_m;
   int offset_variable_A;
+  int offset_variable_cum_incid;
   int offset_variable_S;
   int offset_variable_T;
   double *p;
   double psi;
   double rho;
+  double *S0;
   double sigma;
+  double *T0;
+  double *U0;
 } dualvax_internal;
 dualvax_internal* dualvax_get_internal(SEXP internal_p, int closed_error);
 static void dualvax_finalise(SEXP internal_p);
@@ -101,60 +113,80 @@ dualvax_internal* dualvax_get_internal(SEXP internal_p, int closed_error) {
 void dualvax_finalise(SEXP internal_p) {
   dualvax_internal *internal = dualvax_get_internal(internal_p, 0);
   if (internal_p) {
+    Free(internal->A0);
     Free(internal->C);
     Free(internal->enr);
     Free(internal->foi);
+    Free(internal->I0);
+    Free(internal->incid);
     Free(internal->initial_A);
+    Free(internal->initial_cum_incid);
     Free(internal->initial_I);
     Free(internal->initial_S);
     Free(internal->initial_T);
     Free(internal->initial_U);
-    Free(internal->lambda);
     Free(internal->m);
     Free(internal->N);
     Free(internal->Np);
     Free(internal->p);
+    Free(internal->S0);
+    Free(internal->T0);
+    Free(internal->U0);
     Free(internal);
     R_ClearExternalPtr(internal_p);
   }
 }
 SEXP dualvax_create(SEXP user) {
   dualvax_internal *internal = (dualvax_internal*) Calloc(1, dualvax_internal);
+  internal->A0 = NULL;
   internal->C = NULL;
   internal->enr = NULL;
   internal->foi = NULL;
+  internal->I0 = NULL;
+  internal->incid = NULL;
   internal->initial_A = NULL;
+  internal->initial_cum_incid = NULL;
   internal->initial_I = NULL;
   internal->initial_S = NULL;
   internal->initial_T = NULL;
   internal->initial_U = NULL;
-  internal->lambda = NULL;
   internal->m = NULL;
   internal->N = NULL;
   internal->Np = NULL;
   internal->p = NULL;
+  internal->S0 = NULL;
+  internal->T0 = NULL;
+  internal->U0 = NULL;
   internal->n_group = 2;
   internal->dim_A = internal->n_group;
+  internal->dim_A0 = internal->n_group;
   internal->dim_C = internal->n_group;
+  internal->dim_cum_incid = internal->n_group;
   internal->dim_enr = internal->n_group;
-  internal->dim_foi = internal->n_group;
+  internal->dim_foi_1 = internal->n_group;
+  internal->dim_foi_2 = internal->n_group;
   internal->dim_I = internal->n_group;
-  internal->dim_lambda_1 = internal->n_group;
-  internal->dim_lambda_2 = internal->n_group;
+  internal->dim_I0 = internal->n_group;
+  internal->dim_incid = internal->n_group;
   internal->dim_m_1 = internal->n_group;
   internal->dim_m_2 = internal->n_group;
   internal->dim_N = internal->n_group;
   internal->dim_Np = internal->n_group;
   internal->dim_p = internal->n_group;
   internal->dim_S = internal->n_group;
+  internal->dim_S0 = internal->n_group;
   internal->dim_T = internal->n_group;
+  internal->dim_T0 = internal->n_group;
   internal->dim_U = internal->n_group;
+  internal->dim_U0 = internal->n_group;
   Free(internal->C);
   internal->C = (double*) Calloc(internal->dim_C, double);
-  Free(internal->foi);
-  internal->foi = (double*) Calloc(internal->dim_foi, double);
+  Free(internal->incid);
+  internal->incid = (double*) Calloc(internal->dim_incid, double);
   Free(internal->initial_A);
   internal->initial_A = (double*) Calloc(internal->dim_A, double);
+  Free(internal->initial_cum_incid);
+  internal->initial_cum_incid = (double*) Calloc(internal->dim_cum_incid, double);
   Free(internal->initial_I);
   internal->initial_I = (double*) Calloc(internal->dim_I, double);
   Free(internal->initial_S);
@@ -167,42 +199,35 @@ SEXP dualvax_create(SEXP user) {
   internal->N = (double*) Calloc(internal->dim_N, double);
   Free(internal->Np);
   internal->Np = (double*) Calloc(internal->dim_Np, double);
-  internal->dim_lambda = internal->dim_lambda_1 * internal->dim_lambda_2;
+  internal->dim_foi = internal->dim_foi_1 * internal->dim_foi_2;
   internal->dim_m = internal->dim_m_1 * internal->dim_m_2;
-  for (int i = 1; i <= internal->dim_A; ++i) {
-    internal->initial_A[i - 1] = 0;
+  for (int i = 1; i <= internal->dim_cum_incid; ++i) {
+    internal->initial_cum_incid[i - 1] = 0;
   }
-  for (int i = 1; i <= internal->dim_I; ++i) {
-    internal->initial_I[i - 1] = 0;
-  }
-  for (int i = 1; i <= internal->dim_S; ++i) {
-    internal->initial_S[i - 1] = 0;
-  }
-  for (int i = 1; i <= internal->dim_T; ++i) {
-    internal->initial_T[i - 1] = 0;
-  }
-  for (int i = 1; i <= internal->dim_U; ++i) {
-    internal->initial_U[i - 1] = 0;
-  }
-  internal->offset_output_m = internal->dim_N + internal->dim_foi;
   internal->offset_variable_A = internal->dim_U + internal->dim_I;
+  internal->offset_variable_cum_incid = internal->dim_U + internal->dim_I + internal->dim_A + internal->dim_S + internal->dim_T;
   internal->offset_variable_S = internal->dim_U + internal->dim_I + internal->dim_A;
   internal->offset_variable_T = internal->dim_U + internal->dim_I + internal->dim_A + internal->dim_S;
-  Free(internal->lambda);
-  internal->lambda = (double*) Calloc(internal->dim_lambda, double);
+  Free(internal->foi);
+  internal->foi = (double*) Calloc(internal->dim_foi, double);
   Free(internal->m);
   internal->m = (double*) Calloc(internal->dim_m, double);
+  internal->A0 = NULL;
   internal->beta = NA_REAL;
   internal->enr = NULL;
   internal->epsilon = NA_REAL;
   internal->eta = NA_REAL;
   internal->exr = NA_REAL;
+  internal->I0 = NULL;
   internal->mu = NA_REAL;
   internal->nu = NA_REAL;
   internal->p = NULL;
   internal->psi = NA_REAL;
   internal->rho = NA_REAL;
+  internal->S0 = NULL;
   internal->sigma = NA_REAL;
+  internal->T0 = NULL;
+  internal->U0 = NULL;
   SEXP ptr = PROTECT(R_MakeExternalPtr(internal, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(ptr, dualvax_finalise);
   UNPROTECT(1);
@@ -219,126 +244,162 @@ void dualvax_initmod_desolve(void(* odeparms) (int *, double *)) {
 }
 SEXP dualvax_contents(SEXP internal_p) {
   dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
-  SEXP contents = PROTECT(allocVector(VECSXP, 44));
-  SET_VECTOR_ELT(contents, 0, ScalarReal(internal->beta));
+  SEXP contents = PROTECT(allocVector(VECSXP, 56));
+  SEXP A0 = PROTECT(allocVector(REALSXP, internal->dim_A0));
+  memcpy(REAL(A0), internal->A0, internal->dim_A0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 0, A0);
+  SET_VECTOR_ELT(contents, 1, ScalarReal(internal->beta));
   SEXP C = PROTECT(allocVector(REALSXP, internal->dim_C));
   memcpy(REAL(C), internal->C, internal->dim_C * sizeof(double));
-  SET_VECTOR_ELT(contents, 1, C);
-  SET_VECTOR_ELT(contents, 2, ScalarInteger(internal->dim_A));
-  SET_VECTOR_ELT(contents, 3, ScalarInteger(internal->dim_C));
-  SET_VECTOR_ELT(contents, 4, ScalarInteger(internal->dim_enr));
-  SET_VECTOR_ELT(contents, 5, ScalarInteger(internal->dim_foi));
-  SET_VECTOR_ELT(contents, 6, ScalarInteger(internal->dim_I));
-  SET_VECTOR_ELT(contents, 7, ScalarInteger(internal->dim_lambda));
-  SET_VECTOR_ELT(contents, 8, ScalarInteger(internal->dim_lambda_1));
-  SET_VECTOR_ELT(contents, 9, ScalarInteger(internal->dim_lambda_2));
-  SET_VECTOR_ELT(contents, 10, ScalarInteger(internal->dim_m));
-  SET_VECTOR_ELT(contents, 11, ScalarInteger(internal->dim_m_1));
-  SET_VECTOR_ELT(contents, 12, ScalarInteger(internal->dim_m_2));
-  SET_VECTOR_ELT(contents, 13, ScalarInteger(internal->dim_N));
-  SET_VECTOR_ELT(contents, 14, ScalarInteger(internal->dim_Np));
-  SET_VECTOR_ELT(contents, 15, ScalarInteger(internal->dim_p));
-  SET_VECTOR_ELT(contents, 16, ScalarInteger(internal->dim_S));
-  SET_VECTOR_ELT(contents, 17, ScalarInteger(internal->dim_T));
-  SET_VECTOR_ELT(contents, 18, ScalarInteger(internal->dim_U));
+  SET_VECTOR_ELT(contents, 2, C);
+  SET_VECTOR_ELT(contents, 3, ScalarInteger(internal->dim_A));
+  SET_VECTOR_ELT(contents, 4, ScalarInteger(internal->dim_A0));
+  SET_VECTOR_ELT(contents, 5, ScalarInteger(internal->dim_C));
+  SET_VECTOR_ELT(contents, 6, ScalarInteger(internal->dim_cum_incid));
+  SET_VECTOR_ELT(contents, 7, ScalarInteger(internal->dim_enr));
+  SET_VECTOR_ELT(contents, 8, ScalarInteger(internal->dim_foi));
+  SET_VECTOR_ELT(contents, 9, ScalarInteger(internal->dim_foi_1));
+  SET_VECTOR_ELT(contents, 10, ScalarInteger(internal->dim_foi_2));
+  SET_VECTOR_ELT(contents, 11, ScalarInteger(internal->dim_I));
+  SET_VECTOR_ELT(contents, 12, ScalarInteger(internal->dim_I0));
+  SET_VECTOR_ELT(contents, 13, ScalarInteger(internal->dim_incid));
+  SET_VECTOR_ELT(contents, 14, ScalarInteger(internal->dim_m));
+  SET_VECTOR_ELT(contents, 15, ScalarInteger(internal->dim_m_1));
+  SET_VECTOR_ELT(contents, 16, ScalarInteger(internal->dim_m_2));
+  SET_VECTOR_ELT(contents, 17, ScalarInteger(internal->dim_N));
+  SET_VECTOR_ELT(contents, 18, ScalarInteger(internal->dim_Np));
+  SET_VECTOR_ELT(contents, 19, ScalarInteger(internal->dim_p));
+  SET_VECTOR_ELT(contents, 20, ScalarInteger(internal->dim_S));
+  SET_VECTOR_ELT(contents, 21, ScalarInteger(internal->dim_S0));
+  SET_VECTOR_ELT(contents, 22, ScalarInteger(internal->dim_T));
+  SET_VECTOR_ELT(contents, 23, ScalarInteger(internal->dim_T0));
+  SET_VECTOR_ELT(contents, 24, ScalarInteger(internal->dim_U));
+  SET_VECTOR_ELT(contents, 25, ScalarInteger(internal->dim_U0));
   SEXP enr = PROTECT(allocVector(REALSXP, internal->dim_enr));
   memcpy(REAL(enr), internal->enr, internal->dim_enr * sizeof(double));
-  SET_VECTOR_ELT(contents, 19, enr);
-  SET_VECTOR_ELT(contents, 20, ScalarReal(internal->epsilon));
-  SET_VECTOR_ELT(contents, 21, ScalarReal(internal->eta));
-  SET_VECTOR_ELT(contents, 22, ScalarReal(internal->exr));
+  SET_VECTOR_ELT(contents, 26, enr);
+  SET_VECTOR_ELT(contents, 27, ScalarReal(internal->epsilon));
+  SET_VECTOR_ELT(contents, 28, ScalarReal(internal->eta));
+  SET_VECTOR_ELT(contents, 29, ScalarReal(internal->exr));
   SEXP foi = PROTECT(allocVector(REALSXP, internal->dim_foi));
   memcpy(REAL(foi), internal->foi, internal->dim_foi * sizeof(double));
-  SET_VECTOR_ELT(contents, 23, foi);
+  odin_set_dim(foi, 2, internal->dim_foi_1, internal->dim_foi_2);
+  SET_VECTOR_ELT(contents, 30, foi);
+  SEXP I0 = PROTECT(allocVector(REALSXP, internal->dim_I0));
+  memcpy(REAL(I0), internal->I0, internal->dim_I0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 31, I0);
+  SEXP incid = PROTECT(allocVector(REALSXP, internal->dim_incid));
+  memcpy(REAL(incid), internal->incid, internal->dim_incid * sizeof(double));
+  SET_VECTOR_ELT(contents, 32, incid);
   SEXP initial_A = PROTECT(allocVector(REALSXP, internal->dim_A));
   memcpy(REAL(initial_A), internal->initial_A, internal->dim_A * sizeof(double));
-  SET_VECTOR_ELT(contents, 24, initial_A);
+  SET_VECTOR_ELT(contents, 33, initial_A);
+  SEXP initial_cum_incid = PROTECT(allocVector(REALSXP, internal->dim_cum_incid));
+  memcpy(REAL(initial_cum_incid), internal->initial_cum_incid, internal->dim_cum_incid * sizeof(double));
+  SET_VECTOR_ELT(contents, 34, initial_cum_incid);
   SEXP initial_I = PROTECT(allocVector(REALSXP, internal->dim_I));
   memcpy(REAL(initial_I), internal->initial_I, internal->dim_I * sizeof(double));
-  SET_VECTOR_ELT(contents, 25, initial_I);
+  SET_VECTOR_ELT(contents, 35, initial_I);
   SEXP initial_S = PROTECT(allocVector(REALSXP, internal->dim_S));
   memcpy(REAL(initial_S), internal->initial_S, internal->dim_S * sizeof(double));
-  SET_VECTOR_ELT(contents, 26, initial_S);
+  SET_VECTOR_ELT(contents, 36, initial_S);
   SEXP initial_T = PROTECT(allocVector(REALSXP, internal->dim_T));
   memcpy(REAL(initial_T), internal->initial_T, internal->dim_T * sizeof(double));
-  SET_VECTOR_ELT(contents, 27, initial_T);
+  SET_VECTOR_ELT(contents, 37, initial_T);
   SEXP initial_U = PROTECT(allocVector(REALSXP, internal->dim_U));
   memcpy(REAL(initial_U), internal->initial_U, internal->dim_U * sizeof(double));
-  SET_VECTOR_ELT(contents, 28, initial_U);
-  SEXP lambda = PROTECT(allocVector(REALSXP, internal->dim_lambda));
-  memcpy(REAL(lambda), internal->lambda, internal->dim_lambda * sizeof(double));
-  odin_set_dim(lambda, 2, internal->dim_lambda_1, internal->dim_lambda_2);
-  SET_VECTOR_ELT(contents, 29, lambda);
+  SET_VECTOR_ELT(contents, 38, initial_U);
   SEXP m = PROTECT(allocVector(REALSXP, internal->dim_m));
   memcpy(REAL(m), internal->m, internal->dim_m * sizeof(double));
   odin_set_dim(m, 2, internal->dim_m_1, internal->dim_m_2);
-  SET_VECTOR_ELT(contents, 30, m);
-  SET_VECTOR_ELT(contents, 31, ScalarReal(internal->mu));
+  SET_VECTOR_ELT(contents, 39, m);
+  SET_VECTOR_ELT(contents, 40, ScalarReal(internal->mu));
   SEXP N = PROTECT(allocVector(REALSXP, internal->dim_N));
   memcpy(REAL(N), internal->N, internal->dim_N * sizeof(double));
-  SET_VECTOR_ELT(contents, 32, N);
-  SET_VECTOR_ELT(contents, 33, ScalarInteger(internal->n_group));
+  SET_VECTOR_ELT(contents, 41, N);
+  SET_VECTOR_ELT(contents, 42, ScalarInteger(internal->n_group));
   SEXP Np = PROTECT(allocVector(REALSXP, internal->dim_Np));
   memcpy(REAL(Np), internal->Np, internal->dim_Np * sizeof(double));
-  SET_VECTOR_ELT(contents, 34, Np);
-  SET_VECTOR_ELT(contents, 35, ScalarReal(internal->nu));
-  SET_VECTOR_ELT(contents, 36, ScalarInteger(internal->offset_output_m));
-  SET_VECTOR_ELT(contents, 37, ScalarInteger(internal->offset_variable_A));
-  SET_VECTOR_ELT(contents, 38, ScalarInteger(internal->offset_variable_S));
-  SET_VECTOR_ELT(contents, 39, ScalarInteger(internal->offset_variable_T));
+  SET_VECTOR_ELT(contents, 43, Np);
+  SET_VECTOR_ELT(contents, 44, ScalarReal(internal->nu));
+  SET_VECTOR_ELT(contents, 45, ScalarInteger(internal->offset_variable_A));
+  SET_VECTOR_ELT(contents, 46, ScalarInteger(internal->offset_variable_cum_incid));
+  SET_VECTOR_ELT(contents, 47, ScalarInteger(internal->offset_variable_S));
+  SET_VECTOR_ELT(contents, 48, ScalarInteger(internal->offset_variable_T));
   SEXP p = PROTECT(allocVector(REALSXP, internal->dim_p));
   memcpy(REAL(p), internal->p, internal->dim_p * sizeof(double));
-  SET_VECTOR_ELT(contents, 40, p);
-  SET_VECTOR_ELT(contents, 41, ScalarReal(internal->psi));
-  SET_VECTOR_ELT(contents, 42, ScalarReal(internal->rho));
-  SET_VECTOR_ELT(contents, 43, ScalarReal(internal->sigma));
-  SEXP nms = PROTECT(allocVector(STRSXP, 44));
-  SET_STRING_ELT(nms, 0, mkChar("beta"));
-  SET_STRING_ELT(nms, 1, mkChar("C"));
-  SET_STRING_ELT(nms, 2, mkChar("dim_A"));
-  SET_STRING_ELT(nms, 3, mkChar("dim_C"));
-  SET_STRING_ELT(nms, 4, mkChar("dim_enr"));
-  SET_STRING_ELT(nms, 5, mkChar("dim_foi"));
-  SET_STRING_ELT(nms, 6, mkChar("dim_I"));
-  SET_STRING_ELT(nms, 7, mkChar("dim_lambda"));
-  SET_STRING_ELT(nms, 8, mkChar("dim_lambda_1"));
-  SET_STRING_ELT(nms, 9, mkChar("dim_lambda_2"));
-  SET_STRING_ELT(nms, 10, mkChar("dim_m"));
-  SET_STRING_ELT(nms, 11, mkChar("dim_m_1"));
-  SET_STRING_ELT(nms, 12, mkChar("dim_m_2"));
-  SET_STRING_ELT(nms, 13, mkChar("dim_N"));
-  SET_STRING_ELT(nms, 14, mkChar("dim_Np"));
-  SET_STRING_ELT(nms, 15, mkChar("dim_p"));
-  SET_STRING_ELT(nms, 16, mkChar("dim_S"));
-  SET_STRING_ELT(nms, 17, mkChar("dim_T"));
-  SET_STRING_ELT(nms, 18, mkChar("dim_U"));
-  SET_STRING_ELT(nms, 19, mkChar("enr"));
-  SET_STRING_ELT(nms, 20, mkChar("epsilon"));
-  SET_STRING_ELT(nms, 21, mkChar("eta"));
-  SET_STRING_ELT(nms, 22, mkChar("exr"));
-  SET_STRING_ELT(nms, 23, mkChar("foi"));
-  SET_STRING_ELT(nms, 24, mkChar("initial_A"));
-  SET_STRING_ELT(nms, 25, mkChar("initial_I"));
-  SET_STRING_ELT(nms, 26, mkChar("initial_S"));
-  SET_STRING_ELT(nms, 27, mkChar("initial_T"));
-  SET_STRING_ELT(nms, 28, mkChar("initial_U"));
-  SET_STRING_ELT(nms, 29, mkChar("lambda"));
-  SET_STRING_ELT(nms, 30, mkChar("m"));
-  SET_STRING_ELT(nms, 31, mkChar("mu"));
-  SET_STRING_ELT(nms, 32, mkChar("N"));
-  SET_STRING_ELT(nms, 33, mkChar("n_group"));
-  SET_STRING_ELT(nms, 34, mkChar("Np"));
-  SET_STRING_ELT(nms, 35, mkChar("nu"));
-  SET_STRING_ELT(nms, 36, mkChar("offset_output_m"));
-  SET_STRING_ELT(nms, 37, mkChar("offset_variable_A"));
-  SET_STRING_ELT(nms, 38, mkChar("offset_variable_S"));
-  SET_STRING_ELT(nms, 39, mkChar("offset_variable_T"));
-  SET_STRING_ELT(nms, 40, mkChar("p"));
-  SET_STRING_ELT(nms, 41, mkChar("psi"));
-  SET_STRING_ELT(nms, 42, mkChar("rho"));
-  SET_STRING_ELT(nms, 43, mkChar("sigma"));
+  SET_VECTOR_ELT(contents, 49, p);
+  SET_VECTOR_ELT(contents, 50, ScalarReal(internal->psi));
+  SET_VECTOR_ELT(contents, 51, ScalarReal(internal->rho));
+  SEXP S0 = PROTECT(allocVector(REALSXP, internal->dim_S0));
+  memcpy(REAL(S0), internal->S0, internal->dim_S0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 52, S0);
+  SET_VECTOR_ELT(contents, 53, ScalarReal(internal->sigma));
+  SEXP T0 = PROTECT(allocVector(REALSXP, internal->dim_T0));
+  memcpy(REAL(T0), internal->T0, internal->dim_T0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 54, T0);
+  SEXP U0 = PROTECT(allocVector(REALSXP, internal->dim_U0));
+  memcpy(REAL(U0), internal->U0, internal->dim_U0 * sizeof(double));
+  SET_VECTOR_ELT(contents, 55, U0);
+  SEXP nms = PROTECT(allocVector(STRSXP, 56));
+  SET_STRING_ELT(nms, 0, mkChar("A0"));
+  SET_STRING_ELT(nms, 1, mkChar("beta"));
+  SET_STRING_ELT(nms, 2, mkChar("C"));
+  SET_STRING_ELT(nms, 3, mkChar("dim_A"));
+  SET_STRING_ELT(nms, 4, mkChar("dim_A0"));
+  SET_STRING_ELT(nms, 5, mkChar("dim_C"));
+  SET_STRING_ELT(nms, 6, mkChar("dim_cum_incid"));
+  SET_STRING_ELT(nms, 7, mkChar("dim_enr"));
+  SET_STRING_ELT(nms, 8, mkChar("dim_foi"));
+  SET_STRING_ELT(nms, 9, mkChar("dim_foi_1"));
+  SET_STRING_ELT(nms, 10, mkChar("dim_foi_2"));
+  SET_STRING_ELT(nms, 11, mkChar("dim_I"));
+  SET_STRING_ELT(nms, 12, mkChar("dim_I0"));
+  SET_STRING_ELT(nms, 13, mkChar("dim_incid"));
+  SET_STRING_ELT(nms, 14, mkChar("dim_m"));
+  SET_STRING_ELT(nms, 15, mkChar("dim_m_1"));
+  SET_STRING_ELT(nms, 16, mkChar("dim_m_2"));
+  SET_STRING_ELT(nms, 17, mkChar("dim_N"));
+  SET_STRING_ELT(nms, 18, mkChar("dim_Np"));
+  SET_STRING_ELT(nms, 19, mkChar("dim_p"));
+  SET_STRING_ELT(nms, 20, mkChar("dim_S"));
+  SET_STRING_ELT(nms, 21, mkChar("dim_S0"));
+  SET_STRING_ELT(nms, 22, mkChar("dim_T"));
+  SET_STRING_ELT(nms, 23, mkChar("dim_T0"));
+  SET_STRING_ELT(nms, 24, mkChar("dim_U"));
+  SET_STRING_ELT(nms, 25, mkChar("dim_U0"));
+  SET_STRING_ELT(nms, 26, mkChar("enr"));
+  SET_STRING_ELT(nms, 27, mkChar("epsilon"));
+  SET_STRING_ELT(nms, 28, mkChar("eta"));
+  SET_STRING_ELT(nms, 29, mkChar("exr"));
+  SET_STRING_ELT(nms, 30, mkChar("foi"));
+  SET_STRING_ELT(nms, 31, mkChar("I0"));
+  SET_STRING_ELT(nms, 32, mkChar("incid"));
+  SET_STRING_ELT(nms, 33, mkChar("initial_A"));
+  SET_STRING_ELT(nms, 34, mkChar("initial_cum_incid"));
+  SET_STRING_ELT(nms, 35, mkChar("initial_I"));
+  SET_STRING_ELT(nms, 36, mkChar("initial_S"));
+  SET_STRING_ELT(nms, 37, mkChar("initial_T"));
+  SET_STRING_ELT(nms, 38, mkChar("initial_U"));
+  SET_STRING_ELT(nms, 39, mkChar("m"));
+  SET_STRING_ELT(nms, 40, mkChar("mu"));
+  SET_STRING_ELT(nms, 41, mkChar("N"));
+  SET_STRING_ELT(nms, 42, mkChar("n_group"));
+  SET_STRING_ELT(nms, 43, mkChar("Np"));
+  SET_STRING_ELT(nms, 44, mkChar("nu"));
+  SET_STRING_ELT(nms, 45, mkChar("offset_variable_A"));
+  SET_STRING_ELT(nms, 46, mkChar("offset_variable_cum_incid"));
+  SET_STRING_ELT(nms, 47, mkChar("offset_variable_S"));
+  SET_STRING_ELT(nms, 48, mkChar("offset_variable_T"));
+  SET_STRING_ELT(nms, 49, mkChar("p"));
+  SET_STRING_ELT(nms, 50, mkChar("psi"));
+  SET_STRING_ELT(nms, 51, mkChar("rho"));
+  SET_STRING_ELT(nms, 52, mkChar("S0"));
+  SET_STRING_ELT(nms, 53, mkChar("sigma"));
+  SET_STRING_ELT(nms, 54, mkChar("T0"));
+  SET_STRING_ELT(nms, 55, mkChar("U0"));
   setAttrib(contents, R_NamesSymbol, nms);
-  UNPROTECT(15);
+  UNPROTECT(21);
   return contents;
 }
 SEXP dualvax_set_user(SEXP internal_p, SEXP user) {
@@ -352,8 +413,28 @@ SEXP dualvax_set_user(SEXP internal_p, SEXP user) {
   internal->psi = user_get_scalar_double(user, "psi", internal->psi, NA_REAL, NA_REAL);
   internal->rho = user_get_scalar_double(user, "rho", internal->rho, NA_REAL, NA_REAL);
   internal->sigma = user_get_scalar_double(user, "sigma", internal->sigma, NA_REAL, NA_REAL);
+  internal->A0 = (double*) user_get_array(user, false, internal->A0, "A0", NA_REAL, NA_REAL, 1, internal->dim_A0);
   internal->enr = (double*) user_get_array(user, false, internal->enr, "enr", NA_REAL, NA_REAL, 1, internal->dim_enr);
+  internal->I0 = (double*) user_get_array(user, false, internal->I0, "I0", NA_REAL, NA_REAL, 1, internal->dim_I0);
   internal->p = (double*) user_get_array(user, false, internal->p, "p", NA_REAL, NA_REAL, 1, internal->dim_p);
+  internal->S0 = (double*) user_get_array(user, false, internal->S0, "S0", NA_REAL, NA_REAL, 1, internal->dim_S0);
+  internal->T0 = (double*) user_get_array(user, false, internal->T0, "T0", NA_REAL, NA_REAL, 1, internal->dim_T0);
+  internal->U0 = (double*) user_get_array(user, false, internal->U0, "U0", NA_REAL, NA_REAL, 1, internal->dim_U0);
+  for (int i = 1; i <= internal->dim_A; ++i) {
+    internal->initial_A[i - 1] = internal->A0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_I; ++i) {
+    internal->initial_I[i - 1] = internal->I0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_S; ++i) {
+    internal->initial_S[i - 1] = internal->S0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_T; ++i) {
+    internal->initial_T[i - 1] = internal->T0[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_U; ++i) {
+    internal->initial_U[i - 1] = internal->U0[i - 1];
+  }
   return R_NilValue;
 }
 SEXP dualvax_metadata(SEXP internal_p) {
@@ -365,48 +446,49 @@ SEXP dualvax_metadata(SEXP internal_p) {
   SET_STRING_ELT(nms, 2, mkChar("n_out"));
   SET_STRING_ELT(nms, 3, mkChar("interpolate_t"));
   setAttrib(ret, R_NamesSymbol, nms);
-  SEXP variable_length = PROTECT(allocVector(VECSXP, 5));
-  SEXP variable_names = PROTECT(allocVector(STRSXP, 5));
+  SEXP variable_length = PROTECT(allocVector(VECSXP, 6));
+  SEXP variable_names = PROTECT(allocVector(STRSXP, 6));
   setAttrib(variable_length, R_NamesSymbol, variable_names);
   SET_VECTOR_ELT(variable_length, 0, ScalarInteger(internal->dim_U));
   SET_VECTOR_ELT(variable_length, 1, ScalarInteger(internal->dim_I));
   SET_VECTOR_ELT(variable_length, 2, ScalarInteger(internal->dim_A));
   SET_VECTOR_ELT(variable_length, 3, ScalarInteger(internal->dim_S));
   SET_VECTOR_ELT(variable_length, 4, ScalarInteger(internal->dim_T));
+  SET_VECTOR_ELT(variable_length, 5, ScalarInteger(internal->dim_cum_incid));
   SET_STRING_ELT(variable_names, 0, mkChar("U"));
   SET_STRING_ELT(variable_names, 1, mkChar("I"));
   SET_STRING_ELT(variable_names, 2, mkChar("A"));
   SET_STRING_ELT(variable_names, 3, mkChar("S"));
   SET_STRING_ELT(variable_names, 4, mkChar("T"));
+  SET_STRING_ELT(variable_names, 5, mkChar("cum_incid"));
   SET_VECTOR_ELT(ret, 0, variable_length);
   UNPROTECT(2);
-  SEXP output_length = PROTECT(allocVector(VECSXP, 3));
-  SEXP output_names = PROTECT(allocVector(STRSXP, 3));
+  SEXP output_length = PROTECT(allocVector(VECSXP, 2));
+  SEXP output_names = PROTECT(allocVector(STRSXP, 2));
   setAttrib(output_length, R_NamesSymbol, output_names);
   SET_VECTOR_ELT(output_length, 0, ScalarInteger(internal->dim_N));
-  SET_VECTOR_ELT(output_length, 1, ScalarInteger(internal->dim_foi));
-  SET_VECTOR_ELT(output_length, 2, allocVector(INTSXP, 2));
-  int * dim_m = INTEGER(VECTOR_ELT(output_length, 2));
-  dim_m[0] = internal->dim_m_1;
-  dim_m[1] = internal->dim_m_2;
+  SET_VECTOR_ELT(output_length, 1, allocVector(INTSXP, 2));
+  int * dim_foi = INTEGER(VECTOR_ELT(output_length, 1));
+  dim_foi[0] = internal->dim_foi_1;
+  dim_foi[1] = internal->dim_foi_2;
   SET_STRING_ELT(output_names, 0, mkChar("N"));
   SET_STRING_ELT(output_names, 1, mkChar("foi"));
-  SET_STRING_ELT(output_names, 2, mkChar("m"));
   SET_VECTOR_ELT(ret, 1, output_length);
   UNPROTECT(2);
-  SET_VECTOR_ELT(ret, 2, ScalarInteger(internal->dim_N + internal->dim_foi + internal->dim_m));
+  SET_VECTOR_ELT(ret, 2, ScalarInteger(internal->dim_N + internal->dim_foi));
   UNPROTECT(2);
   return ret;
 }
 SEXP dualvax_initial_conditions(SEXP internal_p, SEXP t_ptr) {
   dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
-  SEXP r_state = PROTECT(allocVector(REALSXP, internal->dim_U + internal->dim_I + internal->dim_A + internal->dim_S + internal->dim_T));
+  SEXP r_state = PROTECT(allocVector(REALSXP, internal->dim_U + internal->dim_I + internal->dim_A + internal->dim_S + internal->dim_T + internal->dim_cum_incid));
   double * state = REAL(r_state);
   memcpy(state + 0, internal->initial_U, internal->dim_U * sizeof(double));
   memcpy(state + internal->dim_U, internal->initial_I, internal->dim_I * sizeof(double));
   memcpy(state + internal->offset_variable_A, internal->initial_A, internal->dim_A * sizeof(double));
   memcpy(state + internal->offset_variable_S, internal->initial_S, internal->dim_S * sizeof(double));
   memcpy(state + internal->offset_variable_T, internal->initial_T, internal->dim_T * sizeof(double));
+  memcpy(state + internal->offset_variable_cum_incid, internal->initial_cum_incid, internal->dim_cum_incid * sizeof(double));
   UNPROTECT(1);
   return r_state;
 }
@@ -436,26 +518,28 @@ void dualvax_rhs(dualvax_internal* internal, double t, double * state, double * 
   }
   for (int i = 1; i <= internal->dim_m_1; ++i) {
     for (int j = 1; j <= internal->dim_m_2; ++j) {
-      internal->m[i - 1 + internal->dim_m_1 * (j - 1)] = internal->epsilon * (i == j) + (1 - internal->epsilon) * internal->p[j - 1] * internal->N[j - 1] / (double) odin_sum1(internal->Np, 0, internal->dim_Np);
+      internal->m[i - 1 + internal->dim_m_1 * (j - 1)] = internal->epsilon * (i == j) + (1 - internal->epsilon) * internal->Np[j - 1] / (double) odin_sum1(internal->Np, 0, internal->dim_Np);
     }
   }
-  for (int i = 1; i <= internal->dim_lambda_1; ++i) {
-    for (int j = 1; j <= internal->dim_lambda_2; ++j) {
-      internal->lambda[i - 1 + internal->dim_lambda_1 * (j - 1)] = internal->m[internal->dim_m_1 * (j - 1) + i - 1] * internal->C[j - 1] / (double) internal->N[j - 1];
+  for (int i = 1; i <= internal->dim_foi_1; ++i) {
+    for (int j = 1; j <= internal->dim_foi_2; ++j) {
+      internal->foi[i - 1 + internal->dim_foi_1 * (j - 1)] = internal->beta * internal->p[i - 1] * internal->m[internal->dim_m_1 * (j - 1) + i - 1] * internal->C[j - 1] / (double) internal->N[j - 1];
     }
   }
-  for (int i = 1; i <= internal->dim_foi; ++i) {
-    internal->foi[i - 1] = internal->beta * internal->p[i - 1] * odin_sum2(internal->lambda, i - 1, i, 0, internal->dim_lambda_2, internal->dim_lambda_1);
+  for (int i = 1; i <= internal->dim_incid; ++i) {
+    internal->incid[i - 1] = odin_sum2(internal->foi, i - 1, i, 0, internal->dim_foi_2, internal->dim_foi_1) * U[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_cum_incid; ++i) {
+    dstatedt[internal->offset_variable_cum_incid + i - 1] = internal->incid[i - 1];
   }
   for (int i = 1; i <= internal->dim_I; ++i) {
-    dstatedt[internal->dim_U + i - 1] = internal->foi[i - 1] * U[i - 1] - (internal->sigma + internal->exr) * I[i - 1];
+    dstatedt[internal->dim_U + i - 1] = internal->incid[i - 1] - (internal->sigma + internal->exr) * I[i - 1];
   }
   for (int i = 1; i <= internal->dim_U; ++i) {
-    dstatedt[0 + i - 1] = internal->enr[i - 1] - (internal->foi[i - 1] + internal->exr) * U[i - 1] + internal->nu * A[i - 1] + internal->rho * T[i - 1];
+    dstatedt[0 + i - 1] = internal->enr[i - 1] - internal->incid[i - 1] - internal->exr * U[i - 1] + internal->nu * A[i - 1] + internal->rho * T[i - 1];
   }
   if (output) {
     memcpy(output + 0, internal->N, internal->dim_N * sizeof(double));
-    memcpy(output + internal->offset_output_m, internal->m, internal->dim_m * sizeof(double));
     memcpy(output + internal->dim_N, internal->foi, internal->dim_foi * sizeof(double));
   }
 }
@@ -484,24 +568,20 @@ void dualvax_output_dde(size_t n_eq, double t, double * state, size_t n_output, 
   memcpy(output + 0, internal->N, internal->dim_N * sizeof(double));
   for (int i = 1; i <= internal->dim_m_1; ++i) {
     for (int j = 1; j <= internal->dim_m_2; ++j) {
-      internal->m[i - 1 + internal->dim_m_1 * (j - 1)] = internal->epsilon * (i == j) + (1 - internal->epsilon) * internal->p[j - 1] * internal->N[j - 1] / (double) odin_sum1(internal->Np, 0, internal->dim_Np);
+      internal->m[i - 1 + internal->dim_m_1 * (j - 1)] = internal->epsilon * (i == j) + (1 - internal->epsilon) * internal->Np[j - 1] / (double) odin_sum1(internal->Np, 0, internal->dim_Np);
     }
   }
-  for (int i = 1; i <= internal->dim_lambda_1; ++i) {
-    for (int j = 1; j <= internal->dim_lambda_2; ++j) {
-      internal->lambda[i - 1 + internal->dim_lambda_1 * (j - 1)] = internal->m[internal->dim_m_1 * (j - 1) + i - 1] * internal->C[j - 1] / (double) internal->N[j - 1];
+  for (int i = 1; i <= internal->dim_foi_1; ++i) {
+    for (int j = 1; j <= internal->dim_foi_2; ++j) {
+      internal->foi[i - 1 + internal->dim_foi_1 * (j - 1)] = internal->beta * internal->p[i - 1] * internal->m[internal->dim_m_1 * (j - 1) + i - 1] * internal->C[j - 1] / (double) internal->N[j - 1];
     }
-  }
-  memcpy(output + internal->offset_output_m, internal->m, internal->dim_m * sizeof(double));
-  for (int i = 1; i <= internal->dim_foi; ++i) {
-    internal->foi[i - 1] = internal->beta * internal->p[i - 1] * odin_sum2(internal->lambda, i - 1, i, 0, internal->dim_lambda_2, internal->dim_lambda_1);
   }
   memcpy(output + internal->dim_N, internal->foi, internal->dim_foi * sizeof(double));
 }
 SEXP dualvax_rhs_r(SEXP internal_p, SEXP t, SEXP state) {
   SEXP dstatedt = PROTECT(allocVector(REALSXP, LENGTH(state)));
   dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
-  SEXP output_ptr = PROTECT(allocVector(REALSXP, internal->dim_N + internal->dim_foi + internal->dim_m));
+  SEXP output_ptr = PROTECT(allocVector(REALSXP, internal->dim_N + internal->dim_foi));
   setAttrib(dstatedt, install("output"), output_ptr);
   UNPROTECT(1);
   double *output = REAL(output_ptr);
