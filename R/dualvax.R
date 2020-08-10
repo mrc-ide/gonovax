@@ -38,10 +38,13 @@ dualvax_parameters <- function(gono_params = NULL,
 ##' 
 dualvax_initial <- function(pars) {
   n_par <- length(pars$beta)
+  
+  # separate into 1:low and 2:high activity groups
   N0 <- matrix(pars$N0 * c(pars$ql, 1 - pars$ql), byrow = TRUE, 
                nrow = n_par, ncol = 2 )
+  # set initial asymptomatic prevalence in each group
   A0 <- round(cbind(N0[, 1] * pars$prev_Asl, N0[, 2] * pars$prev_Ash))
-
+  
   I0 <- S0 <- T0 <- matrix(0, nrow = nrow(A0), ncol = ncol(A0))
 
   list(U0 = N0 - A0,
