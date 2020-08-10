@@ -18,7 +18,7 @@ test_that("data_frame and read_csv do not do factor conversion", {
 })
 
 test_that("sircovid_file throws for missing files", {
-  expect_true(file.exists(sircovid_file("odin/basic.R")))
+  expect_true(file.exists(gonovax_file("odin/dualvax.R")))
   ## NOTE: not testing error string because it comes from base R
   expect_error(sircovid_file("odin/acidic.R"))
 })
