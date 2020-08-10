@@ -4,7 +4,7 @@
 ##' @export dualvax
 NULL
 
-##' @name Parameters for the "[dualvax]" model.
+##' @name dualvax_parameters
 ##' @title Parameters for the dualvax model
 ##' @param gono_params A dataframe of natural history parameters
 ##' @param vax_params A vector of vaccination params
