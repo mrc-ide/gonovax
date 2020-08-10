@@ -1,0 +1,69 @@
+context("dualvax (check)")
+
+test_that("there are no infections when beta is 0", {
+  params <- dualvax_parameters()
+  params$beta <- 0
+  mod <- dualvax(user = params)
+  tt <- seq(0, 1, 1 / 365)
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+  
+  expect_true(all(y$I == 0))
+  expect_true(all(y$S == 0))
+})
+
+test_that("there are no symptomatic infections when psi = 0", {
+  params <- dualvax_parameters()
+  params$psi <- 0
+  mod <- dualvax(user = params)
+  tt <- seq(0, 1, 1 / 365)
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+  
+  expect_true(any(y$I == 0))
+  expect_true(all(y$S == 0))
+})
+
+test_that("there are no infections when A0 = 0", {
+  params <- dualvax_parameters()
+  params$A0[] <- 0
+  mod <- dualvax(user = params)
+  tt <- seq(0, 1, 1 / 365)
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+
+  expect_true(all(y$I == 0))
+  expect_true(all(y$A == 0))
+  expect_true(all(y$S == 0))
+})
+
+test_that("the foi is calculated correctly", {
+  params <- dualvax_parameters()
+  mod <- dualvax(user = params)
+  tt <- seq(0, 1, 1/365)
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+  
+  # unpack parameters
+  pL <- params$p[1]
+  pH <- params$p[2]
+  NL <- y$N[, 1]
+  NH <- y$N[, 2]
+  CL <- y$I[, 1] + y$A[, 1] + y$S[, 1]
+  CH <- y$I[, 2] + y$A[, 2] + y$S[, 2]
+  eps <- params$epsilon
+  beta <- params$beta
+  np <- pL * NL + pH * NH
+
+  foi_LL <- pL * beta * (eps + (1 - eps) * pL * NL / np) * CL / NL
+  foi_LH <- pL * pH * beta * (1 - eps) / np * CH
+  foi_HL <- pH * pL * beta * (1 - eps) / np * CL
+  foi_HH <- pH * beta * (eps + (1 - eps) * pH * NH / np) * CH / NH
+  
+  expect_equal(y$foi[, 1, 1], foi_LL)
+  expect_equal(y$foi[, 1, 2], foi_LH)
+  expect_equal(y$foi[, 2, 1], foi_HL)
+  expect_equal(y$foi[, 2, 2], foi_HH)
+  
+})
+  
