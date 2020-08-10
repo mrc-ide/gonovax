@@ -2,13 +2,10 @@
 ##' @title Model of gonorrhoea with dual vaccines
 ##'This is an odin model.
 ##' @export dualvax
-##' 
 NULL
 
 ##' @name Parameters for the "[dualvax]" model.
-##' 
-##' @title Parameters for the dulavax model
-##' 
+##' @title Parameters for the dualvax model
 ##' @param gono_params A dataframe of natural history parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param init_params A list of starting conditions
@@ -35,24 +32,17 @@ dualvax_parameters <- function(gono_params = NULL,
 ##'
 ##' @return A list of initial conditions
 ##' @export
-##' 
 dualvax_initial <- function(pars) {
   n_par <- length(pars$beta)
-  
   # separate into 1:low and 2:high activity groups
-  N0 <- matrix(pars$N0 * c(pars$ql, 1 - pars$ql), byrow = TRUE, 
-               nrow = n_par, ncol = 2 )
+  N0 <- matrix(pars$N0 * c(pars$ql, 1 - pars$ql), byrow = TRUE,
+               nrow = n_par, ncol = 2)
   # set initial asymptomatic prevalence in each group
   A0 <- round(cbind(N0[, 1] * pars$prev_Asl, N0[, 2] * pars$prev_Ash))
-  
   I0 <- S0 <- T0 <- matrix(0, nrow = nrow(A0), ncol = ncol(A0))
-
   list(U0 = N0 - A0,
        I0 = I0,
        A0 = A0,
        S0 = S0,
        T0 = T0)
 }
-
-
-

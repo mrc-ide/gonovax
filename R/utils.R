@@ -17,4 +17,3 @@ write_csv <- function(...) {
 data_frame <- function(...) {
   data.frame(..., check.names = FALSE, stringsAsFactors = FALSE)
 }
-

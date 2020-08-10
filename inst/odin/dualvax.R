@@ -10,45 +10,47 @@
 
 # Group is either 1: Low, or 2: High activity
 n_par <- length(beta)
-n_group <- 2 
+n_group <- 2
 
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, ]) <- enr[j] - incid[i, j] - exr*U[i, j] + nu[i]*A[i, j] + rho[i]*T[i, j]
-deriv(I[, ]) <- incid[i, j] - (sigma[i] + exr)*I[i, j] 
-deriv(A[, ]) <- (1 - psi[i])*sigma[i]*I[i, j] - (eta[i] + nu[i] + exr)*A[i, j]
-deriv(S[, ]) <- psi[i]*sigma[i]*I[i, j] - (mu[i] + exr)*S[i, j]
-deriv(T[, ]) <- mu[i]*S[i, j] + eta[i]*A[i, j] - (rho[i] + exr)*T[i, j]
+deriv(U[, ]) <- enr[j] - incid[i, j] - exr * U[i, j] + nu[i] * A[i, j] +
+  rho[i] * T[i, j]
+deriv(I[, ]) <- incid[i, j] - (sigma[i] + exr) * I[i, j]
+deriv(A[, ]) <- (1 - psi[i]) * sigma[i] * I[i, j] -
+  (eta[i] + nu[i] + exr) * A[i, j]
+deriv(S[, ]) <- psi[i] * sigma[i] * I[i, j] - (mu[i] + exr) * S[i, j]
+deriv(T[, ]) <- mu[i] * S[i, j] + eta[i] * A[i, j] - (rho[i] + exr) * T[i, j]
 
 deriv(cum_incid[, ]) <- incid[i, j]
 
 
 ## Update population size
-C[, ] <- I[i, j] + A[i, j] + S[i, j] 
+C[, ] <- I[i, j] + A[i, j] + S[i, j]
 N[, ] <- U[i, j] + C[i, j] + T[i, j]
 
 # calculate mixing matrix, probability of infection and force of infection
 Np[, ] <- N[i, j] * p[j]
-m[, , ] <- epsilon[i] * (j==k) + (1-epsilon[i]) * Np[i, k] / sum(Np[i, ])
+m[, , ] <- epsilon[i] * (j == k) + (1 - epsilon[i]) * Np[i, k] / sum(Np[i, ])
 foi[, , ] <- beta[i] * p[j] * m[i, j, k] * C[i, k] / N[i, k]
 incid[, ] <- sum(foi[i, j, ]) * U[i, j]
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
-initial(U[,]) <- U0[i, j]
-initial(I[,]) <- I0[i, j]
-initial(A[,]) <- A0[i, j]
-initial(S[,]) <- S0[i, j]
-initial(T[,]) <- T0[i, j]
+initial(U[, ]) <- U0[i, j]
+initial(I[, ]) <- I0[i, j]
+initial(A[, ]) <- A0[i, j]
+initial(S[, ]) <- S0[i, j]
+initial(T[, ]) <- T0[i, j]
 
 initial(cum_incid[, ]) <- 0
 
-U0[,] <- user()
-I0[,] <- user()
-A0[,] <- user()
-S0[,] <- user()
-T0[,] <- user()
+U0[, ] <- user()
+I0[, ] <- user()
+A0[, ] <- user()
+S0[, ] <- user()
+T0[, ] <- user()
 
 # set up dimensions of compartments
 dim(U) <- c(n_par, n_group)
@@ -103,4 +105,3 @@ dim(p) <- n_group
 
 output(N) <- N
 output(foi) <- foi
-
