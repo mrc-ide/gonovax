@@ -8,7 +8,9 @@
 dualvax_parameters(gono_params = NULL, init_params = NULL, vax_params = NULL)
 }
 \arguments{
-\item{gono_params}{A vector of natural history parameters}
+\item{gono_params}{A dataframe of natural history parameters}
+
+\item{init_params}{A list of starting conditions}
 
 \item{vax_params}{A vector of vaccination params}
 }

@@ -7,7 +7,7 @@
 dualvax_initial(pars)
 }
 \arguments{
-\item{pars}{A parameter list created by [basic_parameters()]; from
+\item{pars}{A parameter list created by [dual_parameters()]; from
 this list we will use the `N0` `q`, `prev_Asl` and `prev_Ash`
 elements.}
 }

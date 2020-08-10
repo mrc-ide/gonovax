@@ -9,8 +9,9 @@ NULL
 ##' 
 ##' @title Parameters for the dulavax model
 ##' 
-##' @param gono_params A vector of natural history parameters
+##' @param gono_params A dataframe of natural history parameters
 ##' @param vax_params A vector of vaccination params
+##' @param init_params A list of starting conditions
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -28,7 +29,7 @@ dualvax_parameters <- function(gono_params = NULL,
 ##'
 ##' @title Initial conditions for the dualvax model
 ##'
-##' @param pars A parameter list created by [basic_parameters()]; from
+##' @param pars A parameter list created by [dual_parameters()]; from
 ##'   this list we will use the `N0` `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
 ##'
