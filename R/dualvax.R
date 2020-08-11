@@ -4,7 +4,7 @@
 ##' @export dualvax
 NULL
 
-##' @name dualvax_parameters
+##' @name dualvax_params
 ##' @title Parameters for the dualvax model
 ##' @param gono_params A dataframe of natural history parameters
 ##' @param vax_params A vector of vaccination params
@@ -14,35 +14,37 @@ NULL
 ##'   within the odin code, though some are also used in processing
 ##'   just before the model is run.
 ##' @export
-dualvax_parameters <- function(gono_params = NULL,
+dualvax_params <- function(gono_params = NULL,
                                init_params = NULL,
                                vax_params = NULL) {
-  ret <- gonovax_parameters()
-  inits <- init_params %||% dualvax_initial(ret)
-  c(ret, inits)
+  ret <- c(demographic_params(), gono_params)
+  init_params <- init_params %||% dualvax_initial(ret) 
+  vax_params <- vax_params %||% list(ve = 1, eff = 0)
+  c(ret, init_params, vax_params)
 }
 
 ##' Create initial conditions for the dualvax model
 ##'
 ##' @title Initial conditions for the dualvax model
 ##'
-##' @param pars A parameter list created by [dual_parameters()]; from
-##'   this list we will use the `N0` `q`, `prev_Asl` and `prev_Ash`
+##' @param pars A parameter list created by [dualvax_params()]; from
+##'   this list we will use the `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
 ##'
 ##' @return A list of initial conditions
 ##' @export
 dualvax_initial <- function(pars) {
-  n_par <- length(pars$beta)
   # separate into 1:low and 2:high activity groups
-  N0 <- matrix(pars$N0 * c(pars$ql, 1 - pars$ql), byrow = TRUE,
-               nrow = n_par, ncol = 2)
+  N0 <- round(pars$N0 * pars$q)
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(length(pars$beta), 2, 1))
+  
   # set initial asymptomatic prevalence in each group
-  A0 <- round(cbind(N0[, 1] * pars$prev_Asl, N0[, 2] * pars$prev_Ash))
-  I0 <- S0 <- T0 <- matrix(0, nrow = nrow(A0), ncol = ncol(A0))
-  list(U0 = N0 - A0,
-       I0 = I0,
-       A0 = A0,
-       S0 = S0,
-       T0 = T0)
+  A0[, 1, 1] <- round(N0[1] * pars$prev_Asl)
+  A0[, 2, 1] <- round(N0[2] * pars$prev_Ash)
+  
+  # set initial uninfecteds
+  U0[, 1, 1] <- N0[1] - A0[, 1, 1]
+  U0[, 2, 1] <- N0[2] - A0[, 2, 1]
+  
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }

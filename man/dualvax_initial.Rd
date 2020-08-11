@@ -4,10 +4,10 @@
 \alias{dualvax_initial}
 \title{Initial conditions for the dualvax model}
 \usage{
-dualvax_initial(pars)
+dualvax_initial(contents)
 }
 \arguments{
-\item{pars}{A parameter list created by [dual_parameters()]; from
+\item{pars}{A parameter list created by [dualvax_parameters()]; from
 this list we will use the `N0` `q`, `prev_Asl` and `prev_Ash`
 elements.}
 }

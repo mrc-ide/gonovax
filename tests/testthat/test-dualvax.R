@@ -1,18 +1,19 @@
 context("dualvax (check)")
 
 test_that("there are no infections when beta is 0", {
-  params <- dualvax_parameters()
+  params <- dualvax_params(gono_params = gono_params(1))
   params$beta[] <- 0
   mod <- dualvax(user = params)
+
   tt <- seq(0, 1, 1 / 365)
-  y <- mod$run(t = tt)
+  y <- mod$run(tt)
   y <- mod$transform_variables(y)
   expect_true(all(y$I == 0))
   expect_true(all(y$S == 0))
 })
 
 test_that("there are no symptomatic infections when psi = 0", {
-  params <- dualvax_parameters()
+  params <- dualvax_params(gono_params = gono_params(1))
   params$psi[] <- 0
   mod <- dualvax(user = params)
   tt <- seq(0, 1, 1 / 365)
@@ -23,8 +24,8 @@ test_that("there are no symptomatic infections when psi = 0", {
 })
 
 test_that("there are no infections when A0 = 0", {
-  params <- dualvax_parameters()
-  params$A0[, ] <- 0
+  params <- dualvax_params(gono_params = gono_params(1))
+  params$A0[, , ] <- 0
   mod <- dualvax(user = params)
   tt <- seq(0, 1, 1 / 365)
   y <- mod$run(t = tt)
@@ -36,7 +37,7 @@ test_that("there are no infections when A0 = 0", {
 })
 
 test_that("the foi is calculated correctly", {
-  params <- dualvax_parameters()
+  params <- dualvax_params(gono_params = gono_params(2))
   mod <- dualvax(user = params)
   tt <- seq(0, 10 / 365, 1 / 365)
   y <- mod$run(t = tt)
@@ -44,10 +45,12 @@ test_that("the foi is calculated correctly", {
   # unpack parameters
   pL <- params$p[1]
   pH <- params$p[2]
-  NL <- y$N[1, 1, 1]
-  NH <- y$N[1, 1, 2]
-  CL <- t(y$I[, , 1] + y$A[, , 1] + y$S[, , 1])
-  CH <- t(y$I[, , 2] + y$A[, , 2] + y$S[, , 2])
+  NL <- sum(y$N[1, 1, 1, ])
+  NH <- sum(y$N[1, 1, 2, ])
+  C <- y$I + y$A + y$S
+  
+  CL <- t(C[, , 1, ])
+  CH <- t(C[, , 2, ])
   eps <- params$epsilon
   beta <- params$beta
   np <- pL * NL + pH * NH
