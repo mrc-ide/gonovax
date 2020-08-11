@@ -28,9 +28,8 @@ dualvax_params <- function(gono_params = NULL,
 ##' @title Initial conditions for the dualvax model
 ##'
 ##' @param pars A parameter list created by [dualvax_params()]; from
-##'   this list we will use the `q`, `prev_Asl` and `prev_Ash`
+##'   this list we will use the `N0`, `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
-##'
 ##' @return A list of initial conditions
 ##' @export
 dualvax_initial <- function(pars) {
