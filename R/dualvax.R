@@ -18,7 +18,7 @@ dualvax_params <- function(gono_params = NULL,
                                init_params = NULL,
                                vax_params = NULL) {
   ret <- c(demographic_params(), gono_params)
-  init_params <- init_params %||% dualvax_initial(ret) 
+  init_params <- init_params %||% dualvax_initial(ret)
   vax_params <- vax_params %||% list(ve = 1, eff = 0)
   c(ret, init_params, vax_params)
 }
@@ -37,14 +37,14 @@ dualvax_initial <- function(pars) {
   # separate into 1:low and 2:high activity groups
   N0 <- round(pars$N0 * pars$q)
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(length(pars$beta), 2, 1))
-  
+
   # set initial asymptomatic prevalence in each group
   A0[, 1, 1] <- round(N0[1] * pars$prev_Asl)
   A0[, 2, 1] <- round(N0[2] * pars$prev_Ash)
-  
+
   # set initial uninfecteds
   U0[, 1, 1] <- N0[1] - A0[, 1, 1]
   U0[, 2, 1] <- N0[2] - A0[, 2, 1]
-  
+
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }

@@ -16,13 +16,13 @@ n_vax <- 1
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, , ]) <- enr * q[j] * ve[k] - incid[i, j, k] - exr * U[i, j, k] + 
+deriv(U[, , ]) <- enr * q[j] * ve[k] - incid[i, j, k] - exr * U[i, j, k] +
   nu[i] * A[i, j, k] + rho[i] * T[i, j, k]
 deriv(I[, , ]) <- incid[i, j, k] - (sigma[i] + exr) * I[i, j, k]
 deriv(A[, , ]) <- (1 - psi[i]) * sigma[i] * I[i, j, k] -
   (eta[i] + nu[i] + exr) * A[i, j, k]
 deriv(S[, , ]) <- psi[i] * sigma[i] * I[i, j, k] - (mu[i] + exr) * S[i, j, k]
-deriv(T[, , ]) <- mu[i] * S[i, j, k] + eta[i] * A[i, j, k] - 
+deriv(T[, , ]) <- mu[i] * S[i, j, k] + eta[i] * A[i, j, k] -
   (rho[i] + exr) * T[i, j, k]
 
 deriv(cum_incid[, , ]) <- incid[i, j, k]

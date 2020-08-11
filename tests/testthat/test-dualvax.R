@@ -48,7 +48,6 @@ test_that("the foi is calculated correctly", {
   NL <- sum(y$N[1, 1, 1, ])
   NH <- sum(y$N[1, 1, 2, ])
   C <- y$I + y$A + y$S
-  
   CL <- t(C[, , 1, ])
   CH <- t(C[, , 2, ])
   eps <- params$epsilon
