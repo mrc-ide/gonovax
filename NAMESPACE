@@ -2,6 +2,6 @@
 
 export(dualvax)
 export(dualvax_initial)
-export(dualvax_parameters)
+export(dualvax_params)
 importFrom(odin,odin)
 useDynLib(gonovax, .registration = TRUE)

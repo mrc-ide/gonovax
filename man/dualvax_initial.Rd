@@ -7,8 +7,8 @@
 dualvax_initial(pars)
 }
 \arguments{
-\item{pars}{A parameter list created by [dual_parameters()]; from
-this list we will use the `N0` `q`, `prev_Asl` and `prev_Ash`
+\item{pars}{A parameter list created by [dualvax_params()]; from
+this list we will use the `N0`, `q`, `prev_Asl` and `prev_Ash`
 elements.}
 }
 \value{

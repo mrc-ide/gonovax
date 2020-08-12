@@ -9,99 +9,157 @@
 ### W: Waned
 
 # Group is either 1: Low, or 2: High activity
-n_par <- length(beta)
+n_par   <- length(beta)
 n_group <- 2
+n_vax   <- user(1)
 
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, ]) <- enr[j] - incid[i, j] - exr * U[i, j] + nu[i] * A[i, j] +
-  rho[i] * T[i, j]
-deriv(I[, ]) <- incid[i, j] - (sigma[i] + exr) * I[i, j]
-deriv(A[, ]) <- (1 - psi[i]) * sigma[i] * I[i, j] -
-  (eta[i] + nu[i] + exr) * A[i, j]
-deriv(S[, ]) <- psi[i] * sigma[i] * I[i, j] - (mu[i] + exr) * S[i, j]
-deriv(T[, ]) <- mu[i] * S[i, j] + eta[i] * A[i, j] - (rho[i] + exr) * T[i, j]
+deriv(U[, , ]) <- enr * q[j] * ve[k] - incid[i, j, k] - exr * U[i, j, k] +
+  nu[i] * A[i, j, k] + (1 - vd) * treated[i, j, k] -
+  sum(n_vd[i, j, k, ]) - sum(n_vs[i, j, k, ]) + sum(wU[i, j, k, ])
+deriv(I[, , ]) <- incid[i, j, k] - (sigma[i] + exr) * I[i, j, k] +
+  sum(wI[i, j, k, ])
+deriv(A[, , ]) <- (1 - psi[i]) * sigma[i] * I[i, j, k] -
+  (eta[i] + nu[i] + exr) * A[i, j, k] +
+  sum(wA[i, j, k, ])
+deriv(S[, , ]) <- psi[i] * sigma[i] * I[i, j, k] - (mu[i] + exr) * S[i, j, k] +
+  sum(wS[i, j, k, ])
+deriv(T[, , ]) <- mu[i] * S[i, j, k] + eta[i] * A[i, j, k] -
+  exr * T[i, j, k] - treated[i, j, k] + sum(wT[i, j, k, ])
 
-deriv(cum_incid[, ]) <- incid[i, j]
-
+deriv(cum_incid[, , ])      <- incid[i, j, k]
+deriv(cum_treated[, , ])    <- treated[i, j, k]
+deriv(cum_screened[, , ])   <- screened[i, j, k]
+deriv(cum_vaccinated[, , ]) <- n_vs[i, j, k, k] + n_vd[i, j, k, k]
+deriv(cum_screened[, , ])   <- screened[i, j, k]
 
 ## Update population size
-C[, ] <- I[i, j] + A[i, j] + S[i, j]
-N[, ] <- U[i, j] + C[i, j] + T[i, j]
+C[, , ] <- I[i, j, k] + A[i, j, k] + S[i, j, k]
+N[, , ] <- U[i, j, k] + C[i, j, k] + T[i, j, k]
 
 # calculate mixing matrix, probability of infection and force of infection
-Np[, ] <- N[i, j] * p[j]
-m[, , ] <- epsilon[i] * (j == k) + (1 - epsilon[i]) * Np[i, k] / sum(Np[i, ])
-foi[, , ] <- beta[i] * p[j] * m[i, j, k] * C[i, k] / N[i, k]
-incid[, ] <- sum(foi[i, j, ]) * U[i, j]
+Np[, ]    <- sum(N[i, j, ]) * p[j]
+m[, , ]   <- epsilon[i] * (j == k) + (1 - epsilon[i]) * Np[i, k] / sum(Np[i, ])
+foi[, , ] <- beta[i] * p[j] * m[i, j, k] * sum(C[i, k, ]) / sum(N[i, k, ])
+
+incid[, , ]    <- sum(foi[i, j, ]) * (1 - eff[k]) * U[i, j, k]
+treated[, , ]  <- rho[i] * T[i, j, k]
+screened[, , ] <- eta[i] * U[i, j, k]
+# vaccination
+## input vax_map (v)
+## (0,  1,
+##  0, -1)
+## at screening
+n_vs[, , , ] <- vs * v[k, l] * screened[i, j, l]
+## on diagnosis
+n_vd[, , , ] <- vd * v[k, l] * treated[i, j, l]
+
+# waning
+## input waning_map
+## (0,  w,
+##  0, -w)
+wU[, , , ] <- w[k, l] * U[i, j, l]
+wI[, , , ] <- w[k, l] * I[i, j, l]
+wA[, , , ] <- w[k, l] * A[i, j, l]
+wS[, , , ] <- w[k, l] * S[i, j, l]
+wT[, , , ] <- w[k, l] * T[i, j, l]
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
-initial(U[, ]) <- U0[i, j]
-initial(I[, ]) <- I0[i, j]
-initial(A[, ]) <- A0[i, j]
-initial(S[, ]) <- S0[i, j]
-initial(T[, ]) <- T0[i, j]
+initial(U[, , ]) <- U0[i, j, k]
+initial(I[, , ]) <- I0[i, j, k]
+initial(A[, , ]) <- A0[i, j, k]
+initial(S[, , ]) <- S0[i, j, k]
+initial(T[, , ]) <- T0[i, j, k]
 
-initial(cum_incid[, ]) <- 0
+U0[, , ] <- user()
+I0[, , ] <- user()
+A0[, , ] <- user()
+S0[, , ] <- user()
+T0[, , ] <- user()
 
-U0[, ] <- user()
-I0[, ] <- user()
-A0[, ] <- user()
-S0[, ] <- user()
-T0[, ] <- user()
+initial(cum_incid[, , ])      <- 0
+initial(cum_treated[, , ])    <- 0
+initial(cum_screened[, , ])   <- 0
+initial(cum_vaccinated[, , ]) <- 0
 
 # set up dimensions of compartments
-dim(U) <- c(n_par, n_group)
-dim(I) <- c(n_par, n_group)
-dim(A) <- c(n_par, n_group)
-dim(S) <- c(n_par, n_group)
-dim(T) <- c(n_par, n_group)
+dim(U) <- c(n_par, n_group, n_vax)
+dim(I) <- c(n_par, n_group, n_vax)
+dim(A) <- c(n_par, n_group, n_vax)
+dim(S) <- c(n_par, n_group, n_vax)
+dim(T) <- c(n_par, n_group, n_vax)
 
-dim(U0) <- c(n_par, n_group)
-dim(I0) <- c(n_par, n_group)
-dim(A0) <- c(n_par, n_group)
-dim(S0) <- c(n_par, n_group)
-dim(T0) <- c(n_par, n_group)
+dim(U0) <- c(n_par, n_group, n_vax)
+dim(I0) <- c(n_par, n_group, n_vax)
+dim(A0) <- c(n_par, n_group, n_vax)
+dim(S0) <- c(n_par, n_group, n_vax)
+dim(T0) <- c(n_par, n_group, n_vax)
 
-dim(C) <- c(n_par, n_group)
-dim(N) <- c(n_par, n_group)
+dim(C)  <- c(n_par, n_group, n_vax)
+dim(N)  <- c(n_par, n_group, n_vax)
 dim(Np) <- c(n_par, n_group)
 
-dim(m) <- c(n_par, n_group, n_group)
-dim(incid) <- c(n_par, n_group)
+dim(m)   <- c(n_par, n_group, n_group)
 dim(foi) <- c(n_par, n_group, n_group)
 
-dim(cum_incid) <- c(n_par, n_group)
+dim(incid)    <- c(n_par, n_group, n_vax)
+dim(treated)  <- c(n_par, n_group, n_vax)
+dim(screened) <- c(n_par, n_group, n_vax)
+
+dim(cum_incid)      <- c(n_par, n_group, n_vax)
+dim(cum_treated)    <- c(n_par, n_group, n_vax)
+dim(cum_screened)   <- c(n_par, n_group, n_vax)
+dim(cum_vaccinated) <- c(n_par, n_group, n_vax)
 
 ## Parameters
-enr[] <- user()
-exr <- user()
-beta[] <- user()
-p[] <- user()
+q[]       <- user()
+enr       <- user()
+exr       <- user()
+beta[]    <- user()
+p[]       <- user()
 epsilon[] <- user()
-sigma[] <- user()
-psi[] <- user()
-eta[] <- user()
-nu[] <- user()
-mu[] <- user()
-rho[] <- user()
+sigma[]   <- user()
+psi[]     <- user()
+eta[]     <- user()
+nu[]      <- user()
+mu[]      <- user()
+rho[]     <- user()
 
+## vaccination pars
+ve[]  <- user()
+vs    <- user()
+vd    <- user()
+eff[] <- user()
+w[, ] <- user()
+v[, ] <- user()
 
-
-dim(beta) <- user()
+## par dimensions
+dim(q)       <- n_group
+dim(beta)    <- user()
 dim(epsilon) <- n_par
-dim(sigma) <- n_par
-dim(psi) <- n_par
-dim(eta) <- n_par
-dim(nu) <- n_par
-dim(mu) <- n_par
-dim(rho) <- n_par
+dim(sigma)   <- n_par
+dim(psi)     <- n_par
+dim(eta)     <- n_par
+dim(nu)      <- n_par
+dim(mu)      <- n_par
+dim(rho)     <- n_par
 
-dim(enr) <- n_group
-dim(p) <- n_group
+dim(ve)   <- n_vax
+dim(eff)  <- n_vax
+dim(v)    <- c(n_vax, n_vax)
+dim(w)    <- c(n_vax, n_vax)
+dim(n_vs) <- c(n_par, n_group, n_vax, n_vax)
+dim(n_vd) <- c(n_par, n_group, n_vax, n_vax)
+dim(wU)   <- c(n_par, n_group, n_vax, n_vax)
+dim(wI)   <- c(n_par, n_group, n_vax, n_vax)
+dim(wA)   <- c(n_par, n_group, n_vax, n_vax)
+dim(wS)   <- c(n_par, n_group, n_vax, n_vax)
+dim(wT)   <- c(n_par, n_group, n_vax, n_vax)
 
+dim(p)   <- n_group
 
-output(N) <- N
+output(N)   <- N
 output(foi) <- foi
