@@ -19,7 +19,7 @@ dualvax_params <- function(gono_params = NULL,
                                vax_params = NULL) {
   ret <- c(demographic_params(), gono_params)
   init_params <- init_params %||% dualvax_initial(ret)
-  vax_params <- vax_params %||% list(ve = 1, eff = 0)
+  vax_params <- vax_params %||% vax_params0()
   c(ret, init_params, vax_params)
 }
 
@@ -46,4 +46,19 @@ dualvax_initial <- function(pars) {
   U0[, 2, 1] <- N0[2] - A0[, 2, 1]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+}
+
+vax_params0 <- function(x) {
+  list(ve = 1,
+       eff = 0,
+       w = as.matrix(0))
+}
+
+vax_params1 <- function(x) {
+  z <- 1 / 4
+  list(ve = 1,
+       eff = 0,
+       w = rbind(c(0, z),
+                c(-z, 0))
+  )
 }
