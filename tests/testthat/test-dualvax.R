@@ -137,7 +137,7 @@ test_that("Check vaccination on screening in Bex model", {
   # check some people are being vaccinated
   expect_true(all(y$U[-1, , , 2] > 0))
   expect_true(all(y$cum_vaccinated[-1, , , 1] > 0))
-  expect_true(all(y$cum_vaccinated[ , , , 2] == 0))
+  expect_true(all(y$cum_vaccinated[, , , 2] == 0))
   # check all those treated were vaccinated
   expect_true(all(y$cum_vaccinated[, , , 1] == y$cum_screened[, , , 1]))
   # check no compartments are leaking
@@ -165,7 +165,7 @@ test_that("Check vaccination on diagnosis in Bex model", {
   # check some people are being vaccinated
   expect_true(all(y$U[-1, , , 2] > 0))
   expect_true(all(y$cum_vaccinated[-1, , , 1] > 0))
-  expect_true(all(y$cum_vaccinated[ , , , 2] == 0))
+  expect_true(all(y$cum_vaccinated[, , , 2] == 0))
   # check all those treated were vaccinated
   expect_true(all(y$cum_vaccinated == y$cum_treated))
   # check no compartments are leaking
