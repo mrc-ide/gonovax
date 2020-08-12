@@ -10,6 +10,7 @@ test_that("there are no infections when beta is 0", {
   y <- mod$transform_variables(y)
   expect_true(all(y$I == 0))
   expect_true(all(y$S == 0))
+  expect_true(all(y$cum_incid == 0))
 })
 
 test_that("there are no symptomatic infections when psi = 0", {
@@ -45,6 +46,7 @@ test_that("no-one is treated when mu and eta = 0", {
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   expect_true(all(y$T == 0))
+  expect_true(all(y$cum_treated == 0))
 })
 
 test_that("the foi is calculated correctly", {
@@ -105,6 +107,54 @@ test_that("Bex model runs with vbe", {
   # with perfect efficacy
   params <- dualvax_params(gono_params = gono_params(1),
                             vax_params = vax_params1(ve = 1, eff = 1))
+  mod <- dualvax(user = params)
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+  # check some people are being vaccinated
+  expect_true(all(y$U[-1, , , 2] > 0))
+  # check no compartments are leaking
+  expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
+  # check there are infections in unvaccinated group
+  expect_false(all(y$I[, , , 1] == 0))
+  expect_false(all(y$A[, , , 1] == 0))
+  expect_false(all(y$S[, , , 1] == 0))
+  expect_false(all(y$T[, , , 1] == 0))
+  # check there are no infections in vaccinated group
+  expect_true(all(y$I[, , , 2] == 0))
+  expect_true(all(y$A[, , , 2] == 0))
+  expect_true(all(y$S[, , , 2] == 0))
+  expect_true(all(y$T[, , , 2] == 0))
+})
+
+test_that("Check vaccination on screening in Bex model", {
+  tt <- seq(0, 1, 1 / 365)
+  # with perfect efficacy
+  params <- dualvax_params(gono_params = gono_params(1),
+                           vax_params = vax_params1(ve = 0, vs = 1, eff = 1))
+  mod <- dualvax(user = params)
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+  # check some people are being vaccinated
+  expect_true(all(y$U[-1, , , 2] > 0))
+  # check no compartments are leaking
+  expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
+  # check there are infections in unvaccinated group
+  expect_false(all(y$I[, , , 1] == 0))
+  expect_false(all(y$A[, , , 1] == 0))
+  expect_false(all(y$S[, , , 1] == 0))
+  expect_false(all(y$T[, , , 1] == 0))
+  # check there are no infections in vaccinated group
+  expect_true(all(y$I[, , , 2] == 0))
+  expect_true(all(y$A[, , , 2] == 0))
+  expect_true(all(y$S[, , , 2] == 0))
+  expect_true(all(y$T[, , , 2] == 0))
+})
+
+test_that("Check vaccination on diagnosis in Bex model", {
+  tt <- seq(0, 1, 1 / 365)
+  # with perfect efficacy
+  params <- dualvax_params(gono_params = gono_params(1),
+                           vax_params = vax_params1(ve = 0, vd = 1, eff = 1))
   mod <- dualvax(user = params)
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)

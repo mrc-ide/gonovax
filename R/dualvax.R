@@ -50,14 +50,21 @@ dualvax_initial <- function(pars) {
 vax_params0 <- function() {
   list(n_vax = 1,
        ve = 1,
+       vs = 0,
+       vd = 0,
        eff = 0,
+       v = as.matrix(0),
        w = as.matrix(0))
 }
 
-vax_params1 <- function(z = 1 / 4, ve = 1, eff = 0.31) {
+vax_params1 <- function(z = 1 / 4, ve = 1, vs = 0, vd = 0, eff = 0.31) {
   list(n_vax = 2,
        ve    = c(1 - ve, ve),
+       vs    = vs,
+       vd    = vd,
        eff   = c(0, eff),
+       v     = rbind(c(1, 0),
+                    c(-1, 0)),
        w     = rbind(c(0,  z),
                      c(0, -z))
   )
