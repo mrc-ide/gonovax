@@ -31,7 +31,9 @@ deriv(T[, , ]) <- mu[i] * S[i, j, k] + eta[i] * A[i, j, k] -
 
 deriv(cum_incid[, , ])      <- incid[i, j, k]
 deriv(cum_treated[, , ])    <- treated[i, j, k]
+deriv(cum_screened[, , ])   <- screened[i, j, k]
 deriv(cum_vaccinated[, , ]) <- n_vs[i, j, k, k] + n_vd[i, j, k, k]
+deriv(cum_screened[, , ])   <- screened[i, j, k]
 
 ## Update population size
 C[, , ] <- I[i, j, k] + A[i, j, k] + S[i, j, k]
@@ -42,14 +44,15 @@ Np[, ]    <- sum(N[i, j, ]) * p[j]
 m[, , ]   <- epsilon[i] * (j == k) + (1 - epsilon[i]) * Np[i, k] / sum(Np[i, ])
 foi[, , ] <- beta[i] * p[j] * m[i, j, k] * sum(C[i, k, ]) / sum(N[i, k, ])
 
-incid[, , ]   <- sum(foi[i, j, ]) * (1 - eff[k]) * U[i, j, k]
-treated[, , ] <- rho[i] * T[i, j, k]
+incid[, , ]    <- sum(foi[i, j, ]) * (1 - eff[k]) * U[i, j, k]
+treated[, , ]  <- rho[i] * T[i, j, k]
+screened[, , ] <- eta[i] * U[i, j, k]
 # vaccination
 ## input vax_map (v)
 ## (0,  1,
 ##  0, -1)
 ## at screening
-n_vs[, , , ] <- eta[i] * vs * v[k, l] * U[i, j, l]
+n_vs[, , , ] <- vs * v[k, l] * screened[i, j, l]
 ## on diagnosis
 n_vd[, , , ] <- vd * v[k, l] * treated[i, j, l]
 
@@ -79,6 +82,7 @@ T0[, , ] <- user()
 
 initial(cum_incid[, , ])      <- 0
 initial(cum_treated[, , ])    <- 0
+initial(cum_screened[, , ])   <- 0
 initial(cum_vaccinated[, , ]) <- 0
 
 # set up dimensions of compartments
@@ -98,14 +102,16 @@ dim(C)  <- c(n_par, n_group, n_vax)
 dim(N)  <- c(n_par, n_group, n_vax)
 dim(Np) <- c(n_par, n_group)
 
-dim(m)          <- c(n_par, n_group, n_group)
-dim(incid)      <- c(n_par, n_group, n_vax)
-dim(treated)    <- c(n_par, n_group, n_vax)
+dim(m)   <- c(n_par, n_group, n_group)
+dim(foi) <- c(n_par, n_group, n_group)
 
-dim(foi)     <- c(n_par, n_group, n_group)
+dim(incid)    <- c(n_par, n_group, n_vax)
+dim(treated)  <- c(n_par, n_group, n_vax)
+dim(screened) <- c(n_par, n_group, n_vax)
 
 dim(cum_incid)      <- c(n_par, n_group, n_vax)
 dim(cum_treated)    <- c(n_par, n_group, n_vax)
+dim(cum_screened)   <- c(n_par, n_group, n_vax)
 dim(cum_vaccinated) <- c(n_par, n_group, n_vax)
 
 ## Parameters
