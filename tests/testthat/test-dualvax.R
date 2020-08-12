@@ -136,6 +136,9 @@ test_that("Check vaccination on screening in Bex model", {
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
   expect_true(all(y$U[-1, , , 2] > 0))
+  expect_true(all(y$cum_vaccinated[-1, , , 1] > 0))
+  # check all those treated were vaccinated
+  expect_true(all(y$cum_vaccinated == y$cum_treated))
   # check no compartments are leaking
   expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group
@@ -160,6 +163,9 @@ test_that("Check vaccination on diagnosis in Bex model", {
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
   expect_true(all(y$U[-1, , , 2] > 0))
+  expect_true(all(y$cum_vaccinated[-1, , , 1] > 0))
+  # check all those treated were vaccinated
+  expect_true(all(y$cum_vaccinated == y$cum_treated))
   # check no compartments are leaking
   expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group

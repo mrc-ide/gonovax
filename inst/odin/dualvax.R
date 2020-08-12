@@ -29,8 +29,9 @@ deriv(S[, , ]) <- psi[i] * sigma[i] * I[i, j, k] - (mu[i] + exr) * S[i, j, k] +
 deriv(T[, , ]) <- mu[i] * S[i, j, k] + eta[i] * A[i, j, k] -
   exr * T[i, j, k] - treated[i, j, k] + sum(wT[i, j, k, ])
 
-deriv(cum_incid[, , ])   <- incid[i, j, k]
-deriv(cum_treated[, , ]) <- treated[i, j, k]
+deriv(cum_incid[, , ])      <- incid[i, j, k]
+deriv(cum_treated[, , ])    <- treated[i, j, k]
+deriv(cum_vaccinated[, , ]) <- n_vs[i, j, k, k] + n_vd[i, j, k, k]
 
 ## Update population size
 C[, , ] <- I[i, j, k] + A[i, j, k] + S[i, j, k]
@@ -76,8 +77,9 @@ A0[, , ] <- user()
 S0[, , ] <- user()
 T0[, , ] <- user()
 
-initial(cum_incid[, , ])   <- 0
-initial(cum_treated[, , ]) <- 0
+initial(cum_incid[, , ])      <- 0
+initial(cum_treated[, , ])    <- 0
+initial(cum_vaccinated[, , ]) <- 0
 
 # set up dimensions of compartments
 dim(U) <- c(n_par, n_group, n_vax)
@@ -96,13 +98,15 @@ dim(C)  <- c(n_par, n_group, n_vax)
 dim(N)  <- c(n_par, n_group, n_vax)
 dim(Np) <- c(n_par, n_group)
 
-dim(m)       <- c(n_par, n_group, n_group)
-dim(incid)   <- c(n_par, n_group, n_vax)
-dim(treated) <- c(n_par, n_group, n_vax)
+dim(m)          <- c(n_par, n_group, n_group)
+dim(incid)      <- c(n_par, n_group, n_vax)
+dim(treated)    <- c(n_par, n_group, n_vax)
+
 dim(foi)     <- c(n_par, n_group, n_group)
 
-dim(cum_incid)   <- c(n_par, n_group, n_vax)
-dim(cum_treated) <- c(n_par, n_group, n_vax)
+dim(cum_incid)      <- c(n_par, n_group, n_vax)
+dim(cum_treated)    <- c(n_par, n_group, n_vax)
+dim(cum_vaccinated) <- c(n_par, n_group, n_vax)
 
 ## Parameters
 q[]       <- user()
