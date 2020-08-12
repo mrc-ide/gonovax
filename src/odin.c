@@ -313,14 +313,8 @@ SEXP dualvax_create(SEXP user) {
   internal->wT = NULL;
   internal->wU = NULL;
   internal->n_group = 2;
-  internal->n_vax = 1;
-  internal->dim_eff = internal->n_vax;
   internal->dim_p = internal->n_group;
   internal->dim_q = internal->n_group;
-  internal->dim_ve = internal->n_vax;
-  internal->dim_w_1 = internal->n_vax;
-  internal->dim_w_2 = internal->n_vax;
-  internal->dim_w = internal->dim_w_1 * internal->dim_w_2;
   internal->A0 = NULL;
   internal->beta = NULL;
   internal->eff = NULL;
@@ -341,6 +335,7 @@ SEXP dualvax_create(SEXP user) {
   internal->U0 = NULL;
   internal->ve = NULL;
   internal->w = NULL;
+  internal->n_vax = 1;
   SEXP ptr = PROTECT(R_MakeExternalPtr(internal, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(ptr, dualvax_finalise);
   UNPROTECT(1);
@@ -815,6 +810,12 @@ SEXP dualvax_set_user(SEXP internal_p, SEXP user) {
   internal->beta = (double*) user_get_array_dim(user, false, internal->beta, "beta", 1, NA_REAL, NA_REAL, &internal->dim_beta);
   internal->enr = user_get_scalar_double(user, "enr", internal->enr, NA_REAL, NA_REAL);
   internal->exr = user_get_scalar_double(user, "exr", internal->exr, NA_REAL, NA_REAL);
+  internal->n_vax = user_get_scalar_int(user, "n_vax", internal->n_vax, NA_REAL, NA_REAL);
+  internal->dim_eff = internal->n_vax;
+  internal->dim_ve = internal->n_vax;
+  internal->dim_w_1 = internal->n_vax;
+  internal->dim_w_2 = internal->n_vax;
+  internal->dim_w = internal->dim_w_1 * internal->dim_w_2;
   internal->eff = (double*) user_get_array(user, false, internal->eff, "eff", NA_REAL, NA_REAL, 1, internal->dim_eff);
   internal->n_par = internal->dim_beta;
   internal->p = (double*) user_get_array(user, false, internal->p, "p", NA_REAL, NA_REAL, 1, internal->dim_p);

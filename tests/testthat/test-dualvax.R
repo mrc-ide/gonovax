@@ -64,3 +64,27 @@ test_that("the foi is calculated correctly", {
   expect_equal(y$foi[, , 2, 1], t(foi_HL))
   expect_equal(y$foi[, , 2, 2], t(foi_HH))
 })
+
+test_that("model runs with vaccination", {
+  tt <- seq(0, 1, 1 / 365)
+  params0 <- dualvax_params(gono_params = gono_params(1))
+  mod0 <- dualvax(user = params0)
+  y0 <- mod0$run(t = tt)
+  y0 <- mod0$transform_variables(y0)
+
+  params1 <- dualvax_params(gono_params = gono_params(1),
+                           vax_params = vax_params1(ve = 0))
+  mod1 <- dualvax(user = params1)
+  y1 <- mod1$run(t = tt)
+  y1 <- mod1$transform_variables(y1)
+
+  # check that nil vaccination gives same results as before
+  expect_true(all(y1$U[, , , 1, drop = FALSE] == y0$U))
+  expect_true(all(y1$I[, , , 1, drop = FALSE] == y0$I))
+  expect_true(all(y1$A[, , , 1, drop = FALSE] == y0$A))
+  expect_true(all(y1$S[, , , 1, drop = FALSE] == y0$S))
+  expect_true(all(y1$T[, , , 1, drop = FALSE] == y0$T))
+
+  expect_true(all(y1$N[, , , 2] == 0))
+  expect_true(all(apply(y1$N, c(1, 2), sum) - 6e5 < 1e-6))
+})

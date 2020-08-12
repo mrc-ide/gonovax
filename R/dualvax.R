@@ -17,10 +17,10 @@ NULL
 dualvax_params <- function(gono_params = NULL,
                                init_params = NULL,
                                vax_params = NULL) {
-  ret <- c(demographic_params(), gono_params)
-  init_params <- init_params %||% dualvax_initial(ret)
   vax_params <- vax_params %||% vax_params0()
-  c(ret, init_params, vax_params)
+  ret <- c(demographic_params(), gono_params, vax_params)
+  init_params <- init_params %||% dualvax_initial(ret)
+  c(ret, init_params)
 }
 
 ##' Create initial conditions for the dualvax model
@@ -35,8 +35,7 @@ dualvax_params <- function(gono_params = NULL,
 dualvax_initial <- function(pars) {
   # separate into 1:low and 2:high activity groups
   N0 <- round(pars$N0 * pars$q)
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(length(pars$beta), 2, 1))
-
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(length(pars$beta), 2, pars$n_vax))
   # set initial asymptomatic prevalence in each group
   A0[, 1, 1] <- round(N0[1] * pars$prev_Asl)
   A0[, 2, 1] <- round(N0[2] * pars$prev_Ash)
@@ -48,17 +47,18 @@ dualvax_initial <- function(pars) {
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
 
-vax_params0 <- function(x) {
-  list(ve = 1,
+vax_params0 <- function() {
+  list(n_vax = 1,
+       ve = 1,
        eff = 0,
        w = as.matrix(0))
 }
 
-vax_params1 <- function(x) {
-  z <- 1 / 4
-  list(ve = 1,
-       eff = 0,
-       w = rbind(c(0, z),
-                c(-z, 0))
+vax_params1 <- function(z = 1 / 4, ve = 1, eff = 0.31) {
+  list(n_vax = 2,
+       ve    = c(1 - ve, ve),
+       eff   = c(0, eff),
+       w     = rbind(c(0,  z),
+                     c(0, -z))
   )
 }

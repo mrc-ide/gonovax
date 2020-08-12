@@ -11,7 +11,7 @@
 # Group is either 1: Low, or 2: High activity
 n_par <- length(beta)
 n_group <- 2
-n_vax <- 1
+n_vax <- user(1)
 
 
 ## Core equations for transitions between compartments:
