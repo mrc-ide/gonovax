@@ -2,6 +2,7 @@
 
 export(dualvax)
 export(dualvax_initial)
+export(dualvax_initial_t)
 export(dualvax_params)
 export(gono_params)
 importFrom(odin,odin)
