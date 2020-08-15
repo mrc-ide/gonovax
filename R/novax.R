@@ -61,5 +61,6 @@ run_novax_int <- function(n = NULL, tt, equilib = FALSE) {
 ##' @return A list of transformed model outputs
 ##' @export
 run_novax <- function(n = NULL, tt, equilib = FALSE) {
+  n <- n %||% seq_len(nrow(gono_params()))
   lapply(n, run_novax_int, tt = tt, equilib = equilib)
 }
