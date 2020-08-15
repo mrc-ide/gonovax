@@ -18,11 +18,13 @@ gono_params <- function(n = NULL) {
     cache$gono_params <-
       read_csv(gonovax_file("extdata/gono_params.csv"))
   }
+
   pars <- cache$gono_params
   n_pars <- nrow(pars)
   # if n not supplied, return all parameters
   i  <- n %||% seq_len(n_pars)
   # limit to parameter sets available
   i <- i[(i > 0) & (i <= n_pars)]
+
   pars[i, ]
 }

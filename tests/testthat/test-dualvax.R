@@ -72,10 +72,10 @@ test_that("the foi is calculated correctly", {
   foi_HL <- pH * pL * beta * (1 - eps) / np * CL
   foi_HH <- pH * beta * (eps + (1 - eps) * pH * NH / np) * CH / NH
   # test
-  expect_equal(y$foi[, , 1, 1], t(foi_LL))
-  expect_equal(y$foi[, , 1, 2], t(foi_LH))
-  expect_equal(y$foi[, , 2, 1], t(foi_HL))
-  expect_equal(y$foi[, , 2, 2], t(foi_HH))
+  expect_equal(y$foi[, , 1, 1], drop(foi_LL))
+  expect_equal(y$foi[, , 1, 2], drop(foi_LH))
+  expect_equal(y$foi[, , 2, 1], drop(foi_HL))
+  expect_equal(y$foi[, , 2, 2], drop(foi_HH))
 })
 
 test_that("Bex model runs with no vaccination", {
