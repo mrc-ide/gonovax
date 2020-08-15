@@ -1,3 +1,8 @@
+# gonovax 0.1.2
+
+* add novax_equilib() which returns the cached equilibrium compartments for all
+parameters in gono_params()
+
 # gonovax 0.1.1
 
 * export gono_params() and allow selection of specific parameter sets
