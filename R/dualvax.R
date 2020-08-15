@@ -52,7 +52,7 @@ dualvax_initial <- function(pars) {
 ##' @param y a transformed dualvax model run output
 ##' @param n_vax an integer indicating the number of vaccine compartments,
 ##' consistent with the input
-##' @return A list of initial conditions to restart a dualvax model with n_vax 
+##' @return A list of initial conditions to restart a dualvax model with n_vax
 ##' vaccination levels
 ##' @export
 dualvax_restart <- function(y, n_vax = NULL) {
