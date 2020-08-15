@@ -47,14 +47,14 @@ dualvax_initial <- function(pars) {
 }
 
 ##' Create parameters to start the dualvax model from equilibrium
-##' @name dualvax_initial_t
+##' @name dualvax_restart
 ##' @title Create parameters to start the dualvax model from equilibrium
 ##' @param n_vax an integer indicating the number of vaccine compartments
 ##' @param comps a named list of arrays, as output by the model
 ##' (including U, I, A, S, T)
 ##' @return A list of initial conditions
 ##' @export
-dualvax_initial_t <- function(n_vax, comps) {
+dualvax_restart <- function(n_vax, comps) {
 
   dim_comps <- dim(comps[["U"]])
 
