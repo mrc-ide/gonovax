@@ -12,3 +12,21 @@ test_that("can select a specific parameter sets", {
   # check that cannot extend beyond parameter set
   expect_equal(gono_params(c(1, nrow(gp) + 1)), gp[1, ])
 })
+
+test_that("novax_equilib returns equlibrium conditions", {
+
+  y <- novax_equilib(1)
+  tt <- y$t
+  params <- dualvax_params(gono_params = gono_params(1))
+  mod <- dualvax(user = params)
+
+  y1 <- mod$run(tt)
+  y1 <- mod$transform_variables(y1)
+
+  expect_equal(y, y1)
+# check that can load all parameters at once
+  y2 <- novax_equilib()
+  expect_equal(length(y2), 982)
+  expect_equal(y2[[1]], y1)
+
+})

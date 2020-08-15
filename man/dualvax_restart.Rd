@@ -13,7 +13,7 @@ dualvax_restart(y, n_vax = NULL)
 consistent with the input}
 }
 \value{
-A list of initial conditions to restart a dualvax model with n_vax 
+A list of initial conditions to restart a dualvax model with n_vax
 vaccination levels
 }
 \description{
