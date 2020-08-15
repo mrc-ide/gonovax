@@ -6,6 +6,12 @@ demographic_params <- function() {
        exr = 1 / 50
   )
 }
+##' @name gono_params
+##' @title Posterior parameters of gonorrhoea natural history
+##' @param n an integer vector (or value) containing the indices of the required
+##' parameter sets (1:982). If `n = NULL` the full parameter set is returned
+##' @return A data frame of parameters
+##' @export
 
 gono_params <- function(n = NULL) {
   if (is.null(cache$gono_params)) {
