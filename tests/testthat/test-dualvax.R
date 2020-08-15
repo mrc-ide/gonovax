@@ -193,7 +193,7 @@ test_that("can initialise after time 0", {
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
 
-  inits <- dualvax_initial_t(n_vax = 1, comps = y)
+  inits <- dualvax_restart(n_vax = 1, comps = y)
 
   expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
   expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
@@ -210,7 +210,7 @@ test_that("can initialise after time 0", {
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   # check with more vax levels
-  inits <- dualvax_initial_t(n_vax = 2, comps = y)
+  inits <- dualvax_restart(n_vax = 2, comps = y)
   expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
   expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
   expect_true(all(y$A[length(tt), , , ] == inits$A0[, , 1]))
