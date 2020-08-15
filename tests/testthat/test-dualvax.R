@@ -50,7 +50,8 @@ test_that("no-one is treated when mu and eta = 0", {
 })
 
 test_that("the foi is calculated correctly", {
-  params <- dualvax_params(gono_params = gono_params(2))
+  params <- dualvax_params(gono_params = gono_params(1:2))
+  expect_true(length(params$beta) > 0)
   mod <- dualvax(user = params)
   tt <- seq.int(0, 10) / 365
   y <- mod$run(t = tt)
@@ -72,10 +73,10 @@ test_that("the foi is calculated correctly", {
   foi_HL <- pH * pL * beta * (1 - eps) / np * CL
   foi_HH <- pH * beta * (eps + (1 - eps) * pH * NH / np) * CH / NH
   # test
-  expect_equal(y$foi[, , 1, 1], drop(foi_LL))
-  expect_equal(y$foi[, , 1, 2], drop(foi_LH))
-  expect_equal(y$foi[, , 2, 1], drop(foi_HL))
-  expect_equal(y$foi[, , 2, 2], drop(foi_HH))
+  expect_equal(y$foi[, , 1, 1], t(foi_LL))
+  expect_equal(y$foi[, , 1, 2], t(foi_LH))
+  expect_equal(y$foi[, , 2, 1], t(foi_HL))
+  expect_equal(y$foi[, , 2, 2], t(foi_HH))
 })
 
 test_that("Bex model runs with no vaccination", {
@@ -180,4 +181,45 @@ test_that("Check vaccination on diagnosis in Bex model", {
   expect_true(all(y$A[, , , 2] == 0))
   expect_true(all(y$S[, , , 2] == 0))
   expect_true(all(y$T[, , , 2] == 0))
+})
+
+test_that("can initialise after time 0", {
+
+  ## check with single parameter set
+  params <- dualvax_params(gono_params = gono_params(1))
+  mod <- dualvax(user = params)
+
+  tt <- seq.int(0, 10) / 365
+  y <- mod$run(tt)
+  y <- mod$transform_variables(y)
+
+  inits <- dualvax_restart(y, n_vax = 1)
+
+  expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
+  expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
+  expect_true(all(y$A[length(tt), , , ] == inits$A0[, , 1]))
+  expect_true(all(y$S[length(tt), , , ] == inits$S0[, , 1]))
+  expect_true(all(y$T[length(tt), , , ] == inits$T0[, , 1]))
+
+  # check with > 1 parameter set
+  params <- dualvax_params(gono_params = gono_params(1:2))
+  expect_true(length(params$beta) > 0)
+  mod <- dualvax(user = params)
+
+  tt <- seq.int(0, 10) / 365
+  y <- mod$run(tt)
+  y <- mod$transform_variables(y)
+  # check with more vax levels
+  inits <- dualvax_restart(y, n_vax = 2)
+  expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
+  expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
+  expect_true(all(y$A[length(tt), , , ] == inits$A0[, , 1]))
+  expect_true(all(y$S[length(tt), , , ] == inits$S0[, , 1]))
+  expect_true(all(y$T[length(tt), , , ] == inits$T0[, , 1]))
+  expect_true(all(inits$U0[, , 2] == 0))
+  expect_true(all(inits$I0[, , 2] == 0))
+  expect_true(all(inits$A0[, , 2] == 0))
+  expect_true(all(inits$S0[, , 2] == 0))
+  expect_true(all(inits$T0[, , 2] == 0))
+
 })

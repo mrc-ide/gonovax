@@ -24,9 +24,8 @@ dualvax_params <- function(gono_params = NULL,
 }
 
 ##' Create initial conditions for the dualvax model
-##'
+##' @name dualvax_initial
 ##' @title Initial conditions for the dualvax model
-##'
 ##' @param pars A parameter list created by [dualvax_params()]; from
 ##'   this list we will use the `N0`, `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
@@ -43,6 +42,37 @@ dualvax_initial <- function(pars) {
   # set initial uninfecteds
   U0[, 1, 1] <- N0[1] - A0[, 1, 1]
   U0[, 2, 1] <- N0[2] - A0[, 2, 1]
+
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+}
+
+##' Create parameters to start the dualvax model from equilibrium
+##' @name dualvax_restart
+##' @title Create parameters to start the dualvax model from equilibrium
+##' @param y a transformed dualvax model run output
+##' @param n_vax an integer indicating the number of vaccine compartments,
+##' consistent with the input
+##' @return A list of initial conditions to restart a dualvax model with n_vax
+##' vaccination levels
+##' @export
+dualvax_restart <- function(y, n_vax = NULL) {
+
+  dim_y <- dim(y[["U"]])
+
+  i_t <- dim_y[1]
+  n_par <- dim_y[2]
+  n_vax <- n_vax %||% dim_y[4]
+
+  n_vax_input <- dim_y[4]
+  i_vax <- seq_len(min(n_vax,  n_vax_input))
+
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(n_par, 2, n_vax))
+  # set compartments in each group
+  U0[, , i_vax] <- y$U[i_t, , , i_vax]
+  I0[, , i_vax] <- y$I[i_t, , , i_vax]
+  A0[, , i_vax] <- y$A[i_t, , , i_vax]
+  S0[, , i_vax] <- y$S[i_t, , , i_vax]
+  T0[, , i_vax] <- y$T[i_t, , , i_vax]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
