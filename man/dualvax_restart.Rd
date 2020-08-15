@@ -4,16 +4,17 @@
 \alias{dualvax_restart}
 \title{Create parameters to start the dualvax model from equilibrium}
 \usage{
-dualvax_restart(n_vax, comps)
+dualvax_restart(y, n_vax = NULL)
 }
 \arguments{
-\item{n_vax}{an integer indicating the number of vaccine compartments}
+\item{y}{a transformed dualvax model run output}
 
-\item{comps}{a named list of arrays, as output by the model
-(including U, I, A, S, T)}
+\item{n_vax}{an integer indicating the number of vaccine compartments,
+consistent with the input}
 }
 \value{
-A list of initial conditions
+A list of initial conditions to restart a dualvax model with n_vax 
+vaccination levels
 }
 \description{
 Create parameters to start the dualvax model from equilibrium

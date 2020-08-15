@@ -49,28 +49,30 @@ dualvax_initial <- function(pars) {
 ##' Create parameters to start the dualvax model from equilibrium
 ##' @name dualvax_restart
 ##' @title Create parameters to start the dualvax model from equilibrium
-##' @param n_vax an integer indicating the number of vaccine compartments
-##' @param comps a named list of arrays, as output by the model
-##' (including U, I, A, S, T)
-##' @return A list of initial conditions
+##' @param y a transformed dualvax model run output
+##' @param n_vax an integer indicating the number of vaccine compartments,
+##' consistent with the input
+##' @return A list of initial conditions to restart a dualvax model with n_vax 
+##' vaccination levels
 ##' @export
-dualvax_restart <- function(n_vax, comps) {
+dualvax_restart <- function(y, n_vax = NULL) {
 
-  dim_comps <- dim(comps[["U"]])
+  dim_y <- dim(y[["U"]])
 
-  i_t <- dim_comps[1]
-  n_par <- dim_comps[2]
+  i_t <- dim_y[1]
+  n_par <- dim_y[2]
+  n_vax <- n_vax %||% dim_y[4]
 
-  n_vax_input <- dim_comps[4]
+  n_vax_input <- dim_y[4]
   i_vax <- seq_len(min(n_vax,  n_vax_input))
 
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(n_par, 2, n_vax))
   # set compartments in each group
-  U0[, , i_vax] <- comps$U[i_t, , , i_vax]
-  I0[, , i_vax] <- comps$I[i_t, , , i_vax]
-  A0[, , i_vax] <- comps$A[i_t, , , i_vax]
-  S0[, , i_vax] <- comps$S[i_t, , , i_vax]
-  T0[, , i_vax] <- comps$T[i_t, , , i_vax]
+  U0[, , i_vax] <- y$U[i_t, , , i_vax]
+  I0[, , i_vax] <- y$I[i_t, , , i_vax]
+  A0[, , i_vax] <- y$A[i_t, , , i_vax]
+  S0[, , i_vax] <- y$S[i_t, , , i_vax]
+  T0[, , i_vax] <- y$T[i_t, , , i_vax]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
