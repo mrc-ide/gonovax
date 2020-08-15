@@ -33,3 +33,32 @@ vax_params0 <- function() {
        v = as.matrix(0),
        w = as.matrix(0))
 }
+
+
+run_novax_int <- function(n = NULL, tt, equilib = FALSE) {
+  init_params <- NULL
+  if (equilib) {
+    if (length(n) > 1) stop("if length(n) > 1, equilib must be FALSE")
+    init_params <- restart_params(novax_equilib(n))
+  }
+
+  pars <- model_params(gono_params = gono_params(n),
+                       init_params = init_params)
+  mod <- model(user = pars, unused_user_action = FALSE)
+  y <- mod$run(tt)
+  mod$transform_variables(y)
+}
+
+##' @name run_novax
+##' @title run model without vaccination for input parameter sets, either from
+##' initialisation or from equilibrium
+##' @param n an integer vector (or value) containing the indices of
+##' corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
+##' for the full parameter set are returned
+##' @param equilib a logical indicating whether to run from equilibrium, default
+##' is `FALSE`, i.e. run from initial conditions
+##' @return A list of transformed model outputs
+##' @export
+run_novax <- function(n = NULL, tt, equilib = FALSE) {
+  lapply(n, run_novax_int, tt = tt, equilib = equilib)
+}
