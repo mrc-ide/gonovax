@@ -6,14 +6,25 @@ demographic_params <- function() {
        exr = 1 / 50
   )
 }
+##' @name gono_params
+##' @title Posterior parameters of gonorrhoea natural history
+##' @param n an integer vector (or value) containing the indices of the required
+##' parameter sets (1:982). If `n = NULL` the full parameter set is returned
+##' @return A data frame of parameters
+##' @export
 
 gono_params <- function(n = NULL) {
   if (is.null(cache$gono_params)) {
     cache$gono_params <-
       read_csv(gonovax_file("extdata/gono_params.csv"))
   }
+
   pars <- cache$gono_params
-  # select first n parameter sets, if n supplied
-  i  <- n %||% nrow(pars)
-  pars[seq_len(i), ]
+  n_pars <- nrow(pars)
+  # if n not supplied, return all parameters
+  i  <- n %||% seq_len(n_pars)
+  # limit to parameter sets available
+  i <- i[(i > 0) & (i <= n_pars)]
+
+  pars[i, ]
 }
