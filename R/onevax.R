@@ -21,7 +21,7 @@ run_onevax_int <- function(n = NULL, tt, eff, dur, ve, vd, vs, equilib) {
   }
   vax_params <- vax_params1(dur = dur, ve = ve, vs = vs, vd = vd, eff = eff)
   pars <- model_params(gono_params = gono_params(n),
-                       init_params = init_params, 
+                       init_params = init_params,
                        vax_params = vax_params)
   mod <- model(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)
@@ -47,7 +47,7 @@ run_onevax_int <- function(n = NULL, tt, eff, dur, ve, vd, vs, equilib) {
 ##' is `FALSE`, i.e. run from initial conditions
 ##' @return A list of transformed model outputs
 ##' @export
-run_onevax <- function(n = NULL, tt, eff, dur, 
+run_onevax <- function(n = NULL, tt, eff, dur,
                        ve = 0, vd = 0, vs = 0,
                        equilib = FALSE) {
   n <- n %||% seq_len(nrow(gono_params()))
