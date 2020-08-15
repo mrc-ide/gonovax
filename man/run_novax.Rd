@@ -12,6 +12,8 @@ run_novax(n = NULL, tt, equilib = FALSE)
 corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
 for the full parameter set are returned}
 
+\item{tt}{a numeric vector of times at which the model state is output}
+
 \item{equilib}{a logical indicating whether to run from equilibrium, default
 is `FALSE`, i.e. run from initial conditions}
 }

@@ -55,6 +55,7 @@ run_novax_int <- function(n = NULL, tt, equilib = FALSE) {
 ##' @param n an integer vector (or value) containing the indices of
 ##' corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
 ##' for the full parameter set are returned
+##' @param tt a numeric vector of times at which the model state is output
 ##' @param equilib a logical indicating whether to run from equilibrium, default
 ##' is `FALSE`, i.e. run from initial conditions
 ##' @return A list of transformed model outputs
