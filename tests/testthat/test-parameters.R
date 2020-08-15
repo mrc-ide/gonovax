@@ -17,8 +17,8 @@ test_that("novax_equilib returns equlibrium conditions", {
 
   y <- novax_equilib(1)
   tt <- y$t
-  params <- dualvax_params(gono_params = gono_params(1))
-  mod <- dualvax(user = params)
+  params <- model_params(gono_params = gono_params(1))
+  mod <- model(user = params)
 
   y1 <- mod$run(tt)
   y1 <- mod$transform_variables(y1)

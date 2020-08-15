@@ -1,9 +1,9 @@
-context("dualvax (check)")
+context("model (check)")
 
 test_that("there are no infections when beta is 0", {
-  params <- dualvax_params(gono_params = gono_params(1))
+  params <- model_params(gono_params = gono_params(1))
   params$beta[] <- 0
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
 
   tt <- seq.int(0, 10) / 365
   y <- mod$run(tt)
@@ -14,9 +14,9 @@ test_that("there are no infections when beta is 0", {
 })
 
 test_that("there are no symptomatic infections when psi = 0", {
-  params <- dualvax_params(gono_params = gono_params(1))
+  params <- model_params(gono_params = gono_params(1))
   params$psi[] <- 0
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
   tt <- seq.int(0, 10) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -25,9 +25,9 @@ test_that("there are no symptomatic infections when psi = 0", {
 })
 
 test_that("there are no infections when A0 = 0", {
-  params <- dualvax_params(gono_params = gono_params(1))
+  params <- model_params(gono_params = gono_params(1))
   params$A0[, , ] <- 0
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
   tt <- seq.int(0, 10) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -38,9 +38,9 @@ test_that("there are no infections when A0 = 0", {
 })
 
 test_that("no-one is treated when mu and eta = 0", {
-  params <- dualvax_params(gono_params = gono_params(1))
+  params <- model_params(gono_params = gono_params(1))
   params$mu[] <- params$eta[] <- 0
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
 
   tt <- seq.int(0, 10) / 365
   y <- mod$run(tt)
@@ -50,9 +50,9 @@ test_that("no-one is treated when mu and eta = 0", {
 })
 
 test_that("the foi is calculated correctly", {
-  params <- dualvax_params(gono_params = gono_params(1:2))
+  params <- model_params(gono_params = gono_params(1:2))
   expect_true(length(params$beta) > 0)
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
   tt <- seq.int(0, 10) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -81,14 +81,14 @@ test_that("the foi is calculated correctly", {
 
 test_that("Bex model runs with no vaccination", {
   tt <- seq.int(0, 10) / 365
-  params0 <- dualvax_params(gono_params = gono_params(1))
-  mod0 <- dualvax(user = params0)
+  params0 <- model_params(gono_params = gono_params(1))
+  mod0 <- model(user = params0)
   y0 <- mod0$run(t = tt)
   y0 <- mod0$transform_variables(y0)
 
-  params1 <- dualvax_params(gono_params = gono_params(1),
+  params1 <- model_params(gono_params = gono_params(1),
                            vax_params = vax_params1(ve = 0))
-  mod1 <- dualvax(user = params1)
+  mod1 <- model(user = params1)
   y1 <- mod1$run(t = tt)
   y1 <- mod1$transform_variables(y1)
 
@@ -106,9 +106,9 @@ test_that("Bex model runs with no vaccination", {
 test_that("Bex model runs with vbe", {
   tt <- seq.int(0, 10) / 365
   # with perfect efficacy
-  params <- dualvax_params(gono_params = gono_params(1),
+  params <- model_params(gono_params = gono_params(1),
                             vax_params = vax_params1(ve = 1, eff = 1))
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
@@ -130,9 +130,9 @@ test_that("Bex model runs with vbe", {
 test_that("Check vaccination on screening in Bex model", {
   tt <- seq.int(0, 10) / 365
   # with perfect efficacy
-  params <- dualvax_params(gono_params = gono_params(1),
+  params <- model_params(gono_params = gono_params(1),
                            vax_params = vax_params1(ve = 0, vs = 1, eff = 1))
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
@@ -158,9 +158,9 @@ test_that("Check vaccination on screening in Bex model", {
 test_that("Check vaccination on diagnosis in Bex model", {
   tt <- seq.int(0, 10) / 365
   # with perfect efficacy
-  params <- dualvax_params(gono_params = gono_params(1),
+  params <- model_params(gono_params = gono_params(1),
                            vax_params = vax_params1(ve = 0, vd = 1, eff = 1))
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
@@ -186,14 +186,14 @@ test_that("Check vaccination on diagnosis in Bex model", {
 test_that("can initialise after time 0", {
 
   ## check with single parameter set
-  params <- dualvax_params(gono_params = gono_params(1))
-  mod <- dualvax(user = params)
+  params <- model_params(gono_params = gono_params(1))
+  mod <- model(user = params)
 
   tt <- seq.int(0, 10) / 365
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
 
-  inits <- dualvax_restart(y, n_vax = 1)
+  inits <- restart_params(y, n_vax = 1)
 
   expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
   expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
@@ -202,15 +202,15 @@ test_that("can initialise after time 0", {
   expect_true(all(y$T[length(tt), , , ] == inits$T0[, , 1]))
 
   # check with > 1 parameter set
-  params <- dualvax_params(gono_params = gono_params(1:2))
+  params <- model_params(gono_params = gono_params(1:2))
   expect_true(length(params$beta) > 0)
-  mod <- dualvax(user = params)
+  mod <- model(user = params)
 
   tt <- seq.int(0, 10) / 365
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   # check with more vax levels
-  inits <- dualvax_restart(y, n_vax = 2)
+  inits <- restart_params(y, n_vax = 2)
   expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
   expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
   expect_true(all(y$A[length(tt), , , ] == inits$A0[, , 1]))

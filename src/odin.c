@@ -4,7 +4,7 @@
 #include <Rinternals.h>
 #include <stdbool.h>
 #include <R_ext/Rdynload.h>
-typedef struct dualvax_internal {
+typedef struct model_internal {
   double *A0;
   double *beta;
   double *C;
@@ -237,20 +237,20 @@ typedef struct dualvax_internal {
   double *wS;
   double *wT;
   double *wU;
-} dualvax_internal;
-dualvax_internal* dualvax_get_internal(SEXP internal_p, int closed_error);
-static void dualvax_finalise(SEXP internal_p);
-SEXP dualvax_create(SEXP user);
-void dualvax_initmod_desolve(void(* odeparms) (int *, double *));
-SEXP dualvax_contents(SEXP internal_p);
-SEXP dualvax_set_user(SEXP internal_p, SEXP user);
-SEXP dualvax_metadata(SEXP internal_p);
-SEXP dualvax_initial_conditions(SEXP internal_p, SEXP t_ptr);
-void dualvax_rhs(dualvax_internal* internal, double t, double * state, double * dstatedt, double * output);
-void dualvax_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal);
-void dualvax_rhs_desolve(int * neq, double * t, double * state, double * dstatedt, double * output, int * np);
-void dualvax_output_dde(size_t n_eq, double t, double * state, size_t n_output, double * output, void * internal_p);
-SEXP dualvax_rhs_r(SEXP internal_p, SEXP t, SEXP state);
+} model_internal;
+model_internal* model_get_internal(SEXP internal_p, int closed_error);
+static void model_finalise(SEXP internal_p);
+SEXP model_create(SEXP user);
+void model_initmod_desolve(void(* odeparms) (int *, double *));
+SEXP model_contents(SEXP internal_p);
+SEXP model_set_user(SEXP internal_p, SEXP user);
+SEXP model_metadata(SEXP internal_p);
+SEXP model_initial_conditions(SEXP internal_p, SEXP t_ptr);
+void model_rhs(model_internal* internal, double t, double * state, double * dstatedt, double * output);
+void model_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal);
+void model_rhs_desolve(int * neq, double * t, double * state, double * dstatedt, double * output, int * np);
+void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, double * output, void * internal_p);
+SEXP model_rhs_r(SEXP internal_p, SEXP t, SEXP state);
 double user_get_scalar_double(SEXP user, const char *name,
                               double default_value, double min, double max);
 int user_get_scalar_int(SEXP user, const char *name,
@@ -277,19 +277,19 @@ double odin_sum1(double *x, size_t from, size_t to);
 double odin_sum2(double* x, int from_i, int to_i, int from_j, int to_j, int dim_x_1);
 double odin_sum3(double* x, int from_i, int to_i, int from_j, int to_j, int from_k, int to_k, int dim_x_1, int dim_x_12);
 double odin_sum4(double* x, int from_i, int to_i, int from_j, int to_j, int from_k, int to_k, int from_l, int to_l, int dim_x_1, int dim_x_12, int dim_x_123);
-dualvax_internal* dualvax_get_internal(SEXP internal_p, int closed_error) {
-  dualvax_internal *internal = NULL;
+model_internal* model_get_internal(SEXP internal_p, int closed_error) {
+  model_internal *internal = NULL;
   if (TYPEOF(internal_p) != EXTPTRSXP) {
     Rf_error("Expected an external pointer");
   }
-  internal = (dualvax_internal*) R_ExternalPtrAddr(internal_p);
+  internal = (model_internal*) R_ExternalPtrAddr(internal_p);
   if (!internal && closed_error) {
     Rf_error("Pointer has been invalidated");
   }
   return internal;
 }
-void dualvax_finalise(SEXP internal_p) {
-  dualvax_internal *internal = dualvax_get_internal(internal_p, 0);
+void model_finalise(SEXP internal_p) {
+  model_internal *internal = model_get_internal(internal_p, 0);
   if (internal_p) {
     Free(internal->A0);
     Free(internal->beta);
@@ -338,8 +338,8 @@ void dualvax_finalise(SEXP internal_p) {
     R_ClearExternalPtr(internal_p);
   }
 }
-SEXP dualvax_create(SEXP user) {
-  dualvax_internal *internal = (dualvax_internal*) Calloc(1, dualvax_internal);
+SEXP model_create(SEXP user) {
+  model_internal *internal = (model_internal*) Calloc(1, model_internal);
   internal->A0 = NULL;
   internal->beta = NULL;
   internal->C = NULL;
@@ -411,21 +411,21 @@ SEXP dualvax_create(SEXP user) {
   internal->w = NULL;
   internal->n_vax = 1;
   SEXP ptr = PROTECT(R_MakeExternalPtr(internal, R_NilValue, R_NilValue));
-  R_RegisterCFinalizer(ptr, dualvax_finalise);
+  R_RegisterCFinalizer(ptr, model_finalise);
   UNPROTECT(1);
   return ptr;
 }
-static dualvax_internal *dualvax_internal_ds;
-void dualvax_initmod_desolve(void(* odeparms) (int *, double *)) {
+static model_internal *model_internal_ds;
+void model_initmod_desolve(void(* odeparms) (int *, double *)) {
   static DL_FUNC get_desolve_gparms = NULL;
   if (get_desolve_gparms == NULL) {
     get_desolve_gparms =
       R_GetCCallable("deSolve", "get_deSolve_gparms");
   }
-  dualvax_internal_ds = dualvax_get_internal(get_desolve_gparms(), 1);
+  model_internal_ds = model_get_internal(get_desolve_gparms(), 1);
 }
-SEXP dualvax_contents(SEXP internal_p) {
-  dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
+SEXP model_contents(SEXP internal_p) {
+  model_internal *internal = model_get_internal(internal_p, 1);
   SEXP contents = PROTECT(allocVector(VECSXP, 232));
   SEXP A0 = PROTECT(allocVector(REALSXP, internal->dim_A0));
   memcpy(REAL(A0), internal->A0, internal->dim_A0 * sizeof(double));
@@ -1013,8 +1013,8 @@ SEXP dualvax_contents(SEXP internal_p) {
   UNPROTECT(45);
   return contents;
 }
-SEXP dualvax_set_user(SEXP internal_p, SEXP user) {
-  dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
+SEXP model_set_user(SEXP internal_p, SEXP user) {
+  model_internal *internal = model_get_internal(internal_p, 1);
   internal->beta = (double*) user_get_array_dim(user, false, internal->beta, "beta", 1, NA_REAL, NA_REAL, &internal->dim_beta);
   internal->enr = user_get_scalar_double(user, "enr", internal->enr, NA_REAL, NA_REAL);
   internal->exr = user_get_scalar_double(user, "exr", internal->exr, NA_REAL, NA_REAL);
@@ -1332,8 +1332,8 @@ SEXP dualvax_set_user(SEXP internal_p, SEXP user) {
   }
   return R_NilValue;
 }
-SEXP dualvax_metadata(SEXP internal_p) {
-  dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
+SEXP model_metadata(SEXP internal_p) {
+  model_internal *internal = model_get_internal(internal_p, 1);
   SEXP ret = PROTECT(allocVector(VECSXP, 4));
   SEXP nms = PROTECT(allocVector(STRSXP, 4));
   SET_STRING_ELT(nms, 0, mkChar("variable_order"));
@@ -1421,8 +1421,8 @@ SEXP dualvax_metadata(SEXP internal_p) {
   UNPROTECT(2);
   return ret;
 }
-SEXP dualvax_initial_conditions(SEXP internal_p, SEXP t_ptr) {
-  dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
+SEXP model_initial_conditions(SEXP internal_p, SEXP t_ptr) {
+  model_internal *internal = model_get_internal(internal_p, 1);
   SEXP r_state = PROTECT(allocVector(REALSXP, internal->dim_U + internal->dim_I + internal->dim_A + internal->dim_S + internal->dim_T + internal->dim_cum_incid + internal->dim_cum_treated + internal->dim_cum_screened + internal->dim_cum_vaccinated));
   double * state = REAL(r_state);
   memcpy(state + 0, internal->initial_U, internal->dim_U * sizeof(double));
@@ -1437,7 +1437,7 @@ SEXP dualvax_initial_conditions(SEXP internal_p, SEXP t_ptr) {
   UNPROTECT(1);
   return r_state;
 }
-void dualvax_rhs(dualvax_internal* internal, double t, double * state, double * dstatedt, double * output) {
+void model_rhs(model_internal* internal, double t, double * state, double * dstatedt, double * output) {
   double * U = state + 0;
   double * I = state + internal->dim_U;
   double * A = state + internal->offset_variable_A;
@@ -1635,14 +1635,14 @@ void dualvax_rhs(dualvax_internal* internal, double t, double * state, double * 
     memcpy(output + internal->dim_N, internal->foi, internal->dim_foi * sizeof(double));
   }
 }
-void dualvax_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal) {
-  dualvax_rhs((dualvax_internal*)internal, t, state, dstatedt, NULL);
+void model_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal) {
+  model_rhs((model_internal*)internal, t, state, dstatedt, NULL);
 }
-void dualvax_rhs_desolve(int * neq, double * t, double * state, double * dstatedt, double * output, int * np) {
-  dualvax_rhs(dualvax_internal_ds, *t, state, dstatedt, output);
+void model_rhs_desolve(int * neq, double * t, double * state, double * dstatedt, double * output, int * np) {
+  model_rhs(model_internal_ds, *t, state, dstatedt, output);
 }
-void dualvax_output_dde(size_t n_eq, double t, double * state, size_t n_output, double * output, void * internal_p) {
-  dualvax_internal *internal = (dualvax_internal*) internal_p;
+void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, double * output, void * internal_p) {
+  model_internal *internal = (model_internal*) internal_p;
   double * U = state + 0;
   double * I = state + internal->dim_U;
   double * A = state + internal->offset_variable_A;
@@ -1684,14 +1684,14 @@ void dualvax_output_dde(size_t n_eq, double t, double * state, size_t n_output, 
   }
   memcpy(output + internal->dim_N, internal->foi, internal->dim_foi * sizeof(double));
 }
-SEXP dualvax_rhs_r(SEXP internal_p, SEXP t, SEXP state) {
+SEXP model_rhs_r(SEXP internal_p, SEXP t, SEXP state) {
   SEXP dstatedt = PROTECT(allocVector(REALSXP, LENGTH(state)));
-  dualvax_internal *internal = dualvax_get_internal(internal_p, 1);
+  model_internal *internal = model_get_internal(internal_p, 1);
   SEXP output_ptr = PROTECT(allocVector(REALSXP, internal->dim_N + internal->dim_foi));
   setAttrib(dstatedt, install("output"), output_ptr);
   UNPROTECT(1);
   double *output = REAL(output_ptr);
-  dualvax_rhs(internal, REAL(t)[0], REAL(state), REAL(dstatedt), output);
+  model_rhs(internal, REAL(t)[0], REAL(state), REAL(dstatedt), output);
   UNPROTECT(1);
   return dstatedt;
 }
