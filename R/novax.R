@@ -7,12 +7,12 @@
 ##' @return A list of transformed model outputs
 ##' @export
 novax_equilib <- function(n = NULL) {
-  
+
   if (is.null(cache$novax_equilib)) {
     cache$novax_equilib <-
       readRDS(gonovax_file("extdata/novax_equilib.rds"))
   }
-  
+
   y <- cache$novax_equilib
   n_y <- length(y)
   # if n not supplied, return all parameters
