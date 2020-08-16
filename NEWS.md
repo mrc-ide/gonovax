@@ -1,3 +1,10 @@
+# gonovax 0.1.3
+
+* rename model to separate novax, onevax (and in future, dualvax / dualvax_wane)
+* add run_novax() and run_onevax() which run the model with cached parameters
+from equilibrium if specified
+* add VbE to vaccination output
+
 # gonovax 0.1.2
 
 * add novax_equilib() which returns the cached equilibrium compartments for all
