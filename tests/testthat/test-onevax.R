@@ -2,6 +2,8 @@ test_that("run_onevax works correctly", {
   tt <- seq(0, 5)
   y1 <- run_onevax(1, tt, eff = 0, dur = 1e3)[[1]]
   # check no-one is vaccinated with v switched off
+  expect_error(run_onevax_int(1:2, tt, equilib = TRUE),
+               label = "if length(n) > 1, equilib must be FALSE")
   expect_true(all(y1$cum_vaccinated == 0))
   y2 <- run_onevax(1, tt, eff = 0, dur = 1e3, ve = 1)[[1]]
   # check 100% vbe vaccinates all new entrants
