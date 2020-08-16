@@ -1,3 +1,11 @@
-gono_params.csv: posterior parameters derived in doi:10.1093/cid/ciz1241
-novax_equilib.rds: equilibrium compartment values corresponding to gono_params
-derived in gonovax-outputs/archive/novax_equilibrium/20200815-141740-c30b6a8a
+gono_params.csv: 
+  posterior parameters derived in:
+    doi:10.1093/cid/ciz1241
+
+novax_equilib.rds: 
+  equilibrium compartment values corresponding to gono_params derived in:
+    gonovax-outputs/archive/novax_equilibrium/20200816-135257-983ae31d
+
+novax_baseline.rds: 
+  baseline incid and cum_incid from 1 - 10 years after equilibrium derived in:
+    gonovax-outputs/archive/novax_equilibrium/20200816-135257-983ae31d
