@@ -15,11 +15,11 @@ vax_params1 <- function(dur = 4, ve = 1, vs = 0, vd = 0, eff = 0.31) {
 
 run_onevax_int <- function(n = NULL, tt, eff, dur, ve, vd, vs, equilib) {
   init_params <- NULL
+  vax_params <- vax_params1(dur = dur, ve = ve, vs = vs, vd = vd, eff = eff)
   if (equilib) {
     if (length(n) > 1) stop("if length(n) > 1, equilib must be FALSE")
-    init_params <- restart_params(novax_equilib(n))
+    init_params <- restart_params(novax_equilib(n), n_vax = vax_params$n_vax)
   }
-  vax_params <- vax_params1(dur = dur, ve = ve, vs = vs, vd = vd, eff = eff)
   pars <- model_params(gono_params = gono_params(n),
                        init_params = init_params,
                        vax_params = vax_params)
