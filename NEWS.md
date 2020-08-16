@@ -1,3 +1,10 @@
+# gonovax 0.1.4
+
+* cache baseline (novax) incidence parameters
+* add run_grid_onevax() which run the model with cached parameters across an
+eff x dur vaccination grid
+* add plot methods for grid objects
+
 # gonovax 0.1.3
 
 * rename model to separate novax, onevax (and in future, dualvax / dualvax_wane)

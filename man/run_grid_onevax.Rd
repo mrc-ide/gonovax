@@ -2,7 +2,7 @@
 % Please edit documentation in R/onevax.R
 \name{run_grid_onevax}
 \alias{run_grid_onevax}
-\title{run model from equilibrium with single vaccine at the input 
+\title{run model from equilibrium with single vaccine at the input
 efficacy / duration grid locations for n parameter sets}
 \usage{
 run_grid_onevax(n, t, eff, dur, ve = 0, vd = 0, vs = 0)
@@ -29,6 +29,6 @@ run_grid_onevax(n, t, eff, dur, ve = 0, vd = 0, vs = 0)
 A `gonovax_grid` object
 }
 \description{
-run model from equilibrium with single vaccine at the input 
+run model from equilibrium with single vaccine at the input
 efficacy / duration grid locations for n parameter sets
 }

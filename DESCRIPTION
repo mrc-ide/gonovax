@@ -1,6 +1,6 @@
 Package: gonovax
 Title: Stochastic SIR Model for gonorrhoea with vaccination
-Version: 0.1.3
+Version: 0.1.4
 Authors@R:
     c( person(given = "Lilith",
            family = "Whittles",
