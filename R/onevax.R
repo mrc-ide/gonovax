@@ -58,12 +58,12 @@ run_onevax <- function(n = NULL, tt, eff, dur,
 }
 
 ##' @name run_grid_onevax
-##' @title run model from equilibrium with single vaccine at the input 
+##' @title run model from equilibrium with single vaccine at the input
 ##' efficacy / duration grid locations for n parameter sets
 ##' @param n a value denoting the number of parameter sets to run
 ##' @param t an integer number of years at which impact is to be assessed
-##' @param eff numeric vector (between 0-1) of efficacy values of the vaccine 
-##' @param dur numeric vector of duration in years of the vaccine 
+##' @param eff numeric vector (between 0-1) of efficacy values of the vaccine
+##' @param dur numeric vector of duration in years of the vaccine
 ##' @param ve single numeric indicating % of population vaccinated before entry
 ##'  (between 0-1)
 ##' @param vd single numeric indicating % of population vaccinated on diagnosis
@@ -84,7 +84,7 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
                             vd = vd,
                             vs = vs,
                             equilib = TRUE)
-  
+
   cum_incid <- extract_value(res, "cum_incid", t)
   incid <- cum_incid - extract_value(res, "cum_incid", t - 1)
   cum_vaccinated <- extract_value(res, "cum_vaccinated", t)

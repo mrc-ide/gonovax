@@ -39,7 +39,7 @@ novax_baseline <- function(n = NULL, t) {
     cache$novax_baseline <-
       readRDS(gonovax_file("extdata/novax_baseline.rds"))
   }
-  
+
   y <- cache$novax_baseline
   n_y <- nrow(y[[1]])
   # if n not supplied, return all parameters
