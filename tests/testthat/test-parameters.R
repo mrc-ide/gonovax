@@ -30,3 +30,14 @@ test_that("novax_equilib returns equlibrium conditions", {
   expect_equal(y2[[1]], y1)
 
 })
+
+test_that("novax_baseline returns baseline conditions", {
+
+  y <- novax_baseline(1:3, 1:10)
+  expect_equal(names(y), c("incid", "cum_incid"))
+  expect_equal(dim(y$incid), c(10, 3))
+  expect_equal(dim(y$cum_incid), c(10, 3))
+  expect_equal(colSums(y$incid), y$cum_incid[10, ])
+
+  expect_error(novax_baseline(1, 11), "t must be an integer between 1 and 10")
+})

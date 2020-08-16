@@ -33,7 +33,7 @@ novax_equilib <- function(n = NULL) {
 ##' @export
 novax_baseline <- function(n = NULL, t) {
 
-  if (!(t %in% seq_len(10))) stop("t must be an integer between 1 and 10")
+  if (!all(t %in% seq_len(10))) stop("t must be an integer between 1 and 10")
 
   if (is.null(cache$novax_baseline)) {
     cache$novax_baseline <-
