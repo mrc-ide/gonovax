@@ -29,12 +29,6 @@ deriv(S[, , ]) <- psi[i] * sigma[i] * I[i, j, k] - (mu[i] + exr) * S[i, j, k] +
 deriv(T[, , ]) <- mu[i] * S[i, j, k] + eta[i] * A[i, j, k] -
   exr * T[i, j, k] - treated[i, j, k] + sum(wT[i, j, k, ])
 
-deriv(cum_incid[, , ])      <- incid[i, j, k]
-deriv(cum_treated[, , ])    <- treated[i, j, k]
-deriv(cum_screened[, , ])   <- screened[i, j, k]
-deriv(cum_vaccinated[, , ]) <- n_vs[i, j, k, k] + n_vd[i, j, k, k]
-deriv(cum_screened[, , ])   <- screened[i, j, k]
-
 ## Update population size
 C[, , ] <- I[i, j, k] + A[i, j, k] + S[i, j, k]
 N[, , ] <- U[i, j, k] + C[i, j, k] + T[i, j, k]
@@ -55,6 +49,8 @@ screened[, , ] <- eta[i] * U[i, j, k]
 n_vs[, , , ] <- vs * v[k, l] * screened[i, j, l]
 ## on diagnosis
 n_vd[, , , ] <- vd * v[k, l] * treated[i, j, l]
+## on entry
+n_ve[, , 2:n_vax] <- enr * q[j] * ve[k]
 
 # waning
 ## input waning_map
@@ -65,6 +61,15 @@ wI[, , , ] <- w[k, l] * I[i, j, l]
 wA[, , , ] <- w[k, l] * A[i, j, l]
 wS[, , , ] <- w[k, l] * S[i, j, l]
 wT[, , , ] <- w[k, l] * T[i, j, l]
+
+## outputs
+
+deriv(cum_incid[, , ])      <- incid[i, j, k]
+deriv(cum_treated[, , ])    <- treated[i, j, k]
+deriv(cum_screened[, , ])   <- screened[i, j, k]
+deriv(cum_vaccinated[, , ]) <-
+  n_vs[i, j, k, k] + n_vd[i, j, k, k] + n_ve[i, j, k]
+deriv(cum_screened[, , ])   <- screened[i, j, k]
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
@@ -151,6 +156,7 @@ dim(ve)   <- n_vax
 dim(eff)  <- n_vax
 dim(v)    <- c(n_vax, n_vax)
 dim(w)    <- c(n_vax, n_vax)
+dim(n_ve) <- c(n_par, n_group, n_vax)
 dim(n_vs) <- c(n_par, n_group, n_vax, n_vax)
 dim(n_vd) <- c(n_par, n_group, n_vax, n_vax)
 dim(wU)   <- c(n_par, n_group, n_vax, n_vax)
