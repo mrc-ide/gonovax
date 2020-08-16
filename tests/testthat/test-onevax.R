@@ -24,3 +24,8 @@ test_that("run_onevax works correctly", {
   y4e <- run_onevax(1, tt, eff = 1, dur = 1e3, vs = 1, equilib = TRUE)[[1]]
   expect_equal(y4e$cum_vaccinated[, , , 1], y4e$cum_screened[, , , 1])
 })
+
+test_that("run_grid_onevax works as expected", {
+  y <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), ve = 0.5)
+  plot(y)
+})

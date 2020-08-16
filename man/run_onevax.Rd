@@ -2,7 +2,7 @@
 % Please edit documentation in R/onevax.R
 \name{run_onevax}
 \alias{run_onevax}
-\title{run model without vaccination for input parameter sets, either from
+\title{run model with single vaccine for input parameter sets, either from
 initialisation or from equilibrium}
 \usage{
 run_onevax(n = NULL, tt, eff, dur, ve = 0, vd = 0, vs = 0, equilib = FALSE)
@@ -34,6 +34,6 @@ is `FALSE`, i.e. run from initial conditions}
 A list of transformed model outputs
 }
 \description{
-run model without vaccination for input parameter sets, either from
+run model with single vaccine for input parameter sets, either from
 initialisation or from equilibrium
 }

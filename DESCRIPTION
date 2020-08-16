@@ -12,7 +12,10 @@ Encoding: UTF-8
 LazyData: true
 Language: en-GB
 Imports: 
-    odin
+    odin,
+    furrr,
+    ggplot2,
+    gridExtra
 Suggests:
     testthat,
     knitr
