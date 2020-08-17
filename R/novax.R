@@ -41,7 +41,7 @@ novax_baseline <- function(n = NULL, t) {
   }
 
   y <- cache$novax_baseline
-  n_y <- nrow(y[[1]])
+  n_y <- ncol(y[[1]])
   # if n not supplied, return all parameters
   i  <- n %||% seq_len(n_y)
   # limit to parameter sets available

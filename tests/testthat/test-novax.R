@@ -49,5 +49,8 @@ test_that("novax_baseline returns baseline conditions", {
   expect_equal(dim(y$cum_incid), c(10, 3))
   expect_equal(colSums(y$incid), y$cum_incid[10, ])
 
+  y2 <- novax_baseline(1:100, t = 10)
+  expect_equal(length(y2[[1]]), 100)
+
   expect_error(novax_baseline(1, 11), "t must be an integer between 1 and 10")
 })
