@@ -13,7 +13,7 @@ plot.gonovax_grid <- function(grid) {
 }
 
 plot_heatmap <- function(x, what, title = "") {
-  ggplot2::ggplot(x, ggplot2::aes(x = x$eff, y = x$dur, fill = x[[what]])) +
+  ggplot2::ggplot(x, ggplot2::aes(x = eff, y = dur, fill = .data[[what]])) +
     ggplot2::geom_tile() +
     ggplot2::xlab("Efficacy (%)") +
     ggplot2::ylab("Duration (years)") +

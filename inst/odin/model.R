@@ -17,7 +17,7 @@ n_vax   <- user(1)
 ## Core equations for transitions between compartments:
 
 deriv(U[, , ]) <- enr * q[j] * ve[k] - incid[i, j, k] - exr * U[i, j, k] +
-  nu[i] * A[i, j, k] + (1 - vd) * treated[i, j, k] -
+  nu[i] * A[i, j, k] + treated[i, j, k] -
   sum(n_vd[i, j, k, ]) - sum(n_vs[i, j, k, ]) + sum(wU[i, j, k, ])
 deriv(I[, , ]) <- incid[i, j, k] - (sigma[i] + exr) * I[i, j, k] +
   sum(wI[i, j, k, ])
@@ -43,12 +43,12 @@ treated[, , ]  <- rho[i] * T[i, j, k]
 screened[, , ] <- eta[i] * U[i, j, k]
 # vaccination
 ## input vax_map (v)
-## (0,  1,
-##  0, -1)
+## (1, 0,
+## -1, 0)
 ## at screening
-n_vs[, , , ] <- vs * v[k, l] * screened[i, j, l]
+n_vs[, , , ] <- vs[k, l] * screened[i, j, l]
 ## on diagnosis
-n_vd[, , , ] <- vd * v[k, l] * treated[i, j, l]
+n_vd[, , , ] <- vd[k, l] * treated[i, j, l]
 ## on entry
 n_ve[, , 2:n_vax] <- enr * q[j] * ve[k]
 
@@ -134,12 +134,12 @@ mu[]      <- user()
 rho[]     <- user()
 
 ## vaccination pars
-ve[]  <- user()
-vs    <- user()
-vd    <- user()
-eff[] <- user()
-w[, ] <- user()
-v[, ] <- user()
+ve[]      <- user()
+vs[, ]    <- user()
+vd[, ]    <- user()
+eff[]     <- user()
+w[, ]     <- user()
+
 
 ## par dimensions
 dim(q)       <- n_group
@@ -154,7 +154,8 @@ dim(rho)     <- n_par
 
 dim(ve)   <- n_vax
 dim(eff)  <- n_vax
-dim(v)    <- c(n_vax, n_vax)
+dim(vd)   <- c(n_vax, n_vax)
+dim(vs)   <- c(n_vax, n_vax)
 dim(w)    <- c(n_vax, n_vax)
 dim(n_ve) <- c(n_par, n_group, n_vax)
 dim(n_vs) <- c(n_par, n_group, n_vax, n_vax)
