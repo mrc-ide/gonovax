@@ -1,5 +1,5 @@
 
-vax_params1 <- function(dur = 4, ve = 1, vs = 0, vd = 0, eff = 0.31) {
+vax_params1 <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
   z <- 1 / dur
   v <- rbind(c(1, 0),
             c(-1, 0))
@@ -79,7 +79,7 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
   res <- furrr::future_pmap(.l = l,
                             .f = run_onevax,
                             n = nn,
-                            tt = c(t - 1, t),
+                            tt = c(0, t - 1, t),
                             ve = ve,
                             vd = vd,
                             vs = vs,
@@ -90,7 +90,6 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
   cum_vaccinated <- extract_value(res, "cum_vaccinated", t)
 
   baseline <- novax_baseline(nn, t)
-
   out <- list(inputs = list(t = t, ve = ve, vd = vd, vs = vs, grid = l),
               incid = incid,
               cum_incid = cum_incid,
