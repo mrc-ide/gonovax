@@ -36,8 +36,14 @@ test_that("run_grid_onevax works as expected", {
   expect_true(all(abs(y$cum_vaccinated - 1200 * 10 * 0.5) < 1e-10))
 
   y2 <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), vd = 1)
+  expect_equal(y2$red_incid[, 1], c(0, 0), tol = 0.1)
+  expect_equal(y2$red_incid[, 1], y2$red_incid[, 3], tol = 0.1)
+  expect_true(all(y$red_incid > 0))
 
    ### this looks fine
-   y3 <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), vs = 1)
+  y3 <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), vs = 1)
+  expect_equal(y3$red_incid[, 1], c(0, 0), tol = 0.1)
+  expect_equal(y3$red_incid[, 1], y3$red_incid[, 3], tol = 0.1)
+  expect_true(all(y3$red_incid > 0))
 
 })
