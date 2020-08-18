@@ -1,3 +1,9 @@
+# gonovax 0.1.5
+
+* fix bug in novax_baseline()
+* fix model bug that caused people to go missing in VoD
+* update plot method to avoid ggplot2 warnings
+
 # gonovax 0.1.4
 
 * cache baseline (novax) incidence parameters
