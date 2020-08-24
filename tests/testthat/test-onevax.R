@@ -29,14 +29,17 @@ test_that("run_onevax works correctly", {
 })
 
 test_that("run_grid_onevax works as expected", {
-  y <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), ve = 0.5)
+  y <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), ve = 0.5,
+                       full_output = TRUE)
   expect_equal(y$red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y$red_incid[, 1], y$red_incid[, 3], tol = 0.1)
   expect_true(all(y$red_incid > -0.1))
   expect_equal(y$cum_red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y$red_incid[, 1], y$red_incid[, 3], tol = 0.1)
   expect_true(all(abs(y$cum_vaccinated - 1200 * 10 * 0.5 * 2) < 1e-5))
+  expect_equal(length(y$results), nrow(y$inputs$grid))
   plot(y)
+
   y2 <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), vd = 1)
   expect_equal(y2$red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y2$red_incid[, 1], y2$red_incid[, 3], tol = 0.1)

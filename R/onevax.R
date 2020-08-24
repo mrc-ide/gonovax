@@ -70,10 +70,12 @@ run_onevax <- function(n = NULL, tt, eff, dur,
 ##' (between 0-1)
 ##' @param vs single numeric indicating % of population vaccinated on screening
 ##' (between 0-1)
+##' @param full_output ligical indicating whether full results should be output
 ##' @return A `gonovax_grid` object
 ##' @import furrr
 ##' @export
-run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
+run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0,
+                             full_output = FALSE) {
   l <- expand.grid(eff = eff, dur = dur)
   nn <- seq_len(n)
   res <- furrr::future_pmap(.l = l,
@@ -96,6 +98,7 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
               cum_vaccinated = cum_vaccinated,
               red_incid = baseline$incid - incid,
               cum_red_incid = baseline$cum_incid - cum_incid)
+  if (full_output) out$results <- res
   class(out) <- "gonovax_grid"
   out
 }
