@@ -5,7 +5,17 @@
 \title{run model from equilibrium with single vaccine at the input
 efficacy / duration grid locations for n parameter sets}
 \usage{
-run_grid_onevax(n, t, eff, dur, ve = 0, vd = 0, vs = 0, full_output = FALSE)
+run_grid_onevax(
+  n,
+  t,
+  eff,
+  dur,
+  ve = 0,
+  vd = 0,
+  vs = 0,
+  baseline = NULL,
+  full_output = FALSE
+)
 }
 \arguments{
 \item{n}{a value denoting the number of parameter sets to run}
@@ -25,7 +35,10 @@ run_grid_onevax(n, t, eff, dur, ve = 0, vd = 0, vs = 0, full_output = FALSE)
 \item{vs}{single numeric indicating % of population vaccinated on screening
 (between 0-1)}
 
-\item{full_output}{ligical indicating whether full results should be output}
+\item{baseline}{optional input of a baseline to compare to, must be a 
+gonovax_grid object if supplied}
+
+\item{full_output}{logical indicating whether full results should be output}
 }
 \value{
 A `gonovax_grid` object

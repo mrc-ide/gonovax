@@ -55,4 +55,24 @@ test_that("run_grid_onevax works as expected", {
   expect_equal(y3$cum_red_incid[, 1], y3$cum_red_incid[, 3], tol = 0.1)
   expect_true(all(y3$red_incid > -0.1))
   plot(y3)
+
+  y0 <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2))
+  # runs ok with user baseline
+  y4 <- run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), ve = 0.5,
+                        baseline = y0)
+  expect_equal(y4$red_incid, y$red_incid)
+  expect_equal(y4$cum_red_incid, y$cum_red_incid)
+
+  # check error cases
+  expect_error(run_grid_onevax(n = 3, t = 2, eff = c(0, 1), dur = c(1, 2),
+                               ve = 0.5, baseline = y0),
+               "model parameters do not match baseline")
+  expect_error(run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 3),
+                               ve = 0.5, baseline = y0),
+               "dur / eff parameters do not match baseline")
+  class(y0) <- NULL
+  expect_error(run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
+                               ve = 0.5, baseline = y0),
+               "baseline must be a gonovax_grid object")
+
 })
