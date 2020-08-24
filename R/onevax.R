@@ -70,10 +70,14 @@ run_onevax <- function(n = NULL, tt, eff, dur,
 ##' (between 0-1)
 ##' @param vs single numeric indicating % of population vaccinated on screening
 ##' (between 0-1)
+##' @param baseline optional input of a baseline to compare to, must be a
+##' gonovax_grid object if supplied
+##' @param full_output logical indicating whether full results should be output
 ##' @return A `gonovax_grid` object
 ##' @import furrr
 ##' @export
-run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
+run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0,
+                             baseline = NULL, full_output = FALSE) {
   l <- expand.grid(eff = eff, dur = dur)
   nn <- seq_len(n)
   res <- furrr::future_pmap(.l = l,
@@ -89,13 +93,34 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0) {
   incid <- cum_incid - extract_value(res, "cum_incid", t - 1)
   cum_vaccinated <- extract_value(res, "cum_vaccinated", t)
 
-  baseline <- novax_baseline(nn, t)
-  out <- list(inputs = list(t = t, ve = ve, vd = vd, vs = vs, grid = l),
+  # verify baseline
+
+  if (is.null(baseline)) {
+    baseline <- novax_baseline(nn, t)
+  } else {
+    baseline <- verify_baseline(baseline, l, nn)
+  }
+
+  out <- list(inputs = list(n = nn, t = t, ve = ve, vd = vd, vs = vs, grid = l),
               incid = incid,
               cum_incid = cum_incid,
               cum_vaccinated = cum_vaccinated,
               red_incid = baseline$incid - incid,
               cum_red_incid = baseline$cum_incid - cum_incid)
+  if (full_output) out$results <- res
   class(out) <- "gonovax_grid"
   out
+}
+
+verify_baseline <- function(baseline, l, nn) {
+  if (!inherits(baseline, "gonovax_grid")) {
+    stop("baseline must be a gonovax_grid object")
+  }
+  if (!identical(baseline$inputs$grid, l)) {
+    stop("dur / eff parameters do not match baseline")
+  }
+  if (!identical(baseline$inputs$n, nn)) {
+    stop("model parameters do not match baseline")
+  }
+  baseline
 }

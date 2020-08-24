@@ -1,3 +1,8 @@
+# gonovax 0.1.6
+
+* add option to output full results in grid_search()
+* add ability to input baseline in grid_search()
+
 # gonovax 0.1.5
 
 * fix bug in novax_baseline()
