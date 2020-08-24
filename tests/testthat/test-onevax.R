@@ -70,6 +70,9 @@ test_that("run_grid_onevax works as expected", {
   expect_error(run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 3),
                                ve = 0.5, baseline = y0),
                "dur / eff parameters do not match baseline")
+  expect_error(run_grid_onevax(n = 2, t = 3, eff = c(0, 1), dur = c(1, 2),
+                               ve = 0.5, baseline = y0),
+               "t does not match baseline")
   class(y0) <- NULL
   expect_error(run_grid_onevax(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                                ve = 0.5, baseline = y0),
