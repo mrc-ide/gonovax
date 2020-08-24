@@ -97,14 +97,15 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0,
 
   if (is.null(baseline)) {
     baseline <- novax_baseline(nn, t)
+    baseline$cum_vaccinated <- 0
   } else {
-    baseline <- verify_baseline(baseline, l, nn)
+    baseline <- verify_baseline(baseline, l, nn, t)
   }
 
   out <- list(inputs = list(n = nn, t = t, ve = ve, vd = vd, vs = vs, grid = l),
               incid = incid,
               cum_incid = cum_incid,
-              cum_vaccinated = cum_vaccinated,
+              cum_vaccinated = cum_vaccinated - baseline$cum_vaccinated,
               red_incid = baseline$incid - incid,
               cum_red_incid = baseline$cum_incid - cum_incid)
   if (full_output) out$results <- res
@@ -112,7 +113,7 @@ run_grid_onevax  <- function(n, t, eff, dur, ve = 0, vd = 0, vs = 0,
   out
 }
 
-verify_baseline <- function(baseline, l, nn) {
+verify_baseline <- function(baseline, l, nn, t) {
   if (!inherits(baseline, "gonovax_grid")) {
     stop("baseline must be a gonovax_grid object")
   }
@@ -121,6 +122,9 @@ verify_baseline <- function(baseline, l, nn) {
   }
   if (!identical(baseline$inputs$n, nn)) {
     stop("model parameters do not match baseline")
+  }
+  if (!identical(baseline$inputs$t, t)) {
+    stop("t does not match baseline")
   }
   baseline
 }
