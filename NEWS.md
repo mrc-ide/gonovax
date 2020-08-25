@@ -1,3 +1,8 @@
+# gonovax 0.1.7
+
+* remove n_par index as running multiple parameter sets in vectorised mode is
+inefficient in ode solver.
+
 # gonovax 0.1.6
 
 * add option to output full results in grid_search()
