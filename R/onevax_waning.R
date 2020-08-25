@@ -1,4 +1,15 @@
 
+##' @name vax_params1w
+##' @title create vaccination parameters for use in onevax_waning model
+##' @param eff single numeric indicating efficacy of the vaccine (between 0-1)
+##' @param dur single numeric indicating duration of the vaccine (in years)
+##' @param ve single numeric indicating % of population vaccinated before entry
+##'  (between 0-1)
+##' @param vd single numeric indicating % of population vaccinated on diagnosis
+##' (between 0-1)
+##' @param vs single numeric indicating % of population vaccinated on screening
+##' (between 0-1)
+##' @return A list parameters in the model input format
 vax_params1w <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
   # indices of vaccine strata (u: unvaccinated, v: vaccinated, w: waned)
   i_u <- 1
