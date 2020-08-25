@@ -18,7 +18,7 @@
 ##' @return A `gonovax_grid` object
 ##' @import furrr
 ##' @export
-run_grid  <- function(n, t, model = onevax,
+run_grid  <- function(n, t, model = run_onevax,
                       eff, dur, ve = 0, vd = 0, vs = 0,
                       baseline = NULL, full_output = FALSE) {
   l <- expand.grid(eff = eff, dur = dur)
@@ -31,20 +31,20 @@ run_grid  <- function(n, t, model = onevax,
                             vd = vd,
                             vs = vs,
                             equilib = TRUE)
-  
+
   cum_incid <- extract_value(res, "cum_incid", t)
   incid <- cum_incid - extract_value(res, "cum_incid", t - 1)
   cum_vaccinated <- extract_value(res, "cum_vaccinated", t)
-  
+
   # verify baseline
-  
+
   if (is.null(baseline)) {
     baseline <- novax_baseline(nn, t)
     baseline$cum_vaccinated <- 0
   } else {
     baseline <- verify_baseline(baseline, l, nn, t)
   }
-  
+
   out <- list(inputs = list(n = nn, t = t, ve = ve, vd = vd, vs = vs, grid = l),
               incid = incid,
               cum_incid = cum_incid,
