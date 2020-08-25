@@ -8,7 +8,7 @@ efficacy / duration grid locations for n parameter sets}
 run_grid(
   n,
   t,
-  model = onevax,
+  model = run_onevax,
   eff,
   dur,
   ve = 0,
