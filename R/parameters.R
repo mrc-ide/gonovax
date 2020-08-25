@@ -40,15 +40,13 @@ gono_params <- function(n = NULL) {
 initial_params <- function(pars, n_vax = 1) {
   # separate into 1:low and 2:high activity groups
   N0 <- round(pars$N0 * pars$q)
-  n_par <- length(pars$prev_Asl)
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(n_par, 2, n_vax))
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
   # set initial asymptomatic prevalence in each group
-  A0[, 1, 1] <- round(N0[1] * pars$prev_Asl)
-  A0[, 2, 1] <- round(N0[2] * pars$prev_Ash)
+  A0[, 1] <- round(N0 * c(pars$prev_Asl, pars$prev_Ash))
 
   # set initial uninfecteds
-  U0[, 1, 1] <- N0[1] - A0[, 1, 1]
-  U0[, 2, 1] <- N0[2] - A0[, 2, 1]
+  U0[, 1] <- N0 - A0[, 1]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
@@ -63,23 +61,21 @@ initial_params <- function(pars, n_vax = 1) {
 ##' vaccination levels
 ##' @export
 restart_params <- function(y, n_vax = NULL) {
-
   dim_y <- dim(y[["U"]])
 
   i_t <- dim_y[1]
-  n_par <- dim_y[2]
-  n_vax <- n_vax %||% dim_y[4]
+  n_vax <- n_vax %||% dim_y[3]
 
-  n_vax_input <- dim_y[4]
+  n_vax_input <- dim_y[3]
   i_vax <- seq_len(min(n_vax,  n_vax_input))
 
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(n_par, 2, n_vax))
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
   # set compartments in each group
-  U0[, , i_vax] <- y$U[i_t, , , i_vax]
-  I0[, , i_vax] <- y$I[i_t, , , i_vax]
-  A0[, , i_vax] <- y$A[i_t, , , i_vax]
-  S0[, , i_vax] <- y$S[i_t, , , i_vax]
-  T0[, , i_vax] <- y$T[i_t, , , i_vax]
+  U0[, i_vax] <- y$U[i_t, , i_vax]
+  I0[, i_vax] <- y$I[i_t, , i_vax]
+  A0[, i_vax] <- y$A[i_t, , i_vax]
+  S0[, i_vax] <- y$S[i_t, , i_vax]
+  T0[, i_vax] <- y$T[i_t, , i_vax]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }

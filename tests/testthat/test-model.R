@@ -2,7 +2,7 @@ context("model (check)")
 
 test_that("there are no infections when beta is 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$beta[] <- 0
+  params$beta <- 0
   mod <- model(user = params)
 
   tt <- seq.int(0, 10) / 365
@@ -15,7 +15,7 @@ test_that("there are no infections when beta is 0", {
 
 test_that("there are no symptomatic infections when psi = 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$psi[] <- 0
+  params$psi <- 0
   mod <- model(user = params)
   tt <- seq.int(0, 10) / 365
   y <- mod$run(t = tt)
@@ -26,7 +26,7 @@ test_that("there are no symptomatic infections when psi = 0", {
 
 test_that("there are no infections when A0 = 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$A0[, , ] <- 0
+  params$A0[, ] <- 0
   mod <- model(user = params)
   tt <- seq.int(0, 10) / 365
   y <- mod$run(t = tt)
@@ -39,7 +39,7 @@ test_that("there are no infections when A0 = 0", {
 
 test_that("no-one is treated when mu and eta = 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$mu[] <- params$eta[] <- 0
+  params$mu <- params$eta <- 0
   mod <- model(user = params)
 
   tt <- seq.int(0, 10) / 365
@@ -50,7 +50,7 @@ test_that("no-one is treated when mu and eta = 0", {
 })
 
 test_that("the foi is calculated correctly", {
-  params <- model_params(gono_params = gono_params(1:2))
+  params <- model_params(gono_params = gono_params(1))
   expect_true(length(params$beta) > 0)
   mod <- model(user = params)
   tt <- seq.int(0, 10) / 365
@@ -59,11 +59,11 @@ test_that("the foi is calculated correctly", {
   # unpack parameters
   pL <- params$p[1]
   pH <- params$p[2]
-  NL <- sum(y$N[1, 1, 1, ])
-  NH <- sum(y$N[1, 1, 2, ])
+  NL <- sum(y$N[1, 1, ])
+  NH <- sum(y$N[1, 2, ])
   C <- y$I + y$A + y$S
-  CL <- t(C[, , 1, ])
-  CH <- t(C[, , 2, ])
+  CL <- C[, 1, ]
+  CH <- C[, 2, ]
   eps <- params$epsilon
   beta <- params$beta
   np <- pL * NL + pH * NH
@@ -73,10 +73,10 @@ test_that("the foi is calculated correctly", {
   foi_HL <- pH * pL * beta * (1 - eps) / np * CL
   foi_HH <- pH * beta * (eps + (1 - eps) * pH * NH / np) * CH / NH
   # test
-  expect_equal(y$foi[, , 1, 1], t(foi_LL))
-  expect_equal(y$foi[, , 1, 2], t(foi_LH))
-  expect_equal(y$foi[, , 2, 1], t(foi_HL))
-  expect_equal(y$foi[, , 2, 2], t(foi_HH))
+  expect_equal(y$foi[, 1, 1], foi_LL)
+  expect_equal(y$foi[, 1, 2], foi_LH)
+  expect_equal(y$foi[, 2, 1], foi_HL)
+  expect_equal(y$foi[, 2, 2], foi_HH)
 })
 
 test_that("Bex model runs with no vaccination", {
@@ -93,13 +93,13 @@ test_that("Bex model runs with no vaccination", {
   y1 <- mod1$transform_variables(y1)
 
   # check that nil vaccination gives same results as before
-  expect_true(all(y1$U[, , , 1, drop = FALSE] == y0$U))
-  expect_true(all(y1$I[, , , 1, drop = FALSE] == y0$I))
-  expect_true(all(y1$A[, , , 1, drop = FALSE] == y0$A))
-  expect_true(all(y1$S[, , , 1, drop = FALSE] == y0$S))
-  expect_true(all(y1$T[, , , 1, drop = FALSE] == y0$T))
+  expect_true(all(y1$U[, , 1, drop = FALSE] == y0$U))
+  expect_true(all(y1$I[, , 1, drop = FALSE] == y0$I))
+  expect_true(all(y1$A[, , 1, drop = FALSE] == y0$A))
+  expect_true(all(y1$S[, , 1, drop = FALSE] == y0$S))
+  expect_true(all(y1$T[, , 1, drop = FALSE] == y0$T))
 
-  expect_true(all(y1$N[, , , 2] == 0))
+  expect_true(all(y1$N[, , 2] == 0))
   expect_true(all(apply(y1$N, c(1, 2), sum) - 6e5 < 1e-6))
 })
 
@@ -112,19 +112,19 @@ test_that("Bex model runs with vbe", {
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
-  expect_true(all(y$U[-1, , , 2] > 0))
+  expect_true(all(y$U[-1, , 2] > 0))
   # check no compartments are leaking
   expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , , 1] == 0))
-  expect_false(all(y$A[, , , 1] == 0))
-  expect_false(all(y$S[, , , 1] == 0))
-  expect_false(all(y$T[, , , 1] == 0))
+  expect_false(all(y$I[, , 1] == 0))
+  expect_false(all(y$A[, , 1] == 0))
+  expect_false(all(y$S[, , 1] == 0))
+  expect_false(all(y$T[, , 1] == 0))
   # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , , 2] == 0))
-  expect_true(all(y$A[, , , 2] == 0))
-  expect_true(all(y$S[, , , 2] == 0))
-  expect_true(all(y$T[, , , 2] == 0))
+  expect_true(all(y$I[, , 2] == 0))
+  expect_true(all(y$A[, , 2] == 0))
+  expect_true(all(y$S[, , 2] == 0))
+  expect_true(all(y$T[, , 2] == 0))
 })
 
 test_that("Check vaccination on screening in Bex model", {
@@ -136,23 +136,23 @@ test_that("Check vaccination on screening in Bex model", {
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
-  expect_true(all(y$U[-1, , , 2] > 0))
-  expect_true(all(y$cum_vaccinated[-1, , , 1] > 0))
-  expect_true(all(y$cum_vaccinated[, , , 2] == 0))
+  expect_true(all(y$U[-1, , 2] > 0))
+  expect_true(all(y$cum_vaccinated[-1, , 1] > 0))
+  expect_true(all(y$cum_vaccinated[, , 2] == 0))
   # check all those treated were vaccinated
-  expect_true(all(y$cum_vaccinated[, , , 1] == y$cum_screened[, , , 1]))
+  expect_true(all(y$cum_vaccinated[, , 1] == y$cum_screened[, , 1]))
   # check no compartments are leaking
-  expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
+  expect_true(all(apply(y$N, 1, sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , , 1] == 0))
-  expect_false(all(y$A[, , , 1] == 0))
-  expect_false(all(y$S[, , , 1] == 0))
-  expect_false(all(y$T[, , , 1] == 0))
+  expect_false(all(y$I[, , 1] == 0))
+  expect_false(all(y$A[, , 1] == 0))
+  expect_false(all(y$S[, , 1] == 0))
+  expect_false(all(y$T[, , 1] == 0))
   # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , , 2] == 0))
-  expect_true(all(y$A[, , , 2] == 0))
-  expect_true(all(y$S[, , , 2] == 0))
-  expect_true(all(y$T[, , , 2] == 0))
+  expect_true(all(y$I[, , 2] == 0))
+  expect_true(all(y$A[, , 2] == 0))
+  expect_true(all(y$S[, , 2] == 0))
+  expect_true(all(y$T[, , 2] == 0))
 })
 
 test_that("Check vaccination on diagnosis in Bex model", {
@@ -164,23 +164,23 @@ test_that("Check vaccination on diagnosis in Bex model", {
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   # check some people are being vaccinated
-  expect_true(all(y$U[-1, , , 2] > 0))
-  expect_true(all(y$cum_vaccinated[-1, , , 1] > 0))
-  expect_true(all(y$cum_vaccinated[, , , 2] == 0))
+  expect_true(all(y$U[-1, , 2] > 0))
+  expect_true(all(y$cum_vaccinated[-1, , 1] > 0))
+  expect_true(all(y$cum_vaccinated[, , 2] == 0))
   # check all those treated were vaccinated
   expect_true(all(y$cum_vaccinated == y$cum_treated))
   # check no compartments are leaking
-  expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
+  expect_true(all(apply(y$N, 1, sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , , 1] == 0))
-  expect_false(all(y$A[, , , 1] == 0))
-  expect_false(all(y$S[, , , 1] == 0))
-  expect_false(all(y$T[, , , 1] == 0))
+  expect_false(all(y$I[, , 1] == 0))
+  expect_false(all(y$A[, , 1] == 0))
+  expect_false(all(y$S[, , 1] == 0))
+  expect_false(all(y$T[, , 1] == 0))
   # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , , 2] == 0))
-  expect_true(all(y$A[, , , 2] == 0))
-  expect_true(all(y$S[, , , 2] == 0))
-  expect_true(all(y$T[, , , 2] == 0))
+  expect_true(all(y$I[, , 2] == 0))
+  expect_true(all(y$A[, , 2] == 0))
+  expect_true(all(y$S[, , 2] == 0))
+  expect_true(all(y$T[, , 2] == 0))
 })
 
 test_that("can initialise after time 0", {
@@ -195,31 +195,9 @@ test_that("can initialise after time 0", {
 
   inits <- restart_params(y, n_vax = 1)
 
-  expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
-  expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
-  expect_true(all(y$A[length(tt), , , ] == inits$A0[, , 1]))
-  expect_true(all(y$S[length(tt), , , ] == inits$S0[, , 1]))
-  expect_true(all(y$T[length(tt), , , ] == inits$T0[, , 1]))
-
-  # check with > 1 parameter set
-  params <- model_params(gono_params = gono_params(1:2))
-  expect_true(length(params$beta) > 0)
-  mod <- model(user = params)
-
-  tt <- seq.int(0, 10) / 365
-  y <- mod$run(tt)
-  y <- mod$transform_variables(y)
-  # check with more vax levels
-  inits <- restart_params(y, n_vax = 2)
-  expect_true(all(y$U[length(tt), , , ] == inits$U0[, , 1]))
-  expect_true(all(y$I[length(tt), , , ] == inits$I0[, , 1]))
-  expect_true(all(y$A[length(tt), , , ] == inits$A0[, , 1]))
-  expect_true(all(y$S[length(tt), , , ] == inits$S0[, , 1]))
-  expect_true(all(y$T[length(tt), , , ] == inits$T0[, , 1]))
-  expect_true(all(inits$U0[, , 2] == 0))
-  expect_true(all(inits$I0[, , 2] == 0))
-  expect_true(all(inits$A0[, , 2] == 0))
-  expect_true(all(inits$S0[, , 2] == 0))
-  expect_true(all(inits$T0[, , 2] == 0))
-
+  expect_true(all(y$U[length(tt), , ] == inits$U0[, 1]))
+  expect_true(all(y$I[length(tt), , ] == inits$I0[, 1]))
+  expect_true(all(y$A[length(tt), , ] == inits$A0[, 1]))
+  expect_true(all(y$S[length(tt), , ] == inits$S0[, 1]))
+  expect_true(all(y$T[length(tt), , ] == inits$T0[, 1]))
 })
