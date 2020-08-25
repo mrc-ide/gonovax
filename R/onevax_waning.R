@@ -1,5 +1,6 @@
-##' @name vax_params1
-##' @title create vaccination parameters for use in onevax model
+
+##' @name vax_params1w
+##' @title create vaccination parameters for use in onevax_waning model
 ##' @param eff single numeric indicating efficacy of the vaccine (between 0-1)
 ##' @param dur single numeric indicating duration of the vaccine (in years)
 ##' @param ve single numeric indicating % of population vaccinated before entry
@@ -9,25 +10,39 @@
 ##' @param vs single numeric indicating % of population vaccinated on screening
 ##' (between 0-1)
 ##' @return A list parameters in the model input format
-vax_params1 <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
+vax_params1w <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
+  # indices of vaccine strata (u: unvaccinated, v: vaccinated, w: waned)
+  i_u <- 1
+  i_v <- 2
+  i_w <- 5
+  #' currently waning is in stratum 5 (with strata 3:4 unused) for future
+  #' compatibility with dualvax, however may get performance boost by moving to
+  #' stratum 3
+
+  # set up vaccination matrix
+  v <- w <- array(0, dim = c(i_w, i_w))
+  v[i_u, i_u] <-  1
+  v[i_v, i_u] <- -1
+
+  # set up waning matrix
   z <- 1 / dur
-  v <- rbind(c(1, 0),
-            c(-1, 0))
-  list(n_vax = 2,
-       ve    = c(1 - ve, ve),
+  w[i_v, i_v] <- -z
+  w[i_w, i_v] <-  z
+
+  list(n_vax = i_w,
+       ve    = c(1 - ve, ve, 0, 0, 0),
        vs    = vs * v,
        vd    = vd * v,
-       eff   = c(0, eff),
-       w     = rbind(c(0,  z),
-                     c(0, -z))
+       eff   = c(0, eff, 0, 0, 0),
+       w     = w
   )
 }
 
-run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
+run_onevaxw_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
 
   if (length(n) != 1) stop("length(n) must equal 1")
 
-  vax_params <- vax_params1(dur = dur, ve = ve, vs = vs, vd = vd, eff = eff)
+  vax_params <- vax_params1w(dur = dur, ve = ve, vs = vs, vd = vd, eff = eff)
 
   if (equilib) {
     init_params <- restart_params(novax_equilib(n), n_vax = vax_params$n_vax)
@@ -44,9 +59,10 @@ run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
   mod$transform_variables(y)
 }
 
-##' @name run_onevax
+##' @name run_onevax_waning
 ##' @title run model with single vaccine for input parameter sets, either from
-##' initialisation or from equilibrium
+##' initialisation or from equilibrium, those with waned vaccines are ineligible
+##' for revaccination
 ##' @param n an integer vector (or value) containing the indices of
 ##' corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
 ##' for the full parameter set are returned
@@ -63,11 +79,11 @@ run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
 ##' is `FALSE`, i.e. run from initial conditions
 ##' @return A list of transformed model outputs
 ##' @export
-run_onevax <- function(n = NULL, tt, eff, dur,
+run_onevax_waning <- function(n = NULL, tt, eff, dur,
                        ve = 0, vd = 0, vs = 0,
                        equilib = FALSE) {
   n <- n %||% seq_len(nrow(gono_params()))
-  lapply(n, run_onevax_int,
+  lapply(n, run_onevaxw_int,
          tt = tt, eff = eff, dur = dur,
          ve = ve, vd = vd, vs = vs,
          equilib = equilib)

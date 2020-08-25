@@ -1,3 +1,7 @@
+# gonovax 0.1.8
+
+* add onevax_waning model
+
 # gonovax 0.1.7
 
 * remove n_par index as running multiple parameter sets in vectorised mode is

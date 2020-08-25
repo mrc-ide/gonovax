@@ -52,7 +52,9 @@ novax_baseline <- function(n = NULL, t) {
   y
 }
 
-
+##' @name vax_params0
+##' @title create vaccination parameters for use in novax model (null)
+##' @return A list parameters in the model input format
 vax_params0 <- function() {
   list(n_vax = 1,
        ve = 1,
