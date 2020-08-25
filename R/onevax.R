@@ -13,13 +13,19 @@ vax_params1 <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
   )
 }
 
-run_onevax_int <- function(n = NULL, tt, eff, dur, ve, vd, vs, equilib) {
-  init_params <- NULL
+run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
+
+  if (length(n) != 1) stop("length(n) must equal 1")
+
   vax_params <- vax_params1(dur = dur, ve = ve, vs = vs, vd = vd, eff = eff)
+
   if (equilib) {
-    if (length(n) > 1) stop("if length(n) > 1, equilib must be FALSE")
     init_params <- restart_params(novax_equilib(n), n_vax = vax_params$n_vax)
+  } else {
+    # set inital params based on gono_params() input
+    init_params <- NULL
   }
+
   pars <- model_params(gono_params = gono_params(n),
                        init_params = init_params,
                        vax_params = vax_params)

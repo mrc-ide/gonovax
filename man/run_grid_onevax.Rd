@@ -35,7 +35,7 @@ run_grid_onevax(
 \item{vs}{single numeric indicating % of population vaccinated on screening
 (between 0-1)}
 
-\item{baseline}{optional input of a baseline to compare to, must be a 
+\item{baseline}{optional input of a baseline to compare to, must be a
 gonovax_grid object if supplied}
 
 \item{full_output}{logical indicating whether full results should be output}

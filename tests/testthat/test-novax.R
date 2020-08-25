@@ -7,7 +7,7 @@ test_that("run_novax works correctly", {
   y2e <- run_novax_int(2, tt, equilib = TRUE)
 
   expect_error(run_novax_int(1:2, tt, equilib = TRUE),
-               label = "if length(n) > 1, equilib must be FALSE")
+               label = "length(n) must equal 1")
 
   y1m <- run_novax(1, tt)
   y12m <- run_novax(1:2, tt)
