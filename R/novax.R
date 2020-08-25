@@ -63,11 +63,15 @@ vax_params0 <- function() {
 }
 
 
-run_novax_int <- function(n = NULL, tt, equilib = FALSE) {
-  init_params <- NULL
+run_novax_int <- function(n, tt, equilib = FALSE) {
+
+  if (length(n) != 1) stop("length(n) must equal 1")
+
   if (equilib) {
-    if (length(n) > 1) stop("if length(n) > 1, equilib must be FALSE")
     init_params <- restart_params(novax_equilib(n))
+  } else {
+    # set inital params based on gono_params() input
+    init_params <- NULL
   }
 
   pars <- model_params(gono_params = gono_params(n),
