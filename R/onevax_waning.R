@@ -51,7 +51,8 @@ run_onevaxw_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
 
 ##' @name run_onevax_waning
 ##' @title run model with single vaccine for input parameter sets, either from
-##' initialisation or from equilibrium
+##' initialisation or from equilibrium, those with waned vaccines are ineligible
+##' for revaccination
 ##' @param n an integer vector (or value) containing the indices of
 ##' corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
 ##' for the full parameter set are returned
