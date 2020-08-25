@@ -1,12 +1,11 @@
 
 vax_params1w <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
-
   # indices of vaccine strata (u: unvaccinated, v: vaccinated, w: waned)
   i_u <- 1
   i_v <- 2
   i_w <- 5
-  #' currently waning is in stratum 5 (with strata 3:4 unused) for future 
-  #' compatibility with dualvax, however may get performance boost by moving to 
+  #' currently waning is in stratum 5 (with strata 3:4 unused) for future
+  #' compatibility with dualvax, however may get performance boost by moving to
   #' stratum 3
 
   # set up vaccination matrix
@@ -16,8 +15,8 @@ vax_params1w <- function(dur = 1e3, ve = 0, vs = 0, vd = 0, eff = 0) {
 
   # set up waning matrix
   z <- 1 / dur
-  w[i_v, i_w] <-  z
-  w[i_w, i_w] <- -z
+  w[i_v, i_v] <- -z
+  w[i_w, i_v] <-  z
 
   list(n_vax = i_w,
        ve    = c(1 - ve, ve, 0, 0, 0),
