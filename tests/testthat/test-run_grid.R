@@ -9,7 +9,7 @@ test_that("run_grid works as expected", {
   expect_equal(y$red_incid[, 1], y$red_incid[, 3], tol = 0.1)
   expect_true(all(abs(y$cum_vaccinated - 1200 * 10 * 0.5 * 2) < 1e-5))
   expect_equal(length(y$results), nrow(y$inputs$grid))
-  z <- plot(y)
+  plot(y)
 
   y2 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                  strategy = "vd", uptake = 1)
@@ -18,7 +18,7 @@ test_that("run_grid works as expected", {
   expect_true(all(y2$red_incid > -0.1))
   expect_equal(y2$cum_red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y2$red_incid[, 1], y2$red_incid[, 3], tol = 0.1)
-  z <- plot(y2)
+  plot(y2)
   ### this looks fine
   y3 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                  strategy = "va", uptake = 1, full_output = TRUE)
@@ -27,7 +27,7 @@ test_that("run_grid works as expected", {
   expect_equal(y3$cum_red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y3$cum_red_incid[, 1], y3$cum_red_incid[, 3], tol = 0.1)
   expect_true(all(y3$red_incid > -0.1))
-  z <- plot(y3)
+  plot(y3)
 
   y5 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                  strategy = "vt", uptake = 1, full_output = TRUE)
@@ -74,5 +74,5 @@ test_that("run_grid works with onevax_waning model", {
   expect_equal(y$red_incid[, 1], y$red_incid[, 3], tol = 0.1)
   expect_true(all(abs(y$cum_vaccinated - 1200 * 10 * 0.5 * 2) < 1e-5))
   expect_equal(length(y$results), nrow(y$inputs$grid))
-  z <- plot(y)
+  plot(y)
 })
