@@ -1,3 +1,7 @@
+# gonovax 0.1.9
+
+* allow vaccination of activity groups at differing rates
+
 # gonovax 0.1.8
 
 * add onevax_waning model
