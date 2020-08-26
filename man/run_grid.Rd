@@ -12,8 +12,8 @@ run_grid(
   eff,
   dur,
   ve = 0,
-  vd = 0,
-  vs = 0,
+  strategy = "ve",
+  uptake = 0,
   baseline = NULL,
   full_output = FALSE
 )
@@ -32,11 +32,11 @@ run_grid(
 \item{ve}{single numeric indicating % of population vaccinated before entry
 (between 0-1)}
 
-\item{vd}{single numeric indicating % of population vaccinated on diagnosis
-(between 0-1)}
+\item{strategy}{ve: vaccination before entry only (default),
+vd: vaccination on diagnosis, va: vaccination on attendance,
+vt: targeted vaccination (i.e. all diagnosed, group H on screening)}
 
-\item{vs}{single numeric indicating % of population vaccinated on screening
-(between 0-1)}
+\item{uptake}{numeric (0-1) of strategy uptake}
 
 \item{baseline}{optional input of a baseline to compare to, must be a
 gonovax_grid object if supplied}

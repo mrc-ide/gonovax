@@ -8,10 +8,10 @@
 ##' @param dur numeric vector of duration in years of the vaccine
 ##' @param ve single numeric indicating % of population vaccinated before entry
 ##'  (between 0-1)
-##' @param vd single numeric indicating % of population vaccinated on diagnosis
-##' (between 0-1)
-##' @param vs single numeric indicating % of population vaccinated on screening
-##' (between 0-1)
+##' @param strategy ve: vaccination before entry only (default),
+##' vd: vaccination on diagnosis, va: vaccination on attendance,
+##' vt: targeted vaccination (i.e. all diagnosed, group H on screening)
+##' @param uptake numeric (0-1) of strategy uptake
 ##' @param baseline optional input of a baseline to compare to, must be a
 ##' gonovax_grid object if supplied
 ##' @param full_output logical indicating whether full results should be output
@@ -19,10 +19,25 @@
 ##' @import furrr
 ##' @export
 run_grid  <- function(n, t, model = run_onevax,
-                      eff, dur, ve = 0, vd = 0, vs = 0,
+                      eff, dur, ve = 0, strategy = "ve", uptake = 0,
                       baseline = NULL, full_output = FALSE) {
   l <- expand.grid(eff = eff, dur = dur)
   nn <- seq_len(n)
+
+  # set strategy
+  if (strategy == "ve") {
+    vs <- vd <- 0
+  } else if (strategy == "vd") {
+    vd <- uptake
+    vs <- 0
+  } else if (strategy == "va") {
+    vd <- uptake
+    vs <- uptake
+  } else if (strategy == "vt") {
+    vd <- uptake
+    vs <- c(0, uptake)
+  }
+
   res <- furrr::future_pmap(.l = l,
                             .f = model,
                             n = nn,

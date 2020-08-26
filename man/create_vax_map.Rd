@@ -9,8 +9,8 @@ create_vax_map(n_vax, v)
 \arguments{
 \item{n_vax}{Integer in (0, 5) denoting total number of strata}
 
-\item{v}{numeric indicating % of population vaccinated on screening a scalar 
-will apply to both activity groups, a vector of length 2 will apply to each 
+\item{v}{numeric indicating % of population vaccinated on screening a scalar
+will apply to both activity groups, a vector of length 2 will apply to each
 activity group separately}
 }
 \value{

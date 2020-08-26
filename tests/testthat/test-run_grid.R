@@ -11,7 +11,8 @@ test_that("run_grid works as expected", {
   expect_equal(length(y$results), nrow(y$inputs$grid))
   plot(y)
 
-  y2 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), vd = 1)
+  y2 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
+                 strategy = "vd", uptake = 1)
   expect_equal(y2$red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y2$red_incid[, 1], y2$red_incid[, 3], tol = 0.1)
   expect_true(all(y2$red_incid > -0.1))
@@ -19,13 +20,24 @@ test_that("run_grid works as expected", {
   expect_equal(y2$red_incid[, 1], y2$red_incid[, 3], tol = 0.1)
   plot(y2)
   ### this looks fine
-  y3 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), vs = 1)
+  y3 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
+                 strategy = "va", uptake = 1, full_output = TRUE)
   expect_equal(y3$red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y3$red_incid[, 1], y3$red_incid[, 3], tol = 0.1)
   expect_equal(y3$cum_red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y3$cum_red_incid[, 1], y3$cum_red_incid[, 3], tol = 0.1)
   expect_true(all(y3$red_incid > -0.1))
   plot(y3)
+
+  y5 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
+                 strategy = "vt", uptake = 1, full_output = TRUE)
+  expect_equal(y5$red_incid[, 1], c(0, 0), tol = 0.1)
+  expect_equal(y5$red_incid[, 1], y5$red_incid[, 3], tol = 0.1)
+  expect_equal(y5$cum_red_incid[, 1], c(0, 0), tol = 0.1)
+  expect_equal(y5$cum_red_incid[, 1], y5$cum_red_incid[, 3], tol = 0.1)
+  expect_true(all(y5$red_incid > -0.1))
+  expect_true(all(y5$results[[1]][[1]]$cum_vaccinated[, 1, ] <=
+           y3$results[[1]][[1]]$cum_vaccinated[, 1, ]))
 
   y0 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2))
   # runs ok with user baseline
