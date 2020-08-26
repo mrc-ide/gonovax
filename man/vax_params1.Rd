@@ -4,21 +4,23 @@
 \alias{vax_params1}
 \title{create vaccination parameters for use in onevax model}
 \usage{
-vax_params1(dur = 1000, ve = 0, vs = 0, vd = 0, eff = 0)
+vax_params1(eff = 0, dur = 1000, ve = 0, vs = 0, vd = 0)
 }
 \arguments{
+\item{eff}{single numeric indicating efficacy of the vaccine (between 0-1)}
+
 \item{dur}{single numeric indicating duration of the vaccine (in years)}
 
 \item{ve}{single numeric indicating % of population vaccinated before entry
 (between 0-1)}
 
-\item{vs}{single numeric indicating % of population vaccinated on screening
-(between 0-1)}
+\item{vs}{numeric indicating % of population vaccinated on screening
+(between 0-1) a scalar will apply to both activity groups, a vector of
+length 2 will apply to each activity group separately}
 
-\item{vd}{single numeric indicating % of population vaccinated on diagnosis
-(between 0-1)}
-
-\item{eff}{single numeric indicating efficacy of the vaccine (between 0-1)}
+\item{vd}{numeric indicating % of population vaccinated on diagnosis
+(between 0-1) a scalar will apply to both activity groups, a vector of
+length 2 will apply to each activity group separately}
 }
 \value{
 A list parameters in the model input format
