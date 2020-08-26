@@ -12,7 +12,8 @@ plot.gonovax_grid <- function(grid) {
   plot_heatmaps(x)
 }
 
-plot_heatmap <- function(x, what, title = "") {
+plot_heatmap <- function(x, what, title = "", upper_limit = NULL) {
+  upper_limit <- upper_limit %||% max(x$what)
   ggplot2::ggplot(x, ggplot2::aes(x = eff, y = dur, fill = .data[[what]])) +
     ggplot2::geom_tile() +
     ggplot2::xlab("Efficacy (%)") +
@@ -20,7 +21,8 @@ plot_heatmap <- function(x, what, title = "") {
     ggplot2::ggtitle(title) +
     ggplot2::theme_grey() +
     ggplot2::theme(legend.title = ggplot2::element_blank()) +
-    ggplot2::theme(plot.margin = ggplot2::unit(rep(0.5, 4), "cm"))
+    ggplot2::theme(plot.margin = ggplot2::unit(rep(0.5, 4), "cm")) +
+    ggplot2::scale_fill_viridis_c(limits = c(0, upper_limit))
 }
 
 plot_heatmaps <- function(x) {
@@ -33,5 +35,4 @@ plot_heatmaps <- function(x) {
               MoreArgs = list(x = x),
               SIMPLIFY = FALSE)
   gridExtra::grid.arrange(grobs = p)
-  p
 }
