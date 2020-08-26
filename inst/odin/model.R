@@ -41,20 +41,14 @@ incid[, ]    <- sum(foi[i, ]) * (1 - eff[j]) * U[i, j]
 treated[, ]  <- rho * T[i, j]
 screened[, ] <- eta * U[i, j]
 # vaccination
-## input vax_map (v)
-## (1, 0,
-## -1, 0)
 ## at screening
-n_vs[, , ] <- vs[j, k] * screened[i, k]
+n_vs[, , ] <- vs[i, j, k] * screened[i, k]
 ## on diagnosis
-n_vd[, , ] <- vd[j, k] * treated[i, k]
+n_vd[, , ] <- vd[i, j, k] * treated[i, k]
 ## on entry
 n_ve[, 2:n_vax] <- enr * q[i] * ve[j]
 
 # waning
-## input waning_map
-## (0,  w,
-##  0, -w)
 wU[, , ] <- w[j, k] * U[i, k]
 wI[, , ] <- w[j, k] * I[i, k]
 wA[, , ] <- w[j, k] * A[i, k]
@@ -134,8 +128,8 @@ rho     <- user()
 
 ## vaccination pars
 ve[]   <- user()
-vs[, ] <- user()
-vd[, ] <- user()
+vs[, , ] <- user()
+vd[, , ] <- user()
 eff[]  <- user()
 w[, ]  <- user()
 
@@ -144,8 +138,8 @@ dim(p)    <- n_group
 dim(q)    <- n_group
 dim(ve)   <- n_vax
 dim(eff)  <- n_vax
-dim(vd)   <- c(n_vax, n_vax)
-dim(vs)   <- c(n_vax, n_vax)
+dim(vd)   <- c(n_group, n_vax, n_vax)
+dim(vs)   <- c(n_group, n_vax, n_vax)
 dim(w)    <- c(n_vax, n_vax)
 dim(n_ve) <- c(n_group, n_vax)
 dim(n_vs) <- c(n_group, n_vax, n_vax)
