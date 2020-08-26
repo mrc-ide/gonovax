@@ -33,4 +33,5 @@ plot_heatmaps <- function(x) {
               MoreArgs = list(x = x),
               SIMPLIFY = FALSE)
   gridExtra::grid.arrange(grobs = p)
+  p
 }
