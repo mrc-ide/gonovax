@@ -46,4 +46,10 @@ test_that("run_onevax_waning works correctly", {
   expect_equal(z$N[, , 1], y5e$N[, , 1] + y5e$N[, , 5])
   expect_equal(z$cum_incid[, , 1], y5e$cum_incid[, , 1] + y5e$cum_incid[, , 5])
 
+  # check vaccination targeting
+  y6e <- run_onevax_waning(1, tt, eff = 1, dur = 1,
+                    vs = c(0, 1), vd = c(0, 1), equilib = TRUE)[[1]]
+  expect_equal(y6e$N[, 1, 2], rep(0, 6))
+  expect_true(all(y6e$N[-1, 2, 2] > 0))
+  expect_true(all(y6e$N[-1, 2, 5] > 0))
 })

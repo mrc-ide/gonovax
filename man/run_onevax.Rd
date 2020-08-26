@@ -21,11 +21,13 @@ for the full parameter set are returned}
 \item{ve}{single numeric indicating % of population vaccinated before entry
 (between 0-1)}
 
-\item{vd}{single numeric indicating % of population vaccinated on diagnosis
-(between 0-1)}
+\item{vd}{numeric indicating % of population vaccinated on diagnosis
+(between 0-1) a scalar will apply to both activity groups, a vector of
+length 2 will apply to each activity group separately}
 
-\item{vs}{single numeric indicating % of population vaccinated on screening
-(between 0-1)}
+\item{vs}{numeric indicating % of population vaccinated on screening
+(between 0-1) a scalar will apply to both activity groups, a vector of
+length 2 will apply to each activity group separately}
 
 \item{equilib}{a logical indicating whether to run from equilibrium, default
 is `FALSE`, i.e. run from initial conditions}

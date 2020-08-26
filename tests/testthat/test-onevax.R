@@ -26,4 +26,10 @@ test_that("run_onevax works correctly", {
   y4e <- run_onevax(1, tt, eff = 1, dur = 1e3, vs = 1, equilib = TRUE)[[1]]
   expect_equal(y4e$cum_vaccinated[, , 1], y4e$cum_screened[, , 1])
   expect_equal(apply(y4e$N, 1, sum), rep(6e5, 6), tol = 1e-5)
+
+  # check vaccination targeting
+  y5e <- run_onevax(1, tt, eff = 1, dur = 1e3,
+                    vs = c(0, 1), vd = c(0, 1), equilib = TRUE)[[1]]
+  expect_equal(y5e$N[, 1, 2], rep(0, 6))
+  expect_true(all(y5e$N[-1, 2, 2] > 0))
 })
