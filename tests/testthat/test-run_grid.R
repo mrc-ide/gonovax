@@ -1,5 +1,6 @@
 
 test_that("run_grid works as expected", {
+  ## test with ve only
   y <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                        full_output = TRUE)
   expect_equal(y$red_incid[, 1], c(0, 0), tol = 0.1)
@@ -9,8 +10,8 @@ test_that("run_grid works as expected", {
   expect_equal(y$red_incid[, 1], y$red_incid[, 3], tol = 0.1)
   expect_true(all(abs(y$cum_vaccinated - 1200 * 10 * 0.5 * 2) < 1e-5))
   expect_equal(length(y$results), nrow(y$inputs$grid))
-  plot(y)
 
+  ## test with vd only
   y2 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                  strategy = "vd", uptake = 1)
   expect_equal(y2$red_incid[, 1], c(0, 0), tol = 0.1)
@@ -18,8 +19,8 @@ test_that("run_grid works as expected", {
   expect_true(all(y2$red_incid > -0.1))
   expect_equal(y2$cum_red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y2$red_incid[, 1], y2$red_incid[, 3], tol = 0.1)
-  plot(y2)
-  ### this looks fine
+
+  ## test with va only
   y3 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                  strategy = "va", uptake = 1, full_output = TRUE)
   expect_equal(y3$red_incid[, 1], c(0, 0), tol = 0.1)
@@ -27,8 +28,8 @@ test_that("run_grid works as expected", {
   expect_equal(y3$cum_red_incid[, 1], c(0, 0), tol = 0.1)
   expect_equal(y3$cum_red_incid[, 1], y3$cum_red_incid[, 3], tol = 0.1)
   expect_true(all(y3$red_incid > -0.1))
-  plot(y3)
 
+  ## test with vt only
   y5 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
                  strategy = "vt", uptake = 1, full_output = TRUE)
   expect_equal(y5$red_incid[, 1], c(0, 0), tol = 0.1)
@@ -39,8 +40,8 @@ test_that("run_grid works as expected", {
   expect_true(all(y5$results[[1]][[1]]$cum_vaccinated[, 1, ] <=
            y3$results[[1]][[1]]$cum_vaccinated[, 1, ]))
 
+  # test with with user baseline
   y0 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2))
-  # runs ok with user baseline
   y4 <- run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                         baseline = y0)
   expect_equal(y4$red_incid, y$red_incid)
@@ -74,5 +75,23 @@ test_that("run_grid works with onevax_waning model", {
   expect_equal(y$red_incid[, 1], y$red_incid[, 3], tol = 0.1)
   expect_true(all(abs(y$cum_vaccinated - 1200 * 10 * 0.5 * 2) < 1e-5))
   expect_equal(length(y$results), nrow(y$inputs$grid))
-  plot(y)
+
+})
+
+test_that("gonovax_grid format method works as expected", {
+  y <- run_grid(n = 2, t = 2, model = run_onevax,
+                eff = c(0.1, 1), dur = c(1, 2), ve = 0.5)
+  z <- format_grid(y)
+  y0 <- run_novax(n = 1:2, tt = 0:2, equilib = TRUE)
+  baseline <- sapply(y0, function(x) rowSums(x$cum_incid))
+
+  # check heatmaps are compiled correctly
+  expect_equal(z$a, colMeans(baseline[3, ] -  baseline[2, ] - y$incid))
+  expect_equal(z$b, colMeans(y$cum_vaccinated))
+  expect_equal(z$c, colMeans(baseline[3, ] - y$cum_incid))
+  expect_equal(z$d, colMeans(y$cum_vaccinated / (baseline[3, ] - y$cum_incid)))
+
+  # check error case
+  class(y) <- NULL
+  expect_error(format_grid(y))
 })

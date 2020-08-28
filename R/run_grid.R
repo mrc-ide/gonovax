@@ -86,3 +86,24 @@ verify_baseline <- function(baseline, l, nn, t) {
   }
   baseline
 }
+
+##' @name format_grid
+##' @title format grid for heatmap plotting
+##' @param grid a `gonovax_grid` object
+##' @return a dataframe with columns denoting:
+##' eff: efficacy of vaccine (%)
+##' dur: duration of vaccine (years)
+##' a: Reduction in incidence after t years,
+##' b: Courses of vaccine over t years,
+##' c: Infections averted over t years,
+##' d: Courses of vaccine per infection averted (B / C)
+##' @export
+format_grid <- function(grid) {
+  stopifnot(inherits(grid, "gonovax_grid"))
+  data.frame(eff = grid$inputs$grid$eff * 100,
+             dur = grid$inputs$grid$dur,
+             a   = colMeans(grid$red_incid),
+             b   = colMeans(grid$cum_vaccinated),
+             c   = colMeans(grid$cum_red_incid),
+             d   = colMeans(grid$cum_vaccinated / grid$cum_red_incid))
+}
