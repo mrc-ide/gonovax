@@ -10,9 +10,9 @@ format_grid(grid)
 \item{grid}{a `gonovax_grid` object}
 }
 \value{
-a dataframe with columns denoting:  
+a dataframe with columns denoting:
 eff: efficacy of vaccine (%)
-dur: duration of vaccine (years) 
+dur: duration of vaccine (years)
 a: Reduction in incidence after t years,
 b: Courses of vaccine over t years,
 c: Infections averted over t years,
