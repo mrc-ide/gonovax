@@ -50,6 +50,8 @@ run_grid  <- function(n, t, model = run_onevax,
   cum_incid <- extract_value(res, "cum_incid", t)
   incid <- cum_incid - extract_value(res, "cum_incid", t - 1)
   cum_vaccinated <- extract_value(res, "cum_vaccinated", t)
+  cum_diag_a <- extract_value(res, "cum_diag_a", t)
+  cum_diag_s <- extract_value(res, "cum_diag_s", t)
 
   # verify baseline
 
@@ -66,8 +68,10 @@ run_grid  <- function(n, t, model = run_onevax,
               cum_vaccinated = cum_vaccinated - baseline$cum_vaccinated,
               red_incid = baseline$incid - incid,
               cum_red_incid = baseline$cum_incid - cum_incid,
-              cum_diag_a = extract_value(res, "cum_diag_a", t),
-              cum_diag_s = extract_value(res, "cum_diag_s", t))
+              cum_diag_a = cum_diag_a,
+              cum_diag_s = cum_diag_s,
+              cum_red_diag_a = baseline$cum_diag_a - cum_diag_a,
+              cum_red_diag_s = baseline$cum_diag_s - cum_diag_s)
   if (full_output) out$results <- res
   class(out) <- "gonovax_grid"
   out
@@ -99,8 +103,8 @@ verify_baseline <- function(baseline, l, nn, t) {
 ##' b: Courses of vaccine over t years,
 ##' c: Infections averted over t years,
 ##' d: Courses of vaccine per infection averted (B / C)
-##' diag_a: Total asymptomatic diagnoses over t years
-##' diag_s: Total symptomatic diagnoses over t years
+##' diag_a: Reduction in asymptomatic diagnoses over t years
+##' diag_s: Reduction in symptomatic diagnoses over t years
 ##' @export
 format_grid <- function(grid) {
   stopifnot(inherits(grid, "gonovax_grid"))
@@ -110,6 +114,6 @@ format_grid <- function(grid) {
              b      = colMeans(grid$cum_vaccinated),
              c      = colMeans(grid$cum_red_incid),
              d      = colMeans(grid$cum_vaccinated / grid$cum_red_incid),
-             diag_a = colMeans(grid$cum_diag_a),
-             diag_s = colMeans(grid$cum_diag_s))
+             diag_a = colMeans(grid$cum_red_diag_a),
+             diag_s = colMeans(grid$cum_red_diag_s))
 }

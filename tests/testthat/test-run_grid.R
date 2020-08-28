@@ -84,16 +84,19 @@ test_that("gonovax_grid format method works as expected", {
   z <- format_grid(y)
   y0 <- run_novax(n = 1:2, tt = 0:2, equilib = TRUE)
 
-  baseline <- sapply(y0, function(x) rowSums(x$cum_incid))
+  cum_incid0 <- sapply(y0, function(x) rowSums(x$cum_incid))
+  cum_diag_a <- sapply(y0, function(x) rowSums(x$cum_diag_a))
+  cum_diag_s <- sapply(y0, function(x) rowSums(x$cum_diag_s))
   # check heatmaps are compiled correctly
-  expect_equal(z$a, colMeans(baseline[3, ] -  baseline[2, ] - y$incid),
+  expect_equal(z$a, colMeans(cum_incid0[3, ] -  cum_incid0[2, ] - y$incid),
                tol = 0.1)
   expect_equal(z$b, colMeans(y$cum_vaccinated))
-  expect_equal(z$c, colMeans(baseline[3, ] - y$cum_incid), tol = 0.1)
-  expect_equal(z$d, colMeans(y$cum_vaccinated / (baseline[3, ] - y$cum_incid)),
+  expect_equal(z$c, colMeans(cum_incid0[3, ] - y$cum_incid), tol = 0.1)
+  expect_equal(z$d,
+               colMeans(y$cum_vaccinated / (cum_incid0[3, ] - y$cum_incid)),
                tol = 0.1)
-  expect_equal(z$diag_a, colMeans(y$cum_diag_a))
-  expect_equal(z$diag_s, colMeans(y$cum_diag_s))
+  expect_equal(z$diag_a, colMeans(cum_diag_a[3, ] - y$cum_diag_a))
+  expect_equal(z$diag_s, colMeans(cum_diag_s[3, ] - y$cum_diag_s))
 
   # check error case
   class(y) <- NULL
