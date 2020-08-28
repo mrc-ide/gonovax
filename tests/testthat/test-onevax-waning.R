@@ -43,8 +43,9 @@ test_that("run_onevax_waning works correctly", {
   # check that equivalent to waning into U
   z <- run_onevax(1, tt, eff = 1, dur = 1, ve = 1,
                          equilib = TRUE)[[1]]
-  expect_equal(z$N[, , 1], y5e$N[, , 1] + y5e$N[, , 5])
-  expect_equal(z$cum_incid[, , 1], y5e$cum_incid[, , 1] + y5e$cum_incid[, , 5])
+  expect_equal(z$N[, , 1], y5e$N[, , 1] + y5e$N[, , 5], tol = 0.1)
+  expect_equal(z$cum_incid[, , 1], y5e$cum_incid[, , 1] + y5e$cum_incid[, , 5],
+               tol = 0.1)
 
   # check vaccination targeting
   y6e <- run_onevax_waning(1, tt, eff = 1, dur = 1,
