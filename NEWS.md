@@ -1,3 +1,9 @@
+# gonovax 0.1.10
+
+* extend baseline to 20 years
+* take plot method out of package
+* export format_grid
+
 # gonovax 0.1.9
 
 * allow vaccination of activity groups at differing rates
