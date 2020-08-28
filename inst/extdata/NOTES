@@ -7,5 +7,5 @@ novax_equilib.rds:
   running: scripts/generate_novax_equilib.R
 
 novax_baseline.rds: 
-  baseline incid and cum_incid from 1 - 10 years after equilibrium derived by
+  baseline incid and cum_incid from 1 - 20 years after equilibrium derived by
   running: scripts/generate_novax_baseline.R
