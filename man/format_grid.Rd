@@ -17,8 +17,8 @@ a: Reduction in incidence after t years,
 b: Courses of vaccine over t years,
 c: Infections averted over t years,
 d: Courses of vaccine per infection averted (B / C)
-diag_a: Total asymptomatic diagnoses over t years
-diag_s: Total symptomatic diagnoses over t years
+diag_a: Reduction in asymptomatic diagnoses over t years
+diag_s: Reduction in symptomatic diagnoses over t years
 }
 \description{
 format grid for heatmap plotting

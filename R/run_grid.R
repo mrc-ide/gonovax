@@ -103,8 +103,8 @@ verify_baseline <- function(baseline, l, nn, t) {
 ##' b: Courses of vaccine over t years,
 ##' c: Infections averted over t years,
 ##' d: Courses of vaccine per infection averted (B / C)
-##' diag_a: Total asymptomatic diagnoses over t years
-##' diag_s: Total symptomatic diagnoses over t years
+##' diag_a: Reduction in asymptomatic diagnoses over t years
+##' diag_s: Reduction in symptomatic diagnoses over t years
 ##' @export
 format_grid <- function(grid) {
   stopifnot(inherits(grid, "gonovax_grid"))
