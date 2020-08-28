@@ -99,6 +99,7 @@ verify_baseline <- function(baseline, l, nn, t) {
 ##' d: Courses of vaccine per infection averted (B / C)
 ##' @export
 format_grid <- function(grid) {
+  stopifnot(inherits(grid, "gonovax_grid"))
   data.frame(eff = grid$inputs$grid$eff * 100,
              dur = grid$inputs$grid$dur,
              a   = colMeans(grid$red_incid),

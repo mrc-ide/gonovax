@@ -90,4 +90,8 @@ test_that("gonovax_grid format method works as expected", {
   expect_equal(z$b, colMeans(y$cum_vaccinated))
   expect_equal(z$c, colMeans(baseline[3, ] - y$cum_incid))
   expect_equal(z$d, colMeans(y$cum_vaccinated / (baseline[3, ] - y$cum_incid)))
+
+  # check error case
+  class(y) <- NULL
+  expect_error(format_grid(y))
 })
