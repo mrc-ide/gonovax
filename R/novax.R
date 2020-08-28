@@ -47,8 +47,7 @@ novax_baseline <- function(n = NULL, t) {
   # limit to parameter sets available
   i <- i[(i > 0) & (i <= n_y)]
 
-  y$incid <- y$incid[t, i]
-  y$cum_incid <- y$cum_incid[t, i]
+  y <- lapply(y, '[', t, i)
   y
 }
 
