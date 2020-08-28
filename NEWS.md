@@ -1,3 +1,7 @@
+# gonovax 0.1.11
+
+* output asymptomatic and symptomatic diagnoses
+
 # gonovax 0.1.10
 
 * extend baseline to 20 years
