@@ -92,6 +92,8 @@ test_that("gonovax_grid format method works as expected", {
   expect_equal(z$c, colMeans(baseline[3, ] - y$cum_incid), tol = 0.1)
   expect_equal(z$d, colMeans(y$cum_vaccinated / (baseline[3, ] - y$cum_incid)),
                tol = 0.1)
+  expect_equal(z$diag_a, colMeans(y$cum_diag_a))
+  expect_equal(z$diag_s, colMeans(y$cum_diag_s))
 
   # check error case
   class(y) <- NULL
