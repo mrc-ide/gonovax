@@ -22,6 +22,23 @@ test_that("there are no symptomatic infections when psi = 0", {
   y <- mod$transform_variables(y)
   expect_true(any(y$I == 0))
   expect_true(all(y$S == 0))
+  expect_true(all(y$cum_diag_s == 0))
+  expect_true(all(y$cum_diag_a[-1, , ] > 0))
+})
+
+test_that("there are no asymptomatic infections when psi = 1", {
+  params <- model_params(gono_params = gono_params(1))
+  params$psi <- 1
+  params$S0[, ] <- params$A0[, ]
+  params$A0[, ] <- 0
+  mod <- model(user = params)
+  tt <- seq.int(0, 5) / 365
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
+  expect_true(any(y$I == 0))
+  expect_true(all(y$A == 0))
+  expect_true(all(y$cum_diag_a == 0))
+  expect_true(all(y$cum_diag_s[-1, , ] > 0))
 })
 
 test_that("there are no infections when A0 = 0", {
