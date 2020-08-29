@@ -23,7 +23,6 @@ run_grid  <- function(n, t, model = run_onevax,
                       baseline = NULL, full_output = FALSE) {
   l <- expand.grid(eff = eff, dur = dur)
   nn <- seq_len(n)
-
   # set strategy
   prop_vax <- set_strategy(strategy, uptake)
 
@@ -51,7 +50,8 @@ run_grid  <- function(n, t, model = run_onevax,
     baseline <- verify_baseline(baseline, l, nn, t)
   }
 
-  out <- list(inputs = list(n = nn, t = t, ve = ve, vd = vd, vs = vs, grid = l),
+  out <- list(inputs = list(n = nn, t = t, ve = ve,
+                            vd = prop_vax$vd, vs = prop_vax$vs, grid = l),
               incid = incid,
               cum_incid = cum_incid,
               cum_vaccinated = cum_vaccinated - baseline$cum_vaccinated,
@@ -80,6 +80,10 @@ verify_baseline <- function(baseline, l, nn, t) {
     stop("t does not match baseline")
   }
   baseline
+}
+
+extract_value <- function(x, what, t) {
+  sapply(x, function(x) aggregate(x, what)[, x[[1]]$t == t])
 }
 
 ##' @name format_grid
