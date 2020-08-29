@@ -25,26 +25,15 @@ run_grid  <- function(n, t, model = run_onevax,
   nn <- seq_len(n)
 
   # set strategy
-  if (strategy == "ve") {
-    vs <- vd <- 0
-  } else if (strategy == "vd") {
-    vd <- uptake
-    vs <- 0
-  } else if (strategy == "va") {
-    vd <- uptake
-    vs <- uptake
-  } else if (strategy == "vt") {
-    vd <- uptake
-    vs <- c(0, uptake)
-  }
+  prop_vax <- set_strategy(strategy, uptake)
 
   res <- furrr::future_pmap(.l = l,
                             .f = model,
                             n = nn,
                             tt = c(0, t - 1, t),
                             ve = ve,
-                            vd = vd,
-                            vs = vs,
+                            vd = prop_vax$vd,
+                            vs = prop_vax$vs,
                             equilib = TRUE)
 
   cum_incid <- extract_value(res, "cum_incid", t)
