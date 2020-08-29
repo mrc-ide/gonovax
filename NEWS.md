@@ -1,3 +1,8 @@
+# gonovax 0.1.12
+
+* export aggregate() 
+* export set_strategy()
+
 # gonovax 0.1.11
 
 * output asymptomatic and symptomatic diagnoses
