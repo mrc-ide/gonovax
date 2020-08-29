@@ -4,6 +4,7 @@
 ##' @param what a character string of the cumulative trajectory to transform
 ##' @param as_incid logical specifying whether to convert to incidence
 ##' @param f function to apply across parameter sets (eg. mean / median)
+##' @param ... named arguments to pass to f
 ##' @return a transformed time series / array
 ##' @export
 aggregate <- function(x, what, as_incid = FALSE, f = identity, ...) {

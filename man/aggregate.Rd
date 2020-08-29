@@ -14,6 +14,8 @@ aggregate(x, what, as_incid = FALSE, f = identity, ...)
 \item{as_incid}{logical specifying whether to convert to incidence}
 
 \item{f}{function to apply across parameter sets (eg. mean / median)}
+
+\item{...}{named arguments to pass to f}
 }
 \value{
 a transformed time series / array
