@@ -1,4 +1,4 @@
-testthat("aggregate works", {
+test_that("aggregate works", {
   dt <- 1 / 12
   tt <- seq(0, 1, dt)
   y <- run_onevax(1:2, tt, eff = 1, dur = 4)
