@@ -9,6 +9,9 @@
 ##' @export
 aggregate <- function(x, what, as_incid = FALSE, f = identity, ...) {
   y <- sapply(x, function(x) apply(x[[what]], 1, sum))
-  if (as_incid) y <- apply(y, 2, diff)
+  if (as_incid) {
+    dt <- diff(x[[1]]$t)
+    y <- apply(y, 2, diff) / dt
+  }
   apply(y, 1, f, ...)
 }
