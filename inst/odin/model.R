@@ -40,11 +40,14 @@ foi[, ] <- beta * p[i] * m[i, j] * sum(C[j, ]) / sum(N[j, ])
 incid[, ]    <- sum(foi[i, ]) * (1 - eff[j]) * U[i, j]
 treated[, ]  <- rho * T[i, j]
 screened[, ] <- eta * U[i, j]
+
 # vaccination
+## time-varying switch
+vax_switch <- interpolate(vax_t, vax_y, "constant")
 ## at screening
-n_vs[, , ] <- vs[i, j, k] * screened[i, k]
+n_vs[, , ] <- vs[i, j, k] * screened[i, k] * vax_switch
 ## on diagnosis
-n_vd[, , ] <- vd[i, j, k] * treated[i, k]
+n_vd[, , ] <- vd[i, j, k] * treated[i, k] * vax_switch
 ## on entry
 n_ve[, 2:n_vax] <- enr * q[i] * ve[j]
 
@@ -132,6 +135,8 @@ vs[, , ] <- user()
 vd[, , ] <- user()
 eff[]  <- user()
 w[, ]  <- user()
+vax_t[] <- user()
+vax_y[] <- user()
 
 ## par dimensions
 dim(p)    <- n_group
@@ -141,6 +146,9 @@ dim(eff)  <- n_vax
 dim(vd)   <- c(n_group, n_vax, n_vax)
 dim(vs)   <- c(n_group, n_vax, n_vax)
 dim(w)    <- c(n_vax, n_vax)
+dim(vax_t) <- user()
+dim(vax_y) <- user()
+
 dim(n_ve) <- c(n_group, n_vax)
 dim(n_vs) <- c(n_group, n_vax, n_vax)
 dim(n_vd) <- c(n_group, n_vax, n_vax)

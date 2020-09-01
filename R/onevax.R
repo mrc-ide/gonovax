@@ -10,9 +10,10 @@
 ##' @param vs numeric indicating % of population vaccinated on screening
 ##' (between 0-1) a scalar will apply to both activity groups, a vector of
 ##' length 2 will apply to each activity group separately
+##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list parameters in the model input format
 vax_params1 <- function(eff = 0, dur = 1e3,
-                        ve = 0, vs = 0, vd = 0) {
+                        ve = 0, vs = 0, vd = 0, t_stop = 99) {
   # waned vaccinees become return to uninfected compartment
   i_w <- 1
   n_vax <- 2
@@ -22,7 +23,9 @@ vax_params1 <- function(eff = 0, dur = 1e3,
        vs    = create_vax_map(n_vax, vs),
        vd    = create_vax_map(n_vax, vd),
        eff   = c(0, eff),
-       w     = create_waning_map(n_vax, i_w, 1 / dur)
+       w     = create_waning_map(n_vax, i_w, 1 / dur),
+       vax_t = c(0, t_stop),
+       vax_y = c(1, 0)
   )
 }
 

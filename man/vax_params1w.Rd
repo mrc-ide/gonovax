@@ -4,7 +4,7 @@
 \alias{vax_params1w}
 \title{create vaccination parameters for use in onevax_waning model}
 \usage{
-vax_params1w(eff = 0, dur = 1000, ve = 0, vs = 0, vd = 0)
+vax_params1w(eff = 0, dur = 1000, ve = 0, vs = 0, vd = 0, t_stop = 99)
 }
 \arguments{
 \item{eff}{single numeric indicating efficacy of the vaccine (between 0-1)}
@@ -21,6 +21,8 @@ length 2 will apply to each activity group separately}
 \item{vd}{numeric indicating % of population vaccinated on diagnosis
 (between 0-1) a scalar will apply to both activity groups, a vector of
 length 2 will apply to each activity group separately}
+
+\item{t_stop}{time at which vaccination should stop (years)}
 }
 \value{
 A list parameters in the model input format
