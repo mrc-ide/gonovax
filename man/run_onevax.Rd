@@ -5,7 +5,17 @@
 \title{run model with single vaccine for input parameter sets, either from
 initialisation or from equilibrium}
 \usage{
-run_onevax(n = NULL, tt, eff, dur, ve = 0, vd = 0, vs = 0, equilib = FALSE)
+run_onevax(
+  n = NULL,
+  tt,
+  eff,
+  dur,
+  ve = 0,
+  vd = 0,
+  vs = 0,
+  t_stop = 99,
+  equilib = FALSE
+)
 }
 \arguments{
 \item{n}{an integer vector (or value) containing the indices of
@@ -28,6 +38,8 @@ length 2 will apply to each activity group separately}
 \item{vs}{numeric indicating % of population vaccinated on screening
 (between 0-1) a scalar will apply to both activity groups, a vector of
 length 2 will apply to each activity group separately}
+
+\item{t_stop}{time at which vaccination should stop (years)}
 
 \item{equilib}{a logical indicating whether to run from equilibrium, default
 is `FALSE`, i.e. run from initial conditions}
