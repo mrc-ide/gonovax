@@ -14,6 +14,7 @@ run_onevax_waning(
   ve = 0,
   vd = 0,
   vs = 0,
+  t_stop = 99,
   equilib = FALSE
 )
 }
@@ -38,6 +39,8 @@ length 2 will apply to each activity group separately}
 \item{vs}{numeric indicating % of population vaccinated on screening
 (between 0-1) a scalar will apply to both activity groups, a vector of
 length 2 will apply to each activity group separately}
+
+\item{t_stop}{time at which vaccination should stop (years)}
 
 \item{equilib}{a logical indicating whether to run from equilibrium, default
 is `FALSE`, i.e. run from initial conditions}
