@@ -1,3 +1,7 @@
+# gonovax 0.1.13
+
+* add time-varying vaccination parameter
+
 # gonovax 0.1.12
 
 * export aggregate() 
