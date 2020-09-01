@@ -254,15 +254,13 @@ test_that("t_stop is working correctly", {
   ## check with single parameter set
   params <- model_params(gono_params = gono_params(1),
                          vax_params = vax_params1(ve = 0, vd = 1, eff = 1,
-                                                  t_stop = 2/365))
+                                                  t_stop = 2 / 365))
   mod <- model(user = params)
-  
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt, )
   y <- mod$transform_variables(y)
 
-  expect_equal(diff(apply(y$cum_vaccinated, 1, sum))[tt[-length(tt)] > 2/365],
-               c(0,0)) 
+  expect_equal(diff(apply(y$cum_vaccinated, 1, sum))[tt[-length(tt)] > 2 / 365],
+               c(0, 0))
 
 })
-  
