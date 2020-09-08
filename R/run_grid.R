@@ -119,7 +119,7 @@ compare_baseline <- function(y, baseline) {
 ##' @title format grid for heatmap plotting
 ##' @param grid a `gonovax_grid` object
 ##' @param disc_rate annual discount rate for cost-effectiveness calc,
-##' e.g.  0.035 = 3.5%, default is 0
+##' e.g. 0.035 = 3.5pc, default is 0
 ##' @param f the function that should be used to summarise the runs
 ##' @return a dataframe with columns denoting:
 ##' eff: efficacy of vaccine (%)
@@ -133,7 +133,7 @@ compare_baseline <- function(y, baseline) {
 ##' tot_red_diag_s: Reduction in symptomatic diagnoses over t years
 ##' tot_inc_screened: Increase in screening over t years
 ##' @export
-format_grid <- function(grid, disc_rate = 0, f) {
+format_grid <- function(grid, disc_rate = 0, f = mean) {
 
   stopifnot(inherits(grid, "gonovax_grid"))
 

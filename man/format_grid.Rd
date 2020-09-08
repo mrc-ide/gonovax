@@ -4,13 +4,13 @@
 \alias{format_grid}
 \title{format grid for heatmap plotting}
 \usage{
-format_grid(grid, disc_rate = 0, f)
+format_grid(grid, disc_rate = 0, f = mean)
 }
 \arguments{
 \item{grid}{a `gonovax_grid` object}
 
 \item{disc_rate}{annual discount rate for cost-effectiveness calc,
-e.g.  0.035 = 3.5%, default is 0}
+e.g.  0.035 = 3.5pc, default is 0}
 
 \item{f}{the function that should be used to summarise the runs}
 }
