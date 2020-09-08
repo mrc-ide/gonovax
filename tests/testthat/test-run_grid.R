@@ -88,41 +88,40 @@ test_that("gonovax_grid format method works as expected", {
   t <- 2
   y <- run_grid(n = 2, t = t, model = run_onevax,
                 eff = c(0.1, 1), dur = c(1, 2), ve = 0.5)
-  z <- format_grid(y, 2)
+  z <- format_grid(y)
   y0 <- run_novax(n = 1:2, tt = 0:2, equilib = TRUE)
-
-  incid <- sapply(y$incid, "[", t, )
-  cum_vaccinated <- sapply(y$cum_vaccinated, "[", t, )
-  cum_incid <- sapply(y$cum_incid, "[", t, )
-  cum_diag_a <- sapply(y$cum_diag_a, "[", t, )
-  cum_diag_s <- sapply(y$cum_diag_s, "[", t, )
 
   cum_incid0 <- sapply(y0, function(x) rowSums(x$cum_incid))
   cum_diag_a0 <- sapply(y0, function(x) rowSums(x$cum_diag_a))
   cum_diag_s0 <- sapply(y0, function(x) rowSums(x$cum_diag_s))
   cum_screened0 <- sapply(y0, function(x) rowSums(x$cum_screened))
+  incid0 <- apply(cum_incid0, 2, diff)
+
   # check heatmaps are compiled correctly
-  expect_equivalent(z$red_incid,
-               colMeans(cum_incid0[3, ] - cum_incid0[2, ] - incid),
+  expect_equivalent(z$red_incid[, 1], rowMeans(incid0 -y$incid[[1]]), tol = 0.1)
+  expect_equivalent(z$tot_inc_vaccinated, lapply(y$cum_vaccinated, rowMeans))
+  tot_red_incid <- cum_incid0[-1, ] - y$cum_incid[[1]]
+  expect_equivalent(z$tot_red_incid[, 1],
+                    rowMeans(tot_red_incid), tol = 0.1)
+  expect_equivalent(z$cost_eff[, 1],
+               rowMeans(y$cum_vaccinated[[1]] / tot_red_incid),
                tol = 0.1)
-  expect_equivalent(z$tot_inc_vaccinated, colMeans(cum_vaccinated))
-  expect_equivalent(z$tot_red_incid,
-                    colMeans(cum_incid0[3, ] - cum_incid), tol = 0.1)
-  expect_equivalent(z$cost_eff,
-               colMeans(cum_vaccinated / (cum_incid0[3, ] - cum_incid)),
-               tol = 0.1)
-  expect_equivalent(z$tot_red_diag_a, colMeans(cum_diag_a0[3, ] - cum_diag_a))
-  expect_equivalent(z$tot_red_diag_s, colMeans(cum_diag_s0[3, ] - cum_diag_s))
+  expect_equivalent(z$tot_red_diag_a[, 1],
+                    rowMeans(cum_diag_a0[-1, ] - y$cum_diag_a[[1]]))
+  expect_equivalent(z$tot_red_diag_s[, 1],
+                    rowMeans(cum_diag_s0[-1, ] - y$cum_diag_s[[1]]))
 
   # check discount rate
-  z1 <- format_grid(y, 2, 0.05)
+  z1 <- format_grid(y, 0.05)
   w <- which(names(z) == "cost_eff")
   expect_equal(z[-w], z1[-w])
 
   pv <- 1.05 ^ -c(0.5, 1.5)
   pv_inc_vaccinated <- sapply(y$inc_vaccinated, function(x) colSums(x * pv))
   pv_red_incid <- sapply(y$red_incid, function(x) colSums(x * pv))
-  expect_equivalent(z1$cost_eff,   colMeans(pv_inc_vaccinated / pv_red_incid))
+  expect_equivalent(z1$cost_eff[1, ], z$cost_eff[1, ])
+  expect_equivalent(z1$cost_eff[2, ],
+                    colMeans(pv_inc_vaccinated / pv_red_incid))
 
   # check error case
   class(y) <- NULL

@@ -118,8 +118,6 @@ compare_baseline <- function(y, baseline) {
 ##' @name format_grid
 ##' @title format grid for heatmap plotting
 ##' @param grid a `gonovax_grid` object
-##' @param t the time point at which the grid should be extracted, if NULL uses
-##' maximum value calculated in the grid
 ##' @param disc_rate annual discount rate for cost-effectiveness calc,
 ##' e.g.  0.035 = 3.5%, default is 0
 ##' @param f the function that should be used to summarise the runs
@@ -130,17 +128,16 @@ compare_baseline <- function(y, baseline) {
 ##' inc_vaccinated: Additional courses of vaccine over t years,
 ##' tot_red_incid: Infections averted over t years,
 ##' cost_eff: Courses of vaccine per infection averted (B / C),
-##' discounted at rate disc_rate
-##' diag_a: Reduction in asymptomatic diagnoses over t years
-##' diag_s: Reduction in symptomatic diagnoses over t years
+##' discounted at `disc_rate`
+##' tot_red_diag_a: Reduction in asymptomatic diagnoses over t years
+##' tot_red_diag_s: Reduction in symptomatic diagnoses over t years
+##' tot_inc_screened: Increase in screening over t years
 ##' @export
-format_grid <- function(grid, t = NULL, disc_rate = 0, f = mean) {
+format_grid <- function(grid, disc_rate = 0, f = mean) {
 
   stopifnot(inherits(grid, "gonovax_grid"))
 
   tt <- grid$inputs$t[-1]
-  t <- t %||% max(tt)
-  stopifnot(t <= max(tt))
 
   # discount flows by (1 + i) ^ -(t - dt/2) to find PV
 
@@ -149,26 +146,28 @@ format_grid <- function(grid, t = NULL, disc_rate = 0, f = mean) {
 
   # calculate cost-effectiveness
   pv_inc_cum_vaccinated <- calc_pv(grid$inc_vaccinated, pv)
+
   pv_red_cum_incid <- calc_pv(grid$red_incid, pv)
   cost_eff <- mapply(FUN = `/`, pv_inc_cum_vaccinated, pv_red_cum_incid,
                      SIMPLIFY = FALSE)
 
-  data.frame(eff                = grid$inputs$grid$eff * 100,
-             dur                = grid$inputs$grid$dur,
-             red_incid          = summarise_at_t(grid$red_incid, t, f),
-             tot_inc_vaccinated = summarise_at_t(grid$inc_cum_vaccinated, t, f),
-             tot_red_incid      = summarise_at_t(grid$red_cum_incid, t, f),
-             cost_eff           = summarise_at_t(cost_eff, t, f),
-             tot_red_diag_a     = summarise_at_t(grid$red_cum_diag_a, t, f),
-             tot_red_diag_s     = summarise_at_t(grid$red_cum_diag_s, t, f),
-             tot_inc_screened   = summarise_at_t(grid$inc_cum_screened, t, f))
+  list(t                  = tt,
+       eff                = grid$inputs$grid$eff * 100,
+       dur                = grid$inputs$grid$dur,
+       red_incid          = summarise(grid$red_incid, f),
+       tot_inc_vaccinated = summarise(grid$inc_cum_vaccinated, f),
+       tot_red_incid      = summarise(grid$red_cum_incid, f),
+       cost_eff           = summarise(cost_eff, f),
+       tot_red_diag_a     = summarise(grid$red_cum_diag_a, f),
+       tot_red_diag_s     = summarise(grid$red_cum_diag_s, f),
+       tot_inc_screened   = summarise(grid$inc_cum_screened, f))
 }
 
 calc_pv <- function(x, pv) {
   lapply(x, function(x) apply(x * pv, 2, cumsum))
 }
 
-summarise_at_t <- function(x, t, f) {
-  x_t <- sapply(x, "[", t, )
-  apply(x_t, 2, f)
+summarise <- function(x, f) {
+  y <- lapply(x, function(x) apply(x, 1, f))
+  as.data.frame(y)
 }
