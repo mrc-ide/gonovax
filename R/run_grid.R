@@ -152,22 +152,16 @@ format_grid <- function(grid, disc_rate = 0, f = mean, t = NULL) {
   pv_inc_cum_vaccinated <- calc_pv(grid$inc_vaccinated, pv)
 
   pv_red_cum_incid <- calc_pv(grid$red_incid, pv)
-  cost_eff <- mapply(FUN = `/`, pv_inc_cum_vaccinated, pv_red_cum_incid,
+  grid$cost_eff <- mapply(FUN = `/`, pv_inc_cum_vaccinated, pv_red_cum_incid,
                      SIMPLIFY = FALSE)
 
-  ret <- list(red_incid          = summarise(grid$red_incid, f),
-              tot_inc_vaccinated = summarise(grid$inc_cum_vaccinated, f),
-              tot_red_incid      = summarise(grid$red_cum_incid, f),
-              cost_eff           = summarise(cost_eff, f),
-              tot_red_diag_a     = summarise(grid$red_cum_diag_a, f),
-              tot_red_diag_s     = summarise(grid$red_cum_diag_s, f),
-              tot_inc_screened   = summarise(grid$inc_cum_screened, f))
+  ret <- lapply(grid[-1], summarise, f = f)
 
   heatmap_data <- data.frame(eff = grid$inputs$grid$eff * 100,
                        dur = grid$inputs$grid$dur,
                        red_incid = unlist(ret$red_incid[t, ]),
                        tot_inc_vaccinated = unlist(ret$red_incid[t, ]),
-                       tot_red_incid = unlist(ret$tot_red_incid[t, ]),
+                       tot_red_incid = unlist(ret$red_cum_incid[t, ]),
                        cost_eff = unlist(ret$cost_eff[t, ]))
   ret <- switch_levels(ret)
   list(ts = ret, heatmap_data = heatmap_data)
