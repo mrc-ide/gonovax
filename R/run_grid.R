@@ -98,7 +98,6 @@ compare_baseline <- function(y, baseline) {
   inc_vaccinated <- vaccinated - baseline$vaccinated
   red_incid <- baseline$incid - incid
 
-
   # output results
   list(incid = incid,
        vaccinated = vaccinated,
@@ -124,6 +123,7 @@ compare_baseline <- function(y, baseline) {
 ##' @param disc_rate annual discount rate for cost-effectiveness calc,
 ##' e.g. 0.035 = 3.5pc, default is 0
 ##' @param f the function that should be used to summarise the runs
+##' @param t the time at which heatmaps should be taken
 ##' @return a dataframe with columns denoting:
 ##' eff: efficacy of vaccine (%)
 ##' dur: duration of vaccine (years)
@@ -136,11 +136,12 @@ compare_baseline <- function(y, baseline) {
 ##' tot_red_diag_s: Reduction in symptomatic diagnoses over t years
 ##' tot_inc_screened: Increase in screening over t years
 ##' @export
-format_grid <- function(grid, disc_rate = 0, f = mean) {
+format_grid <- function(grid, disc_rate = 0, f = mean, t = NULL) {
 
   stopifnot(inherits(grid, "gonovax_grid"))
 
   tt <- grid$inputs$t[-1]
+  t <- t %||% max(tt)
 
   # discount flows by (1 + i) ^ -(t - dt/2) to find PV
 
@@ -154,16 +155,22 @@ format_grid <- function(grid, disc_rate = 0, f = mean) {
   cost_eff <- mapply(FUN = `/`, pv_inc_cum_vaccinated, pv_red_cum_incid,
                      SIMPLIFY = FALSE)
 
-  list(t                  = tt,
-       eff                = grid$inputs$grid$eff * 100,
-       dur                = grid$inputs$grid$dur,
-       red_incid          = summarise(grid$red_incid, f),
-       tot_inc_vaccinated = summarise(grid$inc_cum_vaccinated, f),
-       tot_red_incid      = summarise(grid$red_cum_incid, f),
-       cost_eff           = summarise(cost_eff, f),
-       tot_red_diag_a     = summarise(grid$red_cum_diag_a, f),
-       tot_red_diag_s     = summarise(grid$red_cum_diag_s, f),
-       tot_inc_screened   = summarise(grid$inc_cum_screened, f))
+  ret <- list(red_incid          = summarise(grid$red_incid, f),
+              tot_inc_vaccinated = summarise(grid$inc_cum_vaccinated, f),
+              tot_red_incid      = summarise(grid$red_cum_incid, f),
+              cost_eff           = summarise(cost_eff, f),
+              tot_red_diag_a     = summarise(grid$red_cum_diag_a, f),
+              tot_red_diag_s     = summarise(grid$red_cum_diag_s, f),
+              tot_inc_screened   = summarise(grid$inc_cum_screened, f))
+  
+  heatmap_data <- data.frame(eff = grid$inputs$grid$eff * 100,
+                       dur = grid$inputs$grid$dur,
+                       red_incid = unlist(ret$red_incid[t, ]),
+                       tot_inc_vaccinated = unlist(ret$red_incid[t, ]),
+                       tot_red_incid = unlist(ret$tot_red_incid[t, ]),
+                       cost_eff = unlist(ret$cost_eff[t, ]))
+  ret <- switch_levels(ret)
+  list(ts = ret, heatmap_data = heatmap_data)
 }
 
 calc_pv <- function(x, pv) {
