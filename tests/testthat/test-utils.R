@@ -22,3 +22,13 @@ test_that("sircovid_file throws for missing files", {
   ## NOTE: not testing error string because it comes from base R
   expect_error(sircovid_file("odin/acidic.R"))
 })
+
+test_that("switch_levels works as expected", {
+  x <- list(a = list(b = 1, c = 2), d = list(b = 3, c = 4),
+            e = list(b = 5, c = 6))
+  y <- switch_levels(x)
+  z <- switch_levels(y)
+  expect_equal(y, list(b = list(a = 1, d = 3, e = 5),
+                       c = list(a = 2, d = 4, e = 6)))
+  expect_equal(x, z)
+})
