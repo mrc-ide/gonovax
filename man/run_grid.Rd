@@ -14,6 +14,7 @@ run_grid(
   ve = 0,
   strategy = "ve",
   uptake = 0,
+  t_stop = 99,
   baseline = NULL,
   full_output = FALSE
 )
@@ -37,6 +38,8 @@ vd: vaccination on diagnosis, va: vaccination on attendance,
 vt: targeted vaccination (i.e. all diagnosed, group H on screening)}
 
 \item{uptake}{numeric (0-1) of strategy uptake}
+
+\item{t_stop}{time at which vaccination should stop (years)}
 
 \item{baseline}{optional input of a baseline to compare to, must be a
 gonovax_grid object if supplied}

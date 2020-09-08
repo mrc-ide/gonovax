@@ -10,9 +10,10 @@
 ##' @param vs numeric indicating % of population vaccinated on screening
 ##' (between 0-1) a scalar will apply to both activity groups, a vector of
 ##' length 2 will apply to each activity group separately
+##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list parameters in the model input format
 vax_params1 <- function(eff = 0, dur = 1e3,
-                        ve = 0, vs = 0, vd = 0) {
+                        ve = 0, vs = 0, vd = 0, t_stop = 99) {
   # waned vaccinees become return to uninfected compartment
   i_w <- 1
   n_vax <- 2
@@ -22,16 +23,18 @@ vax_params1 <- function(eff = 0, dur = 1e3,
        vs    = create_vax_map(n_vax, vs),
        vd    = create_vax_map(n_vax, vd),
        eff   = c(0, eff),
-       w     = create_waning_map(n_vax, i_w, 1 / dur)
+       w     = create_waning_map(n_vax, i_w, 1 / dur),
+       vax_t = c(0, t_stop),
+       vax_y = c(1, 0)
   )
 }
 
-run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
+run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, t_stop, equilib) {
 
   if (length(n) != 1) stop("length(n) must equal 1")
 
   vax_params <- vax_params1(eff = eff, dur = dur,
-                            ve = ve, vs = vs, vd = vd)
+                            ve = ve, vs = vs, vd = vd, t_stop = t_stop)
 
   if (equilib) {
     init_params <- restart_params(novax_equilib(n), n_vax = vax_params$n_vax)
@@ -65,16 +68,17 @@ run_onevax_int <- function(n, tt, eff, dur, ve, vd, vs, equilib) {
 ##' @param vs numeric indicating % of population vaccinated on screening
 ##' (between 0-1) a scalar will apply to both activity groups, a vector of
 ##' length 2 will apply to each activity group separately
+##' @param t_stop time at which vaccination should stop (years)
 ##' @param equilib a logical indicating whether to run from equilibrium, default
 ##' is `FALSE`, i.e. run from initial conditions
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax <- function(n = NULL, tt, eff, dur,
-                       ve = 0, vd = 0, vs = 0,
+                       ve = 0, vd = 0, vs = 0, t_stop = 99,
                        equilib = FALSE) {
   n <- n %||% seq_len(nrow(gono_params()))
   lapply(n, run_onevax_int,
          tt = tt, eff = eff, dur = dur,
-         ve = ve, vd = vd, vs = vs,
+         ve = ve, vd = vd, vs = vs, t_stop = t_stop,
          equilib = equilib)
 }

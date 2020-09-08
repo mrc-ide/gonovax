@@ -4,6 +4,73 @@
 #include <Rinternals.h>
 #include <stdbool.h>
 #include <R_ext/Rdynload.h>
+#ifndef CINTERPOLTE_CINTERPOLATE_H_
+#define CINTERPOLTE_CINTERPOLATE_H_
+
+// Allow use from C++
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// There are only three functions in the interface; allocation,
+// evaluation and freeing.
+
+// Allocate an interpolation object.
+//
+//   type: The mode of interpolation. Must be one of "constant",
+//       "linear" or "spline" (an R error is thrown if a different
+//       value is given).
+//
+//   n: The number of `x` points to interpolate over
+//
+//   ny: the number of `y` points per `x` point.  This is 1 in the
+//       case of zimple interpolation as used by Rs `interpolate()`
+//
+//   x: an array of `x` values of length `n`
+//
+//   y: an array of `ny` sets of `y` values.  This is in R's matrix
+//       order (i.e., the first `n` values are the first series to
+//       interpolate over).
+//
+//   fail_on_extrapolate: if true, when an extrapolation occurs throw
+//       an error; if false return NA_REAL
+//
+//   auto_free: automatically clean up the interpolation object on
+//       return to R. This uses `R_alloc` for allocations rather than
+//       `Calloc` so freeing will always happen (even on error
+//       elsewhere in the code). However, this prevents returning back
+//       a pointer to R that will last longer than the call into C
+//       code.
+//
+// The return value is an opaque pointer that can be passed through to
+// `cinterpolate_eval` and `cinterpolate_free`
+void *cinterpolate_alloc(const char *type, size_t n, size_t ny,
+                         double *x, double *y, bool fail_on_extrapolate,
+                         bool auto_free);
+
+// Evaluate the interpolated function at a new `x` point.
+//
+//   x: A new, single, `x` point to interpolate `y` values to
+//
+//   obj: The interpolation object, as returned by `cinterpolate_alloc`
+//
+//   y: An array of length `ny` to store the interpolated values
+//
+// The return value is 0 if the interpolation is successful (with x
+// lying within the range of values that the interpolation function
+// supports), -1 otherwise
+int cinterpolate_eval(double x, void *obj, double *y);
+
+// Clean up all allocated memory
+//
+//   obj: The interpolation object, as returned by `cinterpolate_alloc`
+void cinterpolate_free(void *obj);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
 typedef struct model_internal {
   double *A0;
   double beta;
@@ -100,6 +167,8 @@ typedef struct model_internal {
   int dim_U0;
   int dim_U0_1;
   int dim_U0_2;
+  int dim_vax_t;
+  int dim_vax_y;
   int dim_vd;
   int dim_vd_1;
   int dim_vd_12;
@@ -157,6 +226,7 @@ typedef struct model_internal {
   double *initial_S;
   double *initial_T;
   double *initial_U;
+  void *interpolate_vax_switch;
   double *m;
   double mu;
   double *N;
@@ -189,6 +259,8 @@ typedef struct model_internal {
   double sigma;
   double *T0;
   double *U0;
+  double *vax_t;
+  double *vax_y;
   double *vd;
   double *ve;
   double *vs;
@@ -234,6 +306,7 @@ SEXP user_get_array_check(SEXP el, bool is_integer, const char *name,
                           double min, double max);
 SEXP user_get_array_check_rank(SEXP user, const char *name, int rank,
                                bool required);
+void interpolate_check_y(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target);
 double odin_sum1(double *x, size_t from, size_t to);
 int odin_isum1(int *x, size_t from, size_t to);
 double odin_sum2(double* x, int from_i, int to_i, int from_j, int to_j, int dim_x_1);
@@ -252,6 +325,8 @@ model_internal* model_get_internal(SEXP internal_p, int closed_error) {
 void model_finalise(SEXP internal_p) {
   model_internal *internal = model_get_internal(internal_p, 0);
   if (internal_p) {
+    cinterpolate_free(internal->interpolate_vax_switch);
+    internal->interpolate_vax_switch = NULL;
     Free(internal->A0);
     Free(internal->C);
     Free(internal->eff);
@@ -284,6 +359,8 @@ void model_finalise(SEXP internal_p) {
     Free(internal->screened);
     Free(internal->T0);
     Free(internal->U0);
+    Free(internal->vax_t);
+    Free(internal->vax_y);
     Free(internal->vd);
     Free(internal->ve);
     Free(internal->vs);
@@ -331,6 +408,8 @@ SEXP model_create(SEXP user) {
   internal->screened = NULL;
   internal->T0 = NULL;
   internal->U0 = NULL;
+  internal->vax_t = NULL;
+  internal->vax_y = NULL;
   internal->vd = NULL;
   internal->ve = NULL;
   internal->vs = NULL;
@@ -374,6 +453,8 @@ SEXP model_create(SEXP user) {
   internal->sigma = NA_REAL;
   internal->T0 = NULL;
   internal->U0 = NULL;
+  internal->vax_t = NULL;
+  internal->vax_y = NULL;
   internal->vd = NULL;
   internal->ve = NULL;
   internal->vs = NULL;
@@ -395,7 +476,7 @@ void model_initmod_desolve(void(* odeparms) (int *, double *)) {
 }
 SEXP model_contents(SEXP internal_p) {
   model_internal *internal = model_get_internal(internal_p, 1);
-  SEXP contents = PROTECT(allocVector(VECSXP, 193));
+  SEXP contents = PROTECT(allocVector(VECSXP, 198));
   SEXP A0 = PROTECT(allocVector(REALSXP, internal->dim_A0));
   memcpy(REAL(A0), internal->A0, internal->dim_A0 * sizeof(double));
   odin_set_dim(A0, 2, internal->dim_A0_1, internal->dim_A0_2);
@@ -497,217 +578,225 @@ SEXP model_contents(SEXP internal_p) {
   SET_VECTOR_ELT(contents, 92, ScalarInteger(internal->dim_U0));
   SET_VECTOR_ELT(contents, 93, ScalarInteger(internal->dim_U0_1));
   SET_VECTOR_ELT(contents, 94, ScalarInteger(internal->dim_U0_2));
-  SET_VECTOR_ELT(contents, 95, ScalarInteger(internal->dim_vd));
-  SET_VECTOR_ELT(contents, 96, ScalarInteger(internal->dim_vd_1));
-  SET_VECTOR_ELT(contents, 97, ScalarInteger(internal->dim_vd_12));
-  SET_VECTOR_ELT(contents, 98, ScalarInteger(internal->dim_vd_2));
-  SET_VECTOR_ELT(contents, 99, ScalarInteger(internal->dim_vd_3));
-  SET_VECTOR_ELT(contents, 100, ScalarInteger(internal->dim_ve));
-  SET_VECTOR_ELT(contents, 101, ScalarInteger(internal->dim_vs));
-  SET_VECTOR_ELT(contents, 102, ScalarInteger(internal->dim_vs_1));
-  SET_VECTOR_ELT(contents, 103, ScalarInteger(internal->dim_vs_12));
-  SET_VECTOR_ELT(contents, 104, ScalarInteger(internal->dim_vs_2));
-  SET_VECTOR_ELT(contents, 105, ScalarInteger(internal->dim_vs_3));
-  SET_VECTOR_ELT(contents, 106, ScalarInteger(internal->dim_w));
-  SET_VECTOR_ELT(contents, 107, ScalarInteger(internal->dim_w_1));
-  SET_VECTOR_ELT(contents, 108, ScalarInteger(internal->dim_w_2));
-  SET_VECTOR_ELT(contents, 109, ScalarInteger(internal->dim_wA));
-  SET_VECTOR_ELT(contents, 110, ScalarInteger(internal->dim_wA_1));
-  SET_VECTOR_ELT(contents, 111, ScalarInteger(internal->dim_wA_12));
-  SET_VECTOR_ELT(contents, 112, ScalarInteger(internal->dim_wA_2));
-  SET_VECTOR_ELT(contents, 113, ScalarInteger(internal->dim_wA_3));
-  SET_VECTOR_ELT(contents, 114, ScalarInteger(internal->dim_wI));
-  SET_VECTOR_ELT(contents, 115, ScalarInteger(internal->dim_wI_1));
-  SET_VECTOR_ELT(contents, 116, ScalarInteger(internal->dim_wI_12));
-  SET_VECTOR_ELT(contents, 117, ScalarInteger(internal->dim_wI_2));
-  SET_VECTOR_ELT(contents, 118, ScalarInteger(internal->dim_wI_3));
-  SET_VECTOR_ELT(contents, 119, ScalarInteger(internal->dim_wS));
-  SET_VECTOR_ELT(contents, 120, ScalarInteger(internal->dim_wS_1));
-  SET_VECTOR_ELT(contents, 121, ScalarInteger(internal->dim_wS_12));
-  SET_VECTOR_ELT(contents, 122, ScalarInteger(internal->dim_wS_2));
-  SET_VECTOR_ELT(contents, 123, ScalarInteger(internal->dim_wS_3));
-  SET_VECTOR_ELT(contents, 124, ScalarInteger(internal->dim_wT));
-  SET_VECTOR_ELT(contents, 125, ScalarInteger(internal->dim_wT_1));
-  SET_VECTOR_ELT(contents, 126, ScalarInteger(internal->dim_wT_12));
-  SET_VECTOR_ELT(contents, 127, ScalarInteger(internal->dim_wT_2));
-  SET_VECTOR_ELT(contents, 128, ScalarInteger(internal->dim_wT_3));
-  SET_VECTOR_ELT(contents, 129, ScalarInteger(internal->dim_wU));
-  SET_VECTOR_ELT(contents, 130, ScalarInteger(internal->dim_wU_1));
-  SET_VECTOR_ELT(contents, 131, ScalarInteger(internal->dim_wU_12));
-  SET_VECTOR_ELT(contents, 132, ScalarInteger(internal->dim_wU_2));
-  SET_VECTOR_ELT(contents, 133, ScalarInteger(internal->dim_wU_3));
+  SET_VECTOR_ELT(contents, 95, ScalarInteger(internal->dim_vax_t));
+  SET_VECTOR_ELT(contents, 96, ScalarInteger(internal->dim_vax_y));
+  SET_VECTOR_ELT(contents, 97, ScalarInteger(internal->dim_vd));
+  SET_VECTOR_ELT(contents, 98, ScalarInteger(internal->dim_vd_1));
+  SET_VECTOR_ELT(contents, 99, ScalarInteger(internal->dim_vd_12));
+  SET_VECTOR_ELT(contents, 100, ScalarInteger(internal->dim_vd_2));
+  SET_VECTOR_ELT(contents, 101, ScalarInteger(internal->dim_vd_3));
+  SET_VECTOR_ELT(contents, 102, ScalarInteger(internal->dim_ve));
+  SET_VECTOR_ELT(contents, 103, ScalarInteger(internal->dim_vs));
+  SET_VECTOR_ELT(contents, 104, ScalarInteger(internal->dim_vs_1));
+  SET_VECTOR_ELT(contents, 105, ScalarInteger(internal->dim_vs_12));
+  SET_VECTOR_ELT(contents, 106, ScalarInteger(internal->dim_vs_2));
+  SET_VECTOR_ELT(contents, 107, ScalarInteger(internal->dim_vs_3));
+  SET_VECTOR_ELT(contents, 108, ScalarInteger(internal->dim_w));
+  SET_VECTOR_ELT(contents, 109, ScalarInteger(internal->dim_w_1));
+  SET_VECTOR_ELT(contents, 110, ScalarInteger(internal->dim_w_2));
+  SET_VECTOR_ELT(contents, 111, ScalarInteger(internal->dim_wA));
+  SET_VECTOR_ELT(contents, 112, ScalarInteger(internal->dim_wA_1));
+  SET_VECTOR_ELT(contents, 113, ScalarInteger(internal->dim_wA_12));
+  SET_VECTOR_ELT(contents, 114, ScalarInteger(internal->dim_wA_2));
+  SET_VECTOR_ELT(contents, 115, ScalarInteger(internal->dim_wA_3));
+  SET_VECTOR_ELT(contents, 116, ScalarInteger(internal->dim_wI));
+  SET_VECTOR_ELT(contents, 117, ScalarInteger(internal->dim_wI_1));
+  SET_VECTOR_ELT(contents, 118, ScalarInteger(internal->dim_wI_12));
+  SET_VECTOR_ELT(contents, 119, ScalarInteger(internal->dim_wI_2));
+  SET_VECTOR_ELT(contents, 120, ScalarInteger(internal->dim_wI_3));
+  SET_VECTOR_ELT(contents, 121, ScalarInteger(internal->dim_wS));
+  SET_VECTOR_ELT(contents, 122, ScalarInteger(internal->dim_wS_1));
+  SET_VECTOR_ELT(contents, 123, ScalarInteger(internal->dim_wS_12));
+  SET_VECTOR_ELT(contents, 124, ScalarInteger(internal->dim_wS_2));
+  SET_VECTOR_ELT(contents, 125, ScalarInteger(internal->dim_wS_3));
+  SET_VECTOR_ELT(contents, 126, ScalarInteger(internal->dim_wT));
+  SET_VECTOR_ELT(contents, 127, ScalarInteger(internal->dim_wT_1));
+  SET_VECTOR_ELT(contents, 128, ScalarInteger(internal->dim_wT_12));
+  SET_VECTOR_ELT(contents, 129, ScalarInteger(internal->dim_wT_2));
+  SET_VECTOR_ELT(contents, 130, ScalarInteger(internal->dim_wT_3));
+  SET_VECTOR_ELT(contents, 131, ScalarInteger(internal->dim_wU));
+  SET_VECTOR_ELT(contents, 132, ScalarInteger(internal->dim_wU_1));
+  SET_VECTOR_ELT(contents, 133, ScalarInteger(internal->dim_wU_12));
+  SET_VECTOR_ELT(contents, 134, ScalarInteger(internal->dim_wU_2));
+  SET_VECTOR_ELT(contents, 135, ScalarInteger(internal->dim_wU_3));
   SEXP eff = PROTECT(allocVector(REALSXP, internal->dim_eff));
   memcpy(REAL(eff), internal->eff, internal->dim_eff * sizeof(double));
-  SET_VECTOR_ELT(contents, 134, eff);
-  SET_VECTOR_ELT(contents, 135, ScalarReal(internal->enr));
-  SET_VECTOR_ELT(contents, 136, ScalarReal(internal->epsilon));
-  SET_VECTOR_ELT(contents, 137, ScalarReal(internal->eta));
-  SET_VECTOR_ELT(contents, 138, ScalarReal(internal->exr));
+  SET_VECTOR_ELT(contents, 136, eff);
+  SET_VECTOR_ELT(contents, 137, ScalarReal(internal->enr));
+  SET_VECTOR_ELT(contents, 138, ScalarReal(internal->epsilon));
+  SET_VECTOR_ELT(contents, 139, ScalarReal(internal->eta));
+  SET_VECTOR_ELT(contents, 140, ScalarReal(internal->exr));
   SEXP foi = PROTECT(allocVector(REALSXP, internal->dim_foi));
   memcpy(REAL(foi), internal->foi, internal->dim_foi * sizeof(double));
   odin_set_dim(foi, 2, internal->dim_foi_1, internal->dim_foi_2);
-  SET_VECTOR_ELT(contents, 139, foi);
+  SET_VECTOR_ELT(contents, 141, foi);
   SEXP I0 = PROTECT(allocVector(REALSXP, internal->dim_I0));
   memcpy(REAL(I0), internal->I0, internal->dim_I0 * sizeof(double));
   odin_set_dim(I0, 2, internal->dim_I0_1, internal->dim_I0_2);
-  SET_VECTOR_ELT(contents, 140, I0);
+  SET_VECTOR_ELT(contents, 142, I0);
   SEXP initial_A = PROTECT(allocVector(REALSXP, internal->dim_A));
   memcpy(REAL(initial_A), internal->initial_A, internal->dim_A * sizeof(double));
   odin_set_dim(initial_A, 2, internal->dim_A_1, internal->dim_A_2);
-  SET_VECTOR_ELT(contents, 141, initial_A);
+  SET_VECTOR_ELT(contents, 143, initial_A);
   SEXP initial_cum_diag_a = PROTECT(allocVector(REALSXP, internal->dim_cum_diag_a));
   memcpy(REAL(initial_cum_diag_a), internal->initial_cum_diag_a, internal->dim_cum_diag_a * sizeof(double));
   odin_set_dim(initial_cum_diag_a, 2, internal->dim_cum_diag_a_1, internal->dim_cum_diag_a_2);
-  SET_VECTOR_ELT(contents, 142, initial_cum_diag_a);
+  SET_VECTOR_ELT(contents, 144, initial_cum_diag_a);
   SEXP initial_cum_diag_s = PROTECT(allocVector(REALSXP, internal->dim_cum_diag_s));
   memcpy(REAL(initial_cum_diag_s), internal->initial_cum_diag_s, internal->dim_cum_diag_s * sizeof(double));
   odin_set_dim(initial_cum_diag_s, 2, internal->dim_cum_diag_s_1, internal->dim_cum_diag_s_2);
-  SET_VECTOR_ELT(contents, 143, initial_cum_diag_s);
+  SET_VECTOR_ELT(contents, 145, initial_cum_diag_s);
   SEXP initial_cum_incid = PROTECT(allocVector(REALSXP, internal->dim_cum_incid));
   memcpy(REAL(initial_cum_incid), internal->initial_cum_incid, internal->dim_cum_incid * sizeof(double));
   odin_set_dim(initial_cum_incid, 2, internal->dim_cum_incid_1, internal->dim_cum_incid_2);
-  SET_VECTOR_ELT(contents, 144, initial_cum_incid);
+  SET_VECTOR_ELT(contents, 146, initial_cum_incid);
   SEXP initial_cum_screened = PROTECT(allocVector(REALSXP, internal->dim_cum_screened));
   memcpy(REAL(initial_cum_screened), internal->initial_cum_screened, internal->dim_cum_screened * sizeof(double));
   odin_set_dim(initial_cum_screened, 2, internal->dim_cum_screened_1, internal->dim_cum_screened_2);
-  SET_VECTOR_ELT(contents, 145, initial_cum_screened);
+  SET_VECTOR_ELT(contents, 147, initial_cum_screened);
   SEXP initial_cum_treated = PROTECT(allocVector(REALSXP, internal->dim_cum_treated));
   memcpy(REAL(initial_cum_treated), internal->initial_cum_treated, internal->dim_cum_treated * sizeof(double));
   odin_set_dim(initial_cum_treated, 2, internal->dim_cum_treated_1, internal->dim_cum_treated_2);
-  SET_VECTOR_ELT(contents, 146, initial_cum_treated);
+  SET_VECTOR_ELT(contents, 148, initial_cum_treated);
   SEXP initial_cum_vaccinated = PROTECT(allocVector(REALSXP, internal->dim_cum_vaccinated));
   memcpy(REAL(initial_cum_vaccinated), internal->initial_cum_vaccinated, internal->dim_cum_vaccinated * sizeof(double));
   odin_set_dim(initial_cum_vaccinated, 2, internal->dim_cum_vaccinated_1, internal->dim_cum_vaccinated_2);
-  SET_VECTOR_ELT(contents, 147, initial_cum_vaccinated);
+  SET_VECTOR_ELT(contents, 149, initial_cum_vaccinated);
   SEXP initial_I = PROTECT(allocVector(REALSXP, internal->dim_I));
   memcpy(REAL(initial_I), internal->initial_I, internal->dim_I * sizeof(double));
   odin_set_dim(initial_I, 2, internal->dim_I_1, internal->dim_I_2);
-  SET_VECTOR_ELT(contents, 148, initial_I);
+  SET_VECTOR_ELT(contents, 150, initial_I);
   SEXP initial_S = PROTECT(allocVector(REALSXP, internal->dim_S));
   memcpy(REAL(initial_S), internal->initial_S, internal->dim_S * sizeof(double));
   odin_set_dim(initial_S, 2, internal->dim_S_1, internal->dim_S_2);
-  SET_VECTOR_ELT(contents, 149, initial_S);
+  SET_VECTOR_ELT(contents, 151, initial_S);
   SEXP initial_T = PROTECT(allocVector(REALSXP, internal->dim_T));
   memcpy(REAL(initial_T), internal->initial_T, internal->dim_T * sizeof(double));
   odin_set_dim(initial_T, 2, internal->dim_T_1, internal->dim_T_2);
-  SET_VECTOR_ELT(contents, 150, initial_T);
+  SET_VECTOR_ELT(contents, 152, initial_T);
   SEXP initial_U = PROTECT(allocVector(REALSXP, internal->dim_U));
   memcpy(REAL(initial_U), internal->initial_U, internal->dim_U * sizeof(double));
   odin_set_dim(initial_U, 2, internal->dim_U_1, internal->dim_U_2);
-  SET_VECTOR_ELT(contents, 151, initial_U);
+  SET_VECTOR_ELT(contents, 153, initial_U);
   SEXP m = PROTECT(allocVector(REALSXP, internal->dim_m));
   memcpy(REAL(m), internal->m, internal->dim_m * sizeof(double));
   odin_set_dim(m, 2, internal->dim_m_1, internal->dim_m_2);
-  SET_VECTOR_ELT(contents, 152, m);
-  SET_VECTOR_ELT(contents, 153, ScalarReal(internal->mu));
+  SET_VECTOR_ELT(contents, 155, m);
+  SET_VECTOR_ELT(contents, 156, ScalarReal(internal->mu));
   SEXP N = PROTECT(allocVector(REALSXP, internal->dim_N));
   memcpy(REAL(N), internal->N, internal->dim_N * sizeof(double));
   odin_set_dim(N, 2, internal->dim_N_1, internal->dim_N_2);
-  SET_VECTOR_ELT(contents, 154, N);
+  SET_VECTOR_ELT(contents, 157, N);
   SEXP n_AT = PROTECT(allocVector(REALSXP, internal->dim_n_AT));
   memcpy(REAL(n_AT), internal->n_AT, internal->dim_n_AT * sizeof(double));
   odin_set_dim(n_AT, 2, internal->dim_n_AT_1, internal->dim_n_AT_2);
-  SET_VECTOR_ELT(contents, 155, n_AT);
-  SET_VECTOR_ELT(contents, 156, ScalarInteger(internal->n_group));
+  SET_VECTOR_ELT(contents, 158, n_AT);
+  SET_VECTOR_ELT(contents, 159, ScalarInteger(internal->n_group));
   SEXP n_ST = PROTECT(allocVector(REALSXP, internal->dim_n_ST));
   memcpy(REAL(n_ST), internal->n_ST, internal->dim_n_ST * sizeof(double));
   odin_set_dim(n_ST, 2, internal->dim_n_ST_1, internal->dim_n_ST_2);
-  SET_VECTOR_ELT(contents, 157, n_ST);
+  SET_VECTOR_ELT(contents, 160, n_ST);
   SEXP n_TU = PROTECT(allocVector(REALSXP, internal->dim_n_TU));
   memcpy(REAL(n_TU), internal->n_TU, internal->dim_n_TU * sizeof(double));
   odin_set_dim(n_TU, 2, internal->dim_n_TU_1, internal->dim_n_TU_2);
-  SET_VECTOR_ELT(contents, 158, n_TU);
+  SET_VECTOR_ELT(contents, 161, n_TU);
   SEXP n_UI = PROTECT(allocVector(REALSXP, internal->dim_n_UI));
   memcpy(REAL(n_UI), internal->n_UI, internal->dim_n_UI * sizeof(double));
   odin_set_dim(n_UI, 2, internal->dim_n_UI_1, internal->dim_n_UI_2);
-  SET_VECTOR_ELT(contents, 159, n_UI);
-  SET_VECTOR_ELT(contents, 160, ScalarInteger(internal->n_vax));
+  SET_VECTOR_ELT(contents, 162, n_UI);
+  SET_VECTOR_ELT(contents, 163, ScalarInteger(internal->n_vax));
   SEXP n_vd = PROTECT(allocVector(REALSXP, internal->dim_n_vd));
   memcpy(REAL(n_vd), internal->n_vd, internal->dim_n_vd * sizeof(double));
   odin_set_dim(n_vd, 3, internal->dim_n_vd_1, internal->dim_n_vd_2, internal->dim_n_vd_3);
-  SET_VECTOR_ELT(contents, 161, n_vd);
+  SET_VECTOR_ELT(contents, 164, n_vd);
   SEXP n_ve = PROTECT(allocVector(REALSXP, internal->dim_n_ve));
   memcpy(REAL(n_ve), internal->n_ve, internal->dim_n_ve * sizeof(double));
   odin_set_dim(n_ve, 2, internal->dim_n_ve_1, internal->dim_n_ve_2);
-  SET_VECTOR_ELT(contents, 162, n_ve);
+  SET_VECTOR_ELT(contents, 165, n_ve);
   SEXP n_vs = PROTECT(allocVector(REALSXP, internal->dim_n_vs));
   memcpy(REAL(n_vs), internal->n_vs, internal->dim_n_vs * sizeof(double));
   odin_set_dim(n_vs, 3, internal->dim_n_vs_1, internal->dim_n_vs_2, internal->dim_n_vs_3);
-  SET_VECTOR_ELT(contents, 163, n_vs);
+  SET_VECTOR_ELT(contents, 166, n_vs);
   SEXP Np = PROTECT(allocVector(REALSXP, internal->dim_Np));
   memcpy(REAL(Np), internal->Np, internal->dim_Np * sizeof(double));
-  SET_VECTOR_ELT(contents, 164, Np);
-  SET_VECTOR_ELT(contents, 165, ScalarReal(internal->nu));
-  SET_VECTOR_ELT(contents, 166, ScalarInteger(internal->offset_variable_A));
-  SET_VECTOR_ELT(contents, 167, ScalarInteger(internal->offset_variable_cum_diag_a));
-  SET_VECTOR_ELT(contents, 168, ScalarInteger(internal->offset_variable_cum_diag_s));
-  SET_VECTOR_ELT(contents, 169, ScalarInteger(internal->offset_variable_cum_incid));
-  SET_VECTOR_ELT(contents, 170, ScalarInteger(internal->offset_variable_cum_screened));
-  SET_VECTOR_ELT(contents, 171, ScalarInteger(internal->offset_variable_cum_treated));
-  SET_VECTOR_ELT(contents, 172, ScalarInteger(internal->offset_variable_cum_vaccinated));
-  SET_VECTOR_ELT(contents, 173, ScalarInteger(internal->offset_variable_S));
-  SET_VECTOR_ELT(contents, 174, ScalarInteger(internal->offset_variable_T));
+  SET_VECTOR_ELT(contents, 167, Np);
+  SET_VECTOR_ELT(contents, 168, ScalarReal(internal->nu));
+  SET_VECTOR_ELT(contents, 169, ScalarInteger(internal->offset_variable_A));
+  SET_VECTOR_ELT(contents, 170, ScalarInteger(internal->offset_variable_cum_diag_a));
+  SET_VECTOR_ELT(contents, 171, ScalarInteger(internal->offset_variable_cum_diag_s));
+  SET_VECTOR_ELT(contents, 172, ScalarInteger(internal->offset_variable_cum_incid));
+  SET_VECTOR_ELT(contents, 173, ScalarInteger(internal->offset_variable_cum_screened));
+  SET_VECTOR_ELT(contents, 174, ScalarInteger(internal->offset_variable_cum_treated));
+  SET_VECTOR_ELT(contents, 175, ScalarInteger(internal->offset_variable_cum_vaccinated));
+  SET_VECTOR_ELT(contents, 176, ScalarInteger(internal->offset_variable_S));
+  SET_VECTOR_ELT(contents, 177, ScalarInteger(internal->offset_variable_T));
   SEXP p = PROTECT(allocVector(REALSXP, internal->dim_p));
   memcpy(REAL(p), internal->p, internal->dim_p * sizeof(double));
-  SET_VECTOR_ELT(contents, 175, p);
-  SET_VECTOR_ELT(contents, 176, ScalarReal(internal->psi));
+  SET_VECTOR_ELT(contents, 178, p);
+  SET_VECTOR_ELT(contents, 179, ScalarReal(internal->psi));
   SEXP q = PROTECT(allocVector(REALSXP, internal->dim_q));
   memcpy(REAL(q), internal->q, internal->dim_q * sizeof(double));
-  SET_VECTOR_ELT(contents, 177, q);
-  SET_VECTOR_ELT(contents, 178, ScalarReal(internal->rho));
+  SET_VECTOR_ELT(contents, 180, q);
+  SET_VECTOR_ELT(contents, 181, ScalarReal(internal->rho));
   SEXP S0 = PROTECT(allocVector(REALSXP, internal->dim_S0));
   memcpy(REAL(S0), internal->S0, internal->dim_S0 * sizeof(double));
   odin_set_dim(S0, 2, internal->dim_S0_1, internal->dim_S0_2);
-  SET_VECTOR_ELT(contents, 179, S0);
+  SET_VECTOR_ELT(contents, 182, S0);
   SEXP screened = PROTECT(allocVector(REALSXP, internal->dim_screened));
   memcpy(REAL(screened), internal->screened, internal->dim_screened * sizeof(double));
   odin_set_dim(screened, 2, internal->dim_screened_1, internal->dim_screened_2);
-  SET_VECTOR_ELT(contents, 180, screened);
-  SET_VECTOR_ELT(contents, 181, ScalarReal(internal->sigma));
+  SET_VECTOR_ELT(contents, 183, screened);
+  SET_VECTOR_ELT(contents, 184, ScalarReal(internal->sigma));
   SEXP T0 = PROTECT(allocVector(REALSXP, internal->dim_T0));
   memcpy(REAL(T0), internal->T0, internal->dim_T0 * sizeof(double));
   odin_set_dim(T0, 2, internal->dim_T0_1, internal->dim_T0_2);
-  SET_VECTOR_ELT(contents, 182, T0);
+  SET_VECTOR_ELT(contents, 185, T0);
   SEXP U0 = PROTECT(allocVector(REALSXP, internal->dim_U0));
   memcpy(REAL(U0), internal->U0, internal->dim_U0 * sizeof(double));
   odin_set_dim(U0, 2, internal->dim_U0_1, internal->dim_U0_2);
-  SET_VECTOR_ELT(contents, 183, U0);
+  SET_VECTOR_ELT(contents, 186, U0);
+  SEXP vax_t = PROTECT(allocVector(REALSXP, internal->dim_vax_t));
+  memcpy(REAL(vax_t), internal->vax_t, internal->dim_vax_t * sizeof(double));
+  SET_VECTOR_ELT(contents, 187, vax_t);
+  SEXP vax_y = PROTECT(allocVector(REALSXP, internal->dim_vax_y));
+  memcpy(REAL(vax_y), internal->vax_y, internal->dim_vax_y * sizeof(double));
+  SET_VECTOR_ELT(contents, 188, vax_y);
   SEXP vd = PROTECT(allocVector(REALSXP, internal->dim_vd));
   memcpy(REAL(vd), internal->vd, internal->dim_vd * sizeof(double));
   odin_set_dim(vd, 3, internal->dim_vd_1, internal->dim_vd_2, internal->dim_vd_3);
-  SET_VECTOR_ELT(contents, 184, vd);
+  SET_VECTOR_ELT(contents, 189, vd);
   SEXP ve = PROTECT(allocVector(REALSXP, internal->dim_ve));
   memcpy(REAL(ve), internal->ve, internal->dim_ve * sizeof(double));
-  SET_VECTOR_ELT(contents, 185, ve);
+  SET_VECTOR_ELT(contents, 190, ve);
   SEXP vs = PROTECT(allocVector(REALSXP, internal->dim_vs));
   memcpy(REAL(vs), internal->vs, internal->dim_vs * sizeof(double));
   odin_set_dim(vs, 3, internal->dim_vs_1, internal->dim_vs_2, internal->dim_vs_3);
-  SET_VECTOR_ELT(contents, 186, vs);
+  SET_VECTOR_ELT(contents, 191, vs);
   SEXP w = PROTECT(allocVector(REALSXP, internal->dim_w));
   memcpy(REAL(w), internal->w, internal->dim_w * sizeof(double));
   odin_set_dim(w, 2, internal->dim_w_1, internal->dim_w_2);
-  SET_VECTOR_ELT(contents, 187, w);
+  SET_VECTOR_ELT(contents, 192, w);
   SEXP wA = PROTECT(allocVector(REALSXP, internal->dim_wA));
   memcpy(REAL(wA), internal->wA, internal->dim_wA * sizeof(double));
   odin_set_dim(wA, 3, internal->dim_wA_1, internal->dim_wA_2, internal->dim_wA_3);
-  SET_VECTOR_ELT(contents, 188, wA);
+  SET_VECTOR_ELT(contents, 193, wA);
   SEXP wI = PROTECT(allocVector(REALSXP, internal->dim_wI));
   memcpy(REAL(wI), internal->wI, internal->dim_wI * sizeof(double));
   odin_set_dim(wI, 3, internal->dim_wI_1, internal->dim_wI_2, internal->dim_wI_3);
-  SET_VECTOR_ELT(contents, 189, wI);
+  SET_VECTOR_ELT(contents, 194, wI);
   SEXP wS = PROTECT(allocVector(REALSXP, internal->dim_wS));
   memcpy(REAL(wS), internal->wS, internal->dim_wS * sizeof(double));
   odin_set_dim(wS, 3, internal->dim_wS_1, internal->dim_wS_2, internal->dim_wS_3);
-  SET_VECTOR_ELT(contents, 190, wS);
+  SET_VECTOR_ELT(contents, 195, wS);
   SEXP wT = PROTECT(allocVector(REALSXP, internal->dim_wT));
   memcpy(REAL(wT), internal->wT, internal->dim_wT * sizeof(double));
   odin_set_dim(wT, 3, internal->dim_wT_1, internal->dim_wT_2, internal->dim_wT_3);
-  SET_VECTOR_ELT(contents, 191, wT);
+  SET_VECTOR_ELT(contents, 196, wT);
   SEXP wU = PROTECT(allocVector(REALSXP, internal->dim_wU));
   memcpy(REAL(wU), internal->wU, internal->dim_wU * sizeof(double));
   odin_set_dim(wU, 3, internal->dim_wU_1, internal->dim_wU_2, internal->dim_wU_3);
-  SET_VECTOR_ELT(contents, 192, wU);
-  SEXP nms = PROTECT(allocVector(STRSXP, 193));
+  SET_VECTOR_ELT(contents, 197, wU);
+  SEXP nms = PROTECT(allocVector(STRSXP, 198));
   SET_STRING_ELT(nms, 0, mkChar("A0"));
   SET_STRING_ELT(nms, 1, mkChar("beta"));
   SET_STRING_ELT(nms, 2, mkChar("C"));
@@ -803,106 +892,111 @@ SEXP model_contents(SEXP internal_p) {
   SET_STRING_ELT(nms, 92, mkChar("dim_U0"));
   SET_STRING_ELT(nms, 93, mkChar("dim_U0_1"));
   SET_STRING_ELT(nms, 94, mkChar("dim_U0_2"));
-  SET_STRING_ELT(nms, 95, mkChar("dim_vd"));
-  SET_STRING_ELT(nms, 96, mkChar("dim_vd_1"));
-  SET_STRING_ELT(nms, 97, mkChar("dim_vd_12"));
-  SET_STRING_ELT(nms, 98, mkChar("dim_vd_2"));
-  SET_STRING_ELT(nms, 99, mkChar("dim_vd_3"));
-  SET_STRING_ELT(nms, 100, mkChar("dim_ve"));
-  SET_STRING_ELT(nms, 101, mkChar("dim_vs"));
-  SET_STRING_ELT(nms, 102, mkChar("dim_vs_1"));
-  SET_STRING_ELT(nms, 103, mkChar("dim_vs_12"));
-  SET_STRING_ELT(nms, 104, mkChar("dim_vs_2"));
-  SET_STRING_ELT(nms, 105, mkChar("dim_vs_3"));
-  SET_STRING_ELT(nms, 106, mkChar("dim_w"));
-  SET_STRING_ELT(nms, 107, mkChar("dim_w_1"));
-  SET_STRING_ELT(nms, 108, mkChar("dim_w_2"));
-  SET_STRING_ELT(nms, 109, mkChar("dim_wA"));
-  SET_STRING_ELT(nms, 110, mkChar("dim_wA_1"));
-  SET_STRING_ELT(nms, 111, mkChar("dim_wA_12"));
-  SET_STRING_ELT(nms, 112, mkChar("dim_wA_2"));
-  SET_STRING_ELT(nms, 113, mkChar("dim_wA_3"));
-  SET_STRING_ELT(nms, 114, mkChar("dim_wI"));
-  SET_STRING_ELT(nms, 115, mkChar("dim_wI_1"));
-  SET_STRING_ELT(nms, 116, mkChar("dim_wI_12"));
-  SET_STRING_ELT(nms, 117, mkChar("dim_wI_2"));
-  SET_STRING_ELT(nms, 118, mkChar("dim_wI_3"));
-  SET_STRING_ELT(nms, 119, mkChar("dim_wS"));
-  SET_STRING_ELT(nms, 120, mkChar("dim_wS_1"));
-  SET_STRING_ELT(nms, 121, mkChar("dim_wS_12"));
-  SET_STRING_ELT(nms, 122, mkChar("dim_wS_2"));
-  SET_STRING_ELT(nms, 123, mkChar("dim_wS_3"));
-  SET_STRING_ELT(nms, 124, mkChar("dim_wT"));
-  SET_STRING_ELT(nms, 125, mkChar("dim_wT_1"));
-  SET_STRING_ELT(nms, 126, mkChar("dim_wT_12"));
-  SET_STRING_ELT(nms, 127, mkChar("dim_wT_2"));
-  SET_STRING_ELT(nms, 128, mkChar("dim_wT_3"));
-  SET_STRING_ELT(nms, 129, mkChar("dim_wU"));
-  SET_STRING_ELT(nms, 130, mkChar("dim_wU_1"));
-  SET_STRING_ELT(nms, 131, mkChar("dim_wU_12"));
-  SET_STRING_ELT(nms, 132, mkChar("dim_wU_2"));
-  SET_STRING_ELT(nms, 133, mkChar("dim_wU_3"));
-  SET_STRING_ELT(nms, 134, mkChar("eff"));
-  SET_STRING_ELT(nms, 135, mkChar("enr"));
-  SET_STRING_ELT(nms, 136, mkChar("epsilon"));
-  SET_STRING_ELT(nms, 137, mkChar("eta"));
-  SET_STRING_ELT(nms, 138, mkChar("exr"));
-  SET_STRING_ELT(nms, 139, mkChar("foi"));
-  SET_STRING_ELT(nms, 140, mkChar("I0"));
-  SET_STRING_ELT(nms, 141, mkChar("initial_A"));
-  SET_STRING_ELT(nms, 142, mkChar("initial_cum_diag_a"));
-  SET_STRING_ELT(nms, 143, mkChar("initial_cum_diag_s"));
-  SET_STRING_ELT(nms, 144, mkChar("initial_cum_incid"));
-  SET_STRING_ELT(nms, 145, mkChar("initial_cum_screened"));
-  SET_STRING_ELT(nms, 146, mkChar("initial_cum_treated"));
-  SET_STRING_ELT(nms, 147, mkChar("initial_cum_vaccinated"));
-  SET_STRING_ELT(nms, 148, mkChar("initial_I"));
-  SET_STRING_ELT(nms, 149, mkChar("initial_S"));
-  SET_STRING_ELT(nms, 150, mkChar("initial_T"));
-  SET_STRING_ELT(nms, 151, mkChar("initial_U"));
-  SET_STRING_ELT(nms, 152, mkChar("m"));
-  SET_STRING_ELT(nms, 153, mkChar("mu"));
-  SET_STRING_ELT(nms, 154, mkChar("N"));
-  SET_STRING_ELT(nms, 155, mkChar("n_AT"));
-  SET_STRING_ELT(nms, 156, mkChar("n_group"));
-  SET_STRING_ELT(nms, 157, mkChar("n_ST"));
-  SET_STRING_ELT(nms, 158, mkChar("n_TU"));
-  SET_STRING_ELT(nms, 159, mkChar("n_UI"));
-  SET_STRING_ELT(nms, 160, mkChar("n_vax"));
-  SET_STRING_ELT(nms, 161, mkChar("n_vd"));
-  SET_STRING_ELT(nms, 162, mkChar("n_ve"));
-  SET_STRING_ELT(nms, 163, mkChar("n_vs"));
-  SET_STRING_ELT(nms, 164, mkChar("Np"));
-  SET_STRING_ELT(nms, 165, mkChar("nu"));
-  SET_STRING_ELT(nms, 166, mkChar("offset_variable_A"));
-  SET_STRING_ELT(nms, 167, mkChar("offset_variable_cum_diag_a"));
-  SET_STRING_ELT(nms, 168, mkChar("offset_variable_cum_diag_s"));
-  SET_STRING_ELT(nms, 169, mkChar("offset_variable_cum_incid"));
-  SET_STRING_ELT(nms, 170, mkChar("offset_variable_cum_screened"));
-  SET_STRING_ELT(nms, 171, mkChar("offset_variable_cum_treated"));
-  SET_STRING_ELT(nms, 172, mkChar("offset_variable_cum_vaccinated"));
-  SET_STRING_ELT(nms, 173, mkChar("offset_variable_S"));
-  SET_STRING_ELT(nms, 174, mkChar("offset_variable_T"));
-  SET_STRING_ELT(nms, 175, mkChar("p"));
-  SET_STRING_ELT(nms, 176, mkChar("psi"));
-  SET_STRING_ELT(nms, 177, mkChar("q"));
-  SET_STRING_ELT(nms, 178, mkChar("rho"));
-  SET_STRING_ELT(nms, 179, mkChar("S0"));
-  SET_STRING_ELT(nms, 180, mkChar("screened"));
-  SET_STRING_ELT(nms, 181, mkChar("sigma"));
-  SET_STRING_ELT(nms, 182, mkChar("T0"));
-  SET_STRING_ELT(nms, 183, mkChar("U0"));
-  SET_STRING_ELT(nms, 184, mkChar("vd"));
-  SET_STRING_ELT(nms, 185, mkChar("ve"));
-  SET_STRING_ELT(nms, 186, mkChar("vs"));
-  SET_STRING_ELT(nms, 187, mkChar("w"));
-  SET_STRING_ELT(nms, 188, mkChar("wA"));
-  SET_STRING_ELT(nms, 189, mkChar("wI"));
-  SET_STRING_ELT(nms, 190, mkChar("wS"));
-  SET_STRING_ELT(nms, 191, mkChar("wT"));
-  SET_STRING_ELT(nms, 192, mkChar("wU"));
+  SET_STRING_ELT(nms, 95, mkChar("dim_vax_t"));
+  SET_STRING_ELT(nms, 96, mkChar("dim_vax_y"));
+  SET_STRING_ELT(nms, 97, mkChar("dim_vd"));
+  SET_STRING_ELT(nms, 98, mkChar("dim_vd_1"));
+  SET_STRING_ELT(nms, 99, mkChar("dim_vd_12"));
+  SET_STRING_ELT(nms, 100, mkChar("dim_vd_2"));
+  SET_STRING_ELT(nms, 101, mkChar("dim_vd_3"));
+  SET_STRING_ELT(nms, 102, mkChar("dim_ve"));
+  SET_STRING_ELT(nms, 103, mkChar("dim_vs"));
+  SET_STRING_ELT(nms, 104, mkChar("dim_vs_1"));
+  SET_STRING_ELT(nms, 105, mkChar("dim_vs_12"));
+  SET_STRING_ELT(nms, 106, mkChar("dim_vs_2"));
+  SET_STRING_ELT(nms, 107, mkChar("dim_vs_3"));
+  SET_STRING_ELT(nms, 108, mkChar("dim_w"));
+  SET_STRING_ELT(nms, 109, mkChar("dim_w_1"));
+  SET_STRING_ELT(nms, 110, mkChar("dim_w_2"));
+  SET_STRING_ELT(nms, 111, mkChar("dim_wA"));
+  SET_STRING_ELT(nms, 112, mkChar("dim_wA_1"));
+  SET_STRING_ELT(nms, 113, mkChar("dim_wA_12"));
+  SET_STRING_ELT(nms, 114, mkChar("dim_wA_2"));
+  SET_STRING_ELT(nms, 115, mkChar("dim_wA_3"));
+  SET_STRING_ELT(nms, 116, mkChar("dim_wI"));
+  SET_STRING_ELT(nms, 117, mkChar("dim_wI_1"));
+  SET_STRING_ELT(nms, 118, mkChar("dim_wI_12"));
+  SET_STRING_ELT(nms, 119, mkChar("dim_wI_2"));
+  SET_STRING_ELT(nms, 120, mkChar("dim_wI_3"));
+  SET_STRING_ELT(nms, 121, mkChar("dim_wS"));
+  SET_STRING_ELT(nms, 122, mkChar("dim_wS_1"));
+  SET_STRING_ELT(nms, 123, mkChar("dim_wS_12"));
+  SET_STRING_ELT(nms, 124, mkChar("dim_wS_2"));
+  SET_STRING_ELT(nms, 125, mkChar("dim_wS_3"));
+  SET_STRING_ELT(nms, 126, mkChar("dim_wT"));
+  SET_STRING_ELT(nms, 127, mkChar("dim_wT_1"));
+  SET_STRING_ELT(nms, 128, mkChar("dim_wT_12"));
+  SET_STRING_ELT(nms, 129, mkChar("dim_wT_2"));
+  SET_STRING_ELT(nms, 130, mkChar("dim_wT_3"));
+  SET_STRING_ELT(nms, 131, mkChar("dim_wU"));
+  SET_STRING_ELT(nms, 132, mkChar("dim_wU_1"));
+  SET_STRING_ELT(nms, 133, mkChar("dim_wU_12"));
+  SET_STRING_ELT(nms, 134, mkChar("dim_wU_2"));
+  SET_STRING_ELT(nms, 135, mkChar("dim_wU_3"));
+  SET_STRING_ELT(nms, 136, mkChar("eff"));
+  SET_STRING_ELT(nms, 137, mkChar("enr"));
+  SET_STRING_ELT(nms, 138, mkChar("epsilon"));
+  SET_STRING_ELT(nms, 139, mkChar("eta"));
+  SET_STRING_ELT(nms, 140, mkChar("exr"));
+  SET_STRING_ELT(nms, 141, mkChar("foi"));
+  SET_STRING_ELT(nms, 142, mkChar("I0"));
+  SET_STRING_ELT(nms, 143, mkChar("initial_A"));
+  SET_STRING_ELT(nms, 144, mkChar("initial_cum_diag_a"));
+  SET_STRING_ELT(nms, 145, mkChar("initial_cum_diag_s"));
+  SET_STRING_ELT(nms, 146, mkChar("initial_cum_incid"));
+  SET_STRING_ELT(nms, 147, mkChar("initial_cum_screened"));
+  SET_STRING_ELT(nms, 148, mkChar("initial_cum_treated"));
+  SET_STRING_ELT(nms, 149, mkChar("initial_cum_vaccinated"));
+  SET_STRING_ELT(nms, 150, mkChar("initial_I"));
+  SET_STRING_ELT(nms, 151, mkChar("initial_S"));
+  SET_STRING_ELT(nms, 152, mkChar("initial_T"));
+  SET_STRING_ELT(nms, 153, mkChar("initial_U"));
+  SET_STRING_ELT(nms, 154, mkChar("interpolate_vax_switch"));
+  SET_STRING_ELT(nms, 155, mkChar("m"));
+  SET_STRING_ELT(nms, 156, mkChar("mu"));
+  SET_STRING_ELT(nms, 157, mkChar("N"));
+  SET_STRING_ELT(nms, 158, mkChar("n_AT"));
+  SET_STRING_ELT(nms, 159, mkChar("n_group"));
+  SET_STRING_ELT(nms, 160, mkChar("n_ST"));
+  SET_STRING_ELT(nms, 161, mkChar("n_TU"));
+  SET_STRING_ELT(nms, 162, mkChar("n_UI"));
+  SET_STRING_ELT(nms, 163, mkChar("n_vax"));
+  SET_STRING_ELT(nms, 164, mkChar("n_vd"));
+  SET_STRING_ELT(nms, 165, mkChar("n_ve"));
+  SET_STRING_ELT(nms, 166, mkChar("n_vs"));
+  SET_STRING_ELT(nms, 167, mkChar("Np"));
+  SET_STRING_ELT(nms, 168, mkChar("nu"));
+  SET_STRING_ELT(nms, 169, mkChar("offset_variable_A"));
+  SET_STRING_ELT(nms, 170, mkChar("offset_variable_cum_diag_a"));
+  SET_STRING_ELT(nms, 171, mkChar("offset_variable_cum_diag_s"));
+  SET_STRING_ELT(nms, 172, mkChar("offset_variable_cum_incid"));
+  SET_STRING_ELT(nms, 173, mkChar("offset_variable_cum_screened"));
+  SET_STRING_ELT(nms, 174, mkChar("offset_variable_cum_treated"));
+  SET_STRING_ELT(nms, 175, mkChar("offset_variable_cum_vaccinated"));
+  SET_STRING_ELT(nms, 176, mkChar("offset_variable_S"));
+  SET_STRING_ELT(nms, 177, mkChar("offset_variable_T"));
+  SET_STRING_ELT(nms, 178, mkChar("p"));
+  SET_STRING_ELT(nms, 179, mkChar("psi"));
+  SET_STRING_ELT(nms, 180, mkChar("q"));
+  SET_STRING_ELT(nms, 181, mkChar("rho"));
+  SET_STRING_ELT(nms, 182, mkChar("S0"));
+  SET_STRING_ELT(nms, 183, mkChar("screened"));
+  SET_STRING_ELT(nms, 184, mkChar("sigma"));
+  SET_STRING_ELT(nms, 185, mkChar("T0"));
+  SET_STRING_ELT(nms, 186, mkChar("U0"));
+  SET_STRING_ELT(nms, 187, mkChar("vax_t"));
+  SET_STRING_ELT(nms, 188, mkChar("vax_y"));
+  SET_STRING_ELT(nms, 189, mkChar("vd"));
+  SET_STRING_ELT(nms, 190, mkChar("ve"));
+  SET_STRING_ELT(nms, 191, mkChar("vs"));
+  SET_STRING_ELT(nms, 192, mkChar("w"));
+  SET_STRING_ELT(nms, 193, mkChar("wA"));
+  SET_STRING_ELT(nms, 194, mkChar("wI"));
+  SET_STRING_ELT(nms, 195, mkChar("wS"));
+  SET_STRING_ELT(nms, 196, mkChar("wT"));
+  SET_STRING_ELT(nms, 197, mkChar("wU"));
   setAttrib(contents, R_NamesSymbol, nms);
-  UNPROTECT(43);
+  UNPROTECT(45);
   return contents;
 }
 SEXP model_set_user(SEXP internal_p, SEXP user) {
@@ -918,6 +1012,8 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->psi = user_get_scalar_double(user, "psi", internal->psi, NA_REAL, NA_REAL);
   internal->rho = user_get_scalar_double(user, "rho", internal->rho, NA_REAL, NA_REAL);
   internal->sigma = user_get_scalar_double(user, "sigma", internal->sigma, NA_REAL, NA_REAL);
+  internal->vax_t = (double*) user_get_array_dim(user, false, internal->vax_t, "vax_t", 1, NA_REAL, NA_REAL, &internal->dim_vax_t);
+  internal->vax_y = (double*) user_get_array_dim(user, false, internal->vax_y, "vax_y", 1, NA_REAL, NA_REAL, &internal->dim_vax_y);
   internal->dim_A_1 = internal->n_group;
   internal->dim_A_2 = internal->n_vax;
   internal->dim_A0_1 = internal->n_group;
@@ -997,6 +1093,9 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->dim_wU_1 = internal->n_group;
   internal->dim_wU_2 = internal->n_vax;
   internal->dim_wU_3 = internal->n_vax;
+  interpolate_check_y(internal->dim_vax_t, internal->dim_vax_y, 0, "vax_y", "vax_switch");
+  cinterpolate_free(internal->interpolate_vax_switch);
+  internal->interpolate_vax_switch = cinterpolate_alloc("constant", internal->dim_vax_t, 1, internal->vax_t, internal->vax_y, true, false);
   internal->dim_A = internal->dim_A_1 * internal->dim_A_2;
   internal->dim_A0 = internal->dim_A0_1 * internal->dim_A0_2;
   internal->dim_C = internal->dim_C_1 * internal->dim_C_2;
@@ -1260,6 +1359,15 @@ SEXP model_metadata(SEXP internal_p) {
   SET_VECTOR_ELT(ret, 1, output_length);
   UNPROTECT(2);
   SET_VECTOR_ELT(ret, 2, ScalarInteger(internal->dim_N + internal->dim_foi));
+  SEXP interpolate_t = PROTECT(allocVector(VECSXP, 3));
+  SEXP interpolate_t_nms = PROTECT(allocVector(STRSXP, 3));
+  setAttrib(interpolate_t, R_NamesSymbol, interpolate_t_nms);
+  SET_VECTOR_ELT(interpolate_t, 0, ScalarReal(internal->vax_t[0]));
+  SET_VECTOR_ELT(interpolate_t, 1, ScalarReal(R_PosInf));
+  SET_STRING_ELT(interpolate_t_nms, 0, mkChar("min"));
+  SET_STRING_ELT(interpolate_t_nms, 1, mkChar("max"));
+  SET_VECTOR_ELT(ret, 3, interpolate_t);
+  UNPROTECT(2);
   UNPROTECT(2);
   return ret;
 }
@@ -1287,6 +1395,8 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   double * A = state + internal->offset_variable_A;
   double * S = state + internal->offset_variable_S;
   double * T = state + internal->offset_variable_T;
+  double vax_switch = 0.0;
+  cinterpolate_eval(t, internal->interpolate_vax_switch, &vax_switch);
   for (int i = 1; i <= internal->dim_C_1; ++i) {
     for (int j = 1; j <= internal->dim_C_2; ++j) {
       internal->C[i - 1 + internal->dim_C_1 * (j - 1)] = I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1];
@@ -1390,14 +1500,14 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   for (int i = 1; i <= internal->dim_n_vd_1; ++i) {
     for (int j = 1; j <= internal->dim_n_vd_2; ++j) {
       for (int k = 1; k <= internal->dim_n_vd_3; ++k) {
-        internal->n_vd[i - 1 + internal->dim_n_vd_1 * (j - 1) + internal->dim_n_vd_12 * (k - 1)] = internal->vd[internal->dim_vd_12 * (k - 1) + internal->dim_vd_1 * (j - 1) + i - 1] * internal->n_TU[internal->dim_n_TU_1 * (k - 1) + i - 1];
+        internal->n_vd[i - 1 + internal->dim_n_vd_1 * (j - 1) + internal->dim_n_vd_12 * (k - 1)] = internal->vd[internal->dim_vd_12 * (k - 1) + internal->dim_vd_1 * (j - 1) + i - 1] * internal->n_TU[internal->dim_n_TU_1 * (k - 1) + i - 1] * vax_switch;
       }
     }
   }
   for (int i = 1; i <= internal->dim_n_vs_1; ++i) {
     for (int j = 1; j <= internal->dim_n_vs_2; ++j) {
       for (int k = 1; k <= internal->dim_n_vs_3; ++k) {
-        internal->n_vs[i - 1 + internal->dim_n_vs_1 * (j - 1) + internal->dim_n_vs_12 * (k - 1)] = internal->vs[internal->dim_vs_12 * (k - 1) + internal->dim_vs_1 * (j - 1) + i - 1] * internal->screened[internal->dim_screened_1 * (k - 1) + i - 1];
+        internal->n_vs[i - 1 + internal->dim_n_vs_1 * (j - 1) + internal->dim_n_vs_12 * (k - 1)] = internal->vs[internal->dim_vs_12 * (k - 1) + internal->dim_vs_1 * (j - 1) + i - 1] * internal->screened[internal->dim_screened_1 * (k - 1) + i - 1] * vax_switch;
       }
     }
   }
@@ -1755,6 +1865,19 @@ SEXP user_get_array_check_rank(SEXP user, const char *name, int rank,
   }
   return el;
 }
+void interpolate_check_y(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target) {
+  if (nx != ny) {
+    if (i == 0) {
+      // vector case
+      Rf_error("Expected %s to have length %d (for %s)",
+               name_arg, nx, name_target);
+    } else {
+      // array case
+      Rf_error("Expected dimension %d of %s to have size %d (for %s)",
+               i, name_arg, nx, name_target);
+    }
+  }
+}
 double odin_sum1(double *x, size_t from, size_t to) {
   double tot = 0.0;
   for (size_t i = from; i < to; ++i) {
@@ -1791,4 +1914,43 @@ double odin_sum3(double* x, int from_i, int to_i, int from_j, int to_j, int from
     }
   }
   return tot;
+}
+// This construction is to help odin
+#ifndef CINTERPOLTE_CINTERPOLATE_H_
+#endif
+
+
+void * cinterpolate_alloc(const char *type, size_t n, size_t ny,
+                          double *x, double *y, bool fail_on_extrapolate,
+                          bool auto_clean) {
+  typedef void* interpolate_alloc_t(const char *, size_t, size_t,
+                                    double*, double*, bool, bool);
+  static interpolate_alloc_t *fun;
+  if (fun == NULL) {
+    fun = (interpolate_alloc_t*)
+      R_GetCCallable("cinterpolate", "interpolate_alloc");
+  }
+  return fun(type, n, ny, x, y, fail_on_extrapolate, auto_clean);
+}
+
+
+int cinterpolate_eval(double x, void *obj, double *y) {
+  typedef int interpolate_eval_t(double, void*, double*);
+  static interpolate_eval_t *fun;
+  if (fun == NULL) {
+    fun = (interpolate_eval_t*)
+      R_GetCCallable("cinterpolate", "interpolate_eval");
+  }
+  return fun(x, obj, y);
+}
+
+
+void cinterpolate_free(void *obj) {
+  typedef int interpolate_free_t(void*);
+  static interpolate_free_t *fun;
+  if (fun == NULL) {
+    fun = (interpolate_free_t*)
+      R_GetCCallable("cinterpolate", "interpolate_free");
+  }
+  fun(obj);
 }

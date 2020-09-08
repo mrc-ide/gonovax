@@ -12,6 +12,7 @@
 ##' vd: vaccination on diagnosis, va: vaccination on attendance,
 ##' vt: targeted vaccination (i.e. all diagnosed, group H on screening)
 ##' @param uptake numeric (0-1) of strategy uptake
+##' @param t_stop time at which vaccination should stop (years)
 ##' @param baseline optional input of a baseline to compare to, must be a
 ##' gonovax_grid object if supplied
 ##' @param full_output logical indicating whether full results should be output
@@ -20,6 +21,7 @@
 ##' @export
 run_grid  <- function(n, t, model = run_onevax,
                       eff, dur, ve = 0, strategy = "ve", uptake = 0,
+                      t_stop = 99,
                       baseline = NULL, full_output = FALSE) {
 
   nn <- seq_len(n)
@@ -47,6 +49,7 @@ run_grid  <- function(n, t, model = run_onevax,
                             ve = ve,
                             vd = prop_vax$vd,
                             vs = prop_vax$vs,
+                            t_stop = t_stop,
                             equilib = TRUE)
 
   ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
