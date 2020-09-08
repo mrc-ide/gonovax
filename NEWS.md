@@ -1,5 +1,9 @@
-# gonovax 0.1.13
+# gonovax 0.1.14
 
+* output full time series in run_grid()
+* extend baseline to 30 years
+
+# gonovax 0.1.13
 * add time-varying vaccination parameter
 
 # gonovax 0.1.12

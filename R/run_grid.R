@@ -23,53 +23,49 @@ run_grid  <- function(n, t, model = run_onevax,
                       eff, dur, ve = 0, strategy = "ve", uptake = 0,
                       t_stop = 99,
                       baseline = NULL, full_output = FALSE) {
-  l <- expand.grid(eff = eff, dur = dur)
+
   nn <- seq_len(n)
+  tt <- seq(0, t)
+  l <- expand.grid(eff = eff, dur = dur)
+
+  # verify baseline
+
+  if (is.null(baseline)) {
+    baseline <- novax_baseline(nn, tt[-1])
+    baseline$vaccinated <- baseline$cum_vaccinated <- 0
+    baseline <- rep(list(baseline), nrow(l))
+  } else {
+    baseline <- verify_baseline(baseline, l, nn, tt)
+    baseline <- switch_levels(baseline[-1])
+  }
+
   # set strategy
   prop_vax <- set_strategy(strategy, uptake)
 
   res <- furrr::future_pmap(.l = l,
                             .f = model,
                             n = nn,
-                            tt = c(0, t - 1, t),
+                            tt = tt,
                             ve = ve,
                             vd = prop_vax$vd,
                             vs = prop_vax$vs,
                             t_stop = t_stop,
                             equilib = TRUE)
 
-  cum_incid <- extract_value(res, "cum_incid", t)
-  incid <- cum_incid - extract_value(res, "cum_incid", t - 1)
-  cum_vaccinated <- extract_value(res, "cum_vaccinated", t)
-  cum_diag_a <- extract_value(res, "cum_diag_a", t)
-  cum_diag_s <- extract_value(res, "cum_diag_s", t)
+  ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
+                            .f = compare_baseline)
 
-  # verify baseline
-
-  if (is.null(baseline)) {
-    baseline <- novax_baseline(nn, t)
-    baseline$cum_vaccinated <- 0
-  } else {
-    baseline <- verify_baseline(baseline, l, nn, t)
-  }
-
-  out <- list(inputs = list(n = nn, t = t, ve = ve,
-                            vd = prop_vax$vd, vs = prop_vax$vs, grid = l),
-              incid = incid,
-              cum_incid = cum_incid,
-              cum_vaccinated = cum_vaccinated - baseline$cum_vaccinated,
-              red_incid = baseline$incid - incid,
-              cum_red_incid = baseline$cum_incid - cum_incid,
-              cum_diag_a = cum_diag_a,
-              cum_diag_s = cum_diag_s,
-              cum_red_diag_a = baseline$cum_diag_a - cum_diag_a,
-              cum_red_diag_s = baseline$cum_diag_s - cum_diag_s)
-  if (full_output) out$results <- res
+  names(ret) <- sprintf("eff%.2f_dur%02d", l$eff, l$dur)
+  ret <- switch_levels(ret)
+  out <- c(list(inputs = list(n = nn, t = tt, ve = ve,
+                            vd = prop_vax$vd, vs = prop_vax$vs, grid = l)),
+            ret)
+  if (full_output) out$full_results <- res
   class(out) <- "gonovax_grid"
   out
 }
 
-verify_baseline <- function(baseline, l, nn, t) {
+verify_baseline <- function(baseline, l, nn, tt) {
   if (!inherits(baseline, "gonovax_grid")) {
     stop("baseline must be a gonovax_grid object")
   }
@@ -79,37 +75,102 @@ verify_baseline <- function(baseline, l, nn, t) {
   if (!identical(baseline$inputs$n, nn)) {
     stop("model parameters do not match baseline")
   }
-  if (!identical(baseline$inputs$t, t)) {
+  if (!identical(baseline$inputs$t, tt)) {
     stop("t does not match baseline")
   }
   baseline
 }
 
-extract_value <- function(x, what, t) {
-  sapply(x, function(x) aggregate(x, what)[, x[[1]]$t == t])
+compare_baseline <- function(y, baseline) {
+
+  # extract cumulative flows of interest
+  cum_incid      <- t(aggregate(y, "cum_incid"))[-1, ]
+  cum_vaccinated <- t(aggregate(y, "cum_vaccinated"))[-1, ]
+  cum_diag_a     <- t(aggregate(y, "cum_diag_a"))[-1, ]
+  cum_diag_s     <- t(aggregate(y, "cum_diag_s"))[-1, ]
+  cum_screened   <- t(aggregate(y, "cum_screened"))[-1, ]
+
+  # extract flows of interest
+  incid          <- t(aggregate(y, "cum_incid", TRUE))
+  vaccinated     <- t(aggregate(y, "cum_vaccinated", TRUE))
+
+  # compare to baseline
+  inc_vaccinated <- vaccinated - baseline$vaccinated
+  red_incid <- baseline$incid - incid
+
+
+  # output results
+  list(incid = incid,
+       vaccinated = vaccinated,
+       cum_incid = cum_incid,
+       cum_vaccinated = cum_vaccinated,
+       cum_diag_a = cum_diag_a,
+       cum_diag_s = cum_diag_s,
+       cum_screened = cum_screened,
+       red_incid = red_incid,
+       inc_vaccinated = inc_vaccinated,
+       red_cum_incid = baseline$cum_incid - cum_incid,
+       inc_cum_vaccinated = cum_vaccinated - baseline$cum_vaccinated,
+       red_cum_diag_a = baseline$cum_diag_a - cum_diag_a,
+       red_cum_diag_s = baseline$cum_diag_s - cum_diag_s,
+       inc_cum_screened = cum_screened - baseline$cum_screened
+  )
 }
+
 
 ##' @name format_grid
 ##' @title format grid for heatmap plotting
 ##' @param grid a `gonovax_grid` object
+##' @param disc_rate annual discount rate for cost-effectiveness calc,
+##' e.g. 0.035 = 3.5pc, default is 0
+##' @param f the function that should be used to summarise the runs
 ##' @return a dataframe with columns denoting:
 ##' eff: efficacy of vaccine (%)
 ##' dur: duration of vaccine (years)
-##' a: Reduction in incidence after t years,
-##' b: Courses of vaccine over t years,
-##' c: Infections averted over t years,
-##' d: Courses of vaccine per infection averted (B / C)
-##' diag_a: Reduction in asymptomatic diagnoses over t years
-##' diag_s: Reduction in symptomatic diagnoses over t years
+##' red_incid: Reduction in incidence after t years,
+##' inc_vaccinated: Additional courses of vaccine over t years,
+##' tot_red_incid: Infections averted over t years,
+##' cost_eff: Courses of vaccine per infection averted (B / C),
+##' discounted at `disc_rate`
+##' tot_red_diag_a: Reduction in asymptomatic diagnoses over t years
+##' tot_red_diag_s: Reduction in symptomatic diagnoses over t years
+##' tot_inc_screened: Increase in screening over t years
 ##' @export
-format_grid <- function(grid) {
+format_grid <- function(grid, disc_rate = 0, f = mean) {
+
   stopifnot(inherits(grid, "gonovax_grid"))
-  data.frame(eff    = grid$inputs$grid$eff * 100,
-             dur    = grid$inputs$grid$dur,
-             a      = colMeans(grid$red_incid),
-             b      = colMeans(grid$cum_vaccinated),
-             c      = colMeans(grid$cum_red_incid),
-             d      = colMeans(grid$cum_vaccinated / grid$cum_red_incid),
-             diag_a = colMeans(grid$cum_red_diag_a),
-             diag_s = colMeans(grid$cum_red_diag_s))
+
+  tt <- grid$inputs$t[-1]
+
+  # discount flows by (1 + i) ^ -(t - dt/2) to find PV
+
+  dt <- diff(tt)[1]
+  pv <- (1 + disc_rate) ^ - (tt - dt / 2)
+
+  # calculate cost-effectiveness
+  pv_inc_cum_vaccinated <- calc_pv(grid$inc_vaccinated, pv)
+
+  pv_red_cum_incid <- calc_pv(grid$red_incid, pv)
+  cost_eff <- mapply(FUN = `/`, pv_inc_cum_vaccinated, pv_red_cum_incid,
+                     SIMPLIFY = FALSE)
+
+  list(t                  = tt,
+       eff                = grid$inputs$grid$eff * 100,
+       dur                = grid$inputs$grid$dur,
+       red_incid          = summarise(grid$red_incid, f),
+       tot_inc_vaccinated = summarise(grid$inc_cum_vaccinated, f),
+       tot_red_incid      = summarise(grid$red_cum_incid, f),
+       cost_eff           = summarise(cost_eff, f),
+       tot_red_diag_a     = summarise(grid$red_cum_diag_a, f),
+       tot_red_diag_s     = summarise(grid$red_cum_diag_s, f),
+       tot_inc_screened   = summarise(grid$inc_cum_screened, f))
+}
+
+calc_pv <- function(x, pv) {
+  lapply(x, function(x) apply(x * pv, 2, cumsum))
+}
+
+summarise <- function(x, f) {
+  y <- lapply(x, function(x) apply(x, 1, f))
+  as.data.frame(y)
 }

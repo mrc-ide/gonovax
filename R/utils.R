@@ -17,3 +17,10 @@ write_csv <- function(...) {
 data_frame <- function(...) {
   data.frame(..., check.names = FALSE, stringsAsFactors = FALSE)
 }
+
+switch_levels <- function(x) {
+  nms <- names(x[[1]])
+  y <- lapply(nms, function(z) lapply(x, "[[", z))
+  names(y) <- nms
+  y
+}
