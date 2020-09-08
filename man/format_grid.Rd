@@ -4,7 +4,7 @@
 \alias{format_grid}
 \title{format grid for heatmap plotting}
 \usage{
-format_grid(grid, disc_rate = 0, f = mean)
+format_grid(grid, disc_rate = 0, f = mean, t = NULL)
 }
 \arguments{
 \item{grid}{a `gonovax_grid` object}
@@ -13,6 +13,8 @@ format_grid(grid, disc_rate = 0, f = mean)
 e.g. 0.035 = 3.5pc, default is 0}
 
 \item{f}{the function that should be used to summarise the runs}
+
+\item{t}{the time at which heatmaps should be taken}
 }
 \value{
 a dataframe with columns denoting:

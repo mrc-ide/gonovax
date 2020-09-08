@@ -98,31 +98,33 @@ test_that("gonovax_grid format method works as expected", {
   incid0 <- apply(cum_incid0, 2, diff)
 
   # check heatmaps are compiled correctly
-  expect_equivalent(z$red_incid[, 1],
+  expect_equivalent(z$ts$eff0.10_dur01$red_incid,
                     rowMeans(incid0 - y$incid[[1]]), tol = 0.1)
-  expect_equivalent(z$tot_inc_vaccinated, lapply(y$cum_vaccinated, rowMeans))
+  expect_equivalent(z$ts$eff0.10_dur01$tot_inc_vaccinated,
+                    rowMeans(y$cum_vaccinated$eff0.10_dur01))
   tot_red_incid <- cum_incid0[-1, ] - y$cum_incid[[1]]
-  expect_equivalent(z$tot_red_incid[, 1],
+  expect_equivalent(z$ts$eff0.10_dur01$tot_red_incid,
                     rowMeans(tot_red_incid), tol = 0.1)
-  expect_equivalent(z$cost_eff[, 1],
+  expect_equivalent(z$ts$eff0.10_dur01$cost_eff,
                rowMeans(y$cum_vaccinated[[1]] / tot_red_incid),
                tol = 0.1)
-  expect_equivalent(z$tot_red_diag_a[, 1],
+  expect_equivalent(z$ts$eff0.10_dur01$tot_red_diag_a,
                     rowMeans(cum_diag_a0[-1, ] - y$cum_diag_a[[1]]))
-  expect_equivalent(z$tot_red_diag_s[, 1],
+  expect_equivalent(z$ts$eff0.10_dur01$tot_red_diag_s,
                     rowMeans(cum_diag_s0[-1, ] - y$cum_diag_s[[1]]))
 
   # check discount rate
   z1 <- format_grid(y, 0.05, mean)
   w <- which(names(z) == "cost_eff")
-  expect_equal(z[-w], z1[-w])
+  expect_equal(z$ts$eff0.10_dur01[-w], z1$ts$eff0.10_dur01[-w])
 
   pv <- 1.05 ^ -c(0.5, 1.5)
   pv_inc_vaccinated <- sapply(y$inc_vaccinated, function(x) colSums(x * pv))
   pv_red_incid <- sapply(y$red_incid, function(x) colSums(x * pv))
-  expect_equivalent(z1$cost_eff[1, ], z$cost_eff[1, ])
-  expect_equivalent(z1$cost_eff[2, ],
-                    colMeans(pv_inc_vaccinated / pv_red_incid))
+  expect_equivalent(z1$ts$eff0.10_dur01$cost_eff[1],
+                    z$ts$eff0.10_dur01$cost_eff[1])
+  expect_equivalent(z1$ts$eff0.10_dur01$cost_eff[2],
+                    colMeans(pv_inc_vaccinated / pv_red_incid)[1])
 
   # check error case
   class(y) <- NULL
