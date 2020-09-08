@@ -4,19 +4,28 @@
 \alias{format_grid}
 \title{format grid for heatmap plotting}
 \usage{
-format_grid(grid)
+format_grid(grid, t = NULL, disc_rate = 0, f = mean)
 }
 \arguments{
 \item{grid}{a `gonovax_grid` object}
+
+\item{t}{the time point at which the grid should be extracted, if NULL uses
+maximum value calculated in the grid}
+
+\item{disc_rate}{annual discount rate for cost-effectiveness calc,
+e.g.  0.035 = 3.5%, default is 0}
+
+\item{f}{the function that should be used to summarise the runs}
 }
 \value{
 a dataframe with columns denoting:
 eff: efficacy of vaccine (%)
 dur: duration of vaccine (years)
-a: Reduction in incidence after t years,
-b: Courses of vaccine over t years,
-c: Infections averted over t years,
-d: Courses of vaccine per infection averted (B / C)
+red_incid: Reduction in incidence after t years,
+inc_vaccinated: Additional courses of vaccine over t years,
+tot_red_incid: Infections averted over t years,
+cost_eff: Courses of vaccine per infection averted (B / C),
+discounted at rate disc_rate
 diag_a: Reduction in asymptomatic diagnoses over t years
 diag_s: Reduction in symptomatic diagnoses over t years
 }
