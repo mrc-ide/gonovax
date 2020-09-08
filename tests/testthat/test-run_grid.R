@@ -98,7 +98,8 @@ test_that("gonovax_grid format method works as expected", {
   incid0 <- apply(cum_incid0, 2, diff)
 
   # check heatmaps are compiled correctly
-  expect_equivalent(z$red_incid[, 1], rowMeans(incid0 - y$incid[[1]]), tol = 0.1)
+  expect_equivalent(z$red_incid[, 1],
+                    rowMeans(incid0 - y$incid[[1]]), tol = 0.1)
   expect_equivalent(z$tot_inc_vaccinated, lapply(y$cum_vaccinated, rowMeans))
   tot_red_incid <- cum_incid0[-1, ] - y$cum_incid[[1]]
   expect_equivalent(z$tot_red_incid[, 1],
