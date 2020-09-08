@@ -1,3 +1,8 @@
+# gonovax 0.1.13
+
+* output full time series in run_grid()
+* extend baseline to 30 years
+
 # gonovax 0.1.12
 
 * export aggregate() 

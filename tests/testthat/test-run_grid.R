@@ -88,7 +88,7 @@ test_that("gonovax_grid format method works as expected", {
   t <- 2
   y <- run_grid(n = 2, t = t, model = run_onevax,
                 eff = c(0.1, 1), dur = c(1, 2), ve = 0.5)
-  z <- format_grid(y)
+  z <- format_grid(y, f = mean)
   y0 <- run_novax(n = 1:2, tt = 0:2, equilib = TRUE)
 
   cum_incid0 <- sapply(y0, function(x) rowSums(x$cum_incid))
@@ -112,7 +112,7 @@ test_that("gonovax_grid format method works as expected", {
                     rowMeans(cum_diag_s0[-1, ] - y$cum_diag_s[[1]]))
 
   # check discount rate
-  z1 <- format_grid(y, 0.05)
+  z1 <- format_grid(y, 0.05, mean)
   w <- which(names(z) == "cost_eff")
   expect_equal(z[-w], z1[-w])
 
@@ -125,5 +125,5 @@ test_that("gonovax_grid format method works as expected", {
 
   # check error case
   class(y) <- NULL
-  expect_error(format_grid(y))
+  expect_error(format_grid(y, 0, mean))
 })

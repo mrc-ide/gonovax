@@ -133,7 +133,7 @@ compare_baseline <- function(y, baseline) {
 ##' tot_red_diag_s: Reduction in symptomatic diagnoses over t years
 ##' tot_inc_screened: Increase in screening over t years
 ##' @export
-format_grid <- function(grid, disc_rate = 0, f = mean) {
+format_grid <- function(grid, disc_rate = 0, f) {
 
   stopifnot(inherits(grid, "gonovax_grid"))
 

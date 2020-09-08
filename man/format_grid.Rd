@@ -4,7 +4,7 @@
 \alias{format_grid}
 \title{format grid for heatmap plotting}
 \usage{
-format_grid(grid, disc_rate = 0, f = mean)
+format_grid(grid, disc_rate = 0, f)
 }
 \arguments{
 \item{grid}{a `gonovax_grid` object}
