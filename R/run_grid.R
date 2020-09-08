@@ -164,7 +164,8 @@ format_grid <- function(grid, disc_rate = 0, f = mean, t = NULL) {
                        tot_red_incid = unlist(ret$red_cum_incid[t, ]),
                        cost_eff = unlist(ret$cost_eff[t, ]))
   ret <- switch_levels(ret)
-  list(ts = c(t = tt, ret), heatmap_data = heatmap_data)
+  ret$t <- tt
+  list(ts = ret, heatmap_data = heatmap_data)
 }
 
 calc_pv <- function(x, pv) {
