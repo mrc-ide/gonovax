@@ -162,7 +162,7 @@ format_grid <- function(grid, disc_rate = 0, f = mean, t = NULL) {
               tot_red_diag_a     = summarise(grid$red_cum_diag_a, f),
               tot_red_diag_s     = summarise(grid$red_cum_diag_s, f),
               tot_inc_screened   = summarise(grid$inc_cum_screened, f))
-  
+
   heatmap_data <- data.frame(eff = grid$inputs$grid$eff * 100,
                        dur = grid$inputs$grid$dur,
                        red_incid = unlist(ret$red_incid[t, ]),
