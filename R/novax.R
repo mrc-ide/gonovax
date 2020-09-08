@@ -28,12 +28,12 @@ novax_equilib <- function(n = NULL) {
 ##' @param n an integer vector (or value) containing the indices of
 ##' corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
 ##' for the full parameter set are returned
-##' @param t an integer between 1 and 20 of the year to return
+##' @param t an integer between 1 and 30 of the year to return
 ##' @return A list containing incid and cum_incid at time t for parameter sets n
 ##' @export
 novax_baseline <- function(n = NULL, t) {
 
-  if (!all(t %in% seq_len(20))) stop("t must be an integer between 1 and 20")
+  if (!all(t %in% seq_len(30))) stop("t must be an integer between 1 and 30")
 
   if (is.null(cache$novax_baseline)) {
     cache$novax_baseline <-

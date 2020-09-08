@@ -11,7 +11,7 @@ novax_baseline(n = NULL, t)
 corresponding parameter set (1:982). If `n = NULL` the equilibrium positions
 for the full parameter set are returned}
 
-\item{t}{an integer between 1 and 20 of the year to return}
+\item{t}{an integer between 1 and 30 of the year to return}
 }
 \value{
 A list containing incid and cum_incid at time t for parameter sets n
