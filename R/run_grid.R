@@ -154,13 +154,14 @@ format_grid <- function(grid, disc_rate = 0, f = mean, t = NULL) {
   pv_red_cum_incid <- calc_pv(grid$red_incid, pv)
   grid$cost_eff <- mapply(FUN = `/`, pv_inc_cum_vaccinated, pv_red_cum_incid,
                      SIMPLIFY = FALSE)
-  ret <- lapply(grid, summarise, f = f)
+
+  ret <- lapply(grid[-1], summarise, f = f)
 
   heatmap_data <- data.frame(eff = grid$inputs$grid$eff * 100,
                        dur = grid$inputs$grid$dur,
                        red_incid = unlist(ret$red_incid[t, ]),
                        tot_inc_vaccinated = unlist(ret$red_incid[t, ]),
-                       tot_red_incid = unlist(ret$tot_red_incid[t, ]),
+                       tot_red_incid = unlist(ret$red_cum_incid[t, ]),
                        cost_eff = unlist(ret$cost_eff[t, ]))
   ret <- switch_levels(ret)
   list(ts = ret, heatmap_data = heatmap_data)

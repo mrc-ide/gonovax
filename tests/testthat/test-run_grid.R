@@ -100,17 +100,17 @@ test_that("gonovax_grid format method works as expected", {
   # check heatmaps are compiled correctly
   expect_equivalent(z$ts$eff0.10_dur01$red_incid,
                     rowMeans(incid0 - y$incid[[1]]), tol = 0.1)
-  expect_equivalent(z$ts$eff0.10_dur01$tot_inc_vaccinated,
+  expect_equivalent(z$ts$eff0.10_dur01$inc_cum_vaccinated,
                     rowMeans(y$cum_vaccinated$eff0.10_dur01))
   tot_red_incid <- cum_incid0[-1, ] - y$cum_incid[[1]]
-  expect_equivalent(z$ts$eff0.10_dur01$tot_red_incid,
+  expect_equivalent(z$ts$eff0.10_dur01$red_cum_incid,
                     rowMeans(tot_red_incid), tol = 0.1)
   expect_equivalent(z$ts$eff0.10_dur01$cost_eff,
                rowMeans(y$cum_vaccinated[[1]] / tot_red_incid),
                tol = 0.1)
-  expect_equivalent(z$ts$eff0.10_dur01$tot_red_diag_a,
+  expect_equivalent(z$ts$eff0.10_dur01$red_cum_diag_a,
                     rowMeans(cum_diag_a0[-1, ] - y$cum_diag_a[[1]]))
-  expect_equivalent(z$ts$eff0.10_dur01$tot_red_diag_s,
+  expect_equivalent(z$ts$eff0.10_dur01$red_cum_diag_s,
                     rowMeans(cum_diag_s0[-1, ] - y$cum_diag_s[[1]]))
 
   # check discount rate
