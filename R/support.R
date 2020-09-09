@@ -15,3 +15,15 @@ aggregate <- function(x, what, as_incid = FALSE, f = identity, ...) {
   }
   apply(y, 1, f, ...)
 }
+
+extract_flows <- function(y) {
+  # extract cumulative flows
+  flow_names <- grep(pattern = "^cum", names(y[[1]]), value = TRUE)
+  cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x))[-1, ])
+  names(cumulative_flows) <- flow_names
+
+  # extract flows
+  flows <- lapply(flow_names, function(x) t(aggregate(y, x, TRUE)))
+  names(flows) <- gsub("^cum_", "", flow_names)
+  c(cumulative_flows, flows)
+}
