@@ -26,9 +26,6 @@ length 2 will apply to each activity group separately}
 }
 \value{
 A list parameters in the model input format
-currently waning is in stratum 5 (with strata 3:4 unused) for future
-compatibility with dualvax, however may get performance boost by moving to
-stratum 3
 }
 \description{
 create vaccination parameters for use in onevax_waning model

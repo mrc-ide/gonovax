@@ -4,7 +4,7 @@
 \alias{create_vax_map}
 \title{Create mapping for movement between strata due to vaccination}
 \usage{
-create_vax_map(n_vax, v, i_u)
+create_vax_map(n_vax, v, i_u = 1)
 }
 \arguments{
 \item{n_vax}{Integer in (0, 5) denoting total number of strata}

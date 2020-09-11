@@ -4,7 +4,7 @@
 \alias{aggregate}
 \title{aggregate model runs by vaccination group x vaccine strata}
 \usage{
-aggregate(x, what, as_incid = FALSE, f = identity, ...)
+aggregate(x, what, as_incid = FALSE, stratum = NULL, f = identity, ...)
 }
 \arguments{
 \item{x}{a transformed model run output}
@@ -12,6 +12,9 @@ aggregate(x, what, as_incid = FALSE, f = identity, ...)
 \item{what}{a character string of the cumulative trajectory to transform}
 
 \item{as_incid}{logical specifying whether to convert to incidence}
+
+\item{stratum}{an integer denoting the stratum to aggregate over, if NULL
+aggregation is over all strata}
 
 \item{f}{function to apply across parameter sets (eg. mean / median)}
 
