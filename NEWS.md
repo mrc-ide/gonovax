@@ -1,3 +1,8 @@
+# gonovax 0.1.15
+
+* output vaccination and revaccination separately
+* use parsimonious numbers of compartments in waning model
+
 # gonovax 0.1.14
 
 * output full time series in run_grid()
