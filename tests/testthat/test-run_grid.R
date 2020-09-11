@@ -52,6 +52,8 @@ test_that("run_grid works as expected", {
                         baseline = y0)
   expect_equivalent(y4, y[-6], tol = 0.1)
 
+
+
   # check error cases
   expect_error(run_grid(n = 3, t = 2, eff = c(0, 1), dur = c(1, 2),
                                ve = 0.5, baseline = y0),

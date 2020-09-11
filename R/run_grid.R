@@ -82,7 +82,7 @@ verify_baseline <- function(baseline, l, nn, tt) {
 
 compare_baseline <- function(y, baseline) {
 
-  # extract cumulative and annula flows
+  # extract cumulative and annual flows
   ret <- extract_flows(y)
 
   # compare to baseline (most will be reductions)

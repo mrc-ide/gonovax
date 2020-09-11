@@ -109,9 +109,10 @@ model_params <- function(gono_params = NULL,
 ##' @param v numeric indicating % of population vaccinated on screening a scalar
 ##' will apply to both activity groups, a vector of length 2 will apply to each
 ##' activity group separately
+##' @param i_u indices of strata eligible for vaccination
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v) {
+create_vax_map <- function(n_vax, v, i_u = 1) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -119,16 +120,17 @@ create_vax_map <- function(n_vax, v) {
   stopifnot(all((v >= 0) & (v <= 1)))
 
   # indices of vaccine strata (u: unvaccinated, v: vaccinated)
-  i_u <- 1
   i_v <- 2
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
-  vax_map[, i_u, i_u] <-  v
   vax_map[, i_v, i_u] <- -v
+  for (i in i_u) {
+    vax_map[, i, i] <-  v
+  }
 
   vax_map
-}
+  }
 
 ##' @name create_waning_map
 ##' @title Create mapping for movement between strata due to vaccine waning

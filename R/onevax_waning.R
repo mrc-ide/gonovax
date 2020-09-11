@@ -18,17 +18,13 @@ vax_params1w <- function(eff = 0, dur = 1e3,
   # indices of vaccine strata (u: unvaccinated, v: vaccinated, w: waned)
   i_u <- 1
   i_v <- 2
-  i_w <- n_vax <- 5
-
-  #' currently waning is in stratum 5 (with strata 3:4 unused) for future
-  #' compatibility with dualvax, however may get performance boost by moving to
-  #' stratum 3
+  i_w <- n_vax <- 3
 
   list(n_vax = n_vax,
-       ve    = c(1 - ve, ve, 0, 0, 0),
-       vs    = create_vax_map(n_vax, vs),
-       vd    = create_vax_map(n_vax, vd),
-       eff   = c(0, eff, 0, 0, 0),
+       ve    = c(1 - ve, ve, 0),
+       vs    = create_vax_map(n_vax, vs, i_u),
+       vd    = create_vax_map(n_vax, vd, i_u),
+       eff   = c(0, eff, 0),
        w     = create_waning_map(n_vax, i_w, 1 / dur),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
