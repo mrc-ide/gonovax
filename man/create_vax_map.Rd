@@ -4,7 +4,7 @@
 \alias{create_vax_map}
 \title{Create mapping for movement between strata due to vaccination}
 \usage{
-create_vax_map(n_vax, v)
+create_vax_map(n_vax, v, i_u)
 }
 \arguments{
 \item{n_vax}{Integer in (0, 5) denoting total number of strata}
@@ -12,6 +12,8 @@ create_vax_map(n_vax, v)
 \item{v}{numeric indicating % of population vaccinated on screening a scalar
 will apply to both activity groups, a vector of length 2 will apply to each
 activity group separately}
+
+\item{i_u}{indices of strata eligible for vaccination}
 }
 \value{
 an array of the mapping
