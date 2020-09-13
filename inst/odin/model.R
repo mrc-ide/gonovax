@@ -14,9 +14,9 @@ n_vax   <- user(1)
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, ]) <- enr * q[i] * ve[j] - n_UI[i, j] - exr * U[i, j] +
-  nu * A[i, j] + n_TU[i, j] -
-  sum(n_vd[i, j, ]) - sum(n_vs[i, j, ]) + sum(wU[i, j, ])
+deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
+  nu * A[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) -
+  sum(n_ve[i, j, ]) - sum(n_vd[i, j, ]) - sum(n_vs[i, j, ])
 
 deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ])
 
@@ -32,6 +32,7 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 ## Update population size
 C[, ] <- I[i, j] + A[i, j] + S[i, j]
 N[, ] <- U[i, j] + C[i, j] + T[i, j]
+entrants[, 1] <- enr * q[i]
 
 # calculate mixing matrix, probability of infection and force of infection
 Np[]    <- sum(N[i, ]) * p[i]
@@ -51,8 +52,8 @@ vax_switch <- interpolate(vax_t, vax_y, "constant")
 n_vs[, , ] <- vs[i, j, k] * screened[i, k] * vax_switch
 ## on diagnosis
 n_vd[, , ] <- vd[i, j, k] * n_TU[i, k] * vax_switch
-## on entry
-n_ve[, 2:n_vax] <- enr * q[i] * ve[j]
+## on entry - no switch as background rate
+n_ve[, , ] <- ve[i, j, k] * entrants[i, k]
 
 # waning
 wU[, , ] <- w[j, k] * U[i, k]
@@ -68,7 +69,7 @@ deriv(cum_diag_a[, ])     <- n_AT[i, j]
 deriv(cum_diag_s[, ])     <- n_ST[i, j]
 deriv(cum_treated[, ])    <- n_TU[i, j]
 deriv(cum_screened[, ])   <- screened[i, j]
-deriv(cum_vaccinated[, ]) <- n_vs[i, j, j] + n_vd[i, j, j] + n_ve[i, j]
+deriv(cum_vaccinated[, ]) <- n_vs[i, j, j] + n_vd[i, j, j] + n_ve[i, j, j]
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
@@ -106,7 +107,9 @@ dim(T0) <- c(n_group, n_vax)
 
 dim(C)  <- c(n_group, n_vax)
 dim(N)  <- c(n_group, n_vax)
+dim(entrants) <- c(n_group, n_vax)
 dim(Np) <- n_group
+
 
 dim(m)   <- c(n_group, n_group)
 dim(foi) <- c(n_group, n_group)
@@ -140,7 +143,7 @@ mu      <- user()
 rho     <- user()
 
 ## vaccination pars
-ve[]   <- user()
+ve[, , ]   <- user()
 vs[, , ] <- user()
 vd[, , ] <- user()
 eff[]  <- user()
@@ -151,15 +154,15 @@ vax_y[] <- user()
 ## par dimensions
 dim(p)    <- n_group
 dim(q)    <- n_group
-dim(ve)   <- n_vax
 dim(eff)  <- n_vax
+dim(ve)   <- c(n_group, n_vax, n_vax)
 dim(vd)   <- c(n_group, n_vax, n_vax)
 dim(vs)   <- c(n_group, n_vax, n_vax)
 dim(w)    <- c(n_vax, n_vax)
 dim(vax_t) <- user()
 dim(vax_y) <- user()
 
-dim(n_ve) <- c(n_group, n_vax)
+dim(n_ve) <- c(n_group, n_vax, n_vax)
 dim(n_vs) <- c(n_group, n_vax, n_vax)
 dim(n_vd) <- c(n_group, n_vax, n_vax)
 dim(wU)   <- c(n_group, n_vax, n_vax)

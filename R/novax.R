@@ -57,7 +57,7 @@ novax_baseline <- function(n = NULL, t) {
 vax_params0 <- function() {
   v <- array(0, dim = c(2, 1, 1))
   list(n_vax = 1,
-       ve = 1,
+       ve = v,
        vs = v,
        vd = v,
        eff = 0,

@@ -1,3 +1,8 @@
+# gonovax 0.1.16
+
+* bug-fix: extract flows now correctly attributes vaccination / re-vaccination
+* re-code model so treatment of VbE is now the same structure as VoD / VoA
+
 # gonovax 0.1.15
 
 * output vaccination and revaccination separately

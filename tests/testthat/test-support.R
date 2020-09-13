@@ -24,12 +24,13 @@ test_that("aggregate works", {
 
 test_that("extract_flows works", {
   tt <- seq(0, 2)
-  y <- run_onevax(1:2, tt, eff = 1, dur = 4, vd = 1)
+  y <- run_onevax(1:2, tt, eff = 1, dur = 4, vd = 1, ve = 1)
   z <- extract_flows(y)
 
   expect_equal(z$cum_incid[1, ], z$incid[1, ])
   expect_equal(z$cum_incid[2, ] - z$cum_incid[1, ], z$incid[2, ])
   expect_equal(z$vaccinated + z$revaccinated,
                t(aggregate(y, "cum_vaccinated", as_incid = TRUE)))
-
+  z$vaccinated
+  z$revaccinated
 })
