@@ -19,7 +19,7 @@ vax_params1 <- function(eff = 0, dur = 1e3,
   i_w <- n_vax <- 3
 
   list(n_vax = n_vax,
-       ve    = c(1 - ve, ve, 0),
+       ve    = create_vax_map(n_vax, ve, i_u),
        vd    = create_vax_map(n_vax, vd, i_u),
        vs    = create_vax_map(n_vax, vs, i_u),
        eff   = c(0, eff, 0),
