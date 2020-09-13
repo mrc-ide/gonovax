@@ -7,9 +7,9 @@ test_that("run_onevax works correctly", {
   expect_true(all(y1$cum_vaccinated == 0))
   y2 <- run_onevax(1, tt, eff = 0, dur = 1e3, ve = 1)[[1]]
   # check 100% vbe vaccinates all new entrants
-  expect_equal(diff(rowSums(y2$cum_vaccinated[, , 2])), rep(12e3, max(tt)))
+  expect_equal(diff(rowSums(y2$cum_vaccinated[, , 1])), rep(12e3, max(tt)))
   # and no-one else
-  expect_equal(sum(y2$cum_vaccinated[, , c(1, 3)]), 0)
+  expect_equal(sum(y2$cum_vaccinated[, , 2:3]), 0)
 
   # check can run from equilib
   y2e <- run_onevax(1, tt, eff = 0, dur = 1e3, ve = 1, equilib = TRUE)[[1]]

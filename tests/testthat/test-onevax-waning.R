@@ -7,8 +7,8 @@ test_that("run_onevax_waning works correctly", {
   expect_true(all(y1$cum_vaccinated == 0))
   y2 <- run_onevax_waning(1, tt, eff = 0, dur = 1, ve = 1)[[1]]
   # check 100% vbe vaccinates all new entrants
-  expect_equal(diff(rowSums(y2$cum_vaccinated[, , 2])), rep(12e3, max(tt)))
-  expect_equal(sum(y2$cum_vaccinated[, , 1]), 0)
+  expect_equal(diff(rowSums(y2$cum_vaccinated[, , 1])), rep(12e3, max(tt)))
+  expect_equal(sum(y2$cum_vaccinated[, , 2:3]), 0)
 
   # check can run from equilib
   y2e <- run_onevax_waning(1, tt, eff = 0, dur = 1, ve = 1,

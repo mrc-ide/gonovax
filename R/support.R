@@ -34,7 +34,6 @@ extract_flows <- function(y) {
     cumulative_flows$cum_vaccinated - cum_newly_vaccinated
   cumulative_flows$cum_vaccinated <- cum_newly_vaccinated
 
-
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
   names(flows) <- gsub("^cum_", "", names(cumulative_flows))
