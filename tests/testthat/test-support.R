@@ -29,8 +29,7 @@ test_that("extract_flows works", {
 
   expect_equal(z$cum_incid[1, ], z$incid[1, ])
   expect_equal(z$cum_incid[2, ] - z$cum_incid[1, ], z$incid[2, ])
-  expect_equal(z$vaccinated + z$revaccinated,
-               t(aggregate(y, "cum_vaccinated", as_incid = TRUE)))
-  z$vaccinated
-  z$revaccinated
+  expect_equal(z$vaccinated, t(aggregate(y, "cum_vaccinated", as_incid = TRUE)))
+  expect_equal(z$cum_revaccinated,
+               sapply(y, function(x) rowSums(x$cum_vaccinated[-1, , 3])))
 })
