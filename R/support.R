@@ -32,7 +32,6 @@ extract_flows <- function(y) {
   cum_newly_vaccinated <- t(aggregate(y, "cum_vaccinated", stratum = 1))
   cumulative_flows$cum_revaccinated <-
     cumulative_flows$cum_vaccinated - cum_newly_vaccinated
-  cumulative_flows$cum_vaccinated <- cum_newly_vaccinated
 
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
