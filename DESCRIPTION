@@ -15,7 +15,7 @@ Imports:
     odin,
     furrr,
     progress (>= 1.2.0),
-    mcstate
+    mcstate (>= 0.2.13)
 Suggests:
     testthat,
     knitr
