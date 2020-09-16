@@ -30,6 +30,15 @@ assert_integer <- function(x, name = deparse(substitute(x)),
   invisible(x)
 }
 
+assert_positive_integer <- function(x, name = deparse(substitute(x))) {
+    force(name)
+    x <- assert_integer(x, name)
+    if (any(x < 1L)) {
+      stop(sprintf("'%s' must be at least 1", name), call. = FALSE)
+    }
+    invisible(x)
+}
+
 
 assert_logical <- function(x, name = deparse(substitute(x))) {
   if (!(is.logical(x))) {
