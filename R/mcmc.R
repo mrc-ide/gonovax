@@ -116,9 +116,13 @@ history_collector <- function(n) {
   list(add = add, get = get)
 }
 
-#' comparison function used to calculate log-likelihood of data given model
-#' simulation - this may be replaced with a user input if we want to try out
-#' different fits / models
+
+##' @title Calculate the log likelihood of the data given the parameters
+##'
+##' @param pars A named vector of parameters
+##'
+##' @return a single log likelihood
+##'
 
 compare <- function(pars) {
 
@@ -148,7 +152,23 @@ compare <- function(pars) {
   sum(lltreated, llattended, na.rm = TRUE)
 }
 
-mcmc_progress <- mcstate:::pmcmc_progress
+# this is imported from mcstate
+
+mcmc_progress <- function(n, show, force = FALSE) {
+  if (show) {
+    fmt <- "Step :current / :total [:bar] ETA :eta | :elapsedfull so far"
+    t0 <- Sys.time()
+    callback <- function(p) {
+      message(sprintf("Finished %d steps in %s",
+                      n, format(Sys.time() - t0, digits = 0)))
+    }
+    p <- progress::progress_bar$new(fmt, n, callback = callback, force = force)
+    p$tick(0)
+    p$tick
+  } else {
+    function() NULL
+  }
+}
 
 gonovax_mcmc <- function(pars, probabilities, chain = NULL,
                          iteration = NULL) {
