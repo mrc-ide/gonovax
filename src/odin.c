@@ -319,7 +319,6 @@ SEXP user_get_array_check_rank(SEXP user, const char *name, int rank,
                                bool required);
 void interpolate_check_y(size_t nx, size_t ny, size_t i, const char *name_arg, const char *name_target);
 double odin_sum1(double *x, size_t from, size_t to);
-int odin_isum1(int *x, size_t from, size_t to);
 double odin_sum2(double* x, int from_i, int to_i, int from_j, int to_j, int dim_x_1);
 double odin_sum3(double* x, int from_i, int to_i, int from_j, int to_j, int from_k, int to_k, int dim_x_1, int dim_x_12);
 model_internal* model_get_internal(SEXP internal_p, int closed_error) {
@@ -1949,13 +1948,6 @@ void interpolate_check_y(size_t nx, size_t ny, size_t i, const char *name_arg, c
 }
 double odin_sum1(double *x, size_t from, size_t to) {
   double tot = 0.0;
-  for (size_t i = from; i < to; ++i) {
-    tot += x[i];
-  }
-  return tot;
-}
-int odin_isum1(int *x, size_t from, size_t to) {
-  int tot = 0.0;
   for (size_t i = from; i < to; ++i) {
     tot += x[i];
   }

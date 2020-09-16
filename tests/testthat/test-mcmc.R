@@ -29,11 +29,11 @@ test_that("mcmc runs", {
   p <- unlist(gono_params(1))
   proposal <- cov(gono_params()) * 0.1
   pars <- Map(mcstate::pmcmc_parameter,
-              name = names(p),
               initial = unname(p),
               min = 0,
               max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
               discrete = FALSE)
+  names(pars) <- names(p)
   pars <- mcstate::pmcmc_parameters$new(pars, proposal)
   set.seed(1)
   z <- mcmc(pars, n_steps = 10, progress = TRUE)
