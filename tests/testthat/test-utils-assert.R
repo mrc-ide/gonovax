@@ -34,7 +34,7 @@ test_that("assert_scalar", {
 test_that("assert_scalar_positive_integer", {
   expect_equal(assert_scalar_positive_integer(1L), 1L)
   expect_equal(assert_scalar_positive_integer(1000000L), 1000000L)
-  
+
   value <- 0L
   expect_error(assert_scalar_positive_integer(value),
                "'value' must be at least 1")
