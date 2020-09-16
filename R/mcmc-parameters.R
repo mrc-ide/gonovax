@@ -1,7 +1,7 @@
 ##' Describe a single parameter for use within the mcmc. Note that
 ##' the name is not set here, but will end up being naturally defined
 ##' when used with [`mcmc_parameters`], which collects
-##' these together for use with [mcmc()]. This function is adapted from the 
+##' these together for use with [mcmc()]. This function is adapted from the
 ##' `pmcmc_parameters` in the mcstate package https://github.com/mrc-ide/mcstate
 ##'
 ##' @title Describe single mcmc parameter
