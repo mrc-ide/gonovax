@@ -42,3 +42,27 @@ extract_flows <- function(y) {
 
   c(cumulative_flows, flows)
 }
+
+##' Convert a year into the number of years after 2007
+##'
+##' @title Convert a year into the number of years after 2007
+##'
+##' @param year an integer year
+##'
+##' @return An integer, being the number of years after 2007
+##' @export
+##' @examples
+##' gonovax_year(2019)
+##' gonovax_year(c(2018, 2019))
+gonovax_year <- function(year) {
+  years_after_2007 <- as.numeric(year - 2007)
+  if (any(years_after_2007 < 0)) {
+    stop("Negative dates, gonovax_year likely applied twice")
+  }
+  years_after_2007
+}
+
+gonovax_year_as_year <- function(gonovax_year) {
+  assert_positive_integer(gonovax_year)
+  2007 + gonovax_year
+}
