@@ -7,7 +7,7 @@ test_that("compare function works as expected", {
   y <- run_novax(1, seq(0, 12))[[1]]
   attended <- diff(y$tot_attended)
   diagnosed <- diff(y$tot_treated)
-  
+
   lldiagnosed <- Map(dnorm, x = data$diagnosed, mean = diagnosed,
                      sd = sqrt(diagnosed), log = TRUE)
   year <- gonovax_year(2019)
