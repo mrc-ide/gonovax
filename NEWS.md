@@ -1,3 +1,7 @@
+# gonovax 0.1.17
+
+* add mcmc fitting method to gumcad data
+
 # gonovax 0.1.16
 
 * bug-fix: extract flows now correctly attributes vaccination / re-vaccination
