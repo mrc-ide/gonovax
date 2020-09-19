@@ -64,3 +64,29 @@ test_that("mcmc runs", {
                           ylab = y, xlab = "iter"))
 
 })
+
+test_that("mcmc runs with multiple chains", {
+  p <- unlist(gono_params(1))
+  proposal <- cov(gono_params()) * 0.1
+  pars <- Map(mcstate::pmcmc_parameter,
+              name = names(p),
+              initial = unname(p),
+              min = 0,
+              max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
+              discrete = FALSE)
+  pars <- mcstate::pmcmc_parameters$new(pars, proposal)
+  set.seed(1)
+  z <- mcmc(pars, n_steps = 4, progress = TRUE, n_chains = 2)
+  expect_equal(z$probabilities[, "log_likelihood"],
+               c(-3833.78202033004, -3256.29981357909, -3256.29981357909,
+                 -3256.29981357909, -3256.29981357909, -3833.78202033004,
+                 -3833.78202033004, -3363.93250303873, -3363.93250303873,
+                 -3161.02224125879), tol = 1e-1)
+  
+  ## no progress
+  set.seed(1)
+  z1 <- mcmc(pars, n_steps = 4, progress = FALSE, n_chains = 2)
+  expect_equal(z, z1)
+  
+  
+})
