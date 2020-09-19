@@ -211,6 +211,7 @@ mcmc_combine <- function(..., samples = list(...)) {
     stop("All chains must have the same length")
   }
 
+  iteration <- lapply(samples, "[[", "iteration")
   iteration <- unlist(iteration, FALSE, FALSE)
 
   chain <- rep(seq_along(samples), each = nrow(samples[[1]]$pars))
