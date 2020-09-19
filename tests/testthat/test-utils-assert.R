@@ -60,3 +60,9 @@ test_that("assert_character", {
   expect_error(assert_character(1), "must be a character")
   expect_error(assert_character(TRUE), "must be a character")
 })
+
+
+test_that("assert_positive_integer", {
+  expect_error(assert_positive_integer(pi), "'pi' must be an integer")
+  expect_error(assert_positive_integer(-1L), "'-1L' must be at least 1")
+})
