@@ -210,10 +210,6 @@ mcmc_combine <- function(..., samples = list(...)) {
   if (length(unique(vnapply(samples, function(x) nrow(x$pars)))) != 1L) {
     stop("All chains must have the same length")
   }
-  iteration <- lapply(samples, "[[", "iteration")
-  if (length(unique(iteration)) != 1L) {
-    stop("All chains must have the same iterations")
-  }
 
   iteration <- unlist(iteration, FALSE, FALSE)
 
