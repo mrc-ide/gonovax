@@ -24,3 +24,11 @@ switch_levels <- function(x) {
   names(y) <- nms
   y
 }
+
+vlapply <- function(x, fun, ...) {
+  vapply(x, fun, logical(1), ...)
+}
+
+vnapply <- function(x, fun, ...) {
+  vapply(x, fun, numeric(1), ...)
+}

@@ -1,6 +1,6 @@
 Package: gonovax
-Title: Stochastic SIR Model for gonorrhoea with vaccination
-Version: 0.1.16
+Title: Deterministic SIR Model for gonorrhoea with vaccination
+Version: 0.1.17
 Authors@R:
     c( person(given = "Lilith",
            family = "Whittles",
@@ -14,8 +14,8 @@ Language: en-GB
 Imports: 
     odin,
     furrr,
-    ggplot2,
-    gridExtra
+    progress (>= 1.2.0),
+    mcstate (>= 0.2.13)
 Suggests:
     testthat,
     knitr

@@ -257,3 +257,15 @@ test_that("t_stop is working correctly", {
                c(0, 0))
 
 })
+
+test_that("aggregated time series output correctly", {
+  ## check with single parameter set
+  params <- model_params(gono_params = gono_params(1))
+  mod <- model(user = params)
+  tt <- seq.int(0, 5) / 365
+  y <- mod$run(tt)
+  y <- mod$transform_variables(y)
+  expect_equal(y$tot_treated, apply(y$cum_treated, 1, sum))
+  expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
+
+})

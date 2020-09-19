@@ -33,3 +33,11 @@ test_that("extract_flows works", {
   expect_equal(z$cum_revaccinated,
                sapply(y, function(x) rowSums(x$cum_vaccinated[-1, , 3])))
 })
+
+test_that("gonovax_year works as expected", {
+  expect_equal(gonovax_year(2009), 2)
+  expect_error(gonovax_year(2006),
+               "Negative dates, gonovax_year likely applied twice")
+  expect_equal(gonovax_year_as_year(2), 2009)
+  expect_error(gonovax_year_as_year(-1), "'gonovax_year' must be at least 1")
+})

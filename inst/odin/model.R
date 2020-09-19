@@ -71,6 +71,10 @@ deriv(cum_treated[, ])    <- n_TU[i, j]
 deriv(cum_screened[, ])   <- screened[i, j]
 deriv(cum_vaccinated[, ]) <- n_vs[i, j, j] + n_vd[i, j, j] + n_ve[i, j, j]
 
+# aggregated time series for fitting mcmc
+output(tot_treated) <- sum(cum_treated)
+output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
+
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
 initial(U[, ]) <- U0[i, j]
