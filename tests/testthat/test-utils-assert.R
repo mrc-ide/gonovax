@@ -49,12 +49,6 @@ test_that("assert_named", {
 })
 
 
-test_that("assert_logical", {
-  expect_error(assert_logical("one"), "must be a logical")
-  expect_error(assert_logical(1), "must be a logical")
-})
-
-
 test_that("assert_character", {
   expect_silent(assert_character("string"))
   expect_error(assert_character(1), "must be a character")
