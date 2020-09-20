@@ -121,10 +121,11 @@ test_that("mcmc_combine works as expected", {
   class(z2) <- NULL
   expect_error(mcmc_combine(z1$mcmc, z2),
                "All elements of '...' must be 'gonovax_mcmc' objects")
-  
+
   z3 <- mcmc(z1$pars, n_steps = 4, progress = TRUE)
-  expect_error(mcmc_combine(z1$mcmc, z3), "All chains must have the same length")
+  expect_error(mcmc_combine(z1$mcmc, z3),
+               "All chains must have the same length")
   expect_error(mcmc_combine(z, z3), "Chains have already been combined")
   expect_error(mcmc_combine(z3), "At least 2 samples objects must be provided")
-  
+
 })
