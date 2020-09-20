@@ -1,3 +1,7 @@
+# gonovax 0.1.18
+
+* add mcmc thinning and sampling tools
+
 # gonovax 0.1.17
 
 * add mcmc fitting method to gumcad data
