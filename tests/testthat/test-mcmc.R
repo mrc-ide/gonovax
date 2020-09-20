@@ -26,25 +26,16 @@ test_that("compare function works as expected", {
 })
 
 test_that("mcmc runs", {
-  p <- unlist(gono_params(1))
-  proposal <- cov(gono_params()) * 0.1
-  pars <- Map(mcstate::pmcmc_parameter,
-              name = names(p),
-              initial = unname(p),
-              min = 0,
-              max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
-              discrete = FALSE)
-  pars <- mcstate::pmcmc_parameters$new(pars, proposal)
-  set.seed(1)
-  z <- mcmc(pars, n_steps = 10, progress = TRUE)
-  expect_equal(z$probabilities[, "log_likelihood"],
+
+  z <- example_mcmc()
+  expect_equal(z$mcmc$probabilities[, "log_likelihood"],
                c(-3833.78202033004, -3833.78202033004, -3570.14662139024,
                  -3570.14662139024, -3570.14662139024, -3554.31011602949,
                  -3554.31011602949, -3554.31011602949, -3554.31011602949,
                  -3554.31011602949, -3543.37004716602), tol = 1e-1)
 
   ## what do results look like?
-  p <- z$pars[nrow(z$pars), ]
+  p <- z$mcmc$pars[nrow(z$mcmc$pars), ]
   model_pars <- model_params(p)
   mod <- model(user = model_pars)
   y <- mod$run(seq(0, 12))
@@ -65,47 +56,8 @@ test_that("mcmc runs", {
 
 })
 
-test_that("mcmc_combine works as expected", {
-  p <- unlist(gono_params(1))
-  proposal <- cov(gono_params()) * 0.1
-  params <- Map(mcstate::pmcmc_parameter,
-              name = names(p),
-              initial = unname(p),
-              min = 0,
-              max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
-              discrete = FALSE)
-  pars <- mcstate::pmcmc_parameters$new(params, proposal)
-  set.seed(1)
-  z1 <- mcmc(pars, n_steps = 5, progress = TRUE)
-  z2 <- mcmc(pars, n_steps = 5, progress = TRUE)
-  z <- mcmc_combine(z1, z2)
-
-  # check error cases
-  class(z2) <- NULL
-  expect_error(mcmc_combine(z1, z2),
-               "All elements of '...' must be 'gonovax_mcmc' objects")
-
-  z3 <- mcmc(pars, n_steps = 4, progress = TRUE)
-  expect_error(mcmc_combine(z1, z3), "All chains must have the same length")
-  expect_error(mcmc_combine(z, z3), "Chains have already been combined")
-  expect_error(mcmc_combine(z1), "At least 2 samples objects must be provided")
-
-  pars <- mcstate::pmcmc_parameters$new(params[-1], proposal[-1, -1])
-  z4 <-  mcmc(pars, n_steps = 5, progress = TRUE)
-  expect_error(mcmc_combine(z1, z4), "All parameters must have the same names")
-
-})
-
 test_that("mcmc runs with multiple chains", {
-  p <- unlist(gono_params(1))
-  proposal <- cov(gono_params()) * 0.1
-  pars <- Map(mcstate::pmcmc_parameter,
-              name = names(p),
-              initial = unname(p),
-              min = 0,
-              max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
-              discrete = FALSE)
-  pars <- mcstate::pmcmc_parameters$new(pars, proposal)
+  pars <- example_mcmc()$pars
   set.seed(1)
   z <- mcmc(pars, n_steps = 4, progress = TRUE, n_chains = 2)
   expect_equal(z$probabilities[, "log_likelihood"],
