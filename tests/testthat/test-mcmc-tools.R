@@ -129,3 +129,30 @@ test_that("mcmc_combine works as expected", {
   expect_error(mcmc_combine(z3), "At least 2 samples objects must be provided")
 
 })
+
+
+
+test_that("can sample from a mcmc", {
+  results <- example_mcmc()$mcmc
+  sub <- mcmc_sample(results, 8, burnin = 2)
+  expect_equal(nrow(sub$pars), 8)
+  expect_true(all(sub$iteration >= 2))
+})
+
+
+test_that("sampling is with replacement", {
+  results <- example_mcmc()$mcmc
+  sub <- mcmc_sample(results, 50, burnin = 2)
+  expect_equal(nrow(sub$pars), 50)
+  expect_true(all(sub$iteration >= 2))
+  expect_true(any(duplicated(sub$iteration)))
+})
+
+
+test_that("can sample from a combined chain", {
+  results <- mcmc_combine(samples = example_mcmc2()$results)
+  sub <- mcmc_sample(results, 50, burnin = 2)
+  expect_equal(nrow(sub$pars), 50)
+  expect_true(all(1:3 %in% sub$chain))
+  expect_true(all(sub$iteration >= 2))
+})
