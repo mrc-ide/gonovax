@@ -8,9 +8,9 @@ initialisation}
 run_novax_user(gono_params, tt)
 }
 \arguments{
-\item{tt}{a numeric vector of times at which the model state is output}
+\item{gono_params}{a set of gono_params, eg a mcmc sample}
 
-\item{a}{set of gono_params}
+\item{tt}{a numeric vector of times at which the model state is output}
 }
 \value{
 A list of transformed model outputs

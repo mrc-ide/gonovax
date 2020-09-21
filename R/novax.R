@@ -104,7 +104,7 @@ run_novax <- function(n = NULL, tt, equilib = FALSE) {
 ##' @name run_novax_user
 ##' @title run model without vaccination for input parameter sets from
 ##' initialisation
-##' @param a set of gono_params
+##' @param gono_params a set of gono_params, eg a mcmc sample
 ##' @param tt a numeric vector of times at which the model state is output
 ##' @return A list of transformed model outputs
 ##' @export
