@@ -1,6 +1,7 @@
 # gonovax 0.1.19
 
 * export data easily
+* add user function for running novax
 
 # gonovax 0.1.18
 
