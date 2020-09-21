@@ -1,3 +1,7 @@
+# gonovax 0.1.19
+
+* export data easily
+
 # gonovax 0.1.18
 
 * add mcmc thinning and sampling tools

@@ -3,6 +3,7 @@
 export(aggregate)
 export(gono_params)
 export(gonovax_year)
+export(gumcad_data)
 export(initial_params)
 export(mcmc)
 export(mcmc_combine)
