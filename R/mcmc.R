@@ -127,11 +127,8 @@ history_collector <- function(n) {
 compare <- function(pars) {
 
   ## load data
-  if (is.null(cache$data)) {
-    cache$data <- read_csv(gonovax_file("extdata/observed_gumcad.csv"))
-  }
+  data <- gumcad_data()
 
-  data <- cache$data
   # initially only fit to most recent attendance figures
   data[data$year < 2019, "attended"] <- NA
 

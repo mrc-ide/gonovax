@@ -100,3 +100,22 @@ run_novax <- function(n = NULL, tt, equilib = FALSE) {
   n <- n %||% seq_len(nrow(gono_params()))
   lapply(n, run_novax_int, tt = tt, equilib = equilib)
 }
+
+##' @name run_novax_user
+##' @title run model without vaccination for input parameter sets from
+##' initialisation
+##' @param gono_params a set of gono_params, eg a mcmc sample
+##' @param tt a numeric vector of times at which the model state is output
+##' @return A list of transformed model outputs
+##' @export
+run_novax_user <- function(gono_params, tt) {
+
+  run <- function(gono_params, tt) {
+    pars <- model_params(gono_params = gono_params)
+    mod <- model(user = pars, unused_user_action = FALSE)
+    y <- mod$run(tt)
+    mod$transform_variables(y)
+  }
+
+  lapply(seq_len(nrow(gono_params)), function(i) run(gono_params[i, ], tt))
+}

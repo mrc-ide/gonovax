@@ -58,3 +58,9 @@ test_that("novax_baseline returns baseline conditions", {
 
   expect_error(novax_baseline(1, 31), "t must be an integer between 1 and 30")
 })
+
+test_that("run_novax_user works as expected", {
+  p <- gono_params(1:2)
+  tt <- 0:5
+  expect_equal(run_novax_user(p, tt), run_novax(1:2, tt))
+})
