@@ -1,3 +1,5 @@
+context("onevax")
+
 test_that("run_onevax works correctly", {
   tt <- seq(0, 5)
   y1 <- run_onevax(1, tt, eff = 0, dur = 1e3)[[1]]

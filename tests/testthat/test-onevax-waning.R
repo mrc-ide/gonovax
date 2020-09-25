@@ -1,3 +1,5 @@
+context("onevax (waning)")
+
 test_that("run_onevax_waning works correctly", {
   tt <- seq(0, 3)
   y1 <- run_onevax_waning(1, tt, eff = 0, dur = 1)[[1]]

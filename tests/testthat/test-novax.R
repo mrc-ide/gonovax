@@ -1,3 +1,5 @@
+context("novax")
+
 test_that("run_novax works correctly", {
   tt <- c(0, 1)
   y1 <- run_novax_int(1, tt)

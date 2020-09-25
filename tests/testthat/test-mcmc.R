@@ -1,3 +1,4 @@
+context("mcmc")
 
 test_that("compare function works as expected", {
   pars <- gono_params(1)
