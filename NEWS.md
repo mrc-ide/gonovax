@@ -1,5 +1,6 @@
 # gonovax 0.1.19
 
+* add GRASP % symptomatic data
 * export data easily
 * add user function for running novax
 
