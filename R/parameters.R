@@ -98,6 +98,10 @@ model_params <- function(gono_params = NULL,
   gono_params <- gono_params %||% gono_params(1)
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
+  # no time-varying beta
+  ret$tt <- c(0, 1e3)
+  ret$beta_t <- rep(ret$beta, 2)
+  ret$eta_t <- rep(ret$eta, 2)
   vax_params <- vax_params %||% vax_params0()
   init_params <- init_params %||% initial_params(ret, n_vax = vax_params$n_vax)
   c(ret, init_params, vax_params)

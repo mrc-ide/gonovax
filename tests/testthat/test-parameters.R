@@ -51,3 +51,4 @@ test_that("waning map works correctly", {
   expect_equal(rowSums(y), c(0, -1, 0, 0, 1))
   expect_equal(colSums(y), c(0, 0, 0, 0, 0))
 })
+

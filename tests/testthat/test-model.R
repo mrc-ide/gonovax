@@ -2,7 +2,7 @@ context("model (check)")
 
 test_that("there are no infections when beta is 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$beta <- 0
+  params$beta_t[] <- 0
   mod <- model(user = params)
 
   tt <- seq.int(0, 5) / 365
@@ -56,7 +56,7 @@ test_that("there are no infections when A0 = 0", {
 
 test_that("no-one is treated when mu and eta = 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$mu <- params$eta <- 0
+  params$mu <- params$eta_t[] <- 0
   mod <- model(user = params)
 
   tt <- seq.int(0, 5) / 365
