@@ -84,7 +84,6 @@ compare_baseline <- function(y, baseline) {
 
   # extract cumulative and annual flows
   ret <- extract_flows(y)
-  
 
   # compare to baseline (most will be reductions)
   ret_vs_baseline <- Map(`-`, ret, baseline[names(ret)])
