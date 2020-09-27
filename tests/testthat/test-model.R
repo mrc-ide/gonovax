@@ -269,3 +269,15 @@ test_that("aggregated time series output correctly", {
   expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
 
 })
+
+test_that("time-varying eta works as expected", {
+  params <- model_params(gono_params = gono_params(1))
+  params$tt <- c(0, 1, 2)
+  params$eta_t <- params$eta * c(1, 2, 2)
+  params$beta_t <- rep(params$beta, 3)
+  mod <- model(user = params)
+  tt <- seq.int(0, 2, by = 1 / 12)
+  y <- mod$run(tt)
+  y <- mod$transform_variables(y)
+  plot(diff(rowSums(y$cum_screened)))
+})
