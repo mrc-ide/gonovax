@@ -1,3 +1,4 @@
+context("parameters")
 
 test_that("can select a specific parameter sets", {
   gp <- read_csv(gonovax_file("extdata/gono_params.csv"))

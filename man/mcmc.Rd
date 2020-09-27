@@ -4,7 +4,7 @@
 \alias{mcmc}
 \title{Run a mcmc sampler}
 \usage{
-mcmc(pars, n_steps, progress = FALSE, n_chains = 1)
+mcmc(pars, n_steps, compare = NULL, progress = FALSE, n_chains = 1)
 }
 \arguments{
 \item{pars}{A [`mcmc_parameters`] object containing
@@ -12,6 +12,10 @@ information about parameters ( parameter ranges, priors, proposal kernel,
 observation functions).}
 
 \item{n_steps}{Number of MCMC steps to run}
+
+\item{compare}{likelihood function to compare data to epidemic trajectory
+should return a single value representing the log-likelihood. Default is
+compare_basic()}
 
 \item{progress}{Logical, indicating if a progress bar should be
 displayed, using [`progress::progress_bar`].}

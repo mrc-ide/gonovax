@@ -5,12 +5,17 @@
 # j = Vaccination status
 ## 1: Unvaccinated
 ## 2: Bexsero
-## 3: Vaccine X
-## 4: Dual
-## 5: Waned
+## 3: Waned
 
 n_group <- 2
 n_vax   <- user(1)
+
+## calibrate time-varying parameters
+# tt runs from t0 = 2007, to t12 = 2019
+tt[] <- user()
+dim(tt) <- user()
+beta <- interpolate(tt, beta_t,  "linear")
+eta  <- interpolate(tt, eta_t, "linear")
 
 ## Core equations for transitions between compartments:
 
@@ -135,16 +140,16 @@ dim(cum_vaccinated) <- c(n_group, n_vax)
 p[]     <- user()
 q[]     <- user()
 
-enr     <- user()
-exr     <- user()
-beta    <- user()
-epsilon <- user()
-sigma   <- user()
-psi     <- user()
-eta     <- user()
-nu      <- user()
-mu      <- user()
-rho     <- user()
+enr      <- user()
+exr      <- user()
+beta_t[] <- user()
+epsilon  <- user()
+sigma    <- user()
+psi      <- user()
+eta_t[]  <- user()
+nu       <- user()
+mu       <- user()
+rho      <- user()
 
 ## vaccination pars
 ve[, , ]   <- user()
@@ -156,6 +161,9 @@ vax_t[] <- user()
 vax_y[] <- user()
 
 ## par dimensions
+dim(beta_t) <- 2
+dim(eta_t)  <- 2
+
 dim(p)    <- n_group
 dim(q)    <- n_group
 dim(eff)  <- n_vax

@@ -1,7 +1,8 @@
+context("mcmc")
 
 test_that("compare function works as expected", {
   pars <- gono_params(1)
-  ll <- compare(pars)
+  ll <- compare_basic(pars)
   expect_equal(ll, -3833.782, tol = 1e-6)
   data <- cache$data
   y <- run_novax(1, seq(0, 12))[[1]]
