@@ -1,3 +1,8 @@
+# gonovax 0.1.20
+
+* add time-varying beta and eta
+* add option to change compare function
+
 # gonovax 0.1.19
 
 * add GRASP % symptomatic data
