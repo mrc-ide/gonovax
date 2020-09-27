@@ -17,6 +17,10 @@
 ##'
 ##' @param n_steps Number of MCMC steps to run
 ##'
+##' @param compare likelihood function to compare data to epidemic trajectory
+##' should return a single value representing the log-likelihood. Default is
+##' compare_basic()
+##'
 ##' @param progress Logical, indicating if a progress bar should be
 ##'   displayed, using [`progress::progress_bar`].
 ##'
@@ -32,27 +36,30 @@
 ##'
 ##' @export
 ##' @importFrom stats runif dnorm
-mcmc <- function(pars, n_steps, progress = FALSE, n_chains = 1) {
+mcmc <- function(pars, n_steps, compare = NULL, progress = FALSE,
+                 n_chains = 1) {
 
   assert_is(pars, "pmcmc_parameters")
   assert_scalar_positive_integer(n_steps)
   assert_scalar_positive_integer(n_chains)
 
+  compare <- compare %||% compare_basic
+
   if (n_chains == 1) {
-    mcmc_single_chain(pars, n_steps, progress)
+    mcmc_single_chain(pars, n_steps, compare, progress)
   } else {
     samples <- vector("list", n_chains)
     for (i in seq_along(samples)) {
       if (progress) {
         message(sprintf("Running chain %d / %d", i, n_chains))
       }
-      samples[[i]] <- mcmc_single_chain(pars, n_steps, progress)
+      samples[[i]] <- mcmc_single_chain(pars, n_steps, compare, progress)
     }
   mcmc_combine(samples = samples)
   }
 }
 
-mcmc_single_chain <- function(pars, n_steps, progress) {
+mcmc_single_chain <- function(pars, n_steps, compare, progress) {
 
   history_pars <- history_collector(n_steps)
   history_probabilities <- history_collector(n_steps)
@@ -122,9 +129,8 @@ history_collector <- function(n) {
 ##' @param pars A named vector of parameters
 ##'
 ##' @return a single log likelihood
-##'
 
-compare <- function(pars) {
+compare_basic <- function(pars) {
 
   ## load data
   data <- gonovax_data()
