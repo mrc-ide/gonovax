@@ -276,9 +276,8 @@ test_that("time-varying eta works as expected", {
   params$eta_t <- params$eta * c(1, 2, 2)
   params$beta_t <- rep(params$beta, 3)
   mod <- model(user = params)
-  tt <- seq.int(0, 2, by = 1 / 12) 
+  tt <- seq.int(0, 2, by = 1 / 12)
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   plot(diff(rowSums(y$cum_screened)))
-  
-}) 
+})
