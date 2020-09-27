@@ -447,8 +447,6 @@ SEXP model_create(SEXP user) {
   internal->wS = NULL;
   internal->wT = NULL;
   internal->wU = NULL;
-  internal->dim_beta_t = 2;
-  internal->dim_eta_t = 2;
   internal->n_group = 2;
   internal->dim_foi_1 = internal->n_group;
   internal->dim_foi_2 = internal->n_group;
@@ -1086,7 +1084,6 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->tt = (double*) user_get_array_dim(user, false, internal->tt, "tt", 1, NA_REAL, NA_REAL, &internal->dim_tt);
   internal->vax_t = (double*) user_get_array_dim(user, false, internal->vax_t, "vax_t", 1, NA_REAL, NA_REAL, &internal->dim_vax_t);
   internal->vax_y = (double*) user_get_array_dim(user, false, internal->vax_y, "vax_y", 1, NA_REAL, NA_REAL, &internal->dim_vax_y);
-  internal->beta_t = (double*) user_get_array(user, false, internal->beta_t, "beta_t", NA_REAL, NA_REAL, 1, internal->dim_beta_t);
   internal->dim_A_1 = internal->n_group;
   internal->dim_A_2 = internal->n_vax;
   internal->dim_A0_1 = internal->n_group;
@@ -1171,12 +1168,12 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->dim_wU_1 = internal->n_group;
   internal->dim_wU_2 = internal->n_vax;
   internal->dim_wU_3 = internal->n_vax;
-  internal->eta_t = (double*) user_get_array(user, false, internal->eta_t, "eta_t", NA_REAL, NA_REAL, 1, internal->dim_eta_t);
   interpolate_check_y(internal->dim_vax_t, internal->dim_vax_y, 0, "vax_y", "vax_switch");
   cinterpolate_free(internal->interpolate_vax_switch);
   internal->interpolate_vax_switch = cinterpolate_alloc("constant", internal->dim_vax_t, 1, internal->vax_t, internal->vax_y, true, false);
   internal->dim_A = internal->dim_A_1 * internal->dim_A_2;
   internal->dim_A0 = internal->dim_A0_1 * internal->dim_A0_2;
+  internal->dim_beta_t = internal->dim_tt;
   internal->dim_C = internal->dim_C_1 * internal->dim_C_2;
   internal->dim_cum_diag_a = internal->dim_cum_diag_a_1 * internal->dim_cum_diag_a_2;
   internal->dim_cum_diag_s = internal->dim_cum_diag_s_1 * internal->dim_cum_diag_s_2;
@@ -1185,6 +1182,7 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->dim_cum_treated = internal->dim_cum_treated_1 * internal->dim_cum_treated_2;
   internal->dim_cum_vaccinated = internal->dim_cum_vaccinated_1 * internal->dim_cum_vaccinated_2;
   internal->dim_entrants = internal->dim_entrants_1 * internal->dim_entrants_2;
+  internal->dim_eta_t = internal->dim_tt;
   internal->dim_I = internal->dim_I_1 * internal->dim_I_2;
   internal->dim_I0 = internal->dim_I0_1 * internal->dim_I0_2;
   internal->dim_N = internal->dim_N_1 * internal->dim_N_2;
@@ -1223,12 +1221,6 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->dim_wU = internal->dim_wU_1 * internal->dim_wU_2 * internal->dim_wU_3;
   internal->dim_wU_12 = internal->dim_wU_1 * internal->dim_wU_2;
   internal->eff = (double*) user_get_array(user, false, internal->eff, "eff", NA_REAL, NA_REAL, 1, internal->dim_eff);
-  interpolate_check_y(internal->dim_tt, internal->dim_beta_t, 0, "beta_t", "beta");
-  cinterpolate_free(internal->interpolate_beta);
-  internal->interpolate_beta = cinterpolate_alloc("linear", internal->dim_tt, 1, internal->tt, internal->beta_t, true, false);
-  interpolate_check_y(internal->dim_tt, internal->dim_eta_t, 0, "eta_t", "eta");
-  cinterpolate_free(internal->interpolate_eta);
-  internal->interpolate_eta = cinterpolate_alloc("linear", internal->dim_tt, 1, internal->tt, internal->eta_t, true, false);
   internal->p = (double*) user_get_array(user, false, internal->p, "p", NA_REAL, NA_REAL, 1, internal->dim_p);
   internal->q = (double*) user_get_array(user, false, internal->q, "q", NA_REAL, NA_REAL, 1, internal->dim_q);
   internal->A0 = (double*) user_get_array(user, false, internal->A0, "A0", NA_REAL, NA_REAL, 2, internal->dim_A0_1, internal->dim_A0_2);
@@ -1286,6 +1278,8 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->wT = (double*) Calloc(internal->dim_wT, double);
   Free(internal->wU);
   internal->wU = (double*) Calloc(internal->dim_wU, double);
+  internal->beta_t = (double*) user_get_array(user, false, internal->beta_t, "beta_t", NA_REAL, NA_REAL, 1, internal->dim_beta_t);
+  internal->eta_t = (double*) user_get_array(user, false, internal->eta_t, "eta_t", NA_REAL, NA_REAL, 1, internal->dim_eta_t);
   internal->I0 = (double*) user_get_array(user, false, internal->I0, "I0", NA_REAL, NA_REAL, 2, internal->dim_I0_1, internal->dim_I0_2);
   for (int i = 1; i <= internal->dim_cum_diag_a_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_diag_a_2; ++j) {
@@ -1363,6 +1357,12 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
       internal->initial_U[i - 1 + internal->dim_U_1 * (j - 1)] = internal->U0[internal->dim_U0_1 * (j - 1) + i - 1];
     }
   }
+  interpolate_check_y(internal->dim_tt, internal->dim_beta_t, 0, "beta_t", "beta");
+  cinterpolate_free(internal->interpolate_beta);
+  internal->interpolate_beta = cinterpolate_alloc("linear", internal->dim_tt, 1, internal->tt, internal->beta_t, true, false);
+  interpolate_check_y(internal->dim_tt, internal->dim_eta_t, 0, "eta_t", "eta");
+  cinterpolate_free(internal->interpolate_eta);
+  internal->interpolate_eta = cinterpolate_alloc("linear", internal->dim_tt, 1, internal->tt, internal->eta_t, true, false);
   for (int i = 1; i <= internal->dim_n_ve_1; ++i) {
     for (int j = 1; j <= internal->dim_n_ve_2; ++j) {
       for (int k = 1; k <= internal->dim_n_ve_3; ++k) {
@@ -1499,18 +1499,9 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   double * T = state + internal->offset_variable_T;
   double vax_switch = 0.0;
   cinterpolate_eval(t, internal->interpolate_vax_switch, &vax_switch);
-  double beta = 0.0;
-  cinterpolate_eval(t, internal->interpolate_beta, &beta);
-  double eta = 0.0;
-  cinterpolate_eval(t, internal->interpolate_eta, &eta);
   for (int i = 1; i <= internal->dim_C_1; ++i) {
     for (int j = 1; j <= internal->dim_C_2; ++j) {
       internal->C[i - 1 + internal->dim_C_1 * (j - 1)] = I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1];
-    }
-  }
-  for (int i = 1; i <= internal->dim_n_AT_1; ++i) {
-    for (int j = 1; j <= internal->dim_n_AT_2; ++j) {
-      internal->n_AT[i - 1 + internal->dim_n_AT_1 * (j - 1)] = eta * A[internal->dim_A_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_n_ST_1; ++i) {
@@ -1521,11 +1512,6 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   for (int i = 1; i <= internal->dim_n_TU_1; ++i) {
     for (int j = 1; j <= internal->dim_n_TU_2; ++j) {
       internal->n_TU[i - 1 + internal->dim_n_TU_1 * (j - 1)] = internal->rho * T[internal->dim_T_1 * (j - 1) + i - 1];
-    }
-  }
-  for (int i = 1; i <= internal->dim_screened_1; ++i) {
-    for (int j = 1; j <= internal->dim_screened_2; ++j) {
-      internal->screened[i - 1 + internal->dim_screened_1 * (j - 1)] = eta * U[internal->dim_U_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_wA_1; ++i) {
@@ -1563,24 +1549,11 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
       }
     }
   }
-  for (int i = 1; i <= internal->dim_A_1; ++i) {
-    for (int j = 1; j <= internal->dim_A_2; ++j) {
-      dstatedt[internal->offset_variable_A + i - 1 + internal->dim_A_1 * (j - 1)] = (1 - internal->psi) * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - (internal->nu + internal->exr) * A[internal->dim_A_1 * (j - 1) + i - 1] + odin_sum3(internal->wA, i - 1, i, j - 1, j, 0, internal->dim_wA_3, internal->dim_wA_1, internal->dim_wA_12);
-    }
-  }
-  for (int i = 1; i <= internal->dim_cum_diag_a_1; ++i) {
-    for (int j = 1; j <= internal->dim_cum_diag_a_2; ++j) {
-      dstatedt[internal->offset_variable_cum_diag_a + i - 1 + internal->dim_cum_diag_a_1 * (j - 1)] = internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1];
-    }
-  }
+  double beta = 0.0;
+  cinterpolate_eval(t, internal->interpolate_beta, &beta);
   for (int i = 1; i <= internal->dim_cum_diag_s_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_diag_s_2; ++j) {
       dstatedt[internal->offset_variable_cum_diag_s + i - 1 + internal->dim_cum_diag_s_1 * (j - 1)] = internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1];
-    }
-  }
-  for (int i = 1; i <= internal->dim_cum_screened_1; ++i) {
-    for (int j = 1; j <= internal->dim_cum_screened_2; ++j) {
-      dstatedt[internal->offset_variable_cum_screened + i - 1 + internal->dim_cum_screened_1 * (j - 1)] = internal->screened[internal->dim_screened_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_cum_treated_1; ++i) {
@@ -1593,11 +1566,8 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
       dstatedt[internal->offset_variable_S + i - 1 + internal->dim_S_1 * (j - 1)] = internal->psi * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] - internal->exr * S[internal->dim_S_1 * (j - 1) + i - 1] + odin_sum3(internal->wS, i - 1, i, j - 1, j, 0, internal->dim_wS_3, internal->dim_wS_1, internal->dim_wS_12);
     }
   }
-  for (int i = 1; i <= internal->dim_T_1; ++i) {
-    for (int j = 1; j <= internal->dim_T_2; ++j) {
-      dstatedt[internal->offset_variable_T + i - 1 + internal->dim_T_1 * (j - 1)] = internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - internal->exr * T[internal->dim_T_1 * (j - 1) + i - 1] - internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1] + odin_sum3(internal->wT, i - 1, i, j - 1, j, 0, internal->dim_wT_3, internal->dim_wT_1, internal->dim_wT_12);
-    }
-  }
+  double eta = 0.0;
+  cinterpolate_eval(t, internal->interpolate_eta, &eta);
   for (int i = 1; i <= internal->dim_N_1; ++i) {
     for (int j = 1; j <= internal->dim_N_2; ++j) {
       internal->N[i - 1 + internal->dim_N_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] + internal->C[internal->dim_C_1 * (j - 1) + i - 1] + T[internal->dim_T_1 * (j - 1) + i - 1];
@@ -1610,6 +1580,44 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
       }
     }
   }
+  for (int i = 1; i <= internal->dim_n_AT_1; ++i) {
+    for (int j = 1; j <= internal->dim_n_AT_2; ++j) {
+      internal->n_AT[i - 1 + internal->dim_n_AT_1 * (j - 1)] = eta * A[internal->dim_A_1 * (j - 1) + i - 1];
+    }
+  }
+  for (int i = 1; i <= internal->dim_Np; ++i) {
+    internal->Np[i - 1] = odin_sum2(internal->N, i - 1, i, 0, internal->dim_N_2, internal->dim_N_1) * internal->p[i - 1];
+  }
+  for (int i = 1; i <= internal->dim_screened_1; ++i) {
+    for (int j = 1; j <= internal->dim_screened_2; ++j) {
+      internal->screened[i - 1 + internal->dim_screened_1 * (j - 1)] = eta * U[internal->dim_U_1 * (j - 1) + i - 1];
+    }
+  }
+  for (int i = 1; i <= internal->dim_A_1; ++i) {
+    for (int j = 1; j <= internal->dim_A_2; ++j) {
+      dstatedt[internal->offset_variable_A + i - 1 + internal->dim_A_1 * (j - 1)] = (1 - internal->psi) * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - (internal->nu + internal->exr) * A[internal->dim_A_1 * (j - 1) + i - 1] + odin_sum3(internal->wA, i - 1, i, j - 1, j, 0, internal->dim_wA_3, internal->dim_wA_1, internal->dim_wA_12);
+    }
+  }
+  for (int i = 1; i <= internal->dim_cum_diag_a_1; ++i) {
+    for (int j = 1; j <= internal->dim_cum_diag_a_2; ++j) {
+      dstatedt[internal->offset_variable_cum_diag_a + i - 1 + internal->dim_cum_diag_a_1 * (j - 1)] = internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1];
+    }
+  }
+  for (int i = 1; i <= internal->dim_cum_screened_1; ++i) {
+    for (int j = 1; j <= internal->dim_cum_screened_2; ++j) {
+      dstatedt[internal->offset_variable_cum_screened + i - 1 + internal->dim_cum_screened_1 * (j - 1)] = internal->screened[internal->dim_screened_1 * (j - 1) + i - 1];
+    }
+  }
+  for (int i = 1; i <= internal->dim_T_1; ++i) {
+    for (int j = 1; j <= internal->dim_T_2; ++j) {
+      dstatedt[internal->offset_variable_T + i - 1 + internal->dim_T_1 * (j - 1)] = internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - internal->exr * T[internal->dim_T_1 * (j - 1) + i - 1] - internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1] + odin_sum3(internal->wT, i - 1, i, j - 1, j, 0, internal->dim_wT_3, internal->dim_wT_1, internal->dim_wT_12);
+    }
+  }
+  for (int i = 1; i <= internal->dim_m_1; ++i) {
+    for (int j = 1; j <= internal->dim_m_2; ++j) {
+      internal->m[i - 1 + internal->dim_m_1 * (j - 1)] = internal->epsilon * (i == j) + (1 - internal->epsilon) * internal->Np[j - 1] / (double) odin_sum1(internal->Np, 0, internal->dim_Np);
+    }
+  }
   for (int i = 1; i <= internal->dim_n_vs_1; ++i) {
     for (int j = 1; j <= internal->dim_n_vs_2; ++j) {
       for (int k = 1; k <= internal->dim_n_vs_3; ++k) {
@@ -1620,14 +1628,6 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   for (int i = 1; i <= internal->dim_cum_vaccinated_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_vaccinated_2; ++j) {
       dstatedt[internal->offset_variable_cum_vaccinated + i - 1 + internal->dim_cum_vaccinated_1 * (j - 1)] = internal->n_vs[internal->dim_n_vs_12 * (j - 1) + internal->dim_n_vs_1 * (j - 1) + i - 1] + internal->n_vd[internal->dim_n_vd_12 * (j - 1) + internal->dim_n_vd_1 * (j - 1) + i - 1] + internal->n_ve[internal->dim_n_ve_12 * (j - 1) + internal->dim_n_ve_1 * (j - 1) + i - 1];
-    }
-  }
-  for (int i = 1; i <= internal->dim_Np; ++i) {
-    internal->Np[i - 1] = odin_sum2(internal->N, i - 1, i, 0, internal->dim_N_2, internal->dim_N_1) * internal->p[i - 1];
-  }
-  for (int i = 1; i <= internal->dim_m_1; ++i) {
-    for (int j = 1; j <= internal->dim_m_2; ++j) {
-      internal->m[i - 1 + internal->dim_m_1 * (j - 1)] = internal->epsilon * (i == j) + (1 - internal->epsilon) * internal->Np[j - 1] / (double) odin_sum1(internal->Np, 0, internal->dim_Np);
     }
   }
   for (int i = 1; i <= internal->dim_foi_1; ++i) {
@@ -1681,13 +1681,13 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
   double * cum_screened = state + internal->offset_variable_cum_screened;
   output[1] = odin_sum1(cum_treated, 0, internal->dim_cum_treated) + odin_sum1(cum_screened, 0, internal->dim_cum_screened);
   output[0] = odin_sum1(cum_treated, 0, internal->dim_cum_treated);
-  double beta = 0.0;
-  cinterpolate_eval(t, internal->interpolate_beta, &beta);
   for (int i = 1; i <= internal->dim_C_1; ++i) {
     for (int j = 1; j <= internal->dim_C_2; ++j) {
       internal->C[i - 1 + internal->dim_C_1 * (j - 1)] = I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1];
     }
   }
+  double beta = 0.0;
+  cinterpolate_eval(t, internal->interpolate_beta, &beta);
   for (int i = 1; i <= internal->dim_N_1; ++i) {
     for (int j = 1; j <= internal->dim_N_2; ++j) {
       internal->N[i - 1 + internal->dim_N_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] + internal->C[internal->dim_C_1 * (j - 1) + i - 1] + T[internal->dim_T_1 * (j - 1) + i - 1];

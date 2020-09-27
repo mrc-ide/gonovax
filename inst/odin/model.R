@@ -161,8 +161,8 @@ vax_t[] <- user()
 vax_y[] <- user()
 
 ## par dimensions
-dim(beta_t) <- 2
-dim(eta_t)  <- 2
+dim(beta_t) <- length(tt)
+dim(eta_t)  <- length(tt)
 
 dim(p)    <- n_group
 dim(q)    <- n_group
