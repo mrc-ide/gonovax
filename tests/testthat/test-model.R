@@ -271,10 +271,11 @@ test_that("aggregated time series output correctly", {
 })
 
 test_that("time-varying eta works as expected", {
-  params <- model_params(gono_params = gono_params(1))
+  gono_pars <- gono_params(1)
+  params <- model_params(gono_params = gono_pars)
   params$tt <- c(0, 1, 2)
-  params$eta_t <- params$eta * c(1, 2, 2)
-  params$beta_t <- rep(params$beta, 3)
+  params$eta_t <- gono_pars$eta * c(1, 2, 2)
+  params$beta_t <- rep(gono_pars$beta, 3)
   mod <- model(user = params)
   tt <- seq.int(0, 2, by = 1 / 12)
   y <- mod$run(tt)
