@@ -81,7 +81,7 @@ gonovax_year_as_year <- function(gonovax_year) {
 ##'
 ##' @param rho overdispersion parameter
 ##'
-##'@param log logical indicating whether to return log value 
+##'@param log logical indicating whether to return log value
 ##'
 ##' @return probability of observing x
 ##' @export
