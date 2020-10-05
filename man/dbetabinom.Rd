@@ -15,6 +15,8 @@ dbetabinom(x, size, prob, rho, log = FALSE)
 \item{prob}{probability of observing a single success}
 
 \item{rho}{overdispersion parameter}
+
+\item{log}{logical indicating whether to return log value}
 }
 \value{
 probability of observing x
