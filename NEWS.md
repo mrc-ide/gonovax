@@ -1,3 +1,7 @@
+# gonovax 0.1.21
+
+* add beta binomial function
+
 # gonovax 0.1.20
 
 * add time-varying beta and eta
