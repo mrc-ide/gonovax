@@ -2,7 +2,7 @@
 % Please edit documentation in R/support.R
 \name{gonovax_year}
 \alias{gonovax_year}
-\title{Convert a year into the number of years after 2007}
+\title{Convert a year into the number of years after 2009}
 \usage{
 gonovax_year(year)
 }
@@ -10,10 +10,10 @@ gonovax_year(year)
 \item{year}{an integer year}
 }
 \value{
-An integer, being the number of years after 2007
+An integer, being the number of years after 2009
 }
 \description{
-Convert a year into the number of years after 2007
+Convert a year into the number of years after 2009
 }
 \examples{
 gonovax_year(2019)

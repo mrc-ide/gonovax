@@ -35,10 +35,10 @@ test_that("extract_flows works", {
 })
 
 test_that("gonovax_year works as expected", {
-  expect_equal(gonovax_year(2009), 2)
+  expect_equal(gonovax_year(2009), 0)
   expect_error(gonovax_year(2006),
                "Negative dates, gonovax_year likely applied twice")
-  expect_equal(gonovax_year_as_year(2), 2009)
+  expect_equal(gonovax_year_as_year(2), 2011)
   expect_error(gonovax_year_as_year(-1), "'gonovax_year' must be at least 1")
 })
 
