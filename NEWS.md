@@ -1,3 +1,7 @@
+# gonovax 0.1.21
+
+* data starts in 2010
+
 # gonovax 0.1.20
 
 * add time-varying beta and eta
