@@ -72,3 +72,38 @@ gonovax_year_as_year <- function(gonovax_year) {
   assert_positive_integer(gonovax_year)
   2009 + gonovax_year
 }
+
+
+##' pdf of a betabinomial parametrised in terms of mean and over-dispersion
+##'
+##' @title pdf of a betabinomial parametrised in terms of probability and
+##' over-dospersion
+##'
+##' @param x data
+##'
+##' @param size integer of sample size
+##'
+##' @param prob probability of observing a single success
+##'
+##' @param rho overdispersion parameter
+##'
+##'@param log logical indicating whether to return log value
+##'
+##' @return probability of observing x
+##' @export
+
+dbetabinom <- function(x, size, prob, rho, log = FALSE) {
+
+  ## here we have prob = a / (a + b)
+  ## so and rho = (a + b + n) / (a + b + 1)
+  a <- prob * (1 / rho - 1)
+  b <- (1 - prob) * (1 / rho - 1)
+
+  out <- lchoose(size, x) + lbeta(x + a, size - x + b) - lbeta(a, b)
+
+  if (!log) {
+    out <- exp(out)
+  }
+
+  out
+}

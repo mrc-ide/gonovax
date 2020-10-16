@@ -41,3 +41,32 @@ test_that("gonovax_year works as expected", {
   expect_equal(gonovax_year_as_year(2), 2011)
   expect_error(gonovax_year_as_year(-1), "'gonovax_year' must be at least 1")
 })
+
+
+test_that("dbetabinom", {
+
+  ## when prob = 1/2, rho = 1/3 (equivalently a = b = 1),
+  ## equivalent to discrete uniform from 0 to size
+  expect_equal(dbetabinom(4, 35, 1 / 2, 1 / 3), 1 / 36)
+  expect_equal(dbetabinom(4, 35, 1 / 2, 1 / 3, log = TRUE), log(1 / 36))
+
+
+  ## compare with extraDistr::dbbinom (uses a and b as parameters - to match
+  ## use prob = a / (a + b) and rho = 1 / (a + b + 1))
+  f <- function(x, size, a, b, log = FALSE) {
+    prob  <- a / (a + b)
+    rho <- 1 / (a + b + 1)
+
+    dbetabinom(x, size, prob, rho, log)
+  }
+
+  ## compare to extraDistr::dbbinom(15, 63, 2, 5) ~ 0.03613356
+  expect_equal(f(15, 63, 2, 5), 0.03613356, tolerance = 1e-8)
+  ## compare to extraDistr::dbbinom(15, 63, 2, 5, log = TRUE) ~ -3.320533
+  expect_equal(f(15, 63, 2, 5, log = TRUE), -3.320533, tolerance = 1e-6)
+
+  ## compare to extraDistr::dbbinom(672, 50454, 3, 2) ~ 4.18089e-08
+  expect_equal(f(672, 50454, 3, 2), 4.18089e-08, tolerance = 1e-13)
+  ## compare to extraDistr::dbbinom(15, 63, 2, 5, log = TRUE) ~ -16.99016
+  expect_equal(f(672, 50454, 3, 2, log = TRUE), -16.99016, tolerance = 1e-5)
+})

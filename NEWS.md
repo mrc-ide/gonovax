@@ -1,6 +1,7 @@
 # gonovax 0.1.21
 
 * data starts in 2010
+* add beta binomial function
 
 # gonovax 0.1.20
 
