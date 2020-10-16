@@ -3,9 +3,9 @@ context("mcmc")
 test_that("compare function works as expected", {
   pars <- gono_params(1)
   ll <- compare_basic(pars)
-  expect_equal(ll, -3833.782, tol = 1e-6)
+  expect_equal(ll, -16506.11, tol = 1e-6)
   data <- cache$data
-  y <- run_novax(1, seq(0, 12))[[1]]
+  y <- run_novax(1, seq(0, nrow(data)))[[1]]
   attended <- diff(y$tot_attended)
   diagnosed <- diff(y$tot_treated)
 
@@ -30,17 +30,18 @@ test_that("mcmc runs", {
 
   z <- example_mcmc()
   expect_equal(z$mcmc$probabilities[, "log_likelihood"],
-               c(-3833.78202033004, -3833.78202033004, -3570.14662139024,
-                 -3570.14662139024, -3570.14662139024, -3554.31011602949,
-                 -3554.31011602949, -3554.31011602949, -3554.31011602949,
-                 -3554.31011602949, -3543.37004716602), tol = 1e-1)
+               c(-16506.1135588395, -16506.1135588395, -12302.0329021242,
+                 -10386.6624356711, -10386.6624356711, -10386.6624356711,
+                 -8292.725909926, -8292.725909926, -7002.84058594194,
+                 -5408.29357213292, -5152.0304181118), tol = 1e-1)
 
   ## what do results look like?
   p <- z$mcmc$pars[nrow(z$mcmc$pars), ]
   model_pars <- model_params(p)
   mod <- model(user = model_pars)
-  y <- mod$run(seq(0, 12))
   data <- cache$data
+  y <- mod$run(seq(0, nrow(data)))
+
   attended <- diff(y[, "tot_attended"])
   diagnosed <- diff(y[, "tot_treated"])
 
@@ -62,10 +63,10 @@ test_that("mcmc runs with multiple chains", {
   set.seed(1)
   z <- mcmc(pars, n_steps = 4, progress = TRUE, n_chains = 2)
   expect_equal(z$probabilities[, "log_likelihood"],
-               c(-3833.78202033004, -3256.29981357909, -3256.29981357909,
-                 -3256.29981357909, -3256.29981357909, -3833.78202033004,
-                 -3833.78202033004, -3363.93250303873, -3363.93250303873,
-                 -3161.02224125879), tol = 1e-1)
+               c(-16506.1135588395, -16506.1135588395, -12302.0329021242,
+                 -10386.6624356711, -10386.6624356711, -16506.1135588395,
+                 -16506.1135588395, -9123.11679554351, -9123.11679554351,
+                 -5985.5066767372), tol = 1e-1)
 
   ## no progress
   set.seed(1)
