@@ -1,3 +1,7 @@
+# gonovax 0.1.22
+
+* add varying screening rate by group
+
 # gonovax 0.1.21
 
 * data starts in 2010

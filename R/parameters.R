@@ -98,11 +98,12 @@ model_params <- function(gono_params = NULL,
   gono_params <- gono_params %||% gono_params(1)
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-  # if tt not supplied, do not use time-varying beta
+  # if tt not supplied, do not use time-varying beta, or time/group varying eta
   if (is.null(ret$tt)) {
     ret$tt <- c(0, 1e3)
     ret$beta_t <- rep(ret$beta, 2)
-    ret$eta_t <- rep(ret$eta, 2)
+    ret$eta_l_t <- rep(ret$eta, 2)
+    ret$eta_h_t <- rep(ret$eta, 2)
     ret$beta <- ret$eta <- NULL
   }
   vax_params <- vax_params %||% vax_params0()

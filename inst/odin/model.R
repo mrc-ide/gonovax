@@ -11,11 +11,14 @@ n_group <- 2
 n_vax   <- user(1)
 
 ## calibrate time-varying parameters
-# tt runs from t0 = 2007, to t12 = 2019
+# tt runs from t0 = 2009, to t10 = 2019
 tt[] <- user()
 dim(tt) <- user()
-beta <- interpolate(tt, beta_t,  "linear")
-eta  <- interpolate(tt, eta_t, "linear")
+beta  <- interpolate(tt, beta_t,  "linear")
+eta_l <- interpolate(tt, eta_l_t, "linear")
+eta_h <- interpolate(tt, eta_h_t, "linear")
+eta[1] <- eta_l
+eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
 
@@ -45,10 +48,10 @@ m[, ]   <- epsilon * (i == j) + (1 - epsilon) * Np[j] / sum(Np)
 foi[, ] <- beta * p[i] * m[i, j] * sum(C[j, ]) / sum(N[j, ])
 
 n_UI[, ]     <- sum(foi[i, ]) * (1 - eff[j]) * U[i, j]
-n_AT[, ]     <- eta * A[i, j]
-n_ST[, ]   <- mu * S[i, j]
+n_AT[, ]     <- eta[i] * A[i, j]
+n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
-screened[, ] <- eta * U[i, j]
+screened[, ] <- eta[i] * U[i, j]
 
 # vaccination
 ## time-varying switch
@@ -140,32 +143,35 @@ dim(cum_vaccinated) <- c(n_group, n_vax)
 p[]     <- user()
 q[]     <- user()
 
-enr      <- user()
-exr      <- user()
-beta_t[] <- user()
-epsilon  <- user()
-sigma    <- user()
-psi      <- user()
-eta_t[]  <- user()
-nu       <- user()
-mu       <- user()
-rho      <- user()
+enr       <- user()
+exr       <- user()
+beta_t[]  <- user()
+eta_l_t[] <- user()
+eta_h_t[] <- user()
+epsilon   <- user()
+sigma     <- user()
+psi       <- user()
+nu        <- user()
+mu        <- user()
+rho       <- user()
 
 ## vaccination pars
-ve[, , ]   <- user()
+ve[, , ] <- user()
 vs[, , ] <- user()
 vd[, , ] <- user()
-eff[]  <- user()
-w[, ]  <- user()
-vax_t[] <- user()
-vax_y[] <- user()
+eff[]    <- user()
+w[, ]    <- user()
+vax_t[]  <- user()
+vax_y[]  <- user()
 
 ## par dimensions
-dim(beta_t) <- length(tt)
-dim(eta_t)  <- length(tt)
+dim(beta_t)  <- length(tt)
+dim(eta_l_t) <- length(tt)
+dim(eta_h_t) <- length(tt)
 
 dim(p)    <- n_group
 dim(q)    <- n_group
+dim(eta)  <- n_group
 dim(eff)  <- n_vax
 dim(ve)   <- c(n_group, n_vax, n_vax)
 dim(vd)   <- c(n_group, n_vax, n_vax)
