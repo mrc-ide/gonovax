@@ -56,7 +56,7 @@ test_that("there are no infections when A0 = 0", {
 
 test_that("no-one is treated when mu and eta = 0", {
   params <- model_params(gono_params = gono_params(1))
-  params$mu <- params$eta_t[] <- 0
+  params$mu <- params$eta_h_t[] <- params$eta_l_t[] <-  0
   mod <- model(user = params)
 
   tt <- seq.int(0, 5) / 365
@@ -274,11 +274,26 @@ test_that("time-varying eta works as expected", {
   gono_pars <- gono_params(1)
   params <- model_params(gono_params = gono_pars)
   params$tt <- c(0, 1, 2)
-  params$eta_t <- gono_pars$eta * c(1, 2, 2)
+  params$eta_l_t <- params$eta_h_t <- gono_pars$eta * c(1, 2, 2)
   params$beta_t <- rep(gono_pars$beta, 3)
   mod <- model(user = params)
-  tt <- seq.int(0, 2, by = 1 / 12)
+  tt <- seq(0, 2, by = 1 / 12)
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
-  plot(diff(rowSums(y$cum_screened)))
+  plot(tt[-1] + 2009, diff(rowSums(y$cum_screened)))
+  
+  # check can vary wrt group
+  params$eta_l_t[] <- gono_pars$eta
+  mod <- model(user = params)
+  y <- mod$run(tt)
+  y <- mod$transform_variables(y)
+  matplot(apply(y$cum_screened, 2, diff), type = "l")
+  
+  # check can switch off screening in a group
+  params$eta_l_t[] <- 0
+  mod <- model(user = params)
+  y1 <- mod$run(tt)
+  y1 <- mod$transform_variables(y1)
+  expect_equal(sum(y1$cum_screened[, 1, ]), 0)
+  expect_true(all(y1$cum_screened[-1, 2, ] > 0))
 })
