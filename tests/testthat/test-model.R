@@ -281,14 +281,14 @@ test_that("time-varying eta works as expected", {
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   plot(tt[-1] + 2009, diff(rowSums(y$cum_screened)))
-  
+
   # check can vary wrt group
   params$eta_l_t[] <- gono_pars$eta
   mod <- model(user = params)
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   matplot(apply(y$cum_screened, 2, diff), type = "l")
-  
+
   # check can switch off screening in a group
   params$eta_l_t[] <- 0
   mod <- model(user = params)
