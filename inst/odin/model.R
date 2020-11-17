@@ -83,6 +83,10 @@ deriv(cum_vaccinated[, ]) <- n_vs[i, j, j] + n_vd[i, j, j] + n_ve[i, j, j]
 output(tot_treated) <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
+# output time-varying params for checking
+output(beta) <- beta
+output(eta) <- eta
+
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
 initial(U[, ]) <- U0[i, j]
