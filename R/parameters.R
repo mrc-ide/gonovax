@@ -77,7 +77,7 @@ restart_params <- function(y, n_vax = NULL) {
   S0[, i_vax] <- y$S[i_t, , i_vax]
   T0[, i_vax] <- y$T[i_t, , i_vax]
 
-  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
 }
 
 ##' @name model_params
