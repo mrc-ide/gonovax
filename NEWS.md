@@ -1,3 +1,7 @@
+# gonovax 0.1.23
+
+* add GRASP 2020 data
+
 # gonovax 0.1.22
 
 * add varying screening rate by group
