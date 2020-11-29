@@ -3,7 +3,7 @@ context("mcmc")
 test_that("compare function works as expected", {
   pars <- gono_params(1)
   ll <- compare_basic(pars)
-  expect_equal(ll, -16506.11, tol = 1e-6)
+  expect_equal(ll, -16506.11, tolerance = 1e-6)
   data <- cache$data
   y <- run_novax(1, seq(0, nrow(data)))[[1]]
   attended <- diff(y$tot_attended)
@@ -15,7 +15,7 @@ test_that("compare function works as expected", {
   llattended <- dnorm(data$attended, attended, sqrt(attended), TRUE)[year]
 
   expect_equal(ll, sum(unlist(c(lldiagnosed, llattended)), na.rm = TRUE),
-               tol = 1e-6)
+               tolerance = 1e-6)
 
   ## plot comparison
   par(mfrow = c(1, 2), bty = "n", mar = c(3, 3, 1, 1), mgp = c(1.7, 0.5, 0))
@@ -33,12 +33,12 @@ test_that("mcmc runs", {
                c(-16506.1135588395, -16506.1135588395, -12302.0329021242,
                  -10386.6624356711, -10386.6624356711, -10386.6624356711,
                  -8292.725909926, -8292.725909926, -7002.84058594194,
-                 -5408.29357213292, -5152.0304181118), tol = 1e-1)
+                 -5408.29357213292, -5152.0304181118), tolerance = 1e-1)
 
   ## what do results look like?
   p <- z$mcmc$pars[nrow(z$mcmc$pars), ]
   model_pars <- model_params(p)
-  mod <- model(user = model_pars)
+  mod <- model(user = model_pars, unused_user_action = "ignore")
   data <- cache$data
   y <- mod$run(seq(0, nrow(data)))
 
@@ -66,7 +66,7 @@ test_that("mcmc runs with multiple chains", {
                c(-16506.1135588395, -16506.1135588395, -12302.0329021242,
                  -10386.6624356711, -10386.6624356711, -16506.1135588395,
                  -16506.1135588395, -9123.11679554351, -9123.11679554351,
-                 -5985.5066767372), tol = 1e-1)
+                 -5985.5066767372), tolerance = 1e-1)
 
   ## no progress
   set.seed(1)

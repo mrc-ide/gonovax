@@ -30,7 +30,7 @@ test_that("novax_equilib returns equlibrium conditions", {
   y <- novax_equilib(1)
   tt <- y$t
   params <- model_params(gono_params = gono_params(1))
-  mod <- model(user = params)
+  mod <- model(user = params, unused_user_action = "ignore")
 
   y1 <- mod$run(tt)
   y1 <- mod$transform_variables(y1)
