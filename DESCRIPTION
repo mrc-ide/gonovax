@@ -22,6 +22,6 @@ Suggests:
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Remotes:
-    mrc-ide/odin@mrc-1758,
+    mrc-ide/odin,
     mrc-ide/dde,
     mrc-ide/mcstate
