@@ -1,3 +1,7 @@
+# gonovax 0.1.24
+
+* allow model restart from a future point (necessary for time-varying params)
+
 # gonovax 0.1.23
 
 * add GRASP 2020 data

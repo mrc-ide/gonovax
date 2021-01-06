@@ -91,13 +91,13 @@ run_onevax <- function(n = NULL, tt, eff, dur,
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_user <- function(gono_params, tt) {
-  
+
   run <- function(gono_params, tt) {
     pars <- model_params(gono_params = gono_params)
     mod <- model(user = pars, unused_user_action = FALSE)
     y <- mod$run(tt)
     mod$transform_variables(y)
   }
-  
+
   lapply(seq_len(nrow(gono_params)), function(i) run(gono_params[i, ], tt))
 }

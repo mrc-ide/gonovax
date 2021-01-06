@@ -242,18 +242,18 @@ test_that("can initialise after time 0", {
   expect_true(all(y$S[length(tt), , ] == inits$S0[, 1]))
   expect_true(all(y$T[length(tt), , ] == inits$T0[, 1]))
   expect_true(5 == inits$t)
-  
+
   ## check that restarting works properly
   tt1 <- seq.int(0, 10)
   y1 <- mod$run(tt1)
   y1 <- mod$transform_variables(y1)
-  
+
   params2 <- model_params(gono_params = gono_params(1),
                           init_params = inits)
   mod2 <- model(user = params2)
   y2 <- mod2$run(seq.int(inits$t, 10))
   y2 <- mod2$transform_variables(y2)
-  
+
   expect_equivalent(y1$U[y1$t >= 5, , , drop = FALSE], y2$U, tol = 0.1)
   expect_equivalent(y1$foi[y1$t >= 5, , , drop = FALSE], y2$foi, tol = 1e-5)
 
@@ -297,7 +297,7 @@ test_that("time-varying eta works as expected", {
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   plot(tt[-1] + 2009, diff(rowSums(y$cum_screened)))
-  
+
   expect_equal(y$eta[, 1], approx(params$tt, params$eta_l_t, tt)$y)
   expect_equal(y$eta[, 2], approx(params$tt, params$eta_h_t, tt)$y)
 
@@ -307,7 +307,7 @@ test_that("time-varying eta works as expected", {
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   matplot(apply(y$cum_screened, 2, diff), type = "l")
-  
+
   expect_equal(y$eta[, 1], approx(params$tt, params$eta_l_t, tt)$y)
   expect_equal(y$eta[, 2], approx(params$tt, params$eta_h_t, tt)$y)
 
