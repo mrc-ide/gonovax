@@ -1,6 +1,6 @@
 Package: gonovax
 Title: Deterministic SIR Model of gonorrhoea with vaccination
-Version: 0.1.22
+Version: 0.1.24
 Authors@R:
     c( person(given = "Lilith",
            family = "Whittles",
@@ -12,7 +12,7 @@ Encoding: UTF-8
 LazyData: true
 Language: en-GB
 Imports: 
-    odin,
+    odin (>= 1.1.0),
     furrr,
     progress (>= 1.2.0),
     mcstate (>= 0.2.13)
@@ -21,3 +21,7 @@ Suggests:
     knitr
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
+Remotes:
+    mrc-ide/odin,
+    mrc-ide/dde,
+    mrc-ide/mcstate
