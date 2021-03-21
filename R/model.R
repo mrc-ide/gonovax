@@ -18,10 +18,10 @@ NULL
 run <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
                 transform = TRUE) {
 
-  pars <- gonovax::model_params(gono_params = gono_params,
+  pars <- model_params(gono_params = gono_params,
                                 init_params = init_params,
                                 vax_params = vax_params)
-  mod <- gonovax::model(user = pars, unused_user_action = FALSE)
+  mod <- model(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)
 
   if (transform) {
