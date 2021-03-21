@@ -1,3 +1,19 @@
+test_that("calc_pv works as expected") {
+
+  ## time is dimension 1
+  x <- matrix(seq_len(12), 3, 2)
+  y0 <- calc_pv(x, 0)
+
+  expect_equal(y0, apply(x, 2, cumsum))
+
+  d <- 0.1
+  disc_fac <- (1 + d) ^ -(1:3 - 0.5)
+
+  y1 <- calc_pv(x, d)
+  expect_equal(y1[1, ], x[1, ] * disc_fac[1])
+  expect_equal(y1[3, ], c(disc_fac %*% x))
+}
+
 
 test_that("run_grid works as expected", {
   ## test with ve only
