@@ -11,7 +11,7 @@ gono_params(n = NULL)
 parameter sets (1:982). If `n = NULL` the full parameter set is returned}
 }
 \value{
-A data frame of parameters
+A list of parameters
 }
 \description{
 Posterior parameters of gonorrhoea natural history

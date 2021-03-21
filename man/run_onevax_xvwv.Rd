@@ -9,7 +9,7 @@ for revaccination, and return to the V compartment}
 run_onevax_xvwv(
   tt,
   gono_params,
-  init_params,
+  init_params = NULL,
   eff,
   dur,
   ve = 0,
