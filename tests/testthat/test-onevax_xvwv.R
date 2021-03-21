@@ -1,30 +1,31 @@
-context("onevax")
+context("onevax_xvwv")
 
 test_that("run_onevax works correctly", {
   tt <- seq(0, 5)
-  gp <- gono_params(2)
+  gp <- gono_params(1:2)
   y1 <- run_onevax_xvwv(tt, gp, eff = 0, dur = 1e3)[[1]]
 
   # check no-one is vaccinated with v switched off
   expect_true(all(y1$cum_vaccinated == 0))
-  y2 <- run_onevax_xvwv(tt, gp, eff = 0, dur = 1e3, ve = 1)[[1]]
+  y2 <- run_onevax_xvwv(tt, gp, eff = 0, dur = 1e3, ve = 1)
   # check 100% vbe vaccinates all new entrants
-  expect_equal(diff(rowSums(y2$cum_vaccinated[, , 1])), rep(12e3, max(tt)))
+  expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3, max(tt)))
   # and no-one else
-  expect_equal(sum(y2$cum_vaccinated[, , 2:3]), 0)
+  expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:3]), 0)
 
   # check can restart
-  init_params <- restart_params(y2)
+  init_params <- lapply(y2, restart_params)
   y3 <- run_onevax_xvwv(seq(max(tt), length.out = 2, by = 1),
-                        gp, list(init_params),
-                        eff = 0, dur = 1e3, ve = 1)[[1]]
-  plot(y2$t, apply(y2$U, 1, sum), type = "l", xlim = c(0, 10))
-  lines(y3$t, apply(y3$U, 1, sum), col = "red")
-  expect_equal(y2$U[length(y2$t), , ], y3$U[1, , ])
-  expect_equal(y2$I[length(y2$t), , ], y3$I[1, , ])
-  expect_equal(y2$A[length(y2$t), , ], y3$A[1, , ])
-  expect_equal(y2$S[length(y2$t), , ], y3$S[1, , ])
-  expect_equal(y2$T[length(y2$t), , ], y3$T[1, , ])
+                        gp, init_params,
+                        eff = 0, dur = 1e3, ve = 1)
+  for (i in seq_along(y2)) {
+    expect_equal(y2[[i]]$U[length(tt), , ], y3[[i]]$U[1, , ])
+    expect_equal(y2[[i]]$I[length(tt), , ], y3[[i]]$I[1, , ])
+    expect_equal(y2[[i]]$A[length(tt), , ], y3[[i]]$A[1, , ])
+    expect_equal(y2[[i]]$S[length(tt), , ], y3[[i]]$S[1, , ])
+    expect_equal(y2[[i]]$T[length(tt), , ], y3[[i]]$T[1, , ])
+  }
+
 
   # check vaccination on treatment is working correctly
   y3e <- run_onevax_xvwv(tt, gp, eff = 1, dur = 1e3, vd = 1)[[1]]
@@ -42,11 +43,13 @@ test_that("run_onevax works correctly", {
 
   # check vaccination targeting
   y5e <- run_onevax_xvwv(tt, gp, eff = 1, dur = 1e3,
-                    vs = c(0, 1), vd = c(0, 1))[[1]]
-  expect_equal(y5e$N[, 1, 2], rep(0, 6))
-  expect_equal(sum(y5e$cum_vaccinated[, 1, ]), 0)
-  expect_true(all(y5e$cum_vaccinated[-1, 2, 1] > 0))
-  expect_true(all(y5e$cum_vaccinated[-1, 2, 3] > 0))
-  expect_true(all(y5e$cum_vaccinated[1, 2, 2] == 0))
-  expect_true(all(y5e$N[-1, 2, 2] > 0))
+                    vs = c(0, 1), vd = c(0, 1))
+  for (i in seq_along(y5e)) {
+    expect_equal(y5e[[i]]$N[, 1, 2], rep(0, 6))
+    expect_equal(sum(y5e$cum_vaccinated[, 1, ]), 0)
+    expect_true(all(y5e[[i]]$cum_vaccinated[-1, 2, 1] > 0))
+    expect_true(all(y5e[[i]]$cum_vaccinated[-1, 2, 3] > 0))
+    expect_true(all(y5e[[i]]$cum_vaccinated[1, 2, 2] == 0))
+    expect_true(all(y5e[[i]]$N[-1, 2, 2] > 0))
+  }
 })
