@@ -47,18 +47,19 @@ vax_params_xvwv <- function(eff = 0, dur = 1e3,
 ##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list of transformed model outputs
 ##' @export
-run_onevax_xvwv <- function(tt, gono_params, init_params,
+run_onevax_xvwv <- function(tt, gono_params, init_params = NULL,
                           eff, dur, ve = 0, vd = 0, vs = 0,
                           t_stop = 99) {
   
-  vax_params <- Map(vax_params_xvwv, eff = eff, dur = dur,
-                    ve = ve, vs = vs, vd = vd, t_stop = t_stop)
+  vax_params <- vax_params_xvwv(eff = eff, dur = dur,
+                                ve = ve, vs = vs, vd = vd,
+                                t_stop = t_stop)
   if (is.null(init_params)) {
     ret <- Map(run, gono_params = gono_params,
-               vax_params = vax_params, MoreArgs = list(tt = tt))
+              MoreArgs = list(tt = tt, vax_params = vax_params))
   } else {
     ret <- Map(run, gono_params = gono_params, init_params = init_params,
-               vax_params = vax_params, MoreArgs = list(tt = tt))
+               MoreArgs = list(tt = tt, vax_params = vax_params))
   }
  
   ret
