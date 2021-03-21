@@ -42,8 +42,8 @@ test_that("run_onevax works correctly", {
   expect_equal(apply(y4e$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
 
   # check vaccination targeting
-  y5e <- run_onevax_xvwv(tt, gp, eff = 1, dur = 1e3,
-                    vs = c(0, 1), vd = c(0, 1))
+  v <- list(c(0, 1))
+  y5e <- run_onevax_xvwv(tt, gp, eff = 1, dur = 1e3, vs = v, vd = v)
   for (i in seq_along(y5e)) {
     expect_equal(y5e[[i]]$N[, 1, 2], rep(0, 6))
     expect_equal(sum(y5e$cum_vaccinated[, 1, ]), 0)
