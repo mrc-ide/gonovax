@@ -4,10 +4,12 @@
 \alias{create_waning_map}
 \title{Create mapping for movement between strata due to vaccine waning}
 \usage{
-create_waning_map(n_vax, i_w, z)
+create_waning_map(n_vax, i_v, i_w, z)
 }
 \arguments{
 \item{n_vax}{Integer in (0, 5) denoting total number of strata}
+
+\item{i_v}{indices of strata being vaccinated}
 
 \item{i_w}{Integer in (0, 5) denoting which stratum receives waned vaccinees}
 

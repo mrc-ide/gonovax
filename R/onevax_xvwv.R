@@ -14,16 +14,18 @@
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(eff = 0, dur = 1e3,
                         ve = 0, vs = 0, vd = 0, t_stop = 99) {
-  # waned vaccinees move to own compartment, but are eligible for re-vaccination
-  i_u <- c(1, 3)
+  # waned vaccinees move to own stratum, but are eligible for re-vaccination
+  # 1:x -> 2:v <-> 3:w
+  i_eligible <- c(1, 3)
+  i_v <- c(2, 2)
   i_w <- n_vax <- 3
 
   list(n_vax = n_vax,
-       ve    = create_vax_map(n_vax, ve, i_u),
-       vd    = create_vax_map(n_vax, vd, i_u),
-       vs    = create_vax_map(n_vax, vs, i_u),
+       ve    = create_vax_map(n_vax, ve, i_eligible, i_v),
+       vd    = create_vax_map(n_vax, vd, i_eligible, i_v),
+       vs    = create_vax_map(n_vax, vs, i_eligible, i_v),
        eff   = c(0, eff, 0),
-       w     = create_waning_map(n_vax, i_w, 1 / dur),
+       w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
   )

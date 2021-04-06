@@ -1,3 +1,7 @@
+# gonovax 0.2.1
+
+* add four-stratum waning model: X -> V -> W <-> R
+
 # gonovax 0.2.0
 
 * move globals into package

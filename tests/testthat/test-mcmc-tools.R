@@ -127,7 +127,9 @@ test_that("mcmc_combine works as expected", {
                "All chains must have the same length")
   expect_error(mcmc_combine(z, z3), "Chains have already been combined")
   expect_error(mcmc_combine(z3), "At least 2 samples objects must be provided")
-
+  z4 <- z3
+  colnames(z4$pars) <- paste0("par", seq_len(ncol(z4$pars)))
+  expect_error(mcmc_combine(z3, z4), "All parameters must have the same names")
 })
 
 
