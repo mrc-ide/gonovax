@@ -1,7 +1,7 @@
 context("mcmc")
 
 test_that("compare function works as expected", {
-  pars <- read_csv("inst/extdata/gono_params.csv")[1, ]
+  pars <- read_csv(gonovax_file("extdata/gono_params.csv"))[1, ]
   ll <- compare_basic(pars)
   expect_equal(ll, -16506.11, tolerance = 1e-6)
   data <- cache$data
