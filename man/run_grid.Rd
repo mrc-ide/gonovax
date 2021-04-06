@@ -6,23 +6,28 @@
 efficacy / duration grid locations for n parameter sets}
 \usage{
 run_grid(
-  n,
   t,
-  model = run_onevax,
+  gono_params,
+  init_params,
+  cost_params,
+  baseline,
+  model,
   eff,
   dur,
   ve = 0,
-  strategy = "ve",
-  uptake = 0,
+  strategy = "VbE",
+  uptake_total = 0,
+  uptake_second_dose = uptake_total,
   t_stop = 99,
-  baseline = NULL,
-  full_output = FALSE
+  full_output = FALSE,
+  disc_rate = 0
 )
 }
 \arguments{
-\item{n}{a value denoting the number of parameter sets to run}
-
 \item{t}{an integer number of years at which impact is to be assessed}
+
+\item{baseline}{optional input of a baseline to compare to, must be a
+gonovax_grid object if supplied}
 
 \item{model}{a gonovax run function, by default `run_onevax`}
 
@@ -31,20 +36,24 @@ run_grid(
 \item{dur}{numeric vector of duration in years of the vaccine}
 
 \item{ve}{single numeric indicating % of population vaccinated before entry
-(between 0-1)}
+(between 0-1), default = 0}
 
-\item{strategy}{ve: vaccination before entry only (default),
-vd: vaccination on diagnosis, va: vaccination on attendance,
-vt: targeted vaccination (i.e. all diagnosed, group H on screening)}
+\item{strategy}{`VbE`: vaccination before entry only (default),
+`VoD(all)`: vaccination on diagnosis, `VoA(all)`: vaccination on attendance,
+`VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
+ screening)}
 
-\item{uptake}{numeric (0-1) of strategy uptake}
+\item{uptake_total}{numeric (0-1) of strategy uptake, default = 0}
 
-\item{t_stop}{time at which vaccination should stop (years)}
+\item{uptake_second_dose}{numeric (0-1) of strategy uptake,
+default = uptake_total}
 
-\item{baseline}{optional input of a baseline to compare to, must be a
-gonovax_grid object if supplied}
+\item{t_stop}{time at which vaccination should stop (years), default = 99}
 
 \item{full_output}{logical indicating whether full results should be output}
+
+\item{disc_rate}{discount rate for cost-effectiveness output
+per annum, default = 0}
 }
 \value{
 A `gonovax_grid` object

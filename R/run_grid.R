@@ -1,21 +1,28 @@
 ##' @name run_grid
 ##' @title run model from equilibrium with single vaccine at the input
 ##' efficacy / duration grid locations for n parameter sets
-##' @param n a value denoting the number of parameter sets to run
 ##' @param t an integer number of years at which impact is to be assessed
+##' @param gono_params gono params
+##' @param init_params initial state parameters
+##' @param cost_params cost effectiveness parameters
+##' @param baseline optional input of a baseline to compare to, must be a
+##' gonovax_grid object if supplied
 ##' @param model a gonovax run function, by default `run_onevax`
 ##' @param eff numeric vector (between 0-1) of efficacy values of the vaccine
 ##' @param dur numeric vector of duration in years of the vaccine
 ##' @param ve single numeric indicating % of population vaccinated before entry
-##'  (between 0-1)
-##' @param strategy ve: vaccination before entry only (default),
-##' vd: vaccination on diagnosis, va: vaccination on attendance,
-##' vt: targeted vaccination (i.e. all diagnosed, group H on screening)
-##' @param uptake numeric (0-1) of strategy uptake
-##' @param t_stop time at which vaccination should stop (years)
-##' @param baseline optional input of a baseline to compare to, must be a
-##' gonovax_grid object if supplied
+##'  (between 0-1), default = 0
+##' @param strategy `VbE`: vaccination before entry only (default),
+##' `VoD(all)`: vaccination on diagnosis, `VoA(all)`: vaccination on attendance,
+##' `VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
+##'  screening)
+##' @param uptake_total numeric (0-1) of strategy uptake, default = 0
+##' @param uptake_second_dose numeric (0-1) of strategy uptake,
+##'  default = uptake_total
+##' @param t_stop time at which vaccination should stop (years), default = 99
 ##' @param full_output logical indicating whether full results should be output
+##' @param disc_rate discount rate for cost-effectiveness output
+##'  per annum, default = 0
 ##' @return A `gonovax_grid` object
 ##' @import furrr
 ##' @export
@@ -25,24 +32,23 @@ run_grid  <- function(t, gono_params, init_params, cost_params,
                       uptake_second_dose = uptake_total,
                       t_stop = 99, full_output = FALSE, disc_rate = 0) {
   
-  
   tt <- seq.int(init_params[[1]]$t, length.out = t + 1)
   l <- expand.grid(eff = eff, dur = dur)
-  verify_baseline(baseline, l, gono_params, tt)
-  
+  # verify_baseline(baseline, l, gono_params, tt)
+
   # set strategy
   prop_vax <- lapply(uptake_total, set_strategy, strategy = strategy)
   
   vd <- lapply(prop_vax, "[[", "vd")
   vs <- lapply(prop_vax, "[[", "vs")
-  
+
   # run model grid
   res <- furrr::future_pmap(.l = l, .f = model, tt = tt,
                             gono_params = gono_params,
                             init_params = init_params,
                             ve = ve, vd = vd, vs = vs,
                             t_stop = t_stop)
-  
+
   # compare to baseline
   ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
                        .f = compare_baseline,
@@ -84,15 +90,47 @@ verify_baseline <- function(baseline, l, gono_params, tt) {
   baseline
 }
 
+
+
+set_strategy <- function (strategy, uptake) {
+
+  if (length(uptake) != 1) {
+    stop("uptake must be length 1")
+  }
+
+  if (strategy == "VbE") {
+    vs <- vd <- 0
+  } else if (strategy == "VoD(all)") {
+    vd <- uptake
+    vs <- 0
+  } else if (strategy == "VoA(all)") {
+    vd <- uptake
+    vs <- uptake
+  } else if (strategy == "VoD(H)") {
+    vd <- c(0, uptake)
+    vs <- 0
+  } else if (strategy == "VoA(H)") {
+    vd <- c(0, uptake)
+    vs <- c(0, uptake)
+  } else if (strategy == "VoD(L)+VoA(H)") {
+    vd <- uptake
+    vs <- c(0, uptake)
+  } else {
+    stop("strategy not recognised")
+  }
+  
+  list(vd = vd, vs = vs)
+}
+
 compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
                               disc_rate) {
-  
+
   ## compare run to baseline
   ret <- extract_flows(y)
   ret_vs_baseline <- Map(`-`, ret, baseline[names(ret)])
   names(ret_vs_baseline) <- paste0("inc_", names(ret))
   ret <- c(ret, ret_vs_baseline)
-  
+
   ## calculate cases averted per dose, both with and without discounting
   ret$inc_doses <- calc_doses(ret, uptake_second_dose, TRUE)
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
