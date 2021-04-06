@@ -16,7 +16,7 @@ vax_params_xvwr <- function(eff = 0, dur = 1e3,
        ve    = create_vax_map(n_vax, ve, i_eligible, i_v),
        vd    = create_vax_map(n_vax, vd, i_eligible, i_v),
        vs    = create_vax_map(n_vax, vs, i_eligible, i_v),
-       eff   = c(0, eff, 0),
+       eff   = c(0, eff, 0, eff),
        w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
