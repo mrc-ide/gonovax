@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@
     <p>Create mapping for movement between strata due to vaccination</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_vax_map</span><span class='op'>(</span><span class='va'>n_vax</span>, <span class='va'>v</span>, i_u <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>create_vax_map</span><span class='op'>(</span><span class='va'>n_vax</span>, <span class='va'>v</span>, <span class='va'>i_u</span>, <span class='va'>i_v</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,6 +133,10 @@ activity group separately</p></td>
     <tr>
       <th>i_u</th>
       <td><p>indices of strata eligible for vaccination</p></td>
+    </tr>
+    <tr>
+      <th>i_v</th>
+      <td><p>indices of strata being vaccinated</p></td>
     </tr>
     </table>
 
