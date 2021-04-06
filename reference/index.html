@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.24</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -162,6 +162,12 @@ over-dospersion</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="extract_flows.html">extract_flows()</a></code> </p>
+        </td>
+        <td><p>extract flows used for run_grid</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="gono_params.html">gono_params()</a></code> </p>
         </td>
         <td><p>Posterior parameters of gonorrhoea natural history</p></td>
@@ -223,21 +229,15 @@ This is an odin model.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="novax_baseline.html">novax_baseline()</a></code> </p>
-        </td>
-        <td><p>Equilibrium state of compartmental model with no vaccination</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="novax_equilib.html">novax_equilib()</a></code> </p>
-        </td>
-        <td><p>Equilibrium state of compartmental model with no vaccination</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="restart_params.html">restart_params()</a></code> </p>
         </td>
         <td><p>Create initial conditions to start the model from the end of a run</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="run.html">run()</a></code> </p>
+        </td>
+        <td><p>Run odin model of gonorrhoea with or without vaccination</p></td>
       </tr><tr>
         
         <td>
@@ -248,32 +248,11 @@ efficacy / duration grid locations for n parameter sets</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="run_novax.html">run_novax()</a></code> </p>
-        </td>
-        <td><p>run model without vaccination for input parameter sets, either from
-initialisation or from equilibrium</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="run_novax_user.html">run_novax_user()</a></code> </p>
-        </td>
-        <td><p>run model without vaccination for input parameter sets from
-initialisation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="run_onevax.html">run_onevax()</a></code> </p>
+          <p><code><a href="run_onevax_xvwv.html">run_onevax_xvwv()</a></code> </p>
         </td>
         <td><p>run model with single vaccine for input parameter sets, either from
-initialisation or from equilibrium</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="run_onevax_waning.html">run_onevax_waning()</a></code> </p>
-        </td>
-        <td><p>run model with single vaccine for input parameter sets, either from
-initialisation or from equilibrium, those with waned vaccines are ineligible
-for revaccination</p></td>
+initialisation or from equilibrium, those with waned vaccines are eligible
+for revaccination, and return to the V compartment</p></td>
       </tr><tr>
         
         <td>
@@ -289,15 +268,9 @@ for revaccination</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="vax_params1.html">vax_params1()</a></code> </p>
+          <p><code><a href="vax_params_xvwv.html">vax_params_xvwv()</a></code> </p>
         </td>
-        <td><p>create vaccination parameters for use in onevax model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vax_params1w.html">vax_params1w()</a></code> </p>
-        </td>
-        <td><p>create vaccination parameters for use in onevax_waning model</p></td>
+        <td><p>create vaccination parameters for use in onevax_xvwv model</p></td>
       </tr>
     </tbody>
     </table>

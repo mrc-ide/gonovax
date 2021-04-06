@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create mapping for movement between strata due to vaccination — create_vax_map • gonovax</title>
+<title>create vaccination parameters for use in onevax_xvwv model — vax_params_xvwv • gonovax</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Create mapping for movement between strata due to vaccination — create_vax_map" />
-<meta property="og:description" content="Create mapping for movement between strata due to vaccination" />
+<meta property="og:title" content="create vaccination parameters for use in onevax_xvwv model — vax_params_xvwv" />
+<meta property="og:description" content="create vaccination parameters for use in onevax_xvwv model" />
 
 
 
@@ -106,39 +106,54 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create mapping for movement between strata due to vaccination</h1>
+    <h1>create vaccination parameters for use in onevax_xvwv model</h1>
     
-    <div class="hidden name"><code>create_vax_map.Rd</code></div>
+    <div class="hidden name"><code>vax_params_xvwv.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create mapping for movement between strata due to vaccination</p>
+    <p>create vaccination parameters for use in onevax_xvwv model</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_vax_map</span><span class='op'>(</span><span class='va'>n_vax</span>, <span class='va'>v</span>, i_u <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>vax_params_xvwv</span><span class='op'>(</span>eff <span class='op'>=</span> <span class='fl'>0</span>, dur <span class='op'>=</span> <span class='fl'>1000</span>, ve <span class='op'>=</span> <span class='fl'>0</span>, vs <span class='op'>=</span> <span class='fl'>0</span>, vd <span class='op'>=</span> <span class='fl'>0</span>, t_stop <span class='op'>=</span> <span class='fl'>99</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>n_vax</th>
-      <td><p>Integer in (0, 5) denoting total number of strata</p></td>
+      <th>eff</th>
+      <td><p>single numeric indicating efficacy of the vaccine (between 0-1)</p></td>
     </tr>
     <tr>
-      <th>v</th>
-      <td><p>numeric indicating <!-- % of population vaccinated on screening a scalar -->
-will apply to both activity groups, a vector of length 2 will apply to each
-activity group separately</p></td>
+      <th>dur</th>
+      <td><p>single numeric indicating duration of the vaccine (in years)</p></td>
     </tr>
     <tr>
-      <th>i_u</th>
-      <td><p>indices of strata eligible for vaccination</p></td>
+      <th>ve</th>
+      <td><p>single numeric indicating <!-- % of population vaccinated before entry -->
+(between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>vs</th>
+      <td><p>numeric indicating <!-- % of population vaccinated on screening -->
+(between 0-1) a scalar will apply to both activity groups, a vector of
+length 2 will apply to each activity group separately</p></td>
+    </tr>
+    <tr>
+      <th>vd</th>
+      <td><p>numeric indicating <!-- % of population vaccinated on diagnosis -->
+(between 0-1) a scalar will apply to both activity groups, a vector of
+length 2 will apply to each activity group separately</p></td>
+    </tr>
+    <tr>
+      <th>t_stop</th>
+      <td><p>time at which vaccination should stop (years)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an array of the mapping</p>
+    <p>A list parameters in the model input format</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create mapping for movement between strata due to vaccination — create_vax_map • gonovax</title>
+<title>Run odin model of gonorrhoea with or without vaccination — run • gonovax</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Create mapping for movement between strata due to vaccination — create_vax_map" />
-<meta property="og:description" content="Create mapping for movement between strata due to vaccination" />
+<meta property="og:title" content="Run odin model of gonorrhoea with or without vaccination — run" />
+<meta property="og:description" content="Run odin model of gonorrhoea with or without vaccination" />
 
 
 
@@ -106,39 +106,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create mapping for movement between strata due to vaccination</h1>
+    <h1>Run odin model of gonorrhoea with or without vaccination</h1>
     
-    <div class="hidden name"><code>create_vax_map.Rd</code></div>
+    <div class="hidden name"><code>run.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create mapping for movement between strata due to vaccination</p>
+    <p>Run odin model of gonorrhoea with or without vaccination</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_vax_map</span><span class='op'>(</span><span class='va'>n_vax</span>, <span class='va'>v</span>, i_u <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>run</span><span class='op'>(</span><span class='va'>tt</span>, <span class='va'>gono_params</span>, init_params <span class='op'>=</span> <span class='cn'>NULL</span>, vax_params <span class='op'>=</span> <span class='cn'>NULL</span>, transform <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>n_vax</th>
-      <td><p>Integer in (0, 5) denoting total number of strata</p></td>
+      <th>tt</th>
+      <td><p>a numeric vector of times at which the model state is output</p></td>
     </tr>
     <tr>
-      <th>v</th>
-      <td><p>numeric indicating <!-- % of population vaccinated on screening a scalar -->
-will apply to both activity groups, a vector of length 2 will apply to each
-activity group separately</p></td>
+      <th>gono_params</th>
+      <td><p>a data frame of parameters</p></td>
     </tr>
     <tr>
-      <th>i_u</th>
-      <td><p>indices of strata eligible for vaccination</p></td>
+      <th>init_params</th>
+      <td><p>= NULL</p></td>
+    </tr>
+    <tr>
+      <th>vax_params</th>
+      <td><p>= NULL</p></td>
+    </tr>
+    <tr>
+      <th>transform</th>
+      <td><p>= TRUE</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>an array of the mapping</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

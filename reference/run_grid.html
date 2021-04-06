@@ -75,7 +75,7 @@ efficacy / duration grid locations for n parameter sets" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.24</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
 
@@ -121,29 +121,46 @@ efficacy / duration grid locations for n parameter sets</p>
     </div>
 
     <pre class="usage"><span class='fu'>run_grid</span><span class='op'>(</span>
-  <span class='va'>n</span>,
   <span class='va'>t</span>,
-  model <span class='op'>=</span> <span class='va'>run_onevax</span>,
+  <span class='va'>gono_params</span>,
+  <span class='va'>init_params</span>,
+  <span class='va'>cost_params</span>,
+  <span class='va'>baseline</span>,
+  <span class='va'>model</span>,
   <span class='va'>eff</span>,
   <span class='va'>dur</span>,
   ve <span class='op'>=</span> <span class='fl'>0</span>,
-  strategy <span class='op'>=</span> <span class='st'>"ve"</span>,
-  uptake <span class='op'>=</span> <span class='fl'>0</span>,
+  strategy <span class='op'>=</span> <span class='st'>"VbE"</span>,
+  uptake_total <span class='op'>=</span> <span class='fl'>0</span>,
+  uptake_second_dose <span class='op'>=</span> <span class='va'>uptake_total</span>,
   t_stop <span class='op'>=</span> <span class='fl'>99</span>,
-  baseline <span class='op'>=</span> <span class='cn'>NULL</span>,
-  full_output <span class='op'>=</span> <span class='cn'>FALSE</span>
+  full_output <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  disc_rate <span class='op'>=</span> <span class='fl'>0</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>n</th>
-      <td><p>a value denoting the number of parameter sets to run</p></td>
-    </tr>
-    <tr>
       <th>t</th>
       <td><p>an integer number of years at which impact is to be assessed</p></td>
+    </tr>
+    <tr>
+      <th>gono_params</th>
+      <td><p>gono params</p></td>
+    </tr>
+    <tr>
+      <th>init_params</th>
+      <td><p>initial state parameters</p></td>
+    </tr>
+    <tr>
+      <th>cost_params</th>
+      <td><p>cost effectiveness parameters</p></td>
+    </tr>
+    <tr>
+      <th>baseline</th>
+      <td><p>optional input of a baseline to compare to, must be a
+gonovax_grid object if supplied</p></td>
     </tr>
     <tr>
       <th>model</th>
@@ -160,30 +177,36 @@ efficacy / duration grid locations for n parameter sets</p>
     <tr>
       <th>ve</th>
       <td><p>single numeric indicating <!-- % of population vaccinated before entry -->
-(between 0-1)</p></td>
+(between 0-1), default = 0</p></td>
     </tr>
     <tr>
       <th>strategy</th>
-      <td><p>ve: vaccination before entry only (default),
-vd: vaccination on diagnosis, va: vaccination on attendance,
-vt: targeted vaccination (i.e. all diagnosed, group H on screening)</p></td>
+      <td><p>`VbE`: vaccination before entry only (default),
+`VoD(all)`: vaccination on diagnosis, `VoA(all)`: vaccination on attendance,
+`VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
+ screening)</p></td>
     </tr>
     <tr>
-      <th>uptake</th>
-      <td><p>numeric (0-1) of strategy uptake</p></td>
+      <th>uptake_total</th>
+      <td><p>numeric (0-1) of strategy uptake, default = 0</p></td>
+    </tr>
+    <tr>
+      <th>uptake_second_dose</th>
+      <td><p>numeric (0-1) of strategy uptake,
+default = uptake_total</p></td>
     </tr>
     <tr>
       <th>t_stop</th>
-      <td><p>time at which vaccination should stop (years)</p></td>
-    </tr>
-    <tr>
-      <th>baseline</th>
-      <td><p>optional input of a baseline to compare to, must be a
-gonovax_grid object if supplied</p></td>
+      <td><p>time at which vaccination should stop (years), default = 99</p></td>
     </tr>
     <tr>
       <th>full_output</th>
       <td><p>logical indicating whether full results should be output</p></td>
+    </tr>
+    <tr>
+      <th>disc_rate</th>
+      <td><p>discount rate for cost-effectiveness output
+per annum, default = 0</p></td>
     </tr>
     </table>
 
