@@ -13,4 +13,3 @@ vax_params0 <- function() {
        vax_t = c(0, 99),
        vax_y = c(0, 0))
 }
-

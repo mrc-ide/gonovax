@@ -13,7 +13,6 @@ demographic_params <- function() {
 ##' parameter sets (1:982). If `n = NULL` the full parameter set is returned
 ##' @return A list of parameters
 ##' @export
-##' 
 
 gono_params <- function(n = NULL) {
   if (is.null(cache$gono_params)) {
@@ -189,6 +188,3 @@ set_strategy <- function(strategy, uptake) {
   }
   list(vd = vd, vs = vs)
 }
-
-
-
