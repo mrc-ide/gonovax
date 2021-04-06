@@ -2,11 +2,11 @@ test_cache <- new.env()
 
 example_mcmc <- function() {
   if (is.null(test_cache$example_mcmc)) {
-    p <- unlist(gono_params(1))
-    proposal <- cov(gono_params()) * 0.1
+    p <- read_csv(gonovax_file("extdata/gono_params.csv"))
+    proposal <- cov(p) * 0.1
     params <- Map(mcstate::pmcmc_parameter,
                   name = names(p),
-                  initial = unname(p),
+                  initial = unname(p[1, ]),
                   min = 0,
                   max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
                   discrete = FALSE)
@@ -21,11 +21,11 @@ example_mcmc <- function() {
 
 example_mcmc2 <- function() {
   if (is.null(test_cache$example_mcmc2)) {
-    p <- unlist(gono_params(1))
-    proposal <- cov(gono_params()) * 0.1
+    p <- read_csv(gonovax_file("extdata/gono_params.csv"))
+    proposal <- cov(p) * 0.1
     params <- Map(mcstate::pmcmc_parameter,
                   name = names(p),
-                  initial = unname(p),
+                  initial = unname(p[2, ]),
                   min = 0,
                   max = c(1, 1, 1, 1, 1, Inf, Inf, Inf, Inf, Inf),
                   discrete = FALSE)
