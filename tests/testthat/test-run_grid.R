@@ -191,19 +191,5 @@ test_that("run_grid works as expected", {
   expect_true(all(zz5$results$full_results[[1]][[1]]$cum_vaccinated[, 1, ] <=
            zz3$full_results[[1]][[1]]$cum_vaccinated[, 1, ]))
 
-  # check error cases
-  expect_error(run_grid(n = 3, t = 2, eff = c(0, 1), dur = c(1, 2),
-                               ve = 0.5, baseline = y0),
-               "model parameters do not match baseline")
-  expect_error(run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 3),
-                               ve = 0.5, baseline = y0),
-               "dur / eff parameters do not match baseline")
-  expect_error(run_grid(n = 2, t = 3, eff = c(0, 1), dur = c(1, 2),
-                               ve = 0.5, baseline = y0),
-               "t does not match baseline")
-  class(y0) <- NULL
-  expect_error(run_grid(n = 2, t = 2, eff = c(0, 1), dur = c(1, 2),
-                               ve = 0.5, baseline = y0),
-               "baseline must be a gonovax_grid object")
 
 })
