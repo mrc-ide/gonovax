@@ -189,3 +189,6 @@ set_strategy <- function(strategy, uptake) {
   }
   list(vd = vd, vs = vs)
 }
+
+
+

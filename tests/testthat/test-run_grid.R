@@ -103,7 +103,7 @@ test_that("run_grid works as expected", {
   ## test with vt only
   zz5 <- run_grid(t = 2, gp, ip, cp, blv,
                  model = run_onevax_xvwv,
-                 strategy = "VoD(all)_VoA(H)", 
+                 strategy = "VoD(L)+VoA(H)", 
                  eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                  uptake_total = 1, full_output = TRUE)
   expect_equal(zz5$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
