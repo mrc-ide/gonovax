@@ -26,6 +26,12 @@ run_grid(
 \arguments{
 \item{t}{an integer number of years at which impact is to be assessed}
 
+\item{gono_params}{gono params}
+
+\item{init_params}{initial state parameters}
+
+\item{cost_params}{cost effectiveness parameters}
+
 \item{baseline}{optional input of a baseline to compare to, must be a
 gonovax_grid object if supplied}
 
