@@ -75,13 +75,14 @@ run_grid  <- function(t, gono_params, init_params, cost_params,
 
 
 verify_baseline <- function(baseline, l, gono_params, tt) {
+
   if (!inherits(baseline, "gonovax_grid")) {
     stop("baseline must be a gonovax_grid object")
   }
   if (!identical(baseline$inputs$grid, l)) {
     stop("dur / eff parameters do not match baseline")
   }
-  if (!identical(baseline$inputs$n, nn)) {
+  if (!identical(baseline$inputs$n, length(gono_params))) {
     stop("model parameters do not match baseline")
   }
   if (!identical(baseline$inputs$t, tt)) {
