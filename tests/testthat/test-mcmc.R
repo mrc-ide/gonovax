@@ -1,11 +1,11 @@
 context("mcmc")
 
 test_that("compare function works as expected", {
-  pars <- gono_params(1)
+  pars <- read_csv(gonovax_file("extdata/gono_params.csv"))[1, ]
   ll <- compare_basic(pars)
   expect_equal(ll, -16506.11, tolerance = 1e-6)
   data <- cache$data
-  y <- run_novax(1, seq(0, nrow(data)))[[1]]
+  y <- run(seq(0, nrow(data)), gono_params(1)[[1]])
   attended <- diff(y$tot_attended)
   diagnosed <- diff(y$tot_treated)
 
@@ -37,8 +37,8 @@ test_that("mcmc runs", {
 
   ## what do results look like?
   p <- z$mcmc$pars[nrow(z$mcmc$pars), ]
-  model_pars <- model_params(p)
-  mod <- model(user = model_pars, unused_user_action = "ignore")
+  mod <- model(user = model_params(transform0(p)),
+               unused_user_action = "ignore")
   data <- cache$data
   y <- mod$run(seq(0, nrow(data)))
 

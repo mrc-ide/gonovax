@@ -6,28 +6,42 @@ demographic_params <- function() {
        exr = 1 / 50
   )
 }
+
 ##' @name gono_params
 ##' @title Posterior parameters of gonorrhoea natural history
 ##' @param n an integer vector (or value) containing the indices of the required
 ##' parameter sets (1:982). If `n = NULL` the full parameter set is returned
-##' @return A data frame of parameters
+##' @return A list of parameters
 ##' @export
 
 gono_params <- function(n = NULL) {
   if (is.null(cache$gono_params)) {
+    gp <- read_csv(gonovax_file("extdata/gono_params.csv"))
     cache$gono_params <-
-      read_csv(gonovax_file("extdata/gono_params.csv"))
+      lapply(seq_len(nrow(gp)), function(i) transform0(gp[i, ]))
   }
 
   pars <- cache$gono_params
-  n_pars <- nrow(pars)
+  n_pars <- length(pars)
   # if n not supplied, return all parameters
   i  <- n %||% seq_len(n_pars)
   # limit to parameter sets available
   i <- i[(i > 0) & (i <= n_pars)]
 
-  pars[i, ]
+  pars[i]
 }
+
+transform0 <- function(pars) {
+    # reformat time-varying pars
+    pars <- as.list(pars)
+    pars$tt <- c(0, 1e3)
+    pars$beta_t <-  rep(pars$beta, 2)
+    pars$eta_l_t <- rep(pars$eta, 2)
+    pars$eta_h_t <- pars$eta_l_t
+    pars$beta <- pars$eta <- NULL
+
+    pars
+  }
 
 ##' Create initial conditions for the model
 ##' @name initial_params
@@ -98,15 +112,9 @@ model_params <- function(gono_params = NULL,
   gono_params <- gono_params %||% gono_params(1)
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-  # if tt not supplied, do not use time-varying beta, or time/group varying eta
-  if (is.null(ret$tt)) {
-    ret$tt <- c(0, 1e3)
-    ret$beta_t <- rep(ret$beta, 2)
-    ret$eta_l_t <- rep(ret$eta, 2)
-    ret$eta_h_t <- rep(ret$eta, 2)
-    ret$beta <- ret$eta <- NULL
-  }
+
   vax_params <- vax_params %||% vax_params0()
+
   init_params <- init_params %||% initial_params(ret, n_vax = vax_params$n_vax)
   c(ret, init_params, vax_params)
 }

@@ -1,3 +1,7 @@
+# gonovax 0.2.0
+
+* move globals into package
+
 # gonovax 0.1.24
 
 * allow model restart from a future point (necessary for time-varying params)

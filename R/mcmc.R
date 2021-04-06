@@ -139,9 +139,9 @@ compare_basic <- function(pars) {
   data[data$year < 2019, "attended"] <- NA
 
   ## run odin model
-  pars <- model_params(gono_params = pars)
-  mod <- model(user = pars, unused_user_action = FALSE)
-  y <- mod$run(seq(0, nrow(data)))
+  y <- run(tt = c(0, data$gonovax_year),
+           gono_params =  transform0(pars),
+           transform = FALSE)
 
   ## output total treated and total attended per year from odin model
   diagnosed <- diff(y[, "tot_treated"])
