@@ -31,6 +31,75 @@ test_that("set_strategy works as expected", {
 })
 
 
+test_that("compare baseline works as expected", {
+  
+  gp <- gono_params(1:2)
+  ip <- lapply(run_onevax_xvwv(0:1, gp, eff = 0, dur = 1), restart_params)
+  tt <- 1:4
+  
+  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1, ve = 0.5))
+  blv <- rep(list(bl), 4)
+  cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
+             unit_cost_manage_symptomatic = c(98, 99),
+             unit_cost_manage_asymptomatic = c(93, 94),
+             unit_cost_screen_uninfected = c(70, 71))
+  p <- 0.7
+  
+  y <- run_onevax_xvwv(tt, gp, ip, eff = 0.5, dur = 1, ve = 0.5, vd = 0.75)
+  yy <- extract_flows(y)
+
+  z <- compare_baseline(y, bl, uptake_second_dose = p, cp, 0)
+
+  flownames <- names(yy)
+  incnames <- paste0("inc_", flownames)
+  compnames <- setdiff(names(z), c(flownames, incnames))
+  
+  # check values are carried over correctly
+  expect_equal(z[flownames], yy)
+  expect_equivalent(z[incnames],
+                    Map(`-`, yy[flownames], bl[flownames]))
+  
+  f <- function(x) {
+    (x$vaccinated - x$revaccinated) * (1 + 1 / p) + x$revaccinated
+  }
+  
+  # check doses are calculated correctly
+  expect_equal(f(yy) - f(bl), z$inc_doses)
+  expect_equal(z$cases_averted_per_dose[1, ],
+               -z$inc_treated[1, ] / z$inc_doses[1, ])
+  expect_equal(z$cases_averted_per_dose[length(tt) - 1, ],
+               -colSums(z$inc_treated) / colSums(z$inc_doses))
+  ## with zero disc rate
+  expect_equal(z$cases_averted_per_dose, z$cases_averted_per_dose_pv)
+  
+  tmp <- calc_cases_averted_per_dose(z, 0.03)
+  expect_equal(z$cases_averted_per_dose[1, ], tmp[1, ])
+  expect_true(all(tmp[2, ] != z$cases_averted_per_dose[1, ]))
+
+  ## test cost eff threshold
+  expect_equal(z$cet_20k, calc_cost_eff_threshold(2e5, z, cp, 0))
+  expect_equal(z$cet_30k, calc_cost_eff_threshold(3e5, z, cp, 0))
+  
+  calc_cost <- function(x, cp, qc) {
+    Qu <- cp$unit_cost_screen_uninfected * t(x$screened)
+    Qs <- (cp$unit_cost_manage_symptomatic + qc * cp$qaly_loss_per_diag_s) *
+      t(x$diag_s)
+    Qa <- cp$unit_cost_manage_asymptomatic * t(x$diag_a)
+    
+    t(Qu + Qs + Qa)
+  }
+
+  expect_equal(calc_pv(calc_cost(bl, cp, 2e5) - calc_cost(yy, cp, 2e5), 0) /
+                 calc_pv(z$inc_doses, 0),
+               z$cet_20k)
+  
+  expect_equal(calc_pv(calc_cost(bl, cp, 3e5) - calc_cost(yy, cp, 3e5), 0) /
+                 calc_pv(z$inc_doses, 0),
+               z$cet_30k)
+
+})
+
+
 test_that("run_grid works as expected", {
   ## test with ve only
   
@@ -47,8 +116,7 @@ test_that("run_grid works as expected", {
   
   y <- run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1, ve = 0.5)
   z <- compare_baseline(y, bl, 0.7, cp, 0)
-  z
-  
+
   zz <- run_grid(t = 2, gp, ip, cp, blv,
                 model = run_onevax_xvwv,
                 strategy = "VbE", 
