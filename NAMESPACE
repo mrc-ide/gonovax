@@ -2,6 +2,7 @@
 
 export(aggregate)
 export(dbetabinom)
+export(extract_flows)
 export(gono_params)
 export(gonovax_data)
 export(gonovax_year)

@@ -20,6 +20,11 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
   apply(y, 1, f, ...)
 }
 
+##' @name extract_flows
+##' @title extract flows used for run_grid
+##' @param y a transformed model run output
+##' @return cumulative and incident flows
+##' @export
 extract_flows <- function(y) {
 
   # extract cumulative flows
