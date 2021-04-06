@@ -126,23 +126,24 @@ model_params <- function(gono_params = NULL,
 ##' will apply to both activity groups, a vector of length 2 will apply to each
 ##' activity group separately
 ##' @param i_u indices of strata eligible for vaccination
+##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v, i_u = 1) {
+create_vax_map <- function(n_vax, v, i_u, i_v) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
-  stopifnot(length(v) <= n_group)
+  stopifnot(length(v) %in% c(1, n_group))
   stopifnot(all((v >= 0) & (v <= 1)))
-
-  # indices of vaccine strata (u: unvaccinated, v: vaccinated)
-  i_v <- 2
+  stopifnot(length(i_v) == length(i_u))
+  stopifnot(max(i_u, i_v) <= n_vax)
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
-  vax_map[, i_v, i_u] <- -v
-  for (i in i_u) {
-    vax_map[, i, i] <-  v
+
+  for (i in seq_along(i_u)) {
+    vax_map[, i_u[i], i_u[i]] <-  v
+    vax_map[, i_v[i], i_u[i]] <- -v
   }
 
   vax_map
@@ -151,19 +152,24 @@ create_vax_map <- function(n_vax, v, i_u = 1) {
 ##' @name create_waning_map
 ##' @title Create mapping for movement between strata due to vaccine waning
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
+##' @param i_v indices of strata being vaccinated
 ##' @param i_w Integer in (0, 5) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
 ##' @return an array of the mapping
 
-create_waning_map <- function(n_vax, i_w, z) {
+create_waning_map <- function(n_vax, i_v, i_w, z) {
 
   stopifnot(z > 0)
-  # index of vaccinated compartment currently fixed
-  i_v <- 2
+  stopifnot(length(z) %in% c(1, length(i_v)))
+  stopifnot(length(i_w) == 1)
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
-  w[i_v, i_v] <- -z
+
   w[i_w, i_v] <-  z
+
+  for (i in i_v) {
+    w[i, i] <- -w[i_w, i]
+  }
   w
 }
 
