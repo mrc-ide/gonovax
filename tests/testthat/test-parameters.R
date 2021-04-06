@@ -17,38 +17,72 @@ test_that("can select specific parameter sets", {
 
 test_that("vax_map works correctly", {
   # check error when input more than n_group vaccine uptake
-  expect_error(create_vax_map(2, rep(0, 3)))
+  expect_error(create_vax_map(n_vax = 2, v = rep(0, 3), i_u = 1, i_v = 2))
   # check error when uptake not in 0-1
-  expect_error(create_vax_map(2, c(0, 2)))
-  expect_error(create_vax_map(2, c(0, -1)))
+  expect_error(create_vax_map(n_vax = 2, v = c(0, 2), i_u = 1, i_v = 2))
+  expect_error(create_vax_map(n_vax = 2, v = c(0, -1), i_u = 1, i_v = 2))
+  # check error length(i_u) != length(i_v)
+  expect_error(create_vax_map(n_vax = 3, v = c(0.1, 0.2), i_u = c(1, 3),
+                              i_v = 2))
+  # check error length(i_u) != length(i_v)
+  expect_error(create_vax_map(n_vax = 2, v = c(0.1, 0.2), i_u = 1, i_v = 3))
 
-  # indices of y [group, out, in]
+  # indices of y [group, -to, -from]
   # test onevax map
-  y <- create_vax_map(2, c(0.1, 0.2))
-  expect_equal(y[1, 1, 1], 0.1)
-  expect_equal(y[2, 1, 1], 0.2)
-  expect_equal(sum(y[, , -1]), 0)
-  expect_true(all(apply(y, c(1, 3), sum) == 0))
+  y <- create_vax_map(n_vax = 2, v = c(0.1, 0.2), i_u = 1, i_v = 2)
+  expect_equal(y[1, , 1], c(0.1, -0.1))
+  expect_equal(y[2, , 1], c(0.2, -0.2))
+  expect_true(all(y[, , 2] == 0))
 
-  # test onevax waning map
-  y <- create_vax_map(5, c(0.1, 0.2))
-  expect_equal(y[1, 1, 1], 0.1)
-  expect_equal(y[2, 1, 1], 0.2)
-  expect_equal(sum(y[, , -1]), 0)
-  expect_true(all(apply(y, c(1, 3), sum) == 0))
+  # test onevax_xvwv waning map
+  y <- create_vax_map(n_vax = 3, v = c(0.1, 0.2), i_u = c(1, 3), i_v = c(2, 2))
+  expect_equal(y[1, , 1], c(0.1, -0.1, 0))
+  expect_equal(y[2, , 1], c(0.2, -0.2, 0))
+  expect_equal(y[1, , 3], c(0, -0.1, 0.1))
+  expect_equal(y[2, , 3], c(0, -0.2, 0.2))
+  expect_true(all(y[, , 2] == 0))
+
+  # test onevax_xvwr waning map
+  y <- create_vax_map(n_vax = 4, v = c(0.1, 0.2), i_u = c(1, 3), i_v = c(2, 4))
+  expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0))
+  expect_equal(y[2, , 1], c(0.2, -0.2, 0, 0))
+  expect_equal(y[1, , 3], c(0, 0, 0.1, -0.1))
+  expect_equal(y[2, , 3], c(0, 0, 0.2, -0.2))
+  expect_true(all(y[, , 2] == 0))
+  expect_true(all(y[, , 4] == 0))
+
+  # test onevax_xvwr waning map with single v input
+  y <- create_vax_map(n_vax = 4, v = 0.1, i_u = c(1, 3), i_v = c(2, 4))
+  expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0))
+  expect_equal(y[2, , 1], c(0.1, -0.1, 0, 0))
+  expect_equal(y[1, , 3], c(0, 0, 0.1, -0.1))
+  expect_equal(y[2, , 3], c(0, 0, 0.1, -0.1))
+  expect_true(all(y[, , 2] == 0))
+  expect_true(all(y[, , 4] == 0))
+
 })
 
 test_that("waning map works correctly", {
 
-  expect_error(create_waning_map(2, 1, -1))
+  # check error negative waning
+  expect_error(create_waning_map(n_vax = 2, i_v = 2, i_w = 1, z = -1))
+  # check error more than one waning compartment
+  expect_error(create_waning_map(n_vax = 3, i_v = 2, i_w = c(1, 3), z = 1))
+  # check error length(z) > length(i_v)
+  expect_error(create_waning_map(n_vax = 3, i_v = 2, i_w = 3, z = c(1, 0.5)))
 
   # test onevax map
-  y <- create_waning_map(2, 1, 1)
+  y <- create_waning_map(n_vax = 2, i_v = 2, i_w = 1, z = 1)
   expect_equal(rowSums(y), c(1, -1))
   expect_equal(colSums(y), c(0, 0))
 
   # test onevax waning map
-  y <- create_waning_map(5, 5, 1)
-  expect_equal(rowSums(y), c(0, -1, 0, 0, 1))
-  expect_equal(colSums(y), c(0, 0, 0, 0, 0))
+  y <- create_waning_map(n_vax = 3, i_v = 2, i_w = 3, z = 1)
+  expect_equal(rowSums(y), c(0, -1, 1))
+  expect_equal(colSums(y), c(0, 0, 0))
+
+  y <- create_waning_map(n_vax = 4, i_v = c(2, 4), i_w = 3, z = c(1, 2))
+  expect_equal(rowSums(y), c(0, -1, 3, -2))
+  expect_equal(colSums(y), c(0, 0, 0, 0))
+
 })
