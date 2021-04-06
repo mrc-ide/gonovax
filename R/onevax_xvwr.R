@@ -30,7 +30,7 @@ vax_params_xvwr <- function(eff = 0, dur = 1e3,
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
-run_onevax_xvwvr <- function(tt, gono_params, init_params = NULL,
+run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                           eff, dur, ve = 0, vd = 0, vs = 0,
                           t_stop = 99) {
 

@@ -2,12 +2,11 @@
 % Please edit documentation in R/onevax_xvwr.R
 \name{run_onevax_xvwr}
 \alias{run_onevax_xvwr}
-\alias{run_onevax_xvwvr}
 \title{run model with single vaccine for input parameter sets, either from
 initialisation or from equilibrium, those with waned vaccines are eligible
 for revaccination (R), and return to the R stratum}
 \usage{
-run_onevax_xvwvr(
+run_onevax_xvwr(
   tt,
   gono_params,
   init_params = NULL,
