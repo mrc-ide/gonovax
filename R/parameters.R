@@ -173,24 +173,35 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
   w
 }
 
-##' @name set_strategy
-##' @title Create mapping from vaccination strategy / uptake to model params
-##' @param strategy one of "ve", "va", "vd" or "vt"
-##' @param uptake single numeric between 0-1
-##' @return a list with elements vd and vs
-##' @export
 set_strategy <- function(strategy, uptake) {
-  if (strategy == "ve") {
+
+  if (length(uptake) != 1) {
+    stop("uptake must be length 1")
+  }
+
+  if (strategy == "VbE") {
     vs <- vd <- 0
-  } else if (strategy == "vd") {
+  } else if (strategy == "VoD(all)") {
     vd <- uptake
     vs <- 0
-  } else if (strategy == "va") {
+  } else if (strategy == "VoA(all)") {
     vd <- uptake
     vs <- uptake
-  } else if (strategy == "vt") {
+  } else if (strategy == "VoD(H)") {
+    vd <- c(0, uptake)
+    vs <- 0
+  } else if (strategy == "VoA(H)") {
+    vd <- c(0, uptake)
+    vs <- c(0, uptake)
+  } else if (strategy == "VoD(L)+VoA(H)") {
     vd <- uptake
     vs <- c(0, uptake)
+  } else if (strategy == "VoS(all)") {
+    vd <- 0
+    vs <- uptake
+  } else {
+    stop("strategy not recognised")
   }
+
   list(vd = vd, vs = vs)
 }

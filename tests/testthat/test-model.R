@@ -157,7 +157,8 @@ test_that("Check vaccination on screening in Bex model", {
   # with perfect efficacy
   params <-
     model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(ve = 0, vs = 1, eff = 1))
+                 vax_params = vax_params_xvwv(ve = 0, uptake = 1,
+                                              strategy = "VoS(all)", eff = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -194,7 +195,8 @@ test_that("Check vaccination on diagnosis in Bex model", {
   # with perfect efficacy
   params <-
     model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(ve = 0, vd = 1, eff = 1))
+                 vax_params = vax_params_xvwv(ve = 0, uptake = 1,
+                                              strategy = "VoD(all)", eff = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -263,9 +265,10 @@ test_that("can initialise after time 0", {
 
 test_that("t_stop is working correctly", {
   ## check with single parameter set
+  vp <- vax_params_xvwv(ve = 0, uptake = 1, strategy = "VoD(all)", eff = 1,
+                        t_stop = 2 / 365)
   params <- model_params(gono_params = gono_params(1)[[1]],
-                         vax_params = vax_params_xvwv(ve = 0, vd = 1, eff = 1,
-                                                  t_stop = 2 / 365))
+                         vax_params = vp)
   mod <- model(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt, )
