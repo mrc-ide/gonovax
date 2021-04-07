@@ -23,6 +23,7 @@ test_that("set_strategy works as expected", {
   expect_equal(set_strategy("VoA(all)", i), list(vd = i, vs = i))
   expect_equal(set_strategy("VoA(H)", i), list(vd = c(0, i), vs = c(0, i)))
   expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vd = i, vs = c(0, i)))
+  expect_equal(set_strategy("VoS(all)", i), list(vd = 0, vs = i))
 
   expect_error(set_strategy("hello", i), "strategy not recognised")
   expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
@@ -44,7 +45,8 @@ test_that("compare baseline works as expected", {
              unit_cost_screen_uninfected = c(70, 71))
   p <- 0.7
 
-  y <- run_onevax_xvwv(tt, gp, ip, eff = 0.5, dur = 1, ve = 0.5, vd = 0.75)
+  y <- run_onevax_xvwv(tt, gp, ip, eff = 0.5, dur = 1, ve = 0.5,
+                       uptake = 0.75, strategy = "VoD(all)")
   yy <- extract_flows(y)
 
   z <- compare_baseline(y, bl, uptake_second_dose = p, cp, 0)
@@ -175,21 +177,29 @@ test_that("run_grid works as expected", {
   zz5 <- run_grid(t = 2, gp, ip, cp, blv,
                  model = run_onevax_xvwv,
                  strategy = "VoD(L)+VoA(H)",
-                 eff = c(0, 1), dur = c(1, 2), ve = 0.5,
+                 eff = c(0, 1), dur = c(1, 99), ve = 0.5,
                  uptake_total = 1, full_output = TRUE)
   expect_equal(zz5$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz5$results$eff0.00_dur02$inc_incid,
+  expect_equal(zz5$results$eff0.00_dur99$inc_incid,
                zz5$results$eff0.00_dur01$inc_incid,
                tolerance = 0.1)
   expect_true(all(unlist(zz5$results$inc_incid) > -0.1))
   expect_equal(zz5$results$eff0.00_dur01$inc_cum_incid, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz5$results$eff0.00_dur02$inc_cum_incid,
+  expect_equal(zz5$results$eff0.00_dur99$inc_cum_incid,
                zz5$results$eff0.00_dur01$inc_cum_incid,
                tolerance = 0.1)
-  expect_true(all(zz5$results$full_results[[1]][[1]]$cum_vaccinated[, 1, ] <=
+  expect_true(all(zz5$full_results[[1]][[1]]$cum_vaccinated[, 1, ] <=
            zz3$full_results[[1]][[1]]$cum_vaccinated[, 1, ]))
 
+  tmp <- run_onevax_xvwv(tt, gp[1], init_params = ip[1], eff = 1, dur = 99,
+                         ve = 0.5, strategy = "VoD(L)+VoA(H)",
+                         uptake = 1, t_stop = 99)
+  tmp2 <- run_onevax_xvwv(tt, gp[1], init_params = ip[1], eff = 0, dur = 1,
+                         ve = 0.5, strategy = "VoD(L)+VoA(H)",
+                         uptake = 1, t_stop = 99)
+  expect_equal(tmp[[1]], zz5$full_results[[4]][[1]])
+  expect_equal(tmp2[[1]], zz5$full_results[[1]][[1]])
 
 })

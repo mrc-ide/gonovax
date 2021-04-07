@@ -1,7 +1,8 @@
 test_that("aggregate works", {
   dt <- 1 / 12
   tt <- seq(0, 1, dt)
-  y <- run_onevax_xvwv(tt, gono_params(1:2), eff = 1, dur = 4, vd = 1, ve = 1)
+  y <- run_onevax_xvwv(tt, gono_params(1:2), eff = 1, dur = 4, uptake = 1,
+                       strategy = "VoD(all)", ve = 1)
   z <- aggregate(y, "cum_incid", FALSE)
   expect_equal(dim(z), c(2, length(tt)))
   expect_equal(z[1, ], apply(y[[1]]$cum_incid, 1, sum))
@@ -24,7 +25,8 @@ test_that("aggregate works", {
 
 test_that("extract_flows works", {
   tt <- seq(0, 2)
-  y <- run_onevax_xvwv(tt, gono_params(1:2), eff = 1, dur = 4, vd = 1, ve = 1)
+  y <- run_onevax_xvwv(tt, gono_params(1:2), eff = 1, dur = 4, uptake = 1,
+                       strategy = "VoD(all)", ve = 1)
   z <- extract_flows(y)
 
   expect_equal(z$cum_incid[1, ], z$incid[1, ])
