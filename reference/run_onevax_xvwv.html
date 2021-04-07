@@ -78,7 +78,7 @@ for revaccination, and return to the V compartment" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
       </span>
     </div>
 
@@ -132,8 +132,8 @@ for revaccination, and return to the V compartment</p>
   <span class='va'>eff</span>,
   <span class='va'>dur</span>,
   ve <span class='op'>=</span> <span class='fl'>0</span>,
-  vd <span class='op'>=</span> <span class='fl'>0</span>,
-  vs <span class='op'>=</span> <span class='fl'>0</span>,
+  uptake <span class='op'>=</span> <span class='fl'>0</span>,
+  strategy <span class='op'>=</span> <span class='st'>"VbE"</span>,
   t_stop <span class='op'>=</span> <span class='fl'>99</span>
 <span class='op'>)</span></pre>
 
@@ -166,16 +166,14 @@ for revaccination, and return to the V compartment</p>
 (between 0-1)</p></td>
     </tr>
     <tr>
-      <th>vd</th>
-      <td><p>numeric indicating <!-- % of population vaccinated on diagnosis -->
-(between 0-1) a scalar will apply to both activity groups, a vector of
-length 2 will apply to each activity group separately</p></td>
+      <th>uptake</th>
+      <td><p>single numeric indicating <!-- % of population vaccinated as part -->
+of strategy</p></td>
     </tr>
     <tr>
-      <th>vs</th>
-      <td><p>numeric indicating <!-- % of population vaccinated on screening -->
-(between 0-1) a scalar will apply to both activity groups, a vector of
-length 2 will apply to each activity group separately</p></td>
+      <th>strategy</th>
+      <td><p>single character string in "VbE", "VoD(all)", "VoD(H)",
+"VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"</p></td>
     </tr>
     <tr>
       <th>t_stop</th>
@@ -183,9 +181,6 @@ length 2 will apply to each activity group separately</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A list of transformed model outputs</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
