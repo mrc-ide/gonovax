@@ -35,17 +35,12 @@ run_grid  <- function(t, gono_params, init_params, cost_params,
   tt <- seq.int(init_params[[1]]$t, length.out = t + 1)
   l <- expand.grid(eff = eff, dur = dur)
 
-  # set strategy
-  prop_vax <- lapply(uptake_total, set_strategy, strategy = strategy)
-
-  vd <- lapply(prop_vax, "[[", "vd")
-  vs <- lapply(prop_vax, "[[", "vs")
-
   # run model grid
   res <- furrr::future_pmap(.l = l, .f = model, tt = tt,
                             gono_params = gono_params,
                             init_params = init_params,
-                            ve = ve, vd = vd, vs = vs,
+                            ve = ve, uptake = uptake_total,
+                            strategy = strategy,
                             t_stop = t_stop)
 
   # compare to baseline
@@ -58,7 +53,7 @@ run_grid  <- function(t, gono_params, init_params, cost_params,
   names(ret) <- sprintf("eff%.2f_dur%02d", l$eff, l$dur)
 
   # prepare results
-  out <- list(inputs = list(t = tt, ve = ve, vd = vd, vs = vs, grid = l,
+  out <- list(inputs = list(t = tt, ve = ve, strategy = strategy, grid = l,
                             gono_params = gono_params,
                             init_params = init_params,
                             cost_params = cost_params,
@@ -73,35 +68,7 @@ run_grid  <- function(t, gono_params, init_params, cost_params,
 }
 
 
-set_strategy <- function(strategy, uptake) {
 
-  if (length(uptake) != 1) {
-    stop("uptake must be length 1")
-  }
-
-  if (strategy == "VbE") {
-    vs <- vd <- 0
-  } else if (strategy == "VoD(all)") {
-    vd <- uptake
-    vs <- 0
-  } else if (strategy == "VoA(all)") {
-    vd <- uptake
-    vs <- uptake
-  } else if (strategy == "VoD(H)") {
-    vd <- c(0, uptake)
-    vs <- 0
-  } else if (strategy == "VoA(H)") {
-    vd <- c(0, uptake)
-    vs <- c(0, uptake)
-  } else if (strategy == "VoD(L)+VoA(H)") {
-    vd <- uptake
-    vs <- c(0, uptake)
-  } else {
-    stop("strategy not recognised")
-  }
-
-  list(vd = vd, vs = vs)
-}
 
 compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
                               disc_rate) {
