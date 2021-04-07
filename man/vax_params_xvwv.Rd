@@ -4,23 +4,28 @@
 \alias{vax_params_xvwv}
 \title{create vaccination parameters for use in onevax_xvwv model}
 \usage{
-vax_params_xvwv(eff = 0, dur = 1000, ve = 0, vs = 0, vd = 0, t_stop = 99)
+vax_params_xvwv(
+  eff = 0,
+  dur = 1000,
+  uptake = 0,
+  strategy = "VbE",
+  ve = 0,
+  t_stop = 99
+)
 }
 \arguments{
 \item{eff}{single numeric indicating efficacy of the vaccine (between 0-1)}
 
 \item{dur}{single numeric indicating duration of the vaccine (in years)}
 
+\item{uptake}{single numeric indicating % of population vaccinated as part
+of strategy}
+
+\item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
+"VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
+
 \item{ve}{single numeric indicating % of population vaccinated before entry
 (between 0-1)}
-
-\item{vs}{numeric indicating % of population vaccinated on screening
-(between 0-1) a scalar will apply to both activity groups, a vector of
-length 2 will apply to each activity group separately}
-
-\item{vd}{numeric indicating % of population vaccinated on diagnosis
-(between 0-1) a scalar will apply to both activity groups, a vector of
-length 2 will apply to each activity group separately}
 
 \item{t_stop}{time at which vaccination should stop (years)}
 }

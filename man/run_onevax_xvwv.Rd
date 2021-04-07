@@ -13,8 +13,8 @@ run_onevax_xvwv(
   eff,
   dur,
   ve = 0,
-  vd = 0,
-  vs = 0,
+  uptake = 0,
+  strategy = "VbE",
   t_stop = 99
 )
 }
@@ -32,18 +32,13 @@ run_onevax_xvwv(
 \item{ve}{single numeric indicating % of population vaccinated before entry
 (between 0-1)}
 
-\item{vd}{numeric indicating % of population vaccinated on diagnosis
-(between 0-1) a scalar will apply to both activity groups, a vector of
-length 2 will apply to each activity group separately}
+\item{uptake}{single numeric indicating % of population vaccinated as part
+of strategy}
 
-\item{vs}{numeric indicating % of population vaccinated on screening
-(between 0-1) a scalar will apply to both activity groups, a vector of
-length 2 will apply to each activity group separately}
+\item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
+"VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
 
 \item{t_stop}{time at which vaccination should stop (years)}
-}
-\value{
-A list of transformed model outputs
 }
 \description{
 run model with single vaccine for input parameter sets, either from
