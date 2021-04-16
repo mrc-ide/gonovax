@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>pdf of a betabinomial parametrised in terms of probability and
-over-dospersion — dbetabinom • gonovax</title>
+over-dispersion — dbetabinom • gonovax</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,9 @@ over-dospersion — dbetabinom • gonovax</title>
 
 
 <meta property="og:title" content="pdf of a betabinomial parametrised in terms of probability and
-over-dospersion — dbetabinom" />
-<meta property="og:description" content="pdf of a betabinomial parametrised in terms of mean and over-dispersion" />
+over-dispersion — dbetabinom" />
+<meta property="og:description" content="pdf of a betabinomial parametrised in terms of probability and
+over-dispersion" />
 
 
 
@@ -74,7 +75,7 @@ over-dospersion — dbetabinom" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.3</span>
       </span>
     </div>
 
@@ -109,13 +110,14 @@ over-dospersion — dbetabinom" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>pdf of a betabinomial parametrised in terms of probability and
-over-dospersion</h1>
+over-dispersion</h1>
     
     <div class="hidden name"><code>dbetabinom.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>pdf of a betabinomial parametrised in terms of mean and over-dispersion</p>
+    <p>pdf of a betabinomial parametrised in terms of probability and
+over-dispersion</p>
     </div>
 
     <pre class="usage"><span class='fu'>dbetabinom</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>size</span>, <span class='va'>prob</span>, <span class='va'>rho</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
@@ -137,7 +139,8 @@ over-dospersion</h1>
     </tr>
     <tr>
       <th>rho</th>
-      <td><p>overdispersion parameter</p></td>
+      <td><p>overdispersion parameter, has support [0, 1]
+with low values being less overdispersion</p></td>
     </tr>
     <tr>
       <th>log</th>

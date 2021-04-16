@@ -6,7 +6,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>create vaccination parameters for use in novax model (null) — vax_params0 • gonovax</title>
+<title>Calculate the log likelihood of the data given the parameters
+diagnoses and attendances lhoods are negative binomial
+p_symp lhood is betabinomial — compare • gonovax</title>
 
 
 <!-- jquery -->
@@ -39,8 +41,12 @@
 
 
 
-<meta property="og:title" content="create vaccination parameters for use in novax model (null) — vax_params0" />
-<meta property="og:description" content="create vaccination parameters for use in novax model (null)" />
+<meta property="og:title" content="Calculate the log likelihood of the data given the parameters
+diagnoses and attendances lhoods are negative binomial
+p_symp lhood is betabinomial — compare" />
+<meta property="og:description" content="Calculate the log likelihood of the data given the parameters
+diagnoses and attendances lhoods are negative binomial
+p_symp lhood is betabinomial" />
 
 
 
@@ -106,21 +112,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>create vaccination parameters for use in novax model (null)</h1>
+    <h1>Calculate the log likelihood of the data given the parameters
+diagnoses and attendances lhoods are negative binomial
+p_symp lhood is betabinomial</h1>
     
-    <div class="hidden name"><code>vax_params0.Rd</code></div>
+    <div class="hidden name"><code>compare.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>create vaccination parameters for use in novax model (null)</p>
+    <p>Calculate the log likelihood of the data given the parameters
+diagnoses and attendances lhoods are negative binomial
+p_symp lhood is betabinomial</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vax_params0</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>compare</span><span class='op'>(</span><span class='va'>pars</span>, <span class='va'>transform</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>pars</th>
+      <td><p>A named vector of parameters</p></td>
+    </tr>
+    <tr>
+      <th>transform</th>
+      <td><p>the transform function to use in the comparison</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list parameters in the model input format</p>
+    <p>a single log likelihood</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
