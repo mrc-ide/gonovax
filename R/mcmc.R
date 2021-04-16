@@ -129,7 +129,6 @@ history_collector <- function(n) {
 ##' @param pars A named vector of parameters
 ##'
 ##' @return a single log likelihood
-
 compare_basic <- function(pars) {
 
   ## load data
@@ -154,6 +153,64 @@ compare_basic <- function(pars) {
   ## output log likelihood
   sum(lltreated, llattended, na.rm = TRUE)
 }
+
+
+
+##' @title Calculate the log likelihood of the data given the parameters
+##' diagnoses and attendances lhoods are negative binomial
+##' p_symp lhood is betabinomial
+##' @param pars A named vector of parameters
+##' @param transform the transform function to use in the comparison
+##'
+##' @return a single log likelihood
+##' @importFrom stats dnbinom
+##' @export
+
+compare <- function(pars, transform) {
+
+  ## load data
+  data <- gonovax_data()
+  w <- !is.na(data$n_reported)
+
+  ## run odin model
+  y <- run(tt = c(0, data$gonovax_year), gono_params =  transform(pars),
+           transform = FALSE)
+
+  ## output total treated and total attended per year from odin model
+
+  diagnosed <- diff(y[, "tot_treated"])
+  attended <- diff(y[, "tot_attended"])
+
+  # indices of columns
+  state_names <- colnames(y)
+  i_diag_a <- grep("^cum_diag_a", state_names)
+  i_diag_s <- grep("^cum_diag_s", state_names)
+
+  diag_a <- pmax(diff(rowSums(y[, i_diag_a])), 1e-6)
+  diag_s <- pmax(diff(rowSums(y[, i_diag_s])), 1e-6)
+  p_symp <- diag_s / (diag_a + diag_s)
+
+  # ensure p_symp is in [0, 1]
+  stopifnot(max(p_symp) <= 1)
+  stopifnot(min(p_symp) >= 0)
+
+  ## compare to data
+  ## in dnbinom size = shape param of gamma dist, mu = mean
+
+  size <- 1 / pars[["k_gumcad"]]
+  lltreated <- dnbinom(data$diagnosed, size = size, mu = diagnosed, log = TRUE)
+  llattended <- dnbinom(data$attended, size = size, mu = attended, log = TRUE)
+
+  ## in debetabinom size and prob are binomial parameters, rho is overdispersion
+  ## with support [0, 1], 0 being a binomial
+  llsymptomatic <- dbetabinom(x = data$n_symptomatic[w],
+                              size = data$n_reported[w], prob = p_symp[w],
+                              rho = pars[["k_grasp"]], log = TRUE)
+
+  ## output log likelihood
+  sum(lltreated, llattended, llsymptomatic, na.rm = TRUE)
+}
+
 
 # this is imported from mcstate
 
