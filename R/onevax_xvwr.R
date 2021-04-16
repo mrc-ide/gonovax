@@ -4,7 +4,6 @@
 ##' @param eff_revax efficacy of revaccination, default to same as primary
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
-##' @param
 ##' @return A list parameters in the model input format
 vax_params_xvwr <- function(eff = 0, eff_revax = eff,
                             dur = 1e3, dur_revax = dur, uptake = 0,
