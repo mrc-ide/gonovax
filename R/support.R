@@ -84,23 +84,27 @@ gonovax_year_as_year <- function(gonovax_year) {
 ##' @param x data
 ##' @param size integer of sample size
 ##' @param prob probability of observing a single success
-##' @param rho overdispersion parameter, has support [0, 1] with low values being
-##' less overdispersion
+##' @param rho overdispersion parameter, has support [0, 1]
+##'  with low values being less overdispersion
 ##' @param log logical indicating whether to return log value
 ##'
 ##' @return probability of observing x
 ##' @export
 
 dbetabinom <- function(x, size, prob, rho, log = FALSE) {
-  
+
+  ##comparison with rmutil::dbetabinom
+  ## s = (1 / rho - 1), so that
+  ## rho = 1 / (s + 1).
+
   a <- prob * (1 / rho - 1)
   b <- (1 - prob) * (1 / rho - 1)
-  
+
   out <- lchoose(size, x) + lbeta(x + a, size - x + b) - lbeta(a, b)
-  
+
   if (!log) {
     out <- exp(out)
   }
-  
+
   out
 }
