@@ -3,7 +3,7 @@
 \name{dbetabinom}
 \alias{dbetabinom}
 \title{pdf of a betabinomial parametrised in terms of probability and
-over-dospersion}
+over-dispersion}
 \usage{
 dbetabinom(x, size, prob, rho, log = FALSE)
 }
@@ -14,7 +14,8 @@ dbetabinom(x, size, prob, rho, log = FALSE)
 
 \item{prob}{probability of observing a single success}
 
-\item{rho}{overdispersion parameter}
+\item{rho}{overdispersion parameter, has support [0, 1]
+with low values being less overdispersion}
 
 \item{log}{logical indicating whether to return log value}
 }
@@ -22,5 +23,6 @@ dbetabinom(x, size, prob, rho, log = FALSE)
 probability of observing x
 }
 \description{
-pdf of a betabinomial parametrised in terms of mean and over-dispersion
+pdf of a betabinomial parametrised in terms of probability and
+over-dispersion
 }

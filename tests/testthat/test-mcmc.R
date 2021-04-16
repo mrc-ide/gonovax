@@ -24,6 +24,35 @@ test_that("compare function works as expected", {
   plot(data$year, data$diagnosed, type = "l", ylim = c(0, 3e4))
   lines(data$year, diagnosed, col = "darkred")
 
+  ## test betabinom version
+  pars$k_gumcad <- 0.01
+  pars$k_grasp <- 0.05
+  ll <- compare(pars, transform0)
+  expect_equal(ll, -608.5819, tolerance = 1e-6)
+
+  ## check that increasing overdispersion increases ll
+  pars$k_gumcad <- 0.1
+  ll2 <- compare(pars, transform0)
+  expect_true(ll2 > ll)
+
+  pars$k_grasp <- 0.1
+  ll3 <- compare(pars, transform0)
+  expect_true(ll3 > ll2)
+
+  ## we fit 1 / size so that 0 is no overdispersion
+  lldiagnosed <- Map(dnbinom, x = data$diagnosed, size = 1 / pars$k_gumcad,
+                     mu = diagnosed, log = TRUE)
+  llattended <-  Map(dnbinom, x = data$attended, size = 1 / pars$k_gumcad,
+                     mu = attended, log = TRUE)
+  diag_a <- aggregate(list(y), "cum_diag_a", as_incid = TRUE)
+  diag_s <- aggregate(list(y), "cum_diag_s", as_incid = TRUE)
+  llp_symp <- Map(dbetabinom, x = data$n_symptomatic, size = data$n_reported,
+                  prob = diag_s / (diag_a + diag_s), rho = pars$k_grasp,
+                  log = TRUE)
+
+  expect_equal(ll3, sum(unlist(c(lldiagnosed, llattended, llp_symp)),
+                        na.rm = TRUE), tolerance = 1e-6)
+
 })
 
 test_that("mcmc runs", {

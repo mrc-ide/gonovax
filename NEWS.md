@@ -1,3 +1,7 @@
+# gonovax 0.2.3
+
+* move compare function used in paper into package
+
 # gonovax 0.2.2
 
 * refactor to run based on strategy
