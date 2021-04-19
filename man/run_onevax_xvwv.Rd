@@ -31,11 +31,11 @@ efficacy of the vaccine (between 0-1)}
 \item{dur}{scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)}
 
-\item{ve}{scalar indicating % of population vaccinated before entry
+\item{ve}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
-giving % of population vaccinated as part of strategy}
+giving pc of population vaccinated as part of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
 "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}

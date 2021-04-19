@@ -25,13 +25,13 @@ vax_params_xvwr(
 \item{dur_revax}{duration of protection for revaccination,
 default to same as primary}
 
-\item{uptake}{scalar indicating % of population vaccinated as part
+\item{uptake}{scalar indicating pc of population vaccinated as part
 of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
 "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
 
-\item{ve}{scalar indicating % of population vaccinated before entry
+\item{ve}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{t_stop}{time at which vaccination should stop (years)}

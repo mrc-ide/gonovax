@@ -2,9 +2,9 @@
 ##' @title create vaccination parameters for use in onevax_xvwv model
 ##' @param eff scalar indicating efficacy of the vaccine (between 0-1)
 ##' @param dur scalar indicating duration of the vaccine (in years)
-##' @param ve scalar indicating % of population vaccinated before entry
+##' @param ve scalar indicating pc of population vaccinated before entry
 ##'  (between 0-1)
-##' @param uptake scalar indicating % of population vaccinated as part
+##' @param uptake scalar indicating pc of population vaccinated as part
 ##'  of strategy
 ##' @param strategy single character string in "VbE", "VoD(all)", "VoD(H)",
 ##'  "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"
@@ -48,7 +48,7 @@ vax_params_xvwv <- function(eff = 0, dur = 1e3, uptake = 0, strategy = "VbE",
 ##' @param dur  scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of the vaccine (in years)
 ##' @param uptake  scalar or numeric vector with same length as `gono_params`
-##'  giving % of population vaccinated as part of strategy
+##'  giving pc of population vaccinated as part of strategy
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvwv
 ##' @export

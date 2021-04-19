@@ -39,11 +39,11 @@ giving efficacy of revaccination, default to same as primary}
 \item{dur_revax}{scalar or numeric vector with same length as `gono_params`
 giving duration of protection for revaccination, default to same as primary}
 
-\item{ve}{scalar indicating % of population vaccinated before entry
+\item{ve}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
-giving % of population vaccinated as part of strategy}
+giving pc of population vaccinated as part of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
 "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}

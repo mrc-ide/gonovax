@@ -48,7 +48,6 @@ vax_params_xvwr <- function(eff = 0, eff_revax = eff,
 ##' @param dur_revax scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of protection for revaccination, default to same as primary
 ##' @inheritParams run_onevax_xvwv
-##' @inheritParams vax_params_xvwr
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
