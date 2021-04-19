@@ -70,11 +70,8 @@ test_that("run_onevax_xvwv works correctly", {
   # check length of uptake vector must be 1 or length(gp)
   expect_error(run_onevax_xvwv(tt, gp, eff = 1, dur = 1e3, strategy = "VbE",
                   uptake = c(0, 0.5, 1)))
-  # check length of eff must be 1
-  expect_error(run_onevax_xvwv(tt, gp, eff = c(0, 1), dur = 1e3,
-                               strategy = "VbE", uptake = 1),
-               "'eff' must be a scalar")
-  expect_error(run_onevax_xvwv(tt, gp, eff = 1, dur = c(0, 1e3),
-                               strategy = "VbE", uptake = 1),
-               "'dur' must be a scalar")
+  expect_error(run_onevax_xvwv(tt, gp, eff = c(0, 1, 2), dur = 1e3,
+                               strategy = "VbE", uptake = 1))
+  expect_error(run_onevax_xvwv(tt, gp, eff = 1, dur = c(0, 1e2, 1e3),
+                               strategy = "VbE", uptake = 1))
 })
