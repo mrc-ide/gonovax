@@ -1,3 +1,7 @@
+# gonovax 0.2.4
+
+* Allow efficacy to be varied in run_onevax
+
 # gonovax 0.2.3
 
 * move compare function used in paper into package
