@@ -1,10 +1,10 @@
 ##' @name vax_params_xvwv
 ##' @title create vaccination parameters for use in onevax_xvwv model
-##' @param eff single numeric indicating efficacy of the vaccine (between 0-1)
-##' @param dur single numeric indicating duration of the vaccine (in years)
-##' @param ve single numeric indicating % of population vaccinated before entry
+##' @param eff scalar indicating efficacy of the vaccine (between 0-1)
+##' @param dur scalar indicating duration of the vaccine (in years)
+##' @param ve scalar indicating % of population vaccinated before entry
 ##'  (between 0-1)
-##' @param uptake single numeric indicating % of population vaccinated as part
+##' @param uptake scalar indicating % of population vaccinated as part
 ##'  of strategy
 ##' @param strategy single character string in "VbE", "VoD(all)", "VoD(H)",
 ##'  "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"
@@ -42,6 +42,13 @@ vax_params_xvwv <- function(eff = 0, dur = 1e3, uptake = 0, strategy = "VbE",
 ##' @title run model with single vaccine for input parameter sets, either from
 ##' initialisation or from equilibrium, those with waned vaccines are eligible
 ##' for revaccination, and return to the V compartment
+##' @param gono_params list of gono params
+##' @param eff scalar or numeric vector with same length as `gono_params` giving
+##'  efficacy of the vaccine (between 0-1)
+##' @param dur  scalar or numeric vector with same length as `gono_params`
+##'  giving duration of the vaccine (in years)
+##' @param uptake  scalar or numeric vector with same length as `gono_params`
+##'  giving % of population vaccinated as part of strategy
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvwv
 ##' @export
@@ -49,11 +56,12 @@ run_onevax_xvwv <- function(tt, gono_params, init_params = NULL,
                           eff, dur, ve = 0, uptake = 0, strategy = "VbE",
                           t_stop = 99) {
 
-  stopifnot(length(uptake) %in% c(1, length(gono_params)))
 
-  vax_params <- Map(vax_params_xvwv, uptake = uptake,
-                    MoreArgs = list(eff = eff, dur = dur, strategy = strategy,
-                                    t_stop = t_stop, ve = ve))
+  stopifnot(all(lengths(list(uptake, eff, dur)) %in% c(1, length(gono_params))))
+
+  vax_params <- Map(vax_params_xvwv, uptake = uptake, eff = eff, dur = dur,
+                    MoreArgs = list(strategy = strategy, t_stop = t_stop,
+                                    ve = ve))
 
   if (is.null(init_params)) {
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
