@@ -43,8 +43,11 @@ vax_params_xvwr <- function(eff = 0, eff_revax = eff,
 ##' @title run model with single vaccine for input parameter sets, either from
 ##' initialisation or from equilibrium, those with waned vaccines are eligible
 ##' for revaccination (R), and return to the R stratum
+##' @param eff_revax scalar or numeric vector with same length as `gono_params`
+##'  giving efficacy of revaccination, default to same as primary
+##' @param dur_revax scalar or numeric vector with same length as `gono_params`
+##'  giving duration of protection for revaccination, default to same as primary
 ##' @inheritParams run_onevax_xvwv
-##' @inheritParams vax_params_xvwr
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
@@ -53,11 +56,12 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                             ve = 0, uptake = 0, strategy = "VbE",
                             t_stop = 99) {
 
-  stopifnot(length(uptake) %in% c(1, length(gono_params)))
+  stopifnot(all(lengths(list(uptake, eff, dur, eff_revax, dur_revax)) %in%
+                  c(1, length(gono_params))))
 
-  vax_params <- Map(vax_params_xvwr, uptake = uptake,
-                    MoreArgs = list(eff = eff, dur = dur, eff_revax = eff_revax,
-                                    dur_revax = dur_revax, strategy = strategy,
+  vax_params <- Map(vax_params_xvwr, uptake = uptake, eff = eff, dur = dur,
+                    eff_revax = eff_revax, dur_revax = dur_revax,
+                    MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, ve = ve))
 
   if (is.null(init_params)) {

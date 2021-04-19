@@ -16,22 +16,22 @@ vax_params_xvwr(
 )
 }
 \arguments{
-\item{eff}{single numeric indicating efficacy of the vaccine (between 0-1)}
+\item{eff}{scalar indicating efficacy of the vaccine (between 0-1)}
 
 \item{eff_revax}{efficacy of revaccination, default to same as primary}
 
-\item{dur}{single numeric indicating duration of the vaccine (in years)}
+\item{dur}{scalar indicating duration of the vaccine (in years)}
 
 \item{dur_revax}{duration of protection for revaccination,
 default to same as primary}
 
-\item{uptake}{single numeric indicating % of population vaccinated as part
+\item{uptake}{scalar indicating pc of population vaccinated as part
 of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
 "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
 
-\item{ve}{single numeric indicating % of population vaccinated before entry
+\item{ve}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{t_stop}{time at which vaccination should stop (years)}

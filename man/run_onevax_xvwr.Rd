@@ -23,24 +23,27 @@ run_onevax_xvwr(
 \arguments{
 \item{tt}{a numeric vector of times at which the model state is output}
 
-\item{gono_params}{a data frame of parameters}
+\item{gono_params}{list of gono params}
 
 \item{init_params}{= NULL}
 
-\item{eff}{single numeric indicating efficacy of the vaccine (between 0-1)}
+\item{eff}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine (between 0-1)}
 
-\item{dur}{single numeric indicating duration of the vaccine (in years)}
+\item{dur}{scalar or numeric vector with same length as `gono_params`
+giving duration of the vaccine (in years)}
 
-\item{eff_revax}{efficacy of revaccination, default to same as primary}
+\item{eff_revax}{scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination, default to same as primary}
 
-\item{dur_revax}{duration of protection for revaccination,
-default to same as primary}
+\item{dur_revax}{scalar or numeric vector with same length as `gono_params`
+giving duration of protection for revaccination, default to same as primary}
 
-\item{ve}{single numeric indicating % of population vaccinated before entry
+\item{ve}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
-\item{uptake}{single numeric indicating % of population vaccinated as part
-of strategy}
+\item{uptake}{scalar or numeric vector with same length as `gono_params`
+giving pc of population vaccinated as part of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
 "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
