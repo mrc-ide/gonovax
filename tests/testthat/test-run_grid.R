@@ -118,7 +118,7 @@ test_that("run_grid works as expected", {
   y <- run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1, ve = 0.5)
   z <- compare_baseline(y, bl, 0.7, cp, 0)
 
-  zz <- run_grid(t = 2, gp, ip, cp, blv,
+  zz <- run_grid(gp, ip, cp, blv,
                 model = run_onevax_xvwv,
                 strategy = "VbE",
                 eff = c(0, 1), dur = c(1, 2), ve = 0.5,
@@ -138,7 +138,7 @@ test_that("run_grid works as expected", {
   expect_equal(length(zz$full_results), nrow(zz$inputs$grid))
 
   ## test with vd only
-  zz2 <- run_grid(t = 2, gp, ip, cp, blv,
+  zz2 <- run_grid(gp, ip, cp, blv,
                  model = run_onevax_xvwv,
                  strategy = "VoD(all)",
                  eff = c(0, 1), dur = c(1, 2), ve = 0.5,
@@ -156,7 +156,7 @@ test_that("run_grid works as expected", {
                tolerance = 0.1)
 
   ## test with va only
-  zz3 <- run_grid(t = 2, gp, ip, cp, blv,
+  zz3 <- run_grid(gp, ip, cp, blv,
                   model = run_onevax_xvwv,
                   strategy = "VoA(all)",
                   eff = c(0, 1), dur = c(1, 2), ve = 0.5,
@@ -174,7 +174,7 @@ test_that("run_grid works as expected", {
                tolerance = 0.1)
 
   ## test with vt only
-  zz5 <- run_grid(t = 2, gp, ip, cp, blv,
+  zz5 <- run_grid(gp, ip, cp, blv,
                  model = run_onevax_xvwv,
                  strategy = "VoD(L)+VoA(H)",
                  eff = c(0, 1), dur = c(1, 99), ve = 0.5,

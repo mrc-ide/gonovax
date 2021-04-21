@@ -1,7 +1,6 @@
 ##' @name run_grid
 ##' @title run model from equilibrium with single vaccine at the input
 ##' efficacy / duration grid locations for n parameter sets
-##' @param t an integer number of years at which impact is to be assessed
 ##' @param gono_params gono params
 ##' @param init_params initial state parameters
 ##' @param cost_params cost effectiveness parameters
@@ -26,13 +25,14 @@
 ##' @return A `gonovax_grid` object
 ##' @import furrr
 ##' @export
-run_grid  <- function(t, gono_params, init_params, cost_params,
+run_grid  <- function(gono_params, init_params, cost_params,
                       baseline, model,
                       eff, dur, ve = 0, strategy = "VbE", uptake_total = 0,
                       uptake_second_dose = uptake_total,
                       t_stop = 99, full_output = FALSE, disc_rate = 0) {
 
-  tt <- seq.int(init_params[[1]]$t, length.out = t + 1)
+  tt <- seq.int(init_params[[1]]$t,
+                length.out = nrow((baseline[[1]][[1]])) + 1)
   l <- expand.grid(eff = eff, dur = dur)
 
   # run model grid

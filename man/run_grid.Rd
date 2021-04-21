@@ -6,7 +6,6 @@
 efficacy / duration grid locations for n parameter sets}
 \usage{
 run_grid(
-  t,
   gono_params,
   init_params,
   cost_params,
@@ -24,8 +23,6 @@ run_grid(
 )
 }
 \arguments{
-\item{t}{an integer number of years at which impact is to be assessed}
-
 \item{gono_params}{gono params}
 
 \item{init_params}{initial state parameters}
