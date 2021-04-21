@@ -1,3 +1,7 @@
+# gonovax 0.2.5
+
+* run_grid uses length of baseline to determine time horizon
+
 # gonovax 0.2.4
 
 * Allow efficacy to be varied in run_onevax
