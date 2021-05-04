@@ -86,3 +86,41 @@ test_that("waning map works correctly", {
   expect_equal(colSums(y), c(0, 0, 0, 0))
 
 })
+
+test_that("transform works as expected", {
+  p <- read_csv(gonovax_file("extdata/gono_params.csv"))[1, ]
+  p$beta2009 <- p$beta
+  p$phi_beta <- 0.01
+  p$phi_eta <- 0.02
+  p$eta_h <- p$eta
+  p$gamma_l <- 0.6
+  gp <- transform(p)
+
+  # check ratio is fixed between eta_l and eta_h
+  expect_equal(gp$eta_l_t / gp$eta_h_t, rep(p$gamma_l, length(gp$tt)))
+
+  i_2020 <- which(gp$tt == gonovax_year(2020))
+  
+  ## check increasing to 2020
+  expect_equal(diff(gp$beta_t[seq_len(i_2020)]),
+               rep(p$beta2009 * p$phi_beta, i_2020 - 1L))
+  expect_equal(diff(gp$eta_h_t[seq_len(i_2020)]),
+               rep(p$eta_h * p$phi_eta, i_2020 - 1L))
+  expect_equal(diff(gp$eta_l_t[seq_len(i_2020)]),
+               rep(p$eta_l * p$phi_eta * p$gamma_l, i_2020 - 1L))
+  
+  ## check stable after 2020
+  expect_true(all(diff(gp$beta_t[-seq_len(i_2020)]) == 0))
+  expect_true(all(diff(gp$eta_h_t[-seq_len(i_2020)]) == 0))
+  expect_true(all(diff(gp$eta_l_t[-seq_len(i_2020)]) == 0))
+
+  #Check for fix_par_t = FALSE
+  gp2 <- transform(p, FALSE)
+
+  expect_equal(diff(gp2$beta_t), rep(p$beta2009 * p$phi_beta,
+                                   length(gp2$tt) - 1L))
+  expect_equal(diff(gp2$eta_h_t), rep(p$eta_h * p$phi_eta, length(gp2$tt) - 1L))
+  expect_equal(diff(gp2$eta_l_t), rep(p$eta_h * p$phi_eta * p$gamma_l,
+                                      length(gp2$tt) - 1L))
+
+})
