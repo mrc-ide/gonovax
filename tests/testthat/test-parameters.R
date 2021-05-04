@@ -100,7 +100,7 @@ test_that("transform works as expected", {
   expect_equal(gp$eta_l_t / gp$eta_h_t, rep(p$gamma_l, length(gp$tt)))
 
   i_2020 <- which(gp$tt == gonovax_year(2020))
-  
+
   ## check increasing to 2020
   expect_equal(diff(gp$beta_t[seq_len(i_2020)]),
                rep(p$beta2009 * p$phi_beta, i_2020 - 1L))
@@ -108,7 +108,7 @@ test_that("transform works as expected", {
                rep(p$eta_h * p$phi_eta, i_2020 - 1L))
   expect_equal(diff(gp$eta_l_t[seq_len(i_2020)]),
                rep(p$eta_l * p$phi_eta * p$gamma_l, i_2020 - 1L))
-  
+
   ## check stable after 2020
   expect_true(all(diff(gp$beta_t[-seq_len(i_2020)]) == 0))
   expect_true(all(diff(gp$eta_h_t[-seq_len(i_2020)]) == 0))
