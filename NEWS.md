@@ -1,3 +1,7 @@
+# gonovax 0.2.6
+
+* move transform function into package
+
 # gonovax 0.2.5
 
 * run_grid uses length of baseline to determine time horizon
