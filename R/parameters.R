@@ -41,7 +41,37 @@ transform0 <- function(pars) {
     pars$beta <- pars$eta <- NULL
 
     pars
-  }
+}
+
+##' Transform fitted parameters into gonovax params
+##' @name transform
+##' @title Transform fitted parameters into gonovax params
+##' @param pars list of fitted parameters
+##' @param fix_par_t logical indicating whether parameters with inferred trends
+##' are held at their 2020 values after that date.
+##' @return A list of parameters for use in the model
+##' @export
+transform <- function(pars, fix_par_t = TRUE) {
+  # reformat time-varying pars
+  pars <- as.list(pars)
+  
+  t0 <- 2009
+  t1 <- 2020
+  t_max <- 1e2
+  
+  t_fix <- ifelse(fix_par_t, t1, t0 + t_max)
+  pars$tt <- gonovax::gonovax_year(pmin(seq(t0, t0 + t_max), t_fix))
+  pars$beta_t  <- pars$beta2009 * (1 + pars$phi_beta * pars$tt)
+  
+  pars$eta_l_t <- pars$eta_h * pars$gamma_l * (1 + pars$phi_eta * pars$tt)
+  pars$eta_h_t <- pars$eta_h * (1 + pars$phi_eta * pars$tt)
+  
+  pars$tt <- seq(0, t_max)
+  
+  pars
+}
+
+
 
 ##' Create initial conditions for the model
 ##' @name initial_params
@@ -205,3 +235,5 @@ set_strategy <- function(strategy, uptake) {
 
   list(vd = vd, vs = vs)
 }
+
+
