@@ -1,6 +1,6 @@
 Package: gonovax
 Title: Deterministic SIR Model of gonorrhoea with vaccination
-Version: 0.2.5
+Version: 0.2.6
 Authors@R:
     c( person(given = "Lilith",
            family = "Whittles",
