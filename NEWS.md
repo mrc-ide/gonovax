@@ -1,3 +1,7 @@
+# gonovax 0.2.7
+
+* fix bug QALY cost bug
+
 # gonovax 0.2.6
 
 * move transform function into package
