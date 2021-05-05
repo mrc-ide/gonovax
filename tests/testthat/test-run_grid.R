@@ -78,8 +78,8 @@ test_that("compare baseline works as expected", {
   expect_true(all(tmp[2, ] != z$cases_averted_per_dose[1, ]))
 
   ## test cost eff threshold
-  expect_equal(z$cet_20k, calc_cost_eff_threshold(2e5, z, cp, 0))
-  expect_equal(z$cet_30k, calc_cost_eff_threshold(3e5, z, cp, 0))
+  expect_equal(z$cet_20k, calc_cost_eff_threshold(20000, z, cp, 0))
+  expect_equal(z$cet_30k, calc_cost_eff_threshold(30000, z, cp, 0))
 
   calc_cost <- function(x, cp, qc) {
     Qu <- cp$unit_cost_screen_uninfected * t(x$screened)
@@ -90,11 +90,11 @@ test_that("compare baseline works as expected", {
     t(Qu + Qs + Qa)
   }
 
-  expect_equal(calc_pv(calc_cost(bl, cp, 2e5) - calc_cost(yy, cp, 2e5), 0) /
+  expect_equal(calc_pv(calc_cost(bl, cp, 2e4) - calc_cost(yy, cp, 2e4), 0) /
                  calc_pv(z$inc_doses, 0),
                z$cet_20k)
 
-  expect_equal(calc_pv(calc_cost(bl, cp, 3e5) - calc_cost(yy, cp, 3e5), 0) /
+  expect_equal(calc_pv(calc_cost(bl, cp, 3e4) - calc_cost(yy, cp, 3e4), 0) /
                  calc_pv(z$inc_doses, 0),
                z$cet_30k)
 
