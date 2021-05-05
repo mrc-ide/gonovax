@@ -88,8 +88,8 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ## person with QALY cost - £20k / £30k
   ## both calcs allow for discounting (i.e. are present values as at 2022)
 
-  ret$cet_20k <- calc_cost_eff_threshold(2e5, ret, cost_params, disc_rate)
-  ret$cet_30k <- calc_cost_eff_threshold(3e5, ret, cost_params, disc_rate)
+  ret$cet_20k <- calc_cost_eff_threshold(2e4, ret, cost_params, disc_rate)
+  ret$cet_30k <- calc_cost_eff_threshold(3e4, ret, cost_params, disc_rate)
 
   ret
 }
