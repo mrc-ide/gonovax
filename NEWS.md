@@ -1,3 +1,7 @@
+# gonovax 0.2.8
+
+* rename strategies
+
 # gonovax 0.2.7
 
 * fix bug QALY cost bug

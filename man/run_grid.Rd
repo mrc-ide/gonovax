@@ -42,7 +42,7 @@ gonovax_grid object if supplied}
 (between 0-1), default = 0}
 
 \item{strategy}{`VbE`: vaccination before entry only (default),
-`VoD(all)`: vaccination on diagnosis, `VoA(all)`: vaccination on attendance,
+`VoD`: vaccination on diagnosis, `VoA`: vaccination on attendance,
 `VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
  screening)}
 

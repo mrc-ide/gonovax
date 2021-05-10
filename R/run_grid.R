@@ -12,7 +12,7 @@
 ##' @param ve single numeric indicating % of population vaccinated before entry
 ##'  (between 0-1), default = 0
 ##' @param strategy `VbE`: vaccination before entry only (default),
-##' `VoD(all)`: vaccination on diagnosis, `VoA(all)`: vaccination on attendance,
+##' `VoD`: vaccination on diagnosis, `VoA`: vaccination on attendance,
 ##' `VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
 ##'  screening)
 ##' @param uptake_total numeric (0-1) of strategy uptake, default = 0

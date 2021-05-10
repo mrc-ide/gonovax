@@ -28,8 +28,8 @@ default to same as primary}
 \item{uptake}{scalar indicating pc of population vaccinated as part
 of strategy}
 
-\item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
-"VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
 
 \item{ve}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
