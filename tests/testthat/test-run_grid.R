@@ -18,12 +18,12 @@ test_that("set_strategy works as expected", {
 
   i <- 0.234
   expect_equal(set_strategy("VbE", i), list(vd = 0, vs = 0))
-  expect_equal(set_strategy("VoD(all)", i), list(vd = i, vs = 0))
+  expect_equal(set_strategy("VoD", i), list(vd = i, vs = 0))
   expect_equal(set_strategy("VoD(H)", i), list(vd = c(0, i), vs = 0))
-  expect_equal(set_strategy("VoA(all)", i), list(vd = i, vs = i))
+  expect_equal(set_strategy("VoA", i), list(vd = i, vs = i))
   expect_equal(set_strategy("VoA(H)", i), list(vd = c(0, i), vs = c(0, i)))
   expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vd = i, vs = c(0, i)))
-  expect_equal(set_strategy("VoS(all)", i), list(vd = 0, vs = i))
+  expect_equal(set_strategy("VoS", i), list(vd = 0, vs = i))
 
   expect_error(set_strategy("hello", i), "strategy not recognised")
   expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
@@ -46,7 +46,7 @@ test_that("compare baseline works as expected", {
   p <- 0.7
 
   y <- run_onevax_xvwv(tt, gp, ip, eff = 0.5, dur = 1, ve = 0.5,
-                       uptake = 0.75, strategy = "VoD(all)")
+                       uptake = 0.75, strategy = "VoD")
   yy <- extract_flows(y)
 
   z <- compare_baseline(y, bl, uptake_second_dose = p, cp, 0)
@@ -140,7 +140,7 @@ test_that("run_grid works as expected", {
   ## test with vd only
   zz2 <- run_grid(gp, ip, cp, blv,
                  model = run_onevax_xvwv,
-                 strategy = "VoD(all)",
+                 strategy = "VoD",
                  eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                  uptake_total = 1)
   expect_equal(zz2$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
@@ -158,7 +158,7 @@ test_that("run_grid works as expected", {
   ## test with va only
   zz3 <- run_grid(gp, ip, cp, blv,
                   model = run_onevax_xvwv,
-                  strategy = "VoA(all)",
+                  strategy = "VoA",
                   eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                   uptake_total = 1, full_output = TRUE)
   expect_equal(zz3$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
