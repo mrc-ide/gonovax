@@ -45,8 +45,8 @@ giving duration of protection for revaccination, default to same as primary}
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy}
 
-\item{strategy}{single character string in "VbE", "VoD(all)", "VoD(H)",
-"VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
 
 \item{t_stop}{time at which vaccination should stop (years)}
 }
