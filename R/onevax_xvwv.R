@@ -6,8 +6,8 @@
 ##'  (between 0-1)
 ##' @param uptake scalar indicating pc of population vaccinated as part
 ##'  of strategy
-##' @param strategy single character string in "VbE", "VoD(all)", "VoD(H)",
-##'  "VoA(all)", "VoA(H)", "VoD(L)+VoA(H)"
+##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
+##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
 ##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(eff = 0, dur = 1e3, uptake = 0, strategy = "VbE",
