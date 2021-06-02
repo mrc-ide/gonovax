@@ -28,8 +28,8 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 extract_flows <- function(y) {
 
   # extract cumulative flows
-  flow_names <- c("cum_incid", "cum_diag_a", "cum_diag_s",
-                  "cum_treated", "cum_screened", "cum_vaccinated")
+  flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
+                  "cum_vaccinated")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
@@ -42,8 +42,9 @@ extract_flows <- function(y) {
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
   names(flows) <- gsub("^cum_", "", names(cumulative_flows))
 
-  # remove time 0 from cumulative flows
-  cumulative_flows <- lapply(cumulative_flows, "[", -1, )
+  # remove time 0 from cumulative flows and remove those not needed
+  cumulative_flows <-
+    lapply(cumulative_flows[c("cum_treated", "cum_vaccinated")], "[", -1, )
 
   c(cumulative_flows, flows)
 }
