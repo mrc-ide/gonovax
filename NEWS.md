@@ -1,3 +1,7 @@
+# gonovax 0.2.9
+
+* reduce input size from run_grid
+
 # gonovax 0.2.8
 
 * rename strategies
