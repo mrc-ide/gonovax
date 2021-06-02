@@ -48,7 +48,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
                        .f = compare_baseline,
                        cost_params = cost_params,
                        uptake_second_dose = uptake_second_dose,
-                       disc_rate = disc_rate, full_output = full_output)
+                       disc_rate = disc_rate)
 
   names(ret) <- sprintf("eff%.2f_dur%02d", l$eff, l$dur)
 
@@ -71,7 +71,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 
 
 compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
-                              disc_rate, full_output = FALSE) {
+                              disc_rate) {
 
   ## compare run to baseline
   flows <- extract_flows(y)
@@ -91,16 +91,7 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ret$cet_20k <- calc_cost_eff_threshold(2e4, ret, cost_params, disc_rate)
   ret$cet_30k <- calc_cost_eff_threshold(3e4, ret, cost_params, disc_rate)
 
-  if (full_output) {
-    return(ret)
-  }
-
-  keep <- c("treated", "inc_cum_treated", "inc_cum_vaccinated",
-            "inc_diag_a", "inc_diag_s", "inc_screened",
-            "inc_treated", "inc_doses", "inc_revaccinated", "inc_vaccinated",
-            "cases_averted_per_dose", "cases_averted_per_dose_pv",
-            "cet_20k", "cet_30k")
-  ret[keep]
+  ret
 }
 
 calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE) {

@@ -49,8 +49,7 @@ test_that("compare baseline works as expected", {
                        uptake = 0.75, strategy = "VoD")
   yy <- extract_flows(y)
 
-  z <- compare_baseline(y, bl, uptake_second_dose = p, cp, 0,
-                        full_output = TRUE)
+  z <- compare_baseline(y, bl, uptake_second_dose = p, cp, 0)
 
   flownames <- names(yy)
   incnames <- paste0("inc_", flownames)
@@ -99,10 +98,6 @@ test_that("compare baseline works as expected", {
                  calc_pv(z$inc_doses, 0),
                z$cet_30k)
 
-  # check default run with full output = FALSE
-  zz <- compare_baseline(y, bl, uptake_second_dose = p, cp, 0)
-  expect_equal(zz, z[names(zz)])
-
 })
 
 
@@ -121,7 +116,7 @@ test_that("run_grid works as expected", {
              unit_cost_screen_uninfected = c(70, 71))
 
   y <- run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1, ve = 0.5)
-  z <- compare_baseline(y, bl, 0.7, cp, 0, full_output = TRUE)
+  z <- compare_baseline(y, bl, 0.7, cp, 0)
 
   zz <- run_grid(gp, ip, cp, blv,
                 model = run_onevax_xvwv,
