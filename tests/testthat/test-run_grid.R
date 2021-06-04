@@ -1,7 +1,7 @@
 test_that("calc_pv works as expected", {
 
   ## time is dimension 1
-  x <- matrix(seq_len(12), 3, 2)
+  x <- matrix(seq_len(6), 3, 2)
   y0 <- calc_pv(x, 0)
 
   expect_equal(y0, apply(x, 2, cumsum))
