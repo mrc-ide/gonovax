@@ -74,10 +74,10 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
                               disc_rate) {
 
   ## compare run to baseline
-  ret <- extract_flows(y)
-  ret_vs_baseline <- Map(`-`, ret, baseline[names(ret)])
-  names(ret_vs_baseline) <- paste0("inc_", names(ret))
-  ret <- c(ret, ret_vs_baseline)
+  flows <- extract_flows(y)
+  ret <- Map(`-`, flows, baseline[names(flows)])
+  names(ret) <- paste0("inc_", names(flows))
+  ret <- c(flows, ret)
 
   ## calculate cases averted per dose, both with and without discounting
   ret$inc_doses <- calc_doses(ret, uptake_second_dose, TRUE)

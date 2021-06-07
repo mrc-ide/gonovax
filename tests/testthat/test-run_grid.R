@@ -1,7 +1,7 @@
 test_that("calc_pv works as expected", {
 
   ## time is dimension 1
-  x <- matrix(seq_len(12), 3, 2)
+  x <- matrix(seq_len(6), 3, 2)
   y0 <- calc_pv(x, 0)
 
   expect_equal(y0, apply(x, 2, cumsum))
@@ -124,15 +124,15 @@ test_that("run_grid works as expected", {
                 eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                 uptake_total = 1,
                 full_output = TRUE)
-  expect_equal(zz$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
+  expect_equal(zz$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz$results$eff0.00_dur02$inc_incid,
-               zz$results$eff0.00_dur01$inc_incid,
+  expect_equal(zz$results$eff0.00_dur02$inc_treated,
+               zz$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
-  expect_true(all(unlist(zz$results$inc_incid$eff0.10_dur01) > -0.1))
-  expect_equal(zz$results$eff0.00_dur01$inc_cum_incid,  matrix(0, 2, 2),
+  expect_true(all(unlist(zz$results$inc_treated$eff0.10_dur01) > -0.1))
+  expect_equal(zz$results$eff0.00_dur01$inc_cum_treated,  matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz$results$eff0.00_dur02$inc_cum_incid,  matrix(0, 2, 2),
+  expect_equal(zz$results$eff0.00_dur02$inc_cum_treated,  matrix(0, 2, 2),
                tolerance = 0.1)
   expect_true(all(abs(unlist(zz$results$vaccinated) - 1200 * 10 * 0.5) < 1e-5))
   expect_equal(length(zz$full_results), nrow(zz$inputs$grid))
@@ -143,16 +143,16 @@ test_that("run_grid works as expected", {
                  strategy = "VoD",
                  eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                  uptake_total = 1)
-  expect_equal(zz2$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
+  expect_equal(zz2$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz2$results$eff0.00_dur02$inc_incid,
-               zz2$results$eff0.00_dur01$inc_incid,
+  expect_equal(zz2$results$eff0.00_dur02$inc_treated,
+               zz2$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
-  expect_true(all(unlist(zz2$results$inc_incid) > -0.1))
-  expect_equal(zz2$results$eff0.00_dur01$inc_cum_incid, matrix(0, 2, 2),
+  expect_true(all(unlist(zz2$results$inc_treated) > -0.1))
+  expect_equal(zz2$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz2$results$eff0.00_dur02$inc_cum_incid,
-               zz2$results$eff0.00_dur01$inc_cum_incid,
+  expect_equal(zz2$results$eff0.00_dur02$inc_cum_treated,
+               zz2$results$eff0.00_dur01$inc_cum_treated,
                tolerance = 0.1)
 
   ## test with va only
@@ -161,16 +161,16 @@ test_that("run_grid works as expected", {
                   strategy = "VoA",
                   eff = c(0, 1), dur = c(1, 2), ve = 0.5,
                   uptake_total = 1, full_output = TRUE)
-  expect_equal(zz3$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
+  expect_equal(zz3$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz3$results$eff0.00_dur02$inc_incid,
-               zz3$results$eff0.00_dur01$inc_incid,
+  expect_equal(zz3$results$eff0.00_dur02$inc_treated,
+               zz3$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
-  expect_true(all(unlist(zz3$results$inc_incid) > -0.1))
-  expect_equal(zz3$results$eff0.00_dur01$inc_cum_incid, matrix(0, 2, 2),
+  expect_true(all(unlist(zz3$results$inc_treated) > -0.1))
+  expect_equal(zz3$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz3$results$eff0.00_dur02$inc_cum_incid,
-               zz3$results$eff0.00_dur01$inc_cum_incid,
+  expect_equal(zz3$results$eff0.00_dur02$inc_cum_treated,
+               zz3$results$eff0.00_dur01$inc_cum_treated,
                tolerance = 0.1)
 
   ## test with vt only
@@ -179,16 +179,16 @@ test_that("run_grid works as expected", {
                  strategy = "VoD(L)+VoA(H)",
                  eff = c(0, 1), dur = c(1, 99), ve = 0.5,
                  uptake_total = 1, full_output = TRUE)
-  expect_equal(zz5$results$eff0.00_dur01$inc_incid, matrix(0, 2, 2),
+  expect_equal(zz5$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz5$results$eff0.00_dur99$inc_incid,
-               zz5$results$eff0.00_dur01$inc_incid,
+  expect_equal(zz5$results$eff0.00_dur99$inc_treated,
+               zz5$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
-  expect_true(all(unlist(zz5$results$inc_incid) > -0.1))
-  expect_equal(zz5$results$eff0.00_dur01$inc_cum_incid, matrix(0, 2, 2),
+  expect_true(all(unlist(zz5$results$inc_treated) > -0.1))
+  expect_equal(zz5$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
                tolerance = 0.1)
-  expect_equal(zz5$results$eff0.00_dur99$inc_cum_incid,
-               zz5$results$eff0.00_dur01$inc_cum_incid,
+  expect_equal(zz5$results$eff0.00_dur99$inc_cum_treated,
+               zz5$results$eff0.00_dur01$inc_cum_treated,
                tolerance = 0.1)
   expect_true(all(zz5$full_results[[1]][[1]]$cum_vaccinated[, 1, ] <=
            zz3$full_results[[1]][[1]]$cum_vaccinated[, 1, ]))
