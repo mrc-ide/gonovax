@@ -75,3 +75,25 @@ test_that("run_onevax_xvwv works correctly", {
   expect_error(run_onevax_xvwv(tt, gp, vea = 1, dur = c(0, 1e2, 1e3),
                                strategy = "VbE", uptake = 1))
 })
+
+test_that("vaccine effects work as expected", {
+  tt <- seq(0, 5)
+  gp <- gono_params(1:2)
+
+  ## check perfect protection against symptoms works
+  y1 <- run_onevax_xvwv(tt, gp, ves = 1, dur = 1,
+                        uptake = 1, strategy = "VoA")[[1]]
+
+  expect_true(all(y1$S[, , 2] == 0))
+  expect_true(all(y1$S[-1, , 3] > 1e-6))
+  expect_true(all(y1$A[-1, , ] > 1e-6))
+
+  ## check perfect protection against duration works
+  y2 <- run_onevax_xvwv(tt, gp, ved = 1, dur = 1,
+                        uptake = 1, strategy = "VoA")[[1]]
+
+  expect_true(all(y2$A[, , 2] < 1e-6))
+  expect_true(all(y2$A[-1, , 3] > 1e-6))
+  expect_true(all(y2$S[-1, , ] > 0))
+
+})
