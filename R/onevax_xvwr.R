@@ -40,9 +40,9 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_w <- 3
   i_v <- c(2, 4)
   n_vax <- 4
-  
+
   # ensure duration is not divided by 0
-  ved <- min(ved, 1 - 1e-10) 
+  ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
 
   p <- set_strategy(strategy, uptake)
@@ -83,7 +83,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
-                            dur, vea, vei = 0, ved = 0, ves = 0,
+                            dur, vea = 0, vei = 0, ved = 0, ves = 0,
                             dur_revax = dur,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,

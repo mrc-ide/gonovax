@@ -77,7 +77,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @inheritParams vax_params_xvwv
 ##' @export
 run_onevax_xvwv <- function(tt, gono_params, init_params = NULL,
-                          dur, vea, vei = 0, ved = 0, ves = 0, vbe = 0,
+                          dur, vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
                           uptake = 0, strategy = "VbE",
                           t_stop = 99) {
 

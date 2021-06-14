@@ -11,7 +11,7 @@ run_onevax_xvwv(
   gono_params,
   init_params = NULL,
   dur,
-  vea,
+  vea = 0,
   vei = 0,
   ved = 0,
   ves = 0,
