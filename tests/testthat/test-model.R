@@ -104,7 +104,7 @@ test_that("Bex model runs with no vaccination", {
   y0 <- mod0$transform_variables(y0)
 
   params1 <- model_params(gono_params = gono_params(1)[[1]],
-                           vax_params = vax_params_xvwv(ve = 0))
+                           vax_params = vax_params_xvwv(vbe = 0))
   mod1 <- model(user = params1, unused_user_action = "ignore")
   y1 <- mod1$run(t = tt)
   y1 <- mod1$transform_variables(y1)
@@ -124,7 +124,7 @@ test_that("Bex model runs with vbe", {
   tt <- seq.int(0, 2) / 365
   # with perfect efficacy
   params <- model_params(gono_params = gono_params(1)[[1]],
-                            vax_params = vax_params_xvwv(ve = 1, eff = 1))
+                            vax_params = vax_params_xvwv(vbe = 1, vea = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -157,8 +157,8 @@ test_that("Check vaccination on screening in Bex model", {
   # with perfect efficacy
   params <-
     model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(ve = 0, uptake = 1,
-                                              strategy = "VoS", eff = 1))
+                 vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
+                                              strategy = "VoS", vea = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -195,8 +195,8 @@ test_that("Check vaccination on diagnosis in Bex model", {
   # with perfect efficacy
   params <-
     model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(ve = 0, uptake = 1,
-                                              strategy = "VoD", eff = 1))
+                 vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
+                                              strategy = "VoD", vea = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -265,7 +265,7 @@ test_that("can initialise after time 0", {
 
 test_that("t_stop is working correctly", {
   ## check with single parameter set
-  vp <- vax_params_xvwv(ve = 0, uptake = 1, strategy = "VoD", eff = 1,
+  vp <- vax_params_xvwv(vbe = 0, uptake = 1, strategy = "VoD", vea = 1,
                         t_stop = 2 / 365)
   params <- model_params(gono_params = gono_params(1)[[1]],
                          vax_params = vp)
