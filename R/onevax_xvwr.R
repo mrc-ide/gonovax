@@ -40,6 +40,10 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_w <- 3
   i_v <- c(2, 4)
   n_vax <- 4
+  
+  # ensure duration is not divided by 0
+  ved <- min(ved, 1 - 1e-10) 
+  ved_revax <- min(ved_revax, 1 - 1e-10)
 
   p <- set_strategy(strategy, uptake)
 

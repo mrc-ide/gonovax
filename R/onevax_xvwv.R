@@ -38,6 +38,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # compartments to which vaccine efficacy applies
   ve <- c(0, 1, 0)
+  ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   p <- set_strategy(strategy, uptake)
 
