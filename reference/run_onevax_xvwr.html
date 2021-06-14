@@ -78,7 +78,7 @@ for revaccination (R), and return to the R stratum" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -129,11 +129,17 @@ for revaccination (R), and return to the R stratum</p>
   <span class='va'>tt</span>,
   <span class='va'>gono_params</span>,
   init_params <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>eff</span>,
   <span class='va'>dur</span>,
-  eff_revax <span class='op'>=</span> <span class='va'>eff</span>,
+  vea <span class='op'>=</span> <span class='fl'>0</span>,
+  vei <span class='op'>=</span> <span class='fl'>0</span>,
+  ved <span class='op'>=</span> <span class='fl'>0</span>,
+  ves <span class='op'>=</span> <span class='fl'>0</span>,
   dur_revax <span class='op'>=</span> <span class='va'>dur</span>,
-  ve <span class='op'>=</span> <span class='fl'>0</span>,
+  vea_revax <span class='op'>=</span> <span class='va'>vea</span>,
+  vei_revax <span class='op'>=</span> <span class='va'>vei</span>,
+  ved_revax <span class='op'>=</span> <span class='va'>ved</span>,
+  ves_revax <span class='op'>=</span> <span class='va'>ves</span>,
+  vbe <span class='op'>=</span> <span class='fl'>0</span>,
   uptake <span class='op'>=</span> <span class='fl'>0</span>,
   strategy <span class='op'>=</span> <span class='st'>"VbE"</span>,
   t_stop <span class='op'>=</span> <span class='fl'>99</span>
@@ -155,19 +161,29 @@ for revaccination (R), and return to the R stratum</p>
       <td><p>= NULL</p></td>
     </tr>
     <tr>
-      <th>eff</th>
-      <td><p>scalar or numeric vector with same length as `gono_params` giving
-efficacy of the vaccine (between 0-1)</p></td>
-    </tr>
-    <tr>
       <th>dur</th>
       <td><p>scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)</p></td>
     </tr>
     <tr>
-      <th>eff_revax</th>
-      <td><p>scalar or numeric vector with same length as `gono_params`
-giving efficacy of revaccination, default to same as primary</p></td>
+      <th>vea</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against acquisition (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>vei</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against infectiousness (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>ved</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against duration (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>ves</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against symptoms (between 0-1)</p></td>
     </tr>
     <tr>
       <th>dur_revax</th>
@@ -175,7 +191,31 @@ giving efficacy of revaccination, default to same as primary</p></td>
 giving duration of protection for revaccination, default to same as primary</p></td>
     </tr>
     <tr>
-      <th>ve</th>
+      <th>vea_revax</th>
+      <td><p>scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against acquisition, default to same as
+primary</p></td>
+    </tr>
+    <tr>
+      <th>vei_revax</th>
+      <td><p>scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against infectiousness, default to same as
+primary</p></td>
+    </tr>
+    <tr>
+      <th>ved_revax</th>
+      <td><p>scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against duration of infection, default to
+same as primary</p></td>
+    </tr>
+    <tr>
+      <th>ves_revax</th>
+      <td><p>scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against symptoms, default to same as
+primary</p></td>
+    </tr>
+    <tr>
+      <th>vbe</th>
       <td><p>scalar indicating pc of population vaccinated before entry
 (between 0-1)</p></td>
     </tr>

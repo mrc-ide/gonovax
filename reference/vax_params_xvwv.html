@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -116,11 +116,14 @@
     </div>
 
     <pre class="usage"><span class='fu'>vax_params_xvwv</span><span class='op'>(</span>
-  eff <span class='op'>=</span> <span class='fl'>0</span>,
+  vea <span class='op'>=</span> <span class='fl'>0</span>,
+  vei <span class='op'>=</span> <span class='fl'>0</span>,
+  ved <span class='op'>=</span> <span class='fl'>0</span>,
+  ves <span class='op'>=</span> <span class='fl'>0</span>,
   dur <span class='op'>=</span> <span class='fl'>1000</span>,
   uptake <span class='op'>=</span> <span class='fl'>0</span>,
   strategy <span class='op'>=</span> <span class='st'>"VbE"</span>,
-  ve <span class='op'>=</span> <span class='fl'>0</span>,
+  vbe <span class='op'>=</span> <span class='fl'>0</span>,
   t_stop <span class='op'>=</span> <span class='fl'>99</span>
 <span class='op'>)</span></pre>
 
@@ -128,8 +131,24 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>eff</th>
-      <td><p>scalar indicating efficacy of the vaccine (between 0-1)</p></td>
+      <th>vea</th>
+      <td><p>scalar indicating efficacy of the vaccine against acquisition
+(between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>vei</th>
+      <td><p>scalar indicating efficacy of the vaccine against infectiousness
+(between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>ved</th>
+      <td><p>scalar indicating efficacy of the vaccine against duration
+(between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>ves</th>
+      <td><p>scalar indicating efficacy of the vaccine against symptoms
+(between 0-1)</p></td>
     </tr>
     <tr>
       <th>dur</th>
@@ -146,7 +165,7 @@ of strategy</p></td>
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"</p></td>
     </tr>
     <tr>
-      <th>ve</th>
+      <th>vbe</th>
       <td><p>scalar indicating pc of population vaccinated before entry
 (between 0-1)</p></td>
     </tr>
