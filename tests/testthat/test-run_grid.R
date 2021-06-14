@@ -17,13 +17,13 @@ test_that("calc_pv works as expected", {
 test_that("set_strategy works as expected", {
 
   i <- 0.234
-  expect_equal(set_strategy("VbE", i), list(vd = 0, vs = 0))
-  expect_equal(set_strategy("VoD", i), list(vd = i, vs = 0))
-  expect_equal(set_strategy("VoD(H)", i), list(vd = c(0, i), vs = 0))
-  expect_equal(set_strategy("VoA", i), list(vd = i, vs = i))
-  expect_equal(set_strategy("VoA(H)", i), list(vd = c(0, i), vs = c(0, i)))
-  expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vd = i, vs = c(0, i)))
-  expect_equal(set_strategy("VoS", i), list(vd = 0, vs = i))
+  expect_equal(set_strategy("VbE", i), list(vod = 0, vos = 0))
+  expect_equal(set_strategy("VoD", i), list(vod = i, vos = 0))
+  expect_equal(set_strategy("VoD(H)", i), list(vod = c(0, i), vos = 0))
+  expect_equal(set_strategy("VoA", i), list(vod = i, vos = i))
+  expect_equal(set_strategy("VoA(H)", i), list(vod = c(0, i), vos = c(0, i)))
+  expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vod = i, vos = c(0, i)))
+  expect_equal(set_strategy("VoS", i), list(vod = 0, vos = i))
 
   expect_error(set_strategy("hello", i), "strategy not recognised")
   expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
@@ -34,10 +34,10 @@ test_that("set_strategy works as expected", {
 test_that("compare baseline works as expected", {
 
   gp <- gono_params(1:2)
-  ip <- lapply(run_onevax_xvwv(0:1, gp, eff = 0, dur = 1), restart_params)
+  ip <- lapply(run_onevax_xvwv(0:1, gp, vea = 0, dur = 1), restart_params)
   tt <- 1:4
 
-  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1, ve = 0.5))
+  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1, vbe = 0.5))
   blv <- rep(list(bl), 4)
   cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
              unit_cost_manage_symptomatic = c(98, 99),
@@ -45,7 +45,7 @@ test_that("compare baseline works as expected", {
              unit_cost_screen_uninfected = c(70, 71))
   p <- 0.7
 
-  y <- run_onevax_xvwv(tt, gp, ip, eff = 0.5, dur = 1, ve = 0.5,
+  y <- run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1, vbe = 0.5,
                        uptake = 0.75, strategy = "VoD")
   yy <- extract_flows(y)
 
@@ -102,26 +102,26 @@ test_that("compare baseline works as expected", {
 
 
 test_that("run_grid works as expected", {
-  ## test with ve only
+  ## test with vbe only
 
   gp <- gono_params(1:2)
-  ip <- lapply(run_onevax_xvwv(0:1, gp, eff = 0, dur = 1), restart_params)
+  ip <- lapply(run_onevax_xvwv(0:1, gp, vea = 0, dur = 1), restart_params)
   tt <- 1:3
 
-  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1))
+  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1))
   blv <- rep(list(bl), 4)
   cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
              unit_cost_manage_symptomatic = c(98, 99),
              unit_cost_manage_asymptomatic = c(93, 94),
              unit_cost_screen_uninfected = c(70, 71))
 
-  y <- run_onevax_xvwv(tt, gp, ip, eff = 0, dur = 1, ve = 0.5)
+  y <- run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1, vbe = 0.5)
   z <- compare_baseline(y, bl, 0.7, cp, 0)
 
   zz <- run_grid(gp, ip, cp, blv,
                 model = run_onevax_xvwv,
                 strategy = "VbE",
-                eff = c(0, 1), dur = c(1, 2), ve = 0.5,
+                eff = c(0, 1), dur = c(1, 2), vbe = 0.5,
                 uptake_total = 1,
                 full_output = TRUE)
   expect_equal(zz$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
@@ -137,11 +137,11 @@ test_that("run_grid works as expected", {
   expect_true(all(abs(unlist(zz$results$vaccinated) - 1200 * 10 * 0.5) < 1e-5))
   expect_equal(length(zz$full_results), nrow(zz$inputs$grid))
 
-  ## test with vd only
+  ## test with vod only
   zz2 <- run_grid(gp, ip, cp, blv,
                  model = run_onevax_xvwv,
                  strategy = "VoD",
-                 eff = c(0, 1), dur = c(1, 2), ve = 0.5,
+                 eff = c(0, 1), dur = c(1, 2), vbe = 0.5,
                  uptake_total = 1)
   expect_equal(zz2$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
@@ -159,7 +159,7 @@ test_that("run_grid works as expected", {
   zz3 <- run_grid(gp, ip, cp, blv,
                   model = run_onevax_xvwv,
                   strategy = "VoA",
-                  eff = c(0, 1), dur = c(1, 2), ve = 0.5,
+                  eff = c(0, 1), dur = c(1, 2), vbe = 0.5,
                   uptake_total = 1, full_output = TRUE)
   expect_equal(zz3$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
@@ -177,7 +177,7 @@ test_that("run_grid works as expected", {
   zz5 <- run_grid(gp, ip, cp, blv,
                  model = run_onevax_xvwv,
                  strategy = "VoD(L)+VoA(H)",
-                 eff = c(0, 1), dur = c(1, 99), ve = 0.5,
+                 eff = c(0, 1), dur = c(1, 99), vbe = 0.5,
                  uptake_total = 1, full_output = TRUE)
   expect_equal(zz5$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
                tolerance = 0.1)
@@ -193,11 +193,11 @@ test_that("run_grid works as expected", {
   expect_true(all(zz5$full_results[[1]][[1]]$cum_vaccinated[, 1, ] <=
            zz3$full_results[[1]][[1]]$cum_vaccinated[, 1, ]))
 
-  tmp <- run_onevax_xvwv(tt, gp[1], init_params = ip[1], eff = 1, dur = 99,
-                         ve = 0.5, strategy = "VoD(L)+VoA(H)",
+  tmp <- run_onevax_xvwv(tt, gp[1], init_params = ip[1], vea = 1, dur = 99,
+                         vbe = 0.5, strategy = "VoD(L)+VoA(H)",
                          uptake = 1, t_stop = 99)
-  tmp2 <- run_onevax_xvwv(tt, gp[1], init_params = ip[1], eff = 0, dur = 1,
-                         ve = 0.5, strategy = "VoD(L)+VoA(H)",
+  tmp2 <- run_onevax_xvwv(tt, gp[1], init_params = ip[1], vea = 0, dur = 1,
+                         vbe = 0.5, strategy = "VoD(L)+VoA(H)",
                          uptake = 1, t_stop = 99)
   expect_equal(tmp[[1]], zz5$full_results[[4]][[1]])
   expect_equal(tmp2[[1]], zz5$full_results[[1]][[1]])

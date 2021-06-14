@@ -23,32 +23,35 @@ eta[2] <- eta_h
 ## Core equations for transitions between compartments:
 
 deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
-  nu * A[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) -
-  sum(n_ve[i, j, ]) - sum(n_vd[i, j, ]) - sum(n_vs[i, j, ])
+  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) -
+  sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ])
 
 deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ])
 
-deriv(A[, ]) <- (1 - psi) * sigma * I[i, j] - n_AT[i, j] -
-  (nu + exr) * A[i, j] + sum(wA[i, j, ])
+deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
+  n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ])
 
-deriv(S[, ]) <- psi * sigma * I[i, j] - n_ST[i, j] - exr * S[i, j] +
-  sum(wS[i, j, ])
+deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j] -
+  exr * S[i, j] + sum(wS[i, j, ])
 
 deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
   sum(wT[i, j, ])
 
 ## Update population size
-C[, ] <- I[i, j] + A[i, j] + S[i, j]
+C[, ] <- (I[i, j] + A[i, j] + S[i, j]) * (1 - vei[j])
 N[, ] <- U[i, j] + C[i, j] + T[i, j]
 entrants[, 1] <- enr * q[i]
 
 # calculate mixing matrix, probability of infection and force of infection
 Np[]    <- sum(N[i, ]) * p[i]
+
+# i = infectee, j = infector
 m[, ]   <- epsilon * (i == j) + (1 - epsilon) * Np[j] / sum(Np)
 foi[, ] <- beta * p[i] * m[i, j] * sum(C[j, ]) / sum(N[j, ])
 
-n_UI[, ]     <- sum(foi[i, ]) * (1 - eff[j]) * U[i, j]
+n_UI[, ]     <- sum(foi[i, ]) * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
+n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta[i] * U[i, j]
@@ -57,11 +60,11 @@ screened[, ] <- eta[i] * U[i, j]
 ## time-varying switch
 vax_switch <- interpolate(vax_t, vax_y, "constant")
 ## at screening
-n_vs[, , ] <- vs[i, j, k] * screened[i, k] * vax_switch
+n_vos[, , ] <- vos[i, j, k] * screened[i, k] * vax_switch
 ## on diagnosis
-n_vd[, , ] <- vd[i, j, k] * n_TU[i, k] * vax_switch
+n_vod[, , ] <- vod[i, j, k] * n_TU[i, k] * vax_switch
 ## on entry - no switch as background rate
-n_ve[, , ] <- ve[i, j, k] * entrants[i, k]
+n_vbe[, , ] <- vbe[i, j, k] * entrants[i, k]
 
 # waning
 wU[, , ] <- w[j, k] * U[i, k]
@@ -77,7 +80,7 @@ deriv(cum_diag_a[, ])     <- n_AT[i, j]
 deriv(cum_diag_s[, ])     <- n_ST[i, j]
 deriv(cum_treated[, ])    <- n_TU[i, j]
 deriv(cum_screened[, ])   <- screened[i, j]
-deriv(cum_vaccinated[, ]) <- n_vs[i, j, j] + n_vd[i, j, j] + n_ve[i, j, j]
+deriv(cum_vaccinated[, ]) <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)
@@ -88,7 +91,7 @@ output(beta) <- beta
 output(eta) <- eta
 
 ## Set up compartments
-## Initial states are all 0 as we will provide a state vector
+## Initial states are all 0 as we will provide a state vbector
 initial(U[, ]) <- U0[i, j]
 initial(I[, ]) <- I0[i, j]
 initial(A[, ]) <- A0[i, j]
@@ -132,6 +135,7 @@ dim(foi) <- c(n_group, n_group)
 
 dim(n_UI)     <- c(n_group, n_vax)
 dim(n_AT)     <- c(n_group, n_vax)
+dim(n_AU)     <- c(n_group, n_vax)
 dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
@@ -159,11 +163,18 @@ nu        <- user()
 mu        <- user()
 rho       <- user()
 
-## vaccination pars
-ve[, , ] <- user()
-vs[, , ] <- user()
-vd[, , ] <- user()
-eff[]    <- user()
+## vaccination parameters
+# vaccination routes
+vbe[, , ] <- user()
+vos[, , ] <- user()
+vod[, , ] <- user()
+
+# vaccine effects
+vea[] <- user() # efficacy against acquisition
+ved[] <- user() # efficacy against duration of infection
+ves[] <- user() # efficacy against symptoms
+vei[] <- user() # efficacy against infectiousness
+
 w[, ]    <- user()
 vax_t[]  <- user()
 vax_y[]  <- user()
@@ -176,17 +187,20 @@ dim(eta_h_t) <- length(tt)
 dim(p)    <- n_group
 dim(q)    <- n_group
 dim(eta)  <- n_group
-dim(eff)  <- n_vax
-dim(ve)   <- c(n_group, n_vax, n_vax)
-dim(vd)   <- c(n_group, n_vax, n_vax)
-dim(vs)   <- c(n_group, n_vax, n_vax)
+dim(vea)  <- n_vax
+dim(ved)  <- n_vax
+dim(ves)  <- n_vax
+dim(vei)  <- n_vax
+dim(vbe)   <- c(n_group, n_vax, n_vax)
+dim(vod)   <- c(n_group, n_vax, n_vax)
+dim(vos)   <- c(n_group, n_vax, n_vax)
 dim(w)    <- c(n_vax, n_vax)
 dim(vax_t) <- user()
 dim(vax_y) <- user()
 
-dim(n_ve) <- c(n_group, n_vax, n_vax)
-dim(n_vs) <- c(n_group, n_vax, n_vax)
-dim(n_vd) <- c(n_group, n_vax, n_vax)
+dim(n_vbe) <- c(n_group, n_vax, n_vax)
+dim(n_vos) <- c(n_group, n_vax, n_vax)
+dim(n_vod) <- c(n_group, n_vax, n_vax)
 dim(wU)   <- c(n_group, n_vax, n_vax)
 dim(wI)   <- c(n_group, n_vax, n_vax)
 dim(wA)   <- c(n_group, n_vax, n_vax)

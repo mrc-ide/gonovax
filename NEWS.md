@@ -1,3 +1,9 @@
+# gonovax 0.3.0
+
+* add vaccine effects vea (acquisition), vei (infectiousness),
+ved (duration of infection), ves (symptoms)
+* rename ve -> vbe to avoid confusion
+
 # gonovax 0.2.9
 
 * reduce input size from run_grid

@@ -210,28 +210,28 @@ set_strategy <- function(strategy, uptake) {
   }
 
   if (strategy == "VbE") {
-    vs <- vd <- 0
+    vos <- vod <- 0
   } else if (strategy == "VoD") {
-    vd <- uptake
-    vs <- 0
+    vod <- uptake
+    vos <- 0
   } else if (strategy == "VoA") {
-    vd <- uptake
-    vs <- uptake
+    vod <- uptake
+    vos <- uptake
   } else if (strategy == "VoD(H)") {
-    vd <- c(0, uptake)
-    vs <- 0
+    vod <- c(0, uptake)
+    vos <- 0
   } else if (strategy == "VoA(H)") {
-    vd <- c(0, uptake)
-    vs <- c(0, uptake)
+    vod <- c(0, uptake)
+    vos <- c(0, uptake)
   } else if (strategy == "VoD(L)+VoA(H)") {
-    vd <- uptake
-    vs <- c(0, uptake)
+    vod <- uptake
+    vos <- c(0, uptake)
   } else if (strategy == "VoS") {
-    vd <- 0
-    vs <- uptake
+    vod <- 0
+    vos <- uptake
   } else {
     stop("strategy not recognised")
   }
 
-  list(vd = vd, vs = vs)
+  list(vod = vod, vos = vos)
 }
