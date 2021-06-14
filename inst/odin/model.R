@@ -28,11 +28,11 @@ deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
 
 deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ])
 
-deriv(A[, ]) <- (1 - ves[j] * psi) * sigma * I[i, j] - n_AT[i, j] - n_AU[i, j] +
-  exr * A[i, j] + sum(wA[i, j, ])
+deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
+  n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ])
 
-deriv(S[, ]) <- ves[j] * psi * sigma * I[i, j] - n_ST[i, j] - exr * S[i, j] +
-  sum(wS[i, j, ])
+deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j] -
+  exr * S[i, j] + sum(wS[i, j, ])
 
 deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
   sum(wT[i, j, ])

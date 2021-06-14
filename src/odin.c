@@ -1676,7 +1676,7 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   }
   for (int i = 1; i <= internal->dim_S_1; ++i) {
     for (int j = 1; j <= internal->dim_S_2; ++j) {
-      dstatedt[internal->offset_variable_S + i - 1 + internal->dim_S_1 * (j - 1)] = internal->ves[j - 1] * internal->psi * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] - internal->exr * S[internal->dim_S_1 * (j - 1) + i - 1] + odin_sum3(internal->wS, i - 1, i, j - 1, j, 0, internal->dim_wS_3, internal->dim_wS_1, internal->dim_wS_12);
+      dstatedt[internal->offset_variable_S + i - 1 + internal->dim_S_1 * (j - 1)] = (1 - internal->ves[j - 1]) * internal->psi * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] - internal->exr * S[internal->dim_S_1 * (j - 1) + i - 1] + odin_sum3(internal->wS, i - 1, i, j - 1, j, 0, internal->dim_wS_3, internal->dim_wS_1, internal->dim_wS_12);
     }
   }
   double eta_h = 0.0;
@@ -1723,7 +1723,7 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   }
   for (int i = 1; i <= internal->dim_A_1; ++i) {
     for (int j = 1; j <= internal->dim_A_2; ++j) {
-      dstatedt[internal->offset_variable_A + i - 1 + internal->dim_A_1 * (j - 1)] = (1 - internal->ves[j - 1] * internal->psi) * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - internal->n_AU[internal->dim_n_AU_1 * (j - 1) + i - 1] + internal->exr * A[internal->dim_A_1 * (j - 1) + i - 1] + odin_sum3(internal->wA, i - 1, i, j - 1, j, 0, internal->dim_wA_3, internal->dim_wA_1, internal->dim_wA_12);
+      dstatedt[internal->offset_variable_A + i - 1 + internal->dim_A_1 * (j - 1)] = (1 - (1 - internal->ves[j - 1]) * internal->psi) * internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] - internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - internal->n_AU[internal->dim_n_AU_1 * (j - 1) + i - 1] - internal->exr * A[internal->dim_A_1 * (j - 1) + i - 1] + odin_sum3(internal->wA, i - 1, i, j - 1, j, 0, internal->dim_wA_3, internal->dim_wA_1, internal->dim_wA_12);
     }
   }
   for (int i = 1; i <= internal->dim_cum_diag_a_1; ++i) {
