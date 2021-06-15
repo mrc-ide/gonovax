@@ -114,7 +114,7 @@ name_outputs <- function(res, strata_names) {
 
   group_names <- c("L", "H")
   state_names <- c("U", "I", "A", "S", "T", "N",
-                   "cum_incid", "cum_diag_a", "cum_diag_s"
+                   "cum_incid", "cum_diag_a", "cum_diag_s",
                    "cum_treated", "cum_screened", "cum_vaccinated")
 
   for (nm in state_names) {
