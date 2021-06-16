@@ -38,18 +38,18 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
   sum(wT[i, j, ])
 
 ## Update population size
-C[, ] <- (I[i, j] + A[i, j] + S[i, j]) * (1 - vei[j])
-N[, ] <- U[i, j] + C[i, j] + T[i, j]
+N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 entrants[, 1] <- enr * q[i]
 
 # calculate mixing matrix, probability of infection and force of infection
+C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
+prop_C[] <- sum(C[i, ]) / sum(N[i, ])
 Np[]    <- sum(N[i, ]) * p[i]
 
-# i = infectee, j = infector
-m[, ]   <- epsilon * (i == j) + (1 - epsilon) * Np[j] / sum(Np)
-foi[, ] <- beta * p[i] * m[i, j] * sum(C[j, ]) / sum(N[j, ])
+foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])
+lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
 
-n_UI[, ]     <- sum(foi[i, ]) * (1 - vea[j]) * U[i, j]
+n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
 n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
@@ -127,11 +127,10 @@ dim(T0) <- c(n_group, n_vax)
 dim(C)  <- c(n_group, n_vax)
 dim(N)  <- c(n_group, n_vax)
 dim(entrants) <- c(n_group, n_vax)
-dim(Np) <- n_group
-
-
-dim(m)   <- c(n_group, n_group)
-dim(foi) <- c(n_group, n_group)
+dim(Np)     <- n_group
+dim(prop_C) <- n_group
+dim(foi_LH) <- n_group
+dim(lambda) <- n_group
 
 dim(n_UI)     <- c(n_group, n_vax)
 dim(n_AT)     <- c(n_group, n_vax)
@@ -208,4 +207,4 @@ dim(wS)   <- c(n_group, n_vax, n_vax)
 dim(wT)   <- c(n_group, n_vax, n_vax)
 
 output(N)   <- N
-output(foi) <- foi
+output(lambda) <- lambda
