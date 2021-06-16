@@ -62,7 +62,7 @@ y <- run_onevax_xvwv(tt,
 outputs you can use the `aggregate` function.
 
 This will aggregate over group (L, H) and strata (X, V, W) to give the total
-cumulative infections for each parameter set (rows) over time (columns) 
+cumulative infections for each parameter set (rows) over time (columns).
 
 ```{r}
 
