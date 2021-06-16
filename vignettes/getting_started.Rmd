@@ -25,7 +25,7 @@ First we will run the model without vaccination, read in your table of parameter
  filename <- system.file("extdata/gono_params_t.csv", package = "gonovax",
                          mustWork = TRUE)
  parameter_table <- read.csv(filename)
- parameter_table
+ head(parameter_table)
 ```
 
 We need to transform the table of parameters to the format the model requires
