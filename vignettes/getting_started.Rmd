@@ -1,0 +1,121 @@
+---
+title: "Getting started"
+author: "Lilith Whittles"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+par(mar = c(3, 3, 1, 1), mgp = c(1.7, 0.7, 0), bty = "n")
+```
+
+
+## Vignette Info
+First we will run the model without vaccination, read in your table of parameters
+```{r}
+ library("gonovax")
+ filename <- system.file("extdata/gono_params_t.csv", package = "gonovax",
+                         mustWork = TRUE)
+ parameter_table <- read.csv(filename)
+ parameter_table
+```
+
+We need to transform the table of parameters to the format the model requires
+using the `transform_fixed` function. First we only use 10 parameter sets
+```{r}
+
+n_par <- 100
+gono_params <- lapply(seq_len(n_par),
+                      function(i) transform_fixed(parameter_table[i, ]))
+
+# define the times of the output (in years)
+tt <- c(0, 50)
+y0 <- run_onevax_xvwv(tt, gono_params)
+
+## gets final (equilibrium) states for restart
+init_params <- lapply(y0, restart_params)
+
+# generate vaccine effects parameters
+ve <- data.frame(vea = rep(0.1, n_par),
+                 ved = rep(0.2, n_par),
+                 ves = rep(0.3, n_par))
+
+tt <- seq(0, 10)
+y <- run_onevax_xvwv(tt,
+                     gono_params = gono_params,
+                     init_params = init_params, 
+                     vea = ve$vea, ved = ve$ved, ves = ve$ves,
+                     uptake = 1, strategy = "VoA")
+# strategies can be `VoA` vaccination on attendance,
+# `VoD` = vaccination on diagnosis
+
+```
+`y` is now a list of model runs of length `n_par`. To interact easily with these
+outputs you can use the `aggregate` function. 
+
+This will aggregate over group (L, H) and strata (X, V, W) to give the total
+cumulative infections for each parameter set (rows) over time (columns) 
+
+```{r}
+
+# 
+total_infected <- aggregate(y, what = "cum_incid")
+col <- rgb(0.5, 0.5, 0.5, 0.3)
+matplot(tt, t(total_infected), lty = 1, type = "l", col = col,
+        xlab = "Time", ylab = "Cumulative infections")
+```
+
+This will aggregate over group (L, H) and strata (X, V, W) to give the yearly
+infections for each parameter set (rows) over time (columns) 
+
+```{r}
+
+# 
+annual_infected <- aggregate(y, what = "cum_incid", as_incid = TRUE)
+matplot(tt[-1], t(annual_infected), lty = 1, type = "l", col = col,
+        xlab = "Time", ylab = "Annual infections")
+```
+
+You can look at individual vaccine strata:
+
+```{r}
+
+# 
+annual_infected_X <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                             stratum = "X")
+annual_infected_V <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                             stratum = "V")
+col1 <- rgb(0.5, 0, 0, 0.3)
+col2 <- rgb(0, 0, 0.5, 0.3)
+matplot(tt[-1], t(annual_infected_X), lty = 1, type = "l", col = col1,
+        xlab = "Time", ylab = "Annual infections")
+matlines(tt[-1], t(annual_infected_V), lty = 1, col = col2)
+legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
+       ncol = 2)
+```
+You can look apply functions over the parameter sets to get summary statistics
+
+```{r}
+
+
+mean_ci <- function(x) c(mean = mean(x), quantile(x, c(0.025, 0.975)))
+summary_annual_infected_X <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                             stratum = "X", f = mean_ci)
+summary_annual_infected_V <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                             stratum = "V", f = mean_ci)
+col1 <- "red"
+col2 <- "blue"
+matplot(tt[-1], t(summary_annual_infected_X), lty = c(1, 2, 2), type = "l", col = col1,
+        xlab = "Time", ylab = "Annual infections")
+matlines(tt[-1], t(summary_annual_infected_V), lty = c(1, 2, 2), col = col2)
+legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
+       ncol = 2)
+```
