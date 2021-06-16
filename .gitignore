@@ -6,7 +6,6 @@ inst/doc
 vignettes/*.html
 tests/testthat/Rplots.pdf
 build
-docs
 sircovid_*.tar.gz
 *.o
 *.so
