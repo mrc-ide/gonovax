@@ -9,6 +9,16 @@
 
 <img src="man/figures/vax_diagram.png" align="center" style = "border: none; float: center;" width = "800px">
 
+
+## Installation
+
+The package can be installed directly from GitHub with:
+
+```r
+remotes::install_github("mrc-ide/gonovax", upgrade = FALSE)
+```
+
 ## License
 
 MIT © Imperial College of Science, Technology and Medicine
+
