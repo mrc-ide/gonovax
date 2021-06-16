@@ -140,4 +140,3 @@ test_that("transform_fixed works as expected", {
   expect_true(all(diff(gp$eta_l_t) == 0))
 
 })
-
