@@ -21,3 +21,6 @@
 ^\.covrignore$
 ^\.lintr$
 ^\.github$
+^doc$
+^_pkgdown\.yml$
+^pkgdown$

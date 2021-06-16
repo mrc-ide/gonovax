@@ -71,7 +71,24 @@ transform <- function(pars, fix_par_t = TRUE) {
   pars
 }
 
+##'
+##' @name transform_fixed
+##' @title  Transform fitted parameters into non-time-varying gonovax params
+##' @param pars list of fitted parameters
+##' @return A list of parameters for use in the model
+##' @export
+transform_fixed <- function(pars) {
+  # reformat time-varying pars
+  pars <- as.list(pars)
 
+  pars$tt <- c(0, 1e3)
+  pars$beta_t <-  rep(pars$beta, 2)
+  pars$eta_l_t <- rep(pars$eta_l, 2)
+  pars$eta_h_t <- rep(pars$eta_h, 2)
+  pars$beta <- pars$eta_l <- pars$eta_h <- NULL
+
+  pars
+}
 
 ##' Create initial conditions for the model
 ##' @name initial_params

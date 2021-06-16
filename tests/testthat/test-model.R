@@ -11,6 +11,7 @@ test_that("there are no infections when beta is 0", {
   expect_true(all(y$I == 0))
   expect_true(all(y$S == 0))
   expect_true(all(y$cum_incid == 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no symptomatic infections when psi = 0", {
@@ -24,6 +25,7 @@ test_that("there are no symptomatic infections when psi = 0", {
   expect_true(all(y$S == 0))
   expect_true(all(y$cum_diag_s == 0))
   expect_true(all(y$cum_diag_a[-1, , ] > 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no asymptomatic infections when psi = 1", {
@@ -39,6 +41,7 @@ test_that("there are no asymptomatic infections when psi = 1", {
   expect_true(all(y$A == 0))
   expect_true(all(y$cum_diag_a == 0))
   expect_true(all(y$cum_diag_s[-1, , ] > 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no infections when A0 = 0", {
@@ -52,6 +55,7 @@ test_that("there are no infections when A0 = 0", {
   expect_true(all(y$I == 0))
   expect_true(all(y$A == 0))
   expect_true(all(y$S == 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("no-one is treated when mu and eta = 0", {
@@ -64,6 +68,7 @@ test_that("no-one is treated when mu and eta = 0", {
   y <- mod$transform_variables(y)
   expect_true(all(y$T == 0))
   expect_true(all(y$cum_treated == 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("the foi is calculated correctly", {
@@ -97,8 +102,8 @@ test_that("the foi is calculated correctly", {
   foi_L <- pL * beta * (eps * CL / NL + foi_cross)
   foi_H <- pH * beta * (eps * CH / NH + foi_cross)
 
-  expect_equal(rowSums(y$foi[, 1, ]), foi_L)
-  expect_equal(rowSums(y$foi[, 2, ]), foi_H)
+  expect_equal(y$lambda[, 1], foi_L)
+  expect_equal(y$lambda[, 2], foi_H)
 
 })
 
@@ -124,6 +129,7 @@ test_that("Bex model runs with no vaccination", {
 
   expect_true(all(y1$N[, , 2] == 0))
   expect_true(all(apply(y1$N, c(1, 2), sum) - 6e5 < 1e-6))
+
 })
 
 test_that("Bex model runs with vbe", {
@@ -265,7 +271,7 @@ test_that("can initialise after time 0", {
   y2 <- mod2$transform_variables(y2)
 
   expect_equivalent(y1$U[y1$t >= 5, , , drop = FALSE], y2$U, tol = 0.1)
-  expect_equivalent(y1$foi[y1$t >= 5, , , drop = FALSE], y2$foi, tol = 1e-5)
+  expect_equivalent(y1$lambda[y1$t >= 5, , drop = FALSE], y2$lambda, tol = 1e-5)
 
 })
 

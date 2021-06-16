@@ -1,3 +1,8 @@
+# gonovax 0.3.1
+
+* add vignette
+* add fixed parameter transform function
+
 # gonovax 0.3.0
 
 * add vaccine effects vea (acquisition), vei (infectiousness),

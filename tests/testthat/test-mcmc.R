@@ -3,7 +3,7 @@ context("mcmc")
 test_that("compare function works as expected", {
   pars <- read_csv(gonovax_file("extdata/gono_params.csv"))[1, ]
   ll <- compare_basic(pars)
-  expect_equal(ll, -16506.11, tolerance = 1e-6)
+  expect_equal(ll, -16506.13, tolerance = 1e-6)
   data <- cache$data
   y <- run(seq(0, nrow(data)), gono_params(1)[[1]])
   attended <- diff(y$tot_attended)
