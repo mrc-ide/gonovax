@@ -83,7 +83,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
-                            dur, vea = 0, vei = 0, ved = 0, ves = 0,
+                            dur = 1e3, vea = 0, vei = 0, ved = 0, ves = 0,
                             dur_revax = dur,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,

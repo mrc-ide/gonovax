@@ -76,10 +76,10 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvwv
 ##' @export
-run_onevax_xvwv <- function(tt, gono_params, init_params = NULL,
-                          dur, vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
-                          uptake = 0, strategy = "VbE",
-                          t_stop = 99) {
+run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
+                            vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
+                            uptake = 0, strategy = "VbE",
+                            t_stop = 99) {
 
 
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%
