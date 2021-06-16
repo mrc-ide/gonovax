@@ -120,8 +120,7 @@ name_outputs <- function(res, strata_names) {
   for (nm in state_names) {
     dimnames(res[[nm]]) <- list(NULL, group_names, strata_names)
   }
-  dimnames(res$foi) <- list(NULL, paste0("to_", group_names),
-                            paste0("from_", group_names))
+  dimnames(res$lambda) <- list(NULL, group_names)
   dimnames(res$eta) <- list(NULL, group_names)
 
   res
