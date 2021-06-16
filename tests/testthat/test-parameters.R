@@ -124,3 +124,20 @@ test_that("transform works as expected", {
                                       length(gp2$tt) - 1L))
 
 })
+
+test_that("transform_fixed works as expected", {
+  p <- read_csv(gonovax_file("extdata/gono_params_t.csv"))[1, ]
+
+  gp <- transform_fixed(p)
+
+  # check ratio is fixed between eta_l and eta_h
+  gamma_l <- gp$eta_l_t / gp$eta_h_t
+  expect_equal(gamma_l[1], gamma_l[2])
+
+  ## check stable
+  expect_true(all(diff(gp$beta_t) == 0))
+  expect_true(all(diff(gp$eta_h_t) == 0))
+  expect_true(all(diff(gp$eta_l_t) == 0))
+
+})
+
