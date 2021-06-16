@@ -87,10 +87,11 @@
 
     
     
-<div id="vignette-info" class="section level2">
+<div id="running-the-model" class="section level2">
 <h2 class="hasAnchor">
-<a href="#vignette-info" class="anchor"></a>Vignette Info</h2>
-<p>First we will run the model without vaccination, read in your table of parameters</p>
+<a href="#running-the-model" class="anchor"></a>Running the model</h2>
+<p>First we will run the model without vaccination.</p>
+<p>Start by reading in your table of parameters:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"gonovax"</span><span class="op">)</span>
 <span class="co">#&gt; </span>
@@ -101,9 +102,7 @@
 <span class="co">#&gt; The following object is masked from 'package:base':</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt;     transform</span>
- <span class="va">filename</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata/gono_params_t.csv"</span>, package <span class="op">=</span> <span class="st">"gonovax"</span>,
-                         mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
- <span class="va">parameter_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="va">filename</span><span class="op">)</span>
+ <span class="va">parameter_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"../inst/extdata/gono_params_t.csv"</span><span class="op">)</span>
  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">parameter_table</span><span class="op">)</span>
 <span class="co">#&gt;        beta     eta_l     eta_h   epsilon        mu       nu        psi</span>
 <span class="co">#&gt; 1 0.5548627 0.3443120 0.7972842 0.6424030 209.93828 4.959542 0.09410734</span>
@@ -119,56 +118,80 @@
 <span class="co">#&gt; 4 46.38395  69.83441 0.05306220 0.007125388</span>
 <span class="co">#&gt; 5 73.68399 132.37154 0.03265509 0.008589632</span>
 <span class="co">#&gt; 6 53.32993  74.55650 0.07191239 0.002668673</span></code></pre></div>
-<p>We need to transform the table of parameters to the format the model requires using the <code>transform_fixed</code> function. First we only use 10 parameter sets</p>
+<p>We need to transform the table of parameters to the format the model requires using the <code>transform_fixed</code> function. First we only use 100 parameter sets:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">n_par</span> <span class="op">&lt;-</span> <span class="fl">100</span>
-<span class="va">gono_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">n_par</span><span class="op">)</span>,
-                      <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="fu"><a href="../reference/transform_fixed.html">transform_fixed</a></span><span class="op">(</span><span class="va">parameter_table</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">n_par</span> <span class="op">&lt;-</span> <span class="fl">100</span>
 
-<span class="co"># define the times of the output (in years)</span>
+<span class="co"># transform the parameter table</span>
+<span class="va">gono_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">n_par</span><span class="op">)</span>,
+                      <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="fu"><a href="../reference/transform_fixed.html">transform_fixed</a></span><span class="op">(</span><span class="va">parameter_table</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>We then run the model to equilibrium without vaccination, and save the final states for each parameter set so we can restart with vaccination:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># define the times of the output (in years)</span>
 <span class="va">tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">50</span><span class="op">)</span>
+
+<span class="co"># run the model</span>
 <span class="va">y0</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_onevax_xvwv.html">run_onevax_xvwv</a></span><span class="op">(</span><span class="va">tt</span>, <span class="va">gono_params</span><span class="op">)</span>
 
-<span class="co">## gets final (equilibrium) states for restart</span>
-<span class="va">init_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">y0</span>, <span class="va">restart_params</span><span class="op">)</span>
-
-<span class="co"># generate vaccine effects parameters</span>
-<span class="va">ve</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>vea <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="va">n_par</span><span class="op">)</span>,
-                 ved <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="va">n_par</span><span class="op">)</span>,
-                 ves <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="va">n_par</span><span class="op">)</span><span class="op">)</span>
+<span class="co"># get final (equilibrium) model state for restart</span>
+<span class="va">init_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">y0</span>, <span class="va">restart_params</span><span class="op">)</span></code></pre></div>
+<p>We now run the model with vaccination.</p>
+<p>The efficacy inputs (<code>vea</code>, <code>vei</code>, <code>ved</code>, <code>ves</code>) can be of length 1 or <code>n_par</code></p>
+<p>The strategy can be one of; <em><code>VoD</code>: vaccination on diagnosis </em><code>VoA</code>: vaccination on attendance * <code>VoD(L)+VoA(H)</code>: targeted vaccination (i.e. all diagnosed plus group H on screening)</p>
+<p>The proportion of those eligible that choose to be vaccinated, <code>uptake</code> is a scalar from 0 - 1:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># generate vaccine effects parameters</span>
+<span class="va">ve</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>vea <span class="op">=</span> <span class="fl">0.1</span>, <span class="co"># efficacy against acquisition</span>
+                 vei <span class="op">=</span> <span class="fl">0.2</span>, <span class="co"># efficacy against infectiousness</span>
+                 ved <span class="op">=</span> <span class="fl">0.3</span>, <span class="co"># efficacy against duration of infection</span>
+                 ves <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="co"># efficacy against symptoms</span>
 
 <span class="va">tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_onevax_xvwv.html">run_onevax_xvwv</a></span><span class="op">(</span><span class="va">tt</span>,
                      gono_params <span class="op">=</span> <span class="va">gono_params</span>,
                      init_params <span class="op">=</span> <span class="va">init_params</span>, 
                      vea <span class="op">=</span> <span class="va">ve</span><span class="op">$</span><span class="va">vea</span>, ved <span class="op">=</span> <span class="va">ve</span><span class="op">$</span><span class="va">ved</span>, ves <span class="op">=</span> <span class="va">ve</span><span class="op">$</span><span class="va">ves</span>,
-                     uptake <span class="op">=</span> <span class="fl">1</span>, strategy <span class="op">=</span> <span class="st">"VoA"</span><span class="op">)</span>
-<span class="co"># strategies can be `VoA` vaccination on attendance,</span>
-<span class="co"># `VoD` = vaccination on diagnosis</span></code></pre></div>
-<p><code>y</code> is now a list of model runs of length <code>n_par</code>. To interact easily with these outputs you can use the <code>aggregate</code> function.</p>
-<p>This will aggregate over group (L, H) and strata (X, V, W) to give the total cumulative infections for each parameter set (rows) over time (columns)</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># </span>
-<span class="va">total_infected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span><span class="op">)</span>
+                     uptake <span class="op">=</span> <span class="fl">1</span>, strategy <span class="op">=</span> <span class="st">"VoA"</span><span class="op">)</span></code></pre></div>
+<p><code>y</code> is now a list of model runs of length <code>n_par</code>, each entry contains a list of model outputs. Each of these list entries <code>y[[i]]</code> is a list of model output arrays with dimensions: time, group (L, H), and vaccine status (X, V, W) where applicable</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+<span class="co">#&gt;  [1] "t"              "U"              "I"              "A"             </span>
+<span class="co">#&gt;  [5] "S"              "T"              "cum_incid"      "cum_diag_a"    </span>
+<span class="co">#&gt;  [9] "cum_diag_s"     "cum_treated"    "cum_screened"   "cum_vaccinated"</span>
+<span class="co">#&gt; [13] "tot_treated"    "tot_attended"   "beta"           "eta"           </span>
+<span class="co">#&gt; [17] "lambda"         "N"</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span>
+<span class="co">#&gt; [1] 11  2  3</span>
+<span class="fu"><a href="https://rdrr.io/r/base/dimnames.html">dimnames</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span>
+<span class="co">#&gt; [[1]]</span>
+<span class="co">#&gt; NULL</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[2]]</span>
+<span class="co">#&gt; [1] "L" "H"</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; [[3]]</span>
+<span class="co">#&gt; [1] "X" "V" "W"</span>
+
+<span class="co"># cumulative incidence in unvaccinated group L over time</span>
+<span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">[</span>, <span class="st">"L"</span>, <span class="st">"X"</span><span class="op">]</span>
+<span class="co">#&gt;  [1]     0.00 12019.16 17752.48 20517.99 21988.09 22851.44 23405.84 23790.58</span>
+<span class="co">#&gt;  [9] 24076.17 24301.00 24487.20</span></code></pre></div>
+<p>This will aggregate over group (L, H) and strata (X, V, W) to give the total cumulative infections for each parameter set (rows) over time (columns).</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">total_infected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span><span class="op">)</span>
 <span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html">rgb</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html">matplot</a></span><span class="op">(</span><span class="va">tt</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">total_infected</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col</span>,
         xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Cumulative infections"</span><span class="op">)</span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>This will aggregate over group (L, H) and strata (X, V, W) to give the yearly infections for each parameter set (rows) over time (columns)</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># </span>
-<span class="va">annual_infected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">annual_infected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html">matplot</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">annual_infected</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col</span>,
         xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Annual infections"</span><span class="op">)</span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>You can look at individual vaccine strata:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># </span>
-<span class="va">annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,
                              stratum <span class="op">=</span> <span class="st">"X"</span><span class="op">)</span>
 <span class="va">annual_infected_V</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,
                              stratum <span class="op">=</span> <span class="st">"V"</span><span class="op">)</span>
@@ -179,11 +202,9 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html">matlines</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">annual_infected_V</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="va">col2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"top"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">col1</span>, <span class="va">col2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Unvaccinated"</span>, <span class="st">"Vaccinated"</span><span class="op">)</span>,
        ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-5-1.png" width="700"> You can look apply functions over the parameter sets to get summary statistics</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-
-<span class="va">mean_ci</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-8-1.png" width="700"> You can look apply functions over the parameter sets to get summary statistics</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">mean_ci</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="va">summary_annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,
                              stratum <span class="op">=</span> <span class="st">"X"</span>, f <span class="op">=</span> <span class="va">mean_ci</span><span class="op">)</span>
 <span class="va">summary_annual_infected_V</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -195,7 +216,7 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html">matlines</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">summary_annual_infected_V</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">col2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"top"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">col1</span>, <span class="va">col2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Unvaccinated"</span>, <span class="st">"Vaccinated"</span><span class="op">)</span>,
        ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 </div>
   </div>
 
