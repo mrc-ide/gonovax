@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get gonovax data — gonovax_data • gonovax</title>
+<title>Transform fitted parameters into non-time-varying gonovax params — transform_fixed • gonovax</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Get gonovax data — gonovax_data" />
-<meta property="og:description" content="Get annual time series of GUMCAD diagnoses and testing figures, and annual
-proportion symptomatic from GRASP" />
+<meta property="og:title" content="Transform fitted parameters into non-time-varying gonovax params — transform_fixed" />
+<meta property="og:description" content="Transform fitted parameters into non-time-varying gonovax params" />
 
 
 
@@ -119,24 +118,29 @@ proportion symptomatic from GRASP" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get gonovax data</h1>
+    <h1>Transform fitted parameters into non-time-varying gonovax params</h1>
     
-    <div class="hidden name"><code>gonovax_data.Rd</code></div>
+    <div class="hidden name"><code>transform_fixed.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get annual time series of GUMCAD diagnoses and testing figures, and annual
-proportion symptomatic from GRASP</p>
+    <p>Transform fitted parameters into non-time-varying gonovax params</p>
     </div>
 
-    <pre class="usage"><span class='fu'>gonovax_data</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>transform_fixed</span><span class='op'>(</span><span class='va'>pars</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>pars</th>
+      <td><p>list of fitted parameters</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data.frame containing the gonovax year (i.e. year after 2007),
-the year, the total diagnoses in MSM, the total tests in MSM and the source
-of the data, the proportion of symptomatic diagnoses</p>
+    <p>A list of parameters for use in the model</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
