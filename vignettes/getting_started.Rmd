@@ -59,7 +59,7 @@ y <- run_onevax_xvwv(tt,
 
 ```
 `y` is now a list of model runs of length `n_par`. To interact easily with these
-outputs you can use the `aggregate` function. 
+outputs you can use the `aggregate` function.
 
 This will aggregate over group (L, H) and strata (X, V, W) to give the total
 cumulative infections for each parameter set (rows) over time (columns) 
