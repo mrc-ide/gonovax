@@ -18,7 +18,8 @@ Imports:
     mcstate (>= 0.2.13)
 Suggests:
     testthat,
-    knitr
+    knitr,
+    rmarkdown
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Remotes:

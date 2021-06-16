@@ -21,3 +21,4 @@
 ^\.covrignore$
 ^\.lintr$
 ^\.github$
+^doc$
