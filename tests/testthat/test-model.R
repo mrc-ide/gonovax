@@ -11,6 +11,7 @@ test_that("there are no infections when beta is 0", {
   expect_true(all(y$I == 0))
   expect_true(all(y$S == 0))
   expect_true(all(y$cum_incid == 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no symptomatic infections when psi = 0", {
@@ -24,6 +25,7 @@ test_that("there are no symptomatic infections when psi = 0", {
   expect_true(all(y$S == 0))
   expect_true(all(y$cum_diag_s == 0))
   expect_true(all(y$cum_diag_a[-1, , ] > 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no asymptomatic infections when psi = 1", {
@@ -39,6 +41,7 @@ test_that("there are no asymptomatic infections when psi = 1", {
   expect_true(all(y$A == 0))
   expect_true(all(y$cum_diag_a == 0))
   expect_true(all(y$cum_diag_s[-1, , ] > 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no infections when A0 = 0", {
@@ -52,6 +55,7 @@ test_that("there are no infections when A0 = 0", {
   expect_true(all(y$I == 0))
   expect_true(all(y$A == 0))
   expect_true(all(y$S == 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("no-one is treated when mu and eta = 0", {
@@ -64,10 +68,15 @@ test_that("no-one is treated when mu and eta = 0", {
   y <- mod$transform_variables(y)
   expect_true(all(y$T == 0))
   expect_true(all(y$cum_treated == 0))
+  expect_true(all(unlist(y) >= 0))
 })
 
 test_that("the foi is calculated correctly", {
-  params <- model_params(gono_params = gono_params(1)[[1]])
+  vei <- 0.123
+  vax_params <- vax_params_xvwv(uptake = 0.5, dur = 1,
+                                strategy = "VoA")
+  params <- model_params(gono_params = gono_params(1)[[1]],
+                         vax_params = vax_params)
   expect_true(length(params$beta_t) > 0)
   mod <- model(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
@@ -76,24 +85,26 @@ test_that("the foi is calculated correctly", {
   # unpack parameters
   pL <- params$p[1]
   pH <- params$p[2]
-  NL <- sum(y$N[1, 1, ])
-  NH <- sum(y$N[1, 2, ])
+  NL <- rowSums(y$N[, 1, ])
+  NH <- rowSums(y$N[, 2, ])
   C <- y$I + y$A + y$S
-  CL <- C[, 1, ]
-  CH <- C[, 2, ]
+  CL <- c(C[, 1, ] %*% (1 - vax_params$vei))
+  CH <- c(C[, 2, ] %*% (1 - vax_params$vei))
   eps <- params$epsilon
   beta <- params$beta_t
+
   np <- pL * NL + pH * NH
+  npL <- pL * NL / np
+  npH <- pH * NH / np
+
   # calculate FOI
-  foi_LL <- pL * beta * (eps + (1 - eps) * pL * NL / np) * CL / NL
-  foi_LH <- pL * pH * beta * (1 - eps) / np * CH
-  foi_HL <- pH * pL * beta * (1 - eps) / np * CL
-  foi_HH <- pH * beta * (eps + (1 - eps) * pH * NH / np) * CH / NH
-  # test
-  expect_equal(y$foi[, 1, 1], foi_LL)
-  expect_equal(y$foi[, 1, 2], foi_LH)
-  expect_equal(y$foi[, 2, 1], foi_HL)
-  expect_equal(y$foi[, 2, 2], foi_HH)
+  foi_cross <- (1 - eps) * (npL * CL / NL + npH * CH / NH)
+  foi_L <- pL * beta * (eps * CL / NL + foi_cross)
+  foi_H <- pH * beta * (eps * CH / NH + foi_cross)
+
+  expect_equal(y$lambda[, 1], foi_L)
+  expect_equal(y$lambda[, 2], foi_H)
+
 })
 
 test_that("Bex model runs with no vaccination", {
@@ -104,7 +115,7 @@ test_that("Bex model runs with no vaccination", {
   y0 <- mod0$transform_variables(y0)
 
   params1 <- model_params(gono_params = gono_params(1)[[1]],
-                           vax_params = vax_params_xvwv(ve = 0))
+                           vax_params = vax_params_xvwv(vbe = 0))
   mod1 <- model(user = params1, unused_user_action = "ignore")
   y1 <- mod1$run(t = tt)
   y1 <- mod1$transform_variables(y1)
@@ -118,13 +129,14 @@ test_that("Bex model runs with no vaccination", {
 
   expect_true(all(y1$N[, , 2] == 0))
   expect_true(all(apply(y1$N, c(1, 2), sum) - 6e5 < 1e-6))
+
 })
 
 test_that("Bex model runs with vbe", {
   tt <- seq.int(0, 2) / 365
   # with perfect efficacy
   params <- model_params(gono_params = gono_params(1)[[1]],
-                            vax_params = vax_params_xvwv(ve = 1, eff = 1))
+                            vax_params = vax_params_xvwv(vbe = 1, vea = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -157,8 +169,8 @@ test_that("Check vaccination on screening in Bex model", {
   # with perfect efficacy
   params <-
     model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(ve = 0, uptake = 1,
-                                              strategy = "VoS", eff = 1))
+                 vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
+                                              strategy = "VoS", vea = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -195,8 +207,8 @@ test_that("Check vaccination on diagnosis in Bex model", {
   # with perfect efficacy
   params <-
     model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(ve = 0, uptake = 1,
-                                              strategy = "VoD", eff = 1))
+                 vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
+                                              strategy = "VoD", vea = 1))
   mod <- model(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -259,13 +271,13 @@ test_that("can initialise after time 0", {
   y2 <- mod2$transform_variables(y2)
 
   expect_equivalent(y1$U[y1$t >= 5, , , drop = FALSE], y2$U, tol = 0.1)
-  expect_equivalent(y1$foi[y1$t >= 5, , , drop = FALSE], y2$foi, tol = 1e-5)
+  expect_equivalent(y1$lambda[y1$t >= 5, , drop = FALSE], y2$lambda, tol = 1e-5)
 
 })
 
 test_that("t_stop is working correctly", {
   ## check with single parameter set
-  vp <- vax_params_xvwv(ve = 0, uptake = 1, strategy = "VoD", eff = 1,
+  vp <- vax_params_xvwv(vbe = 0, uptake = 1, strategy = "VoD", vea = 1,
                         t_stop = 2 / 365)
   params <- model_params(gono_params = gono_params(1)[[1]],
                          vax_params = vp)

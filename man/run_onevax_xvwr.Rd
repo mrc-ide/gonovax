@@ -10,11 +10,17 @@ run_onevax_xvwr(
   tt,
   gono_params,
   init_params = NULL,
-  eff,
-  dur,
-  eff_revax = eff,
+  dur = 1000,
+  vea = 0,
+  vei = 0,
+  ved = 0,
+  ves = 0,
   dur_revax = dur,
-  ve = 0,
+  vea_revax = vea,
+  vei_revax = vei,
+  ved_revax = ved,
+  ves_revax = ves,
+  vbe = 0,
   uptake = 0,
   strategy = "VbE",
   t_stop = 99
@@ -27,19 +33,41 @@ run_onevax_xvwr(
 
 \item{init_params}{= NULL}
 
-\item{eff}{scalar or numeric vector with same length as `gono_params` giving
-efficacy of the vaccine (between 0-1)}
-
 \item{dur}{scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)}
 
-\item{eff_revax}{scalar or numeric vector with same length as `gono_params`
-giving efficacy of revaccination, default to same as primary}
+\item{vea}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against acquisition (between 0-1)}
+
+\item{vei}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against infectiousness (between 0-1)}
+
+\item{ved}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against duration (between 0-1)}
+
+\item{ves}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against symptoms (between 0-1)}
 
 \item{dur_revax}{scalar or numeric vector with same length as `gono_params`
 giving duration of protection for revaccination, default to same as primary}
 
-\item{ve}{scalar indicating pc of population vaccinated before entry
+\item{vea_revax}{scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against acquisition, default to same as
+primary}
+
+\item{vei_revax}{scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against infectiousness, default to same as
+primary}
+
+\item{ved_revax}{scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against duration of infection, default to
+same as primary}
+
+\item{ves_revax}{scalar or numeric vector with same length as `gono_params`
+giving efficacy of revaccination against symptoms, default to same as
+primary}
+
+\item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{uptake}{scalar or numeric vector with same length as `gono_params`

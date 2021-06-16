@@ -71,7 +71,24 @@ transform <- function(pars, fix_par_t = TRUE) {
   pars
 }
 
+##'
+##' @name transform_fixed
+##' @title  Transform fitted parameters into non-time-varying gonovax params
+##' @param pars list of fitted parameters
+##' @return A list of parameters for use in the model
+##' @export
+transform_fixed <- function(pars) {
+  # reformat time-varying pars
+  pars <- as.list(pars)
 
+  pars$tt <- c(0, 1e3)
+  pars$beta_t <-  rep(pars$beta, 2)
+  pars$eta_l_t <- rep(pars$eta_l, 2)
+  pars$eta_h_t <- rep(pars$eta_h, 2)
+  pars$beta <- pars$eta_l <- pars$eta_h <- NULL
+
+  pars
+}
 
 ##' Create initial conditions for the model
 ##' @name initial_params
@@ -210,28 +227,28 @@ set_strategy <- function(strategy, uptake) {
   }
 
   if (strategy == "VbE") {
-    vs <- vd <- 0
+    vos <- vod <- 0
   } else if (strategy == "VoD") {
-    vd <- uptake
-    vs <- 0
+    vod <- uptake
+    vos <- 0
   } else if (strategy == "VoA") {
-    vd <- uptake
-    vs <- uptake
+    vod <- uptake
+    vos <- uptake
   } else if (strategy == "VoD(H)") {
-    vd <- c(0, uptake)
-    vs <- 0
+    vod <- c(0, uptake)
+    vos <- 0
   } else if (strategy == "VoA(H)") {
-    vd <- c(0, uptake)
-    vs <- c(0, uptake)
+    vod <- c(0, uptake)
+    vos <- c(0, uptake)
   } else if (strategy == "VoD(L)+VoA(H)") {
-    vd <- uptake
-    vs <- c(0, uptake)
+    vod <- uptake
+    vos <- c(0, uptake)
   } else if (strategy == "VoS") {
-    vd <- 0
-    vs <- uptake
+    vod <- 0
+    vos <- uptake
   } else {
     stop("strategy not recognised")
   }
 
-  list(vd = vd, vs = vs)
+  list(vod = vod, vos = vos)
 }

@@ -10,9 +10,12 @@ run_onevax_xvwv(
   tt,
   gono_params,
   init_params = NULL,
-  eff,
-  dur,
-  ve = 0,
+  dur = 1000,
+  vea = 0,
+  vei = 0,
+  ved = 0,
+  ves = 0,
+  vbe = 0,
   uptake = 0,
   strategy = "VbE",
   t_stop = 99
@@ -25,13 +28,22 @@ run_onevax_xvwv(
 
 \item{init_params}{= NULL}
 
-\item{eff}{scalar or numeric vector with same length as `gono_params` giving
-efficacy of the vaccine (between 0-1)}
-
 \item{dur}{scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)}
 
-\item{ve}{scalar indicating pc of population vaccinated before entry
+\item{vea}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against acquisition (between 0-1)}
+
+\item{vei}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against infectiousness (between 0-1)}
+
+\item{ved}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against duration (between 0-1)}
+
+\item{ves}{scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against symptoms (between 0-1)}
+
+\item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{uptake}{scalar or numeric vector with same length as `gono_params`

@@ -7,9 +7,10 @@
 ##' @param baseline optional input of a baseline to compare to, must be a
 ##' gonovax_grid object if supplied
 ##' @param model a gonovax run function, by default `run_onevax`
-##' @param eff numeric vector (between 0-1) of efficacy values of the vaccine
+##' @param eff numeric vector (between 0-1) of vaccine efficacy against
+##' acquisition
 ##' @param dur numeric vector of duration in years of the vaccine
-##' @param ve single numeric indicating % of population vaccinated before entry
+##' @param vbe single numeric indicating % of population vaccinated before entry
 ##'  (between 0-1), default = 0
 ##' @param strategy `VbE`: vaccination before entry only (default),
 ##' `VoD`: vaccination on diagnosis, `VoA`: vaccination on attendance,
@@ -27,19 +28,19 @@
 ##' @export
 run_grid  <- function(gono_params, init_params, cost_params,
                       baseline, model,
-                      eff, dur, ve = 0, strategy = "VbE", uptake_total = 0,
+                      eff, dur, vbe = 0, strategy = "VbE", uptake_total = 0,
                       uptake_second_dose = uptake_total,
                       t_stop = 99, full_output = FALSE, disc_rate = 0) {
 
   tt <- seq.int(init_params[[1]]$t,
                 length.out = nrow((baseline[[1]][[1]])) + 1)
-  l <- expand.grid(eff = eff, dur = dur)
+  l <- expand.grid(vea = eff, dur = dur)
 
   # run model grid
   res <- furrr::future_pmap(.l = l, .f = model, tt = tt,
                             gono_params = gono_params,
                             init_params = init_params,
-                            ve = ve, uptake = uptake_total,
+                            vbe = vbe, uptake = uptake_total,
                             strategy = strategy,
                             t_stop = t_stop)
 
@@ -50,10 +51,10 @@ run_grid  <- function(gono_params, init_params, cost_params,
                        uptake_second_dose = uptake_second_dose,
                        disc_rate = disc_rate)
 
-  names(ret) <- sprintf("eff%.2f_dur%02d", l$eff, l$dur)
+  names(ret) <- sprintf("eff%.2f_dur%02d", l$vea, l$dur)
 
   # prepare results
-  out <- list(inputs = list(t = tt, ve = ve, strategy = strategy, grid = l,
+  out <- list(inputs = list(t = tt, vbe = vbe, strategy = strategy, grid = l,
                             gono_params = gono_params,
                             init_params = init_params,
                             cost_params = cost_params,

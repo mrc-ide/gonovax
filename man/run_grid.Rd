@@ -13,7 +13,7 @@ run_grid(
   model,
   eff,
   dur,
-  ve = 0,
+  vbe = 0,
   strategy = "VbE",
   uptake_total = 0,
   uptake_second_dose = uptake_total,
@@ -34,11 +34,12 @@ gonovax_grid object if supplied}
 
 \item{model}{a gonovax run function, by default `run_onevax`}
 
-\item{eff}{numeric vector (between 0-1) of efficacy values of the vaccine}
+\item{eff}{numeric vector (between 0-1) of vaccine efficacy against
+acquisition}
 
 \item{dur}{numeric vector of duration in years of the vaccine}
 
-\item{ve}{single numeric indicating % of population vaccinated before entry
+\item{vbe}{single numeric indicating % of population vaccinated before entry
 (between 0-1), default = 0}
 
 \item{strategy}{`VbE`: vaccination before entry only (default),

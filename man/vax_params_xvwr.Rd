@@ -5,20 +5,46 @@
 \title{create vaccination parameters for use in onevax_xvwr model}
 \usage{
 vax_params_xvwr(
-  eff = 0,
-  eff_revax = eff,
+  vea = 0,
+  vei = 0,
+  ved = 0,
+  ves = 0,
+  vea_revax = vea,
+  vei_revax = vei,
+  ved_revax = ved,
+  ves_revax = ves,
   dur = 1000,
   dur_revax = dur,
   uptake = 0,
   strategy = "VbE",
-  ve = 0,
+  vbe = 0,
   t_stop = 99
 )
 }
 \arguments{
-\item{eff}{scalar indicating efficacy of the vaccine (between 0-1)}
+\item{vea}{scalar indicating efficacy of the vaccine against acquisition
+(between 0-1)}
 
-\item{eff_revax}{efficacy of revaccination, default to same as primary}
+\item{vei}{scalar indicating efficacy of the vaccine against infectiousness
+(between 0-1)}
+
+\item{ved}{scalar indicating efficacy of the vaccine against duration
+(between 0-1)}
+
+\item{ves}{scalar indicating efficacy of the vaccine against symptoms
+(between 0-1)}
+
+\item{vea_revax}{scalar indicating efficacy of revaccination against
+acquisition (between 0-1)}
+
+\item{vei_revax}{scalar indicating efficacy of revaccination against
+infectiousness (between 0-1)}
+
+\item{ved_revax}{scalar indicating efficacy of revaccination against
+duration of infection (between 0-1)}
+
+\item{ves_revax}{scalar indicating efficacy of revaccination against
+symptoms (between 0-1)}
 
 \item{dur}{scalar indicating duration of the vaccine (in years)}
 
@@ -31,7 +57,7 @@ of strategy}
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}
 
-\item{ve}{scalar indicating pc of population vaccinated before entry
+\item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
 \item{t_stop}{time at which vaccination should stop (years)}
