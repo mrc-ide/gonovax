@@ -6,8 +6,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Model of gonorrhoea with dual vaccines
-This is an odin model. — model • gonovax</title>
+<title>Run model with single vaccine for input parameter sets, either from
+initialisation or from equilibrium, those with waned vaccines are not
+eligible for revaccination. — run_onevax_xvw • gonovax</title>
 
 
 <!-- jquery -->
@@ -40,10 +41,12 @@ This is an odin model. — model • gonovax</title>
 
 
 
-<meta property="og:title" content="Model of gonorrhoea with dual vaccines
-This is an odin model. — model" />
-<meta property="og:description" content="Model of gonorrhoea with dual vaccines
-This is an odin model." />
+<meta property="og:title" content="Run model with single vaccine for input parameter sets, either from
+initialisation or from equilibrium, those with waned vaccines are not
+eligible for revaccination. — run_onevax_xvw" />
+<meta property="og:description" content="Run model with single vaccine for input parameter sets, either from
+initialisation or from equilibrium, those with waned vaccines are not
+eligible for revaccination." />
 
 
 
@@ -121,18 +124,94 @@ This is an odin model." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Model of gonorrhoea with dual vaccines
-This is an odin model.</h1>
+    <h1>Run model with single vaccine for input parameter sets, either from
+initialisation or from equilibrium, those with waned vaccines are not
+eligible for revaccination.</h1>
     
-    <div class="hidden name"><code>model.Rd</code></div>
+    <div class="hidden name"><code>run_onevax_xvw.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Model of gonorrhoea with dual vaccines
-This is an odin model.</p>
+    <p>Run model with single vaccine for input parameter sets, either from
+initialisation or from equilibrium, those with waned vaccines are not
+eligible for revaccination.</p>
     </div>
 
+    <pre class="usage"><span class='fu'>run_onevax_xvw</span><span class='op'>(</span>
+  <span class='va'>tt</span>,
+  <span class='va'>gono_params</span>,
+  init_params <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dur <span class='op'>=</span> <span class='fl'>1000</span>,
+  vea <span class='op'>=</span> <span class='fl'>0</span>,
+  vei <span class='op'>=</span> <span class='fl'>0</span>,
+  ved <span class='op'>=</span> <span class='fl'>0</span>,
+  ves <span class='op'>=</span> <span class='fl'>0</span>,
+  vbe <span class='op'>=</span> <span class='fl'>0</span>,
+  uptake <span class='op'>=</span> <span class='fl'>0</span>,
+  strategy <span class='op'>=</span> <span class='st'>"VbE"</span>,
+  t_stop <span class='op'>=</span> <span class='fl'>99</span>
+<span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>tt</th>
+      <td><p>a numeric vector of times at which the model state is output</p></td>
+    </tr>
+    <tr>
+      <th>gono_params</th>
+      <td><p>list of gono params</p></td>
+    </tr>
+    <tr>
+      <th>init_params</th>
+      <td><p>= NULL</p></td>
+    </tr>
+    <tr>
+      <th>dur</th>
+      <td><p>scalar or numeric vector with same length as `gono_params`
+giving duration of the vaccine (in years)</p></td>
+    </tr>
+    <tr>
+      <th>vea</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against acquisition (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>vei</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against infectiousness (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>ved</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against duration (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>ves</th>
+      <td><p>scalar or numeric vector with same length as `gono_params` giving
+efficacy of the vaccine against symptoms (between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>vbe</th>
+      <td><p>scalar indicating pc of population vaccinated before entry
+(between 0-1)</p></td>
+    </tr>
+    <tr>
+      <th>uptake</th>
+      <td><p>scalar or numeric vector with same length as `gono_params`
+giving pc of population vaccinated as part of strategy</p></td>
+    </tr>
+    <tr>
+      <th>strategy</th>
+      <td><p>single character string in "VbE", "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)"</p></td>
+    </tr>
+    <tr>
+      <th>t_stop</th>
+      <td><p>time at which vaccination should stop (years)</p></td>
+    </tr>
+    </table>
 
 
   </div>
