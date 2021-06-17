@@ -12,6 +12,18 @@
 
 ## Installation
 
+You will need a compiler to install dependencies for the package, and to build
+any models. Use `pkgbuild::check_build_tools()` to see if your system is ok to
+use.
+
+You will need the packages `odin` and `mcstate`, which can be installed using:
+
+```r
+remotes::install_github("mrc-ide/odin", upgrade = FALSE)
+remotes::install_github("mrc-ide/mcstate", upgrade = FALSE)
+```
+
+
 The package can be installed directly from GitHub with:
 
 ```r
