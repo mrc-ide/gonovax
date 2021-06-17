@@ -52,7 +52,7 @@ test_that("run_onevax_xvw works correctly", {
     # no-one in stratum V or W is vaccinated again
   expect_equal(sum(y4e[[i]]$cum_vaccinated[, , "V"]), 0)
   expect_equal(sum(y4e[[i]]$cum_vaccinated[, , "W"]), 0)
-  
+
   expect_equal(y4e[[i]]$cum_vaccinated[, , "X"] / uptake[i],
                y4e[[i]]$cum_screened[, , "X"] + y4e[[i]]$cum_treated[, , "X"])
   expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
