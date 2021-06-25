@@ -36,8 +36,11 @@ transform0 <- function(pars) {
     pars <- as.list(pars)
 
     check_gono_params(pars)
-    assert_scalar_positive(pars$beta)
-    assert_scalar_positive(pars$eta)
+    with(pars, {
+      assert_scalar_positive(beta)
+      assert_scalar_positive(eta)
+    })
+
 
     pars$tt <- c(0, 1e3)
     pars$beta_t <-  rep(pars$beta, 2)
@@ -60,11 +63,13 @@ transform <- function(pars, fix_par_t = TRUE) {
   # reformat time-varying pars
   pars <- as.list(pars)
   check_gono_params(pars)
-  assert_scalar_positive(pars$beta2009)
-  assert_scalar_positive(pars$phi_beta)
-  assert_scalar_positive(pars$eta_h)
-  assert_scalar_positive(pars$phi_eta)
-  assert_scalar_unit_interval(pars$gamma_l)
+  with(pars, {
+    assert_scalar_positive(beta2009)
+    assert_scalar_positive(phi_beta)
+    assert_scalar_positive(eta_h)
+    assert_scalar_positive(phi_eta)
+    assert_scalar_unit_interval(gamma_l)
+  })
 
   t0 <- 2009
   t1 <- 2020
@@ -92,9 +97,11 @@ transform_fixed <- function(pars) {
   # reformat time-varying pars
   pars <- as.list(pars)
   check_gono_params(pars)
-  assert_scalar_positive(pars$beta)
-  assert_scalar_positive(pars$eta_l)
-  assert_scalar_positive(pars$eta_h)
+  with(pars, {
+    assert_scalar_positive(beta)
+    assert_scalar_positive(eta_l)
+    assert_scalar_positive(eta_h)
+  })
 
   pars$tt <- c(0, 1e3)
   pars$beta_t <-  rep(pars$beta, 2)
@@ -269,13 +276,15 @@ set_strategy <- function(strategy, uptake) {
 }
 
 check_gono_params <- function(pars) {
+with(pars, {
+  assert_scalar_unit_interval(psi)
+  assert_scalar_unit_interval(prev_Asl)
+  assert_scalar_unit_interval(prev_Ash)
+  assert_scalar_unit_interval(epsilon)
+  assert_scalar_positive(sigma)
+  assert_scalar_positive(nu)
+  assert_scalar_positive(mu)
+  assert_scalar_positive(rho)
+})
 
-  assert_scalar_unit_interval(pars$psi)
-  assert_scalar_unit_interval(pars$prev_Asl)
-  assert_scalar_unit_interval(pars$prev_Ash)
-  assert_scalar_unit_interval(pars$epsilon)
-  assert_scalar_positive(pars$sigma)
-  assert_scalar_positive(pars$nu)
-  assert_scalar_positive(pars$mu)
-  assert_scalar_positive(pars$rho)
 }
