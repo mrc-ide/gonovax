@@ -14,23 +14,6 @@ test_that("calc_pv works as expected", {
   expect_equal(y1[3, ], c(disc_fac %*% x))
 })
 
-test_that("set_strategy works as expected", {
-
-  i <- 0.234
-  expect_equal(set_strategy("VbE", i), list(vod = 0, vos = 0))
-  expect_equal(set_strategy("VoD", i), list(vod = i, vos = 0))
-  expect_equal(set_strategy("VoD(H)", i), list(vod = c(0, i), vos = 0))
-  expect_equal(set_strategy("VoA", i), list(vod = i, vos = i))
-  expect_equal(set_strategy("VoA(H)", i), list(vod = c(0, i), vos = c(0, i)))
-  expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vod = i, vos = c(0, i)))
-  expect_equal(set_strategy("VoS", i), list(vod = 0, vos = i))
-
-  expect_error(set_strategy("hello", i), "strategy not recognised")
-  expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
-
-})
-
-
 test_that("compare baseline works as expected", {
 
   gp <- gono_params(1:2)
