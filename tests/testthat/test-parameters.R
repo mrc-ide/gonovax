@@ -9,7 +9,7 @@ test_that("can select specific parameter sets", {
   expect_equal(gono_params(1)[[1]], transform0(p[1, ]))
   # check that can extract multiple parameters
   expect_equal(gono_params(2:3), gp[2:3])
-  # check that negative paramters will not be returned
+  # check that negative parameters will not be returned
   expect_equal(gono_params(c(-1, 1)), gp[1])
   # check that cannot extend beyond parameter set
   expect_equal(gono_params(c(1, nrow(p) + 1)), gp[1])

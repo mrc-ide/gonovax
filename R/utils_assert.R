@@ -91,4 +91,3 @@ assert_scalar_unit_interval <- function(x, name = deparse(substitute(x))) {
   }
   invisible(x)
 }
-
