@@ -276,15 +276,14 @@ set_strategy <- function(strategy, uptake) {
 }
 
 check_gono_params <- function(pars) {
-with(pars, {
-  assert_scalar_unit_interval(psi)
-  assert_scalar_unit_interval(prev_Asl)
-  assert_scalar_unit_interval(prev_Ash)
-  assert_scalar_unit_interval(epsilon)
-  assert_scalar_positive(sigma)
-  assert_scalar_positive(nu)
-  assert_scalar_positive(mu)
-  assert_scalar_positive(rho)
-})
-
+  with(pars, {
+    assert_scalar_unit_interval(psi)
+    assert_scalar_unit_interval(prev_Asl)
+    assert_scalar_unit_interval(prev_Ash)
+    assert_scalar_unit_interval(epsilon)
+    assert_scalar_positive(sigma)
+    assert_scalar_positive(nu)
+    assert_scalar_positive(mu)
+    assert_scalar_positive(rho)
+  })
 }
