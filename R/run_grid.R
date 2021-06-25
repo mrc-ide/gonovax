@@ -69,8 +69,6 @@ run_grid  <- function(gono_params, init_params, cost_params,
 }
 
 
-
-
 compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
                               disc_rate) {
 
