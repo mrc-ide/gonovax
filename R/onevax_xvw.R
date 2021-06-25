@@ -22,13 +22,13 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             vbe = 0, t_stop = 99) {
 
   assert_character(strategy)
-  assert_scalar(vea)
-  assert_scalar(vei)
-  assert_scalar(ved)
-  assert_scalar(ves)
+  assert_scalar_unit_interval(vea)
+  assert_scalar_unit_interval(vei)
+  assert_scalar_unit_interval(ved)
+  assert_scalar_unit_interval(ves)
   assert_scalar(dur)
-  assert_scalar(uptake)
-  assert_scalar(vbe)
+  assert_scalar_unit_interval(uptake)
+  assert_scalar_unit_interval(vbe)
   assert_scalar(t_stop)
 
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
