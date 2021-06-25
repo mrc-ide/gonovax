@@ -34,6 +34,14 @@ gono_params <- function(n = NULL) {
 transform0 <- function(pars) {
     # reformat time-varying pars
     pars <- as.list(pars)
+
+    check_gono_params(pars)
+    with(pars, {
+      assert_scalar_positive(beta)
+      assert_scalar_positive(eta)
+    })
+
+
     pars$tt <- c(0, 1e3)
     pars$beta_t <-  rep(pars$beta, 2)
     pars$eta_l_t <- rep(pars$eta, 2)
@@ -54,6 +62,14 @@ transform0 <- function(pars) {
 transform <- function(pars, fix_par_t = TRUE) {
   # reformat time-varying pars
   pars <- as.list(pars)
+  check_gono_params(pars)
+  with(pars, {
+    assert_scalar_positive(beta2009)
+    assert_scalar_positive(phi_beta)
+    assert_scalar_positive(eta_h)
+    assert_scalar_positive(phi_eta)
+    assert_scalar_unit_interval(gamma_l)
+  })
 
   t0 <- 2009
   t1 <- 2020
@@ -80,6 +96,12 @@ transform <- function(pars, fix_par_t = TRUE) {
 transform_fixed <- function(pars) {
   # reformat time-varying pars
   pars <- as.list(pars)
+  check_gono_params(pars)
+  with(pars, {
+    assert_scalar_positive(beta)
+    assert_scalar_positive(eta_l)
+    assert_scalar_positive(eta_h)
+  })
 
   pars$tt <- c(0, 1e3)
   pars$beta_t <-  rep(pars$beta, 2)
@@ -251,4 +273,17 @@ set_strategy <- function(strategy, uptake) {
   }
 
   list(vod = vod, vos = vos)
+}
+
+check_gono_params <- function(pars) {
+  with(pars, {
+    assert_scalar_unit_interval(psi)
+    assert_scalar_unit_interval(prev_Asl)
+    assert_scalar_unit_interval(prev_Ash)
+    assert_scalar_unit_interval(epsilon)
+    assert_scalar_positive(sigma)
+    assert_scalar_positive(nu)
+    assert_scalar_positive(mu)
+    assert_scalar_positive(rho)
+  })
 }

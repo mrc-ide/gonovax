@@ -14,23 +14,6 @@ test_that("calc_pv works as expected", {
   expect_equal(y1[3, ], c(disc_fac %*% x))
 })
 
-test_that("set_strategy works as expected", {
-
-  i <- 0.234
-  expect_equal(set_strategy("VbE", i), list(vod = 0, vos = 0))
-  expect_equal(set_strategy("VoD", i), list(vod = i, vos = 0))
-  expect_equal(set_strategy("VoD(H)", i), list(vod = c(0, i), vos = 0))
-  expect_equal(set_strategy("VoA", i), list(vod = i, vos = i))
-  expect_equal(set_strategy("VoA(H)", i), list(vod = c(0, i), vos = c(0, i)))
-  expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vod = i, vos = c(0, i)))
-  expect_equal(set_strategy("VoS", i), list(vod = 0, vos = i))
-
-  expect_error(set_strategy("hello", i), "strategy not recognised")
-  expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
-
-})
-
-
 test_that("compare baseline works as expected", {
 
   gp <- gono_params(1:2)
@@ -70,6 +53,11 @@ test_that("compare baseline works as expected", {
                -z$inc_treated[1, ] / z$inc_doses[1, ])
   expect_equal(z$cases_averted_per_dose[length(tt) - 1, ],
                -colSums(z$inc_treated) / colSums(z$inc_doses))
+
+  ## check correct with double dose at revaccination
+  expect_equal(calc_doses(z, uptake_second_dose = p, revax_one_dose = FALSE),
+               z$inc_vaccinated * (1 + 1 / p))
+
   ## with zero disc rate
   expect_equal(z$cases_averted_per_dose, z$cases_averted_per_dose_pv)
 

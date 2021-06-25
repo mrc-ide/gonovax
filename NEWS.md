@@ -1,3 +1,7 @@
+# gonovax 0.3.3
+
+* improve testadd checks for bad parameter inputs
+
 # gonovax 0.3.2
 
 * add three-stratum waning model with no re-vaccination: X -> V -> W 
