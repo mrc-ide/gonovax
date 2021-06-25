@@ -1,5 +1,26 @@
 context("parameters")
 
+test_that("cannot input bad parameters", {
+  p <- read_csv(gonovax_file("extdata/gono_params.csv"))[1, ]
+
+  expect_error(check_gono_params(replace(p, "prev_Asl", -1)),
+                                 "'prev_Asl' must be between 0 and 1")
+  expect_error(check_gono_params(replace(p, "prev_Ash", 2)),
+               "'prev_Ash' must be between 0 and 1")
+  expect_error(check_gono_params(replace(p, "epsilon", 2)),
+               "'epsilon' must be between 0 and 1")
+  expect_error(check_gono_params(replace(p, "psi", 2)),
+               "'psi' must be between 0 and 1")
+  expect_error(check_gono_params(replace(p, "sigma", 0)),
+               "'sigma' must be greater than 0")
+  expect_error(check_gono_params(replace(p, "nu", 0)),
+               "'nu' must be greater than 0")
+  expect_error(check_gono_params(replace(p, "mu", 0)),
+               "'mu' must be greater than 0")
+  expect_error(check_gono_params(replace(p, "rho", 0)),
+               "'rho' must be greater than 0")
+})
+
 test_that("can select specific parameter sets", {
   p <- read_csv(gonovax_file("extdata/gono_params.csv"))
   gp <- lapply(seq_len(nrow(p)), function(i) transform0(p[i, ]))
@@ -123,6 +144,18 @@ test_that("transform works as expected", {
   expect_equal(diff(gp2$eta_l_t), rep(p$eta_h * p$phi_eta * p$gamma_l,
                                       length(gp2$tt) - 1L))
 
+  ## cannot input bad params
+  expect_error(transform(replace(p, "beta2009", 0)),
+               "'beta2009' must be greater than 0")
+  expect_error(transform(replace(p, "phi_beta", 0)),
+               "'phi_beta' must be greater than 0")
+  expect_error(transform(replace(p, "phi_eta", 0)),
+               "'phi_eta' must be greater than 0")
+  expect_error(transform(replace(p, "eta_h", 0)),
+               "'eta_h' must be greater than 0")
+  expect_error(transform(replace(p, "gamma_l", 1.1)),
+               "'gamma_l' must be between 0 and 1")
+
 })
 
 test_that("transform_fixed works as expected", {
@@ -138,5 +171,13 @@ test_that("transform_fixed works as expected", {
   expect_true(all(diff(gp$beta_t) == 0))
   expect_true(all(diff(gp$eta_h_t) == 0))
   expect_true(all(diff(gp$eta_l_t) == 0))
+
+  ## cannot input bad params
+  expect_error(transform_fixed(replace(p, "beta", 0)),
+               "'beta' must be greater than 0")
+  expect_error(transform_fixed(replace(p, "eta_l", 0)),
+               "'eta_l' must be greater than 0")
+  expect_error(transform_fixed(replace(p, "eta_h", 0)),
+               "'eta_h' must be greater than 0")
 
 })
