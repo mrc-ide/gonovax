@@ -114,11 +114,11 @@ test_that("transform works as expected", {
   p$phi_beta <- 0.01
   p$phi_eta <- 0.02
   p$eta_h <- p$eta
-  p$gamma_l <- 0.6
+  p$omega <- 0.6
   gp <- transform(p)
 
   # check ratio is fixed between eta_l and eta_h
-  expect_equal(gp$eta_l_t / gp$eta_h_t, rep(p$gamma_l, length(gp$tt)))
+  expect_equal(gp$eta_l_t / gp$eta_h_t, rep(p$omega, length(gp$tt)))
 
   i_2020 <- which(gp$tt == gonovax_year(2020))
 
@@ -128,7 +128,7 @@ test_that("transform works as expected", {
   expect_equal(diff(gp$eta_h_t[seq_len(i_2020)]),
                rep(p$eta_h * p$phi_eta, i_2020 - 1L))
   expect_equal(diff(gp$eta_l_t[seq_len(i_2020)]),
-               rep(p$eta_h * p$phi_eta * p$gamma_l, i_2020 - 1L))
+               rep(p$eta_h * p$phi_eta * p$omega, i_2020 - 1L))
 
   ## check stable after 2020
   expect_true(all(diff(gp$beta_t[-seq_len(i_2020)]) == 0))
@@ -141,7 +141,7 @@ test_that("transform works as expected", {
   expect_equal(diff(gp2$beta_t), rep(p$beta2009 * p$phi_beta,
                                    length(gp2$tt) - 1L))
   expect_equal(diff(gp2$eta_h_t), rep(p$eta_h * p$phi_eta, length(gp2$tt) - 1L))
-  expect_equal(diff(gp2$eta_l_t), rep(p$eta_h * p$phi_eta * p$gamma_l,
+  expect_equal(diff(gp2$eta_l_t), rep(p$eta_h * p$phi_eta * p$omega,
                                       length(gp2$tt) - 1L))
 
   ## cannot input bad params
@@ -153,8 +153,8 @@ test_that("transform works as expected", {
                "'phi_eta' must be greater than 0")
   expect_error(transform(replace(p, "eta_h", 0)),
                "'eta_h' must be greater than 0")
-  expect_error(transform(replace(p, "gamma_l", 1.1)),
-               "'gamma_l' must be between 0 and 1")
+  expect_error(transform(replace(p, "omega", 1.1)),
+               "'omega' must be between 0 and 1")
 
 })
 
@@ -164,8 +164,8 @@ test_that("transform_fixed works as expected", {
   gp <- transform_fixed(p)
 
   # check ratio is fixed between eta_l and eta_h
-  gamma_l <- gp$eta_l_t / gp$eta_h_t
-  expect_equal(gamma_l[1], gamma_l[2])
+  omega <- gp$eta_l_t / gp$eta_h_t
+  expect_equal(omega[1], omega[2])
 
   ## check stable
   expect_true(all(diff(gp$beta_t) == 0))

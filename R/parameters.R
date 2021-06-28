@@ -68,7 +68,7 @@ transform <- function(pars, fix_par_t = TRUE) {
     assert_scalar_positive(phi_beta)
     assert_scalar_positive(eta_h)
     assert_scalar_positive(phi_eta)
-    assert_scalar_unit_interval(gamma_l)
+    assert_scalar_unit_interval(omega)
   })
 
   t0 <- 2009
@@ -79,7 +79,7 @@ transform <- function(pars, fix_par_t = TRUE) {
   pars$tt <- gonovax::gonovax_year(pmin(seq(t0, t0 + t_max), t_fix))
   pars$beta_t  <- pars$beta2009 * (1 + pars$phi_beta * pars$tt)
 
-  pars$eta_l_t <- pars$eta_h * pars$gamma_l * (1 + pars$phi_eta * pars$tt)
+  pars$eta_l_t <- pars$eta_h * pars$omega * (1 + pars$phi_eta * pars$tt)
   pars$eta_h_t <- pars$eta_h * (1 + pars$phi_eta * pars$tt)
 
   pars$tt <- seq(0, t_max)
