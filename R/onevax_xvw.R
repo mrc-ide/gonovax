@@ -86,22 +86,25 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  efficacy of the vaccine against duration (between 0-1)
 ##' @param ves scalar or numeric vector with same length as `gono_params` giving
 ##'  efficacy of the vaccine against symptoms (between 0-1)
+##' @param vbe scalar giving uptake of vaccination before
+##' entry into population (i.e. adolescent vaccination) defaults to same as
+##' `coverage`
 ##' @param dur  scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of the vaccine (in years)
 ##' @param uptake  scalar or numeric vector with same length as `gono_params`
 ##'  giving pc of population vaccinated as part of strategy
-##' @param coverage scalar giving initial coverage of vaccination
+##' @param coverage scalar giving initial coverage of vaccination, default 0.
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvw
 ##' @export
 run_onevax_xvw <- function(tt, gono_params, init_params = NULL, dur = 1e3,
-                            vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
+                            vea = 0, vei = 0, ved = 0, ves = 0, vbe = coverage,
                             uptake = 0, strategy = "VbE", coverage = 0,
                             t_stop = 99) {
 
-
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
+  assert_scalar_unit_interval(coverage)
 
   vax_params <- Map(vax_params_xvw, uptake = uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
@@ -110,7 +113,7 @@ run_onevax_xvw <- function(tt, gono_params, init_params = NULL, dur = 1e3,
 
   if (is.null(init_params)) {
     pars <- lapply(gono_params, model_params)
-    init_params <- lapply(pars, initial_params_xvw, coverage = coverage)
+    init_params <- Map(initial_params_xvw, pars = pars, coverage = coverage)
   }
 
   ret <- Map(run, gono_params = gono_params, init_params = init_params,

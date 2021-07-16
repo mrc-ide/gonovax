@@ -106,12 +106,14 @@ test_that("vaccine effects work as expected", {
 
 test_that("can set initial coverage", {
   tt <- seq(0, 5)
-  gp <- gono_params(1)
+  gp <- gono_params(1:2)
   cov <- 0.33
 
   ## check perfect protection against symptoms works
-  y <- run_onevax_xvw(tt, gp, ves = 1, dur = 1e3,
-                       vbe = cov, coverage = cov, strategy = "VbE")[[1]]
+  y <- run_onevax_xvw(tt, gp, ves = 1, dur = 1e3, coverage = 0.33)[[1]]
   expect_equivalent(apply(y$N[, , -1], c(1, 2), sum) / apply(y$N, c(1, 2), sum),
                     rep(cov, length(tt) * 2))
+  
+  expect_error(run_onevax_xvw(tt, gp, ves = 1, dur = 1e3, coverage = c(0.1, 0)),
+               "'coverage' must be a scalar")
 })
