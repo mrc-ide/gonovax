@@ -197,3 +197,29 @@ test_that("set_strategy works as expected", {
   expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
 
 })
+
+test_that("initial params works as expected", {
+  pars <- c(demographic_params(), gono_params(1)[[1]])
+  prev0 <- c(pars$prev_Asl, pars$prev_Ash)
+
+  y <- initial_params(pars)
+  expect_equal(sum(unlist(y)), pars$N0)
+  expect_equivalent(y$A0 / (y$A0 + y$U0), prev0, tol = 1e-5)
+  expect_equal(sum(y$I0 + y$S0 + y$T0), 0)
+  expect_equivalent(y$U0, round(pars$N0 * (1 - prev0) * pars$q))
+
+  cov <- c(0.4, 0.6, 0)
+  y1 <- initial_params(pars, n_vax = 3, coverage = cov)
+  expect_equal(sum(unlist(y1)), pars$N0)
+  # check initial prevalence in unvaccinated
+  expect_equivalent((y1$A0[, 1] / (y1$A0[, 1] + y1$U0[, 1])), prev0, tol = 1e-5)
+  # check initial prevalence is zero in vaccinated
+  expect_equal(sum(y1$A0[, -1]), 0)
+  expect_equal(sum(y1$I0 + y1$S0 + y1$T0), 0)
+  expect_equal(colSums(y1$U0 + y1$A0) / pars$N0, cov)
+
+  expect_error(initial_params(pars, coverage = 2))
+  expect_error(initial_params(pars, coverage = -1))
+  expect_error(initial_params(pars, n_vax = 3, coverage = c(1, 0)))
+  expect_error(initial_params(pars, n_vax = 3, coverage = c(1, 1, 0)))
+})
