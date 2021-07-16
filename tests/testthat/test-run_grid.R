@@ -15,7 +15,7 @@ test_that("calc_pv works as expected", {
 })
 
 test_that("compare baseline works as expected", {
-
+ 
   gp <- gono_params(1:2)
   ip <- lapply(run_onevax_xvwv(0:1, gp, vea = 0, dur = 1), restart_params)
   tt <- 1:4
