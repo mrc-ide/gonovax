@@ -47,7 +47,7 @@ prop_C[] <- sum(C[i, ]) / sum(N[i, ])
 Np[]    <- sum(N[i, ]) * p[i]
 
 foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])
-lambda[] <- p[i] * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
+lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
 
 n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
