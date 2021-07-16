@@ -118,18 +118,24 @@ transform_fixed <- function(pars) {
 ##' @param pars A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
 ##' @param n_vax an integer indicating the number of vaccine compartments
-##' @return A list of initial conditions
+##' @param coverage a vector of length `n_vax` that sums to 1 denoting the
+##' initial proportion in each vaccine stratum
+##' @return A list of initial model states
 ##' @export
-initial_params <- function(pars, n_vax = 1) {
-  # separate into 1:low and 2:high activity groups
-  N0 <- round(pars$N0 * pars$q)
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+initial_params <- function(pars, n_vax = 1, coverage = 1) {
 
-  # set initial asymptomatic prevalence in each group
-  A0[, 1] <- round(N0 * c(pars$prev_Asl, pars$prev_Ash))
+  stopifnot(length(coverage) == n_vax)
+  stopifnot(sum(coverage) == 1)
+
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+  # separate into 1:low and 2:high activity groups and by coverage
+  N0 <- pars$N0 * outer(pars$q, coverage)
+
+  # set initial asymptomatic prevalence in each group (unvaccinated only)
+  A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
 
   # set initial uninfecteds
-  U0[, 1] <- N0 - A0[, 1]
+  U0 <- round(N0) - A0
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
@@ -178,13 +184,13 @@ model_params <- function(gono_params = NULL,
                          demographic_params = NULL,
                          init_params = NULL,
                          vax_params = NULL) {
-  gono_params <- gono_params %||% gono_params(1)
+  gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-
   vax_params <- vax_params %||% vax_params0()
 
-  init_params <- init_params %||% initial_params(ret, n_vax = vax_params$n_vax)
+  cov <- c(1, rep(0, vax_params$n_vax - 1))
+  init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
   c(ret, init_params, vax_params)
 }
 
