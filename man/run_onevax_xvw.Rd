@@ -18,6 +18,7 @@ run_onevax_xvw(
   vbe = 0,
   uptake = 0,
   strategy = "VbE",
+  coverage = 0,
   t_stop = 99
 )
 }
@@ -51,6 +52,8 @@ giving pc of population vaccinated as part of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+
+\item{coverage}{scalar giving initial coverage of vaccination}
 
 \item{t_stop}{time at which vaccination should stop (years)}
 }
