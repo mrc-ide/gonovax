@@ -1,6 +1,10 @@
+# gonovax 0.3.4
+
+* allow setting of initial coverage in XVW model
+
 # gonovax 0.3.3
 
-* improve testadd checks for bad parameter inputs
+* improve tests and add checks for bad parameter inputs
 
 # gonovax 0.3.2
 
