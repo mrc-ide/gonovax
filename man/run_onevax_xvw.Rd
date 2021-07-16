@@ -15,9 +15,10 @@ run_onevax_xvw(
   vei = 0,
   ved = 0,
   ves = 0,
-  vbe = 0,
+  vbe = coverage,
   uptake = 0,
   strategy = "VbE",
+  coverage = 0,
   t_stop = 99
 )
 }
@@ -43,14 +44,17 @@ efficacy of the vaccine against duration (between 0-1)}
 \item{ves}{scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against symptoms (between 0-1)}
 
-\item{vbe}{scalar indicating pc of population vaccinated before entry
-(between 0-1)}
+\item{vbe}{scalar giving uptake of vaccination before
+entry into population (i.e. adolescent vaccination) defaults to same as
+`coverage`}
 
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy}
 
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+
+\item{coverage}{scalar giving initial coverage of vaccination, default 0.}
 
 \item{t_stop}{time at which vaccination should stop (years)}
 }

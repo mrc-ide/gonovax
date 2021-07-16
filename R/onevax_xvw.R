@@ -1,3 +1,19 @@
+##' Create initial conditions for the model
+##' @name initial_params
+##' @title Initial conditions for the model
+##' @param pars A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
+##'   elements.
+##' @param coverage  scalar giving initial coverage of vaccination
+##' @return A list of initial conditions
+##' @export
+initial_params_xvw <- function(pars, coverage = 0) {
+  assert_scalar_unit_interval(coverage)
+  n_vax <- 3
+  cov <- c(1 - coverage, coverage, 0)
+  initial_params(pars, n_vax, cov)
+}
+
+
 ##' @name vax_params_xvw
 ##' @title Create vaccination parameters for use in onevax_xvw model
 ##' @param vea scalar indicating efficacy of the vaccine against acquisition
@@ -18,8 +34,8 @@
 ##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list parameters in the model input format
 vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                            dur = 1e3, uptake = 0, strategy = "VbE",
-                            vbe = 0, t_stop = 99) {
+                            dur = 1e3, uptake = 0, strategy = "VbE", vbe = 0,
+                           t_stop = 99) {
 
   assert_character(strategy)
   assert_scalar_unit_interval(vea)
@@ -70,21 +86,25 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  efficacy of the vaccine against duration (between 0-1)
 ##' @param ves scalar or numeric vector with same length as `gono_params` giving
 ##'  efficacy of the vaccine against symptoms (between 0-1)
+##' @param vbe scalar giving uptake of vaccination before
+##' entry into population (i.e. adolescent vaccination) defaults to same as
+##' `coverage`
 ##' @param dur  scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of the vaccine (in years)
 ##' @param uptake  scalar or numeric vector with same length as `gono_params`
 ##'  giving pc of population vaccinated as part of strategy
+##' @param coverage scalar giving initial coverage of vaccination, default 0.
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvw
 ##' @export
 run_onevax_xvw <- function(tt, gono_params, init_params = NULL, dur = 1e3,
-                            vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
-                            uptake = 0, strategy = "VbE",
+                            vea = 0, vei = 0, ved = 0, ves = 0, vbe = coverage,
+                            uptake = 0, strategy = "VbE", coverage = 0,
                             t_stop = 99) {
-
 
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
+  assert_scalar_unit_interval(coverage)
 
   vax_params <- Map(vax_params_xvw, uptake = uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
@@ -92,13 +112,13 @@ run_onevax_xvw <- function(tt, gono_params, init_params = NULL, dur = 1e3,
                                     vbe = vbe))
 
   if (is.null(init_params)) {
-    ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
-              MoreArgs = list(tt = tt))
-  } else {
-    ret <- Map(run, gono_params = gono_params, init_params = init_params,
-               vax_params = vax_params,
-               MoreArgs = list(tt = tt))
+    pars <- lapply(gono_params, model_params)
+    init_params <- Map(initial_params_xvw, pars = pars, coverage = coverage)
   }
+
+  ret <- Map(run, gono_params = gono_params, init_params = init_params,
+             vax_params = vax_params,
+             MoreArgs = list(tt = tt))
 
   # name outputs
   ret <- lapply(ret, name_outputs, c("X", "V", "W"))
