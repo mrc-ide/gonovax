@@ -48,10 +48,14 @@ test_that("compare baseline works as expected", {
   }
 
   # check doses are calculated correctly
+  n <- length(tt) - 1
   expect_equal(f(yy) - f(bl), z$inc_doses)
+  expect_equal(z$inc_cum_doses[1, ], z$inc_doses[1, ])
+  expect_equal(z$inc_cum_doses[n, ], colSums(z$inc_doses))
+
   expect_equal(z$cases_averted_per_dose[1, ],
                -z$inc_treated[1, ] / z$inc_doses[1, ])
-  expect_equal(z$cases_averted_per_dose[length(tt) - 1, ],
+  expect_equal(z$cases_averted_per_dose[n, ],
                -colSums(z$inc_treated) / colSums(z$inc_doses))
 
   ## check correct with double dose at revaccination
