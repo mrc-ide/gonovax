@@ -52,7 +52,7 @@ test_that("compare baseline works as expected", {
   expect_equal(f(yy) - f(bl), z$inc_doses)
   expect_equal(z$inc_cum_doses[1, ], z$inc_doses[1, ])
   expect_equal(z$inc_cum_doses[n, ], colSums(z$inc_doses))
-  
+
   expect_equal(z$cases_averted_per_dose[1, ],
                -z$inc_treated[1, ] / z$inc_doses[1, ])
   expect_equal(z$cases_averted_per_dose[n, ],
