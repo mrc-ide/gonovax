@@ -1,8 +1,11 @@
 ## Files included
 
 * `inst/extdata/gono_params.csv` - 
-  posterior parameters derived in:
-    doi:10.1093/cid/ciz1241
+  posterior parameters previously derived in:
+    [Whittles et al (2020) doi:10.1093/cid/ciz1241](https://doi.org/10.1093/cid/ciz1241)
+
+* `inst/extdata/gono_params_t.csv` - 
+  new posterior parameters
 
 * `inst/extdata/novax_equilib.rds` - 
   equilibrium compartment values corresponding to gono_params derived by 

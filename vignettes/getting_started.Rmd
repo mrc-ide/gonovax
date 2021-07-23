@@ -18,13 +18,14 @@ par(mar = c(3, 3, 1, 1), mgp = c(1.7, 0.7, 0), bty = "n")
 ```
 
 
-## Running the model
+## Running the model without vaccination
+
 First we will run the model without vaccination.
 
 Start by reading in your table of parameters:
 ```{r}
  library("gonovax")
- parameter_table <- read.csv("../inst/extdata/gono_params_t.csv")
+ parameter_table <- read.csv(system.file("extdata/gono_params_t.csv",package='gonovax'))
  head(parameter_table)
 ```
 
@@ -46,21 +47,24 @@ tt <- c(0, 50)
 # run the model
 y0 <- run_onevax_xvwv(tt, gono_params)
 
-# get final (equilibrium) model state for restart
+# get final (equilibrium) model state to use as starting point of run with vaccination
 init_params <- lapply(y0, restart_params)
 ```
+
+## Running the model with vaccination
 
 We now run the model with vaccination.
 
 The efficacy inputs (`vea`, `vei`, `ved`, `ves`) can be of length 1 or `n_par`
 
-The strategy can be one of;
-*`VoD`: vaccination on diagnosis
-*`VoA`: vaccination on attendance
+The strategy can be one of:
+
+* `VoD`: vaccination on diagnosis
+* `VoA`: vaccination on attendance
 * `VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on screening)
 
 The proportion of those eligible that choose to be vaccinated, `uptake` is a
-scalar from 0 - 1:
+scalar from 0 to 1:
 
 ```{r}
 # generate vaccine effects parameters
@@ -92,8 +96,9 @@ dimnames(y[[1]]$cum_incid)
 y[[1]]$cum_incid[, "L", "X"]
 ```
 
+## Graphical representations of results
 
-This will aggregate over group (L, H) and strata (X, V, W) to give the total
+This can be aggregated over group (L, H) and strata (X, V, W) to give the total
 cumulative infections for each parameter set (rows) over time (columns).
 
 ```{r}
@@ -103,8 +108,8 @@ matplot(tt, t(total_infected), lty = 1, type = "l", col = col,
         xlab = "Time", ylab = "Cumulative infections")
 ```
 
-This will aggregate over group (L, H) and strata (X, V, W) to give the yearly
-infections for each parameter set (rows) over time (columns) 
+This can be aggregated over group (L, H) and strata (X, V, W) to give the yearly
+infections for each parameter set (rows) over time (columns).
 
 ```{r}
 annual_infected <- aggregate(y, what = "cum_incid", as_incid = TRUE)
@@ -127,7 +132,8 @@ matlines(tt[-1], t(annual_infected_V), lty = 1, col = col2)
 legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
        ncol = 2)
 ```
-You can look apply functions over the parameter sets to get summary statistics
+
+You can apply functions over the parameter sets to get summary statistics:
 
 ```{r}
 mean_ci <- function(x) c(mean = mean(x), quantile(x, c(0.025, 0.975)))

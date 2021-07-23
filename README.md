@@ -7,14 +7,15 @@
 [![codecov](https://codecov.io/gh/mrc-ide/gonovax/branch/master/graph/badge.svg?token=9u8S3v45AX)](https://codecov.io/gh/mrc-ide/gonovax)
 <!-- badges: end -->
 
+This package implements a compartmental model of gonorrhoea infection with vaccination.
+
 <img src="man/figures/vax_diagram.png" align="center" style = "border: none; float: center;" width = "800px">
 
 
 ## Installation
 
 You will need a compiler to install dependencies for the package, and to build
-any models. Use `pkgbuild::check_build_tools()` to see if your system is ok to
-use.
+the models. Use `pkgbuild::check_build_tools()` to see if your system is usable.
 
 You will need the packages `odin` and `mcstate`, which can be installed using:
 
@@ -24,7 +25,7 @@ remotes::install_github("mrc-ide/mcstate", upgrade = FALSE)
 ```
 
 
-The package can be installed directly from GitHub with:
+The package can then be installed directly from GitHub with:
 
 ```r
 remotes::install_github("mrc-ide/gonovax", upgrade = FALSE)

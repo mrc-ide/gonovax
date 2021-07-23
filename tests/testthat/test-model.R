@@ -266,7 +266,7 @@ test_that("can initialise after time 0", {
 
   params2 <- model_params(gono_params = gono_params(1)[[1]],
                           init_params = inits)
-  mod2 <- model(user = params2)
+  mod2 <- model(user = params2, unused_user_action = "ignore")
   y2 <- mod2$run(seq.int(inits$t, 10))
   y2 <- mod2$transform_variables(y2)
 
