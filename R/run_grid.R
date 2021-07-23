@@ -80,6 +80,8 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
 
   ## calculate cases averted per dose, both with and without discounting
   ret$inc_doses <- calc_doses(ret, uptake_second_dose, TRUE)
+  ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
+  
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
 
