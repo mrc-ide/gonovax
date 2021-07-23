@@ -1,3 +1,7 @@
+# gonovax 0.3.5
+
+* output incremental cumulative vaccine doses given
+
 # gonovax 0.3.4
 
 * allow setting of initial coverage in XVW model
