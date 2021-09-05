@@ -62,7 +62,7 @@ test_that("compare baseline works as expected", {
   ## check correct with double dose at revaccination
   expect_equal(calc_doses(z, uptake_second_dose = p, revax_one_dose = FALSE),
                z$inc_vaccinated * (1 + 1 / p))
-  
+
   ## check against a baseline of no vaccination
   bl0 <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1, vbe = 0))
   blv0 <- rep(list(bl0), 4)
