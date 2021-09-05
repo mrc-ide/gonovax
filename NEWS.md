@@ -1,3 +1,7 @@
+# gonovax 0.3.6
+
+* Assume two doses for adolescent vaccination
+
 # gonovax 0.3.5
 
 * output incremental cumulative vaccine doses given

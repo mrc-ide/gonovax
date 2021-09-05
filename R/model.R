@@ -21,7 +21,7 @@ run <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
   pars <- model_params(gono_params = gono_params,
                                 init_params = init_params,
                                 vax_params = vax_params)
-  mod <- model(user = pars, unused_user_action = FALSE)
+  mod <- model$new(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)
 
   if (transform) {

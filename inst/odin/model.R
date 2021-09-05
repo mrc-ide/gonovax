@@ -81,6 +81,7 @@ deriv(cum_diag_s[, ])     <- n_ST[i, j]
 deriv(cum_treated[, ])    <- n_TU[i, j]
 deriv(cum_screened[, ])   <- screened[i, j]
 deriv(cum_vaccinated[, ]) <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j]
+deriv(cum_vbe[, ]) <- n_vbe[i, j, j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)
@@ -110,6 +111,7 @@ initial(cum_diag_s[, ])     <- 0
 initial(cum_treated[, ])    <- 0
 initial(cum_screened[, ])   <- 0
 initial(cum_vaccinated[, ]) <- 0
+initial(cum_vbe[, ]) <- 0
 
 # set up dimensions of compartments
 dim(U) <- c(n_group, n_vax)
@@ -145,6 +147,7 @@ dim(cum_diag_s)     <- c(n_group, n_vax)
 dim(cum_treated)    <- c(n_group, n_vax)
 dim(cum_screened)   <- c(n_group, n_vax)
 dim(cum_vaccinated) <- c(n_group, n_vax)
+dim(cum_vbe)        <- c(n_group, n_vax)
 
 ## Parameters
 p[]     <- user()
