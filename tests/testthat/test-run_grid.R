@@ -44,7 +44,8 @@ test_that("compare baseline works as expected", {
                     Map(`-`, yy[flownames], bl[flownames]))
 
   f <- function(x) {
-    (x$vaccinated - x$revaccinated) * (1 + 1 / p) + x$revaccinated
+    pv <- x$vaccinated - x$revaccinated - x$vbe
+    pv * (1 + 1 / p) + x$revaccinated + 2 * x$vbe
   }
 
   # check doses are calculated correctly
@@ -61,6 +62,14 @@ test_that("compare baseline works as expected", {
   ## check correct with double dose at revaccination
   expect_equal(calc_doses(z, uptake_second_dose = p, revax_one_dose = FALSE),
                z$inc_vaccinated * (1 + 1 / p))
+  
+  ## check against a baseline of no vaccination
+  bl0 <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1, vbe = 0))
+  blv0 <- rep(list(bl0), 4)
+
+  z1 <- compare_baseline(y, bl0, uptake_second_dose = p, cp, 0)
+  expect_equivalent(z1$inc_vbe, matrix(12000 * 0.5, 3, 2))
+  expect_equal(f(yy) - f(bl0), z1$inc_doses)
 
   ## with zero disc rate
   expect_equal(z$cases_averted_per_dose, z$cases_averted_per_dose_pv)
