@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.6</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
       <h1 data-toc-skip>Getting started</h1>
                         <h4 class="author">Lilith Whittles</h4>
             
-            <h4 class="date">2021-07-23</h4>
+            <h4 class="date">2021-09-05</h4>
       
       
       <div class="hidden name"><code>getting_started.Rmd</code></div>
@@ -170,8 +170,8 @@
 <span class="co">#&gt;  [1] "t"              "U"              "I"              "A"             </span>
 <span class="co">#&gt;  [5] "S"              "T"              "cum_incid"      "cum_diag_a"    </span>
 <span class="co">#&gt;  [9] "cum_diag_s"     "cum_treated"    "cum_screened"   "cum_vaccinated"</span>
-<span class="co">#&gt; [13] "tot_treated"    "tot_attended"   "beta"           "eta"           </span>
-<span class="co">#&gt; [17] "lambda"         "N"</span>
+<span class="co">#&gt; [13] "cum_vbe"        "tot_treated"    "tot_attended"   "beta"          </span>
+<span class="co">#&gt; [17] "eta"            "lambda"         "N"</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span>
 <span class="co">#&gt; [1] 11  2  3</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html">dimnames</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span>
@@ -187,7 +187,7 @@
 <span class="co"># cumulative incidence in unvaccinated group L over time</span>
 <span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">[</span>, <span class="st">"L"</span>, <span class="st">"X"</span><span class="op">]</span>
 <span class="co">#&gt;  [1]     0.00 12019.16 17752.48 20517.99 21988.09 22851.44 23405.84 23790.58</span>
-<span class="co">#&gt;  [9] 24076.17 24301.00 24487.20</span></code></pre></div>
+<span class="co">#&gt;  [9] 24076.18 24301.00 24487.20</span></code></pre></div>
 </div>
 <div id="graphical-representations-of-results" class="section level2">
 <h2 class="hasAnchor">
