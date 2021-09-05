@@ -98,6 +98,7 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
 calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE) {
 
   n_primary_doses_pp <- 1 + 1 / uptake_second_dose
+  n_vbe_pp <- 2 # all vbe get two doses
 
   if (revax_one_dose) {
     n_revax_doses_pp <- 1
@@ -105,11 +106,13 @@ calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE) {
     n_revax_doses_pp <- n_primary_doses_pp
   }
 
-  inc_primary_vaccination <- forecast$inc_vaccinated - forecast$inc_revaccinated
+  inc_primary_vaccination <-
+    forecast$inc_vaccinated - forecast$inc_revaccinated - forecast$inc_vbe
+  inc_vbe_doses <- t(forecast$inc_vbe) * n_vbe_pp
   inc_primary_doses <- t(inc_primary_vaccination) * n_primary_doses_pp
   inc_revax_doses <- t(forecast$inc_revaccinated) * n_revax_doses_pp
 
-  inc_doses <- inc_primary_doses + inc_revax_doses
+  inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
 
   t(inc_doses)
 }
