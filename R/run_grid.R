@@ -85,12 +85,19 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
 
+  costs <- calc_costs(ret, cost_params, disc_rate)
+  ret <- c(ret, costs)
+
   ## calculate cost-effectiveness threshold price as incremental net benefit per
   ## person with QALY cost - £20k / £30k
   ## both calcs allow for discounting (i.e. are present values as at 2022)
+  ret$cet_20k <- calc_cet(2e4, costs)
+  ret$cet_30k <- calc_cet(3e4, costs)
 
-  ret$cet_20k <- calc_cost_eff_threshold(2e4, ret, cost_params, disc_rate)
-  ret$cet_30k <- calc_cost_eff_threshold(3e4, ret, cost_params, disc_rate)
+  ## calculate incremental cost of vaccination assuming £18 and £85 per dose
+  ## both calcs allow for discounting (i.e. are present values as at 2022)
+  ret$inc_costs_18 <- calc_inc_costs(18, costs)
+  ret$inc_costs_85 <- calc_inc_costs(85, costs)
 
   ret
 }
@@ -137,10 +144,7 @@ calc_cases_averted_per_dose <- function(forecast, disc_rate = 0) {
 }
 
 
-calc_cost_eff_threshold <-
-function(cost_qaly, forecast, cost_params, disc_rate) {
-
-    qaly_cost_per_diag_s <- cost_params$qaly_loss_per_diag_s * cost_qaly
+calc_costs <- function(forecast, cost_params, disc_rate) {
 
     red_diag_s <- -t(forecast$inc_diag_s)
     red_diag_a <- -t(forecast$inc_diag_a)
@@ -149,15 +153,24 @@ function(cost_qaly, forecast, cost_params, disc_rate) {
     red_cost_diag_s <- red_diag_s * cost_params$unit_cost_manage_symptomatic
     red_cost_diag_a <- red_diag_a * cost_params$unit_cost_manage_asymptomatic
     inc_cost_screen <- inc_screen * cost_params$unit_cost_screen_uninfected
-    red_qaly_cost   <- red_diag_s * qaly_cost_per_diag_s
 
-    inc_net_benefit <-
-      t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen + red_qaly_cost)
+    red_net_cost <- t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen)
 
-    pv_inc_doses <- calc_pv(forecast$inc_doses, disc_rate)
-    pv_inc_net_benefit <- calc_pv(inc_net_benefit, disc_rate)
+    qaly_gain <- t(red_diag_s * cost_params$qaly_loss_per_diag_s)
 
     ## calc pv incremental net benefit per person protected
-    pv_inc_net_benefit / pv_inc_doses
+    list(pv_inc_doses = calc_pv(forecast$inc_doses, disc_rate),
+         pv_red_net_cost = calc_pv(red_net_cost, disc_rate),
+         pv_qaly_gain = calc_pv(qaly_gain, disc_rate))
+}
 
-  }
+calc_cet <- function(cost_qaly, costs) {
+  # PV inc net benefit = PV reduction in treatment costs + PV gain in QALYs
+  pv_inc_net_benefit <- costs$pv_red_net_cost + costs$pv_qaly_gain * cost_qaly
+  # value of vaccination = PV inc net benefit / PV inc doses
+  pv_inc_net_benefit / costs$pv_inc_doses
+}
+
+calc_inc_costs <- function(price_per_dose, costs) {
+  costs$pv_inc_doses * price_per_dose - costs$pv_red_net_cost
+}
