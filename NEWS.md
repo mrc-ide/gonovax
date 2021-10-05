@@ -1,3 +1,7 @@
+# gonovax 0.3.7
+
+* Output costs and benefits separately to allow ICER calculation
+
 # gonovax 0.3.6
 
 * Assume two doses for adolescent vaccination
