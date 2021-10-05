@@ -88,9 +88,11 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ## calculate cost-effectiveness threshold price as incremental net benefit per
   ## person with QALY cost - £20k / £30k
   ## both calcs allow for discounting (i.e. are present values as at 2022)
+  cost_20k <- calc_cost_eff_threshold(2e4, ret, cost_params, disc_rate)
 
-  ret$cet_20k <- calc_cost_eff_threshold(2e4, ret, cost_params, disc_rate)
-  ret$cet_30k <- calc_cost_eff_threshold(3e4, ret, cost_params, disc_rate)
+  ret <- c(ret, cost_20k)
+  names(ret)[names(ret) == "cet"] <- "cet_20k"
+  ret$cet_30k <- calc_cost_eff_threshold(3e4, ret, cost_params, disc_rate)$cet
 
   ret
 }
@@ -140,24 +142,34 @@ calc_cases_averted_per_dose <- function(forecast, disc_rate = 0) {
 calc_cost_eff_threshold <-
 function(cost_qaly, forecast, cost_params, disc_rate) {
 
-    qaly_cost_per_diag_s <- cost_params$qaly_loss_per_diag_s * cost_qaly
-
     red_diag_s <- -t(forecast$inc_diag_s)
     red_diag_a <- -t(forecast$inc_diag_a)
     inc_screen <- t(forecast$inc_screened)
 
+    qaly_gain <- t(red_diag_s * cost_params$qaly_loss_per_diag_s)
+
     red_cost_diag_s <- red_diag_s * cost_params$unit_cost_manage_symptomatic
     red_cost_diag_a <- red_diag_a * cost_params$unit_cost_manage_asymptomatic
     inc_cost_screen <- inc_screen * cost_params$unit_cost_screen_uninfected
-    red_qaly_cost   <- red_diag_s * qaly_cost_per_diag_s
+    red_qaly_cost   <- qaly_gain * cost_qaly
 
-    inc_net_benefit <-
-      t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen + red_qaly_cost)
+    red_net_cost <- t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen)
+    inc_net_benefit <- red_net_cost + red_qaly_cost
 
     pv_inc_doses <- calc_pv(forecast$inc_doses, disc_rate)
     pv_inc_net_benefit <- calc_pv(inc_net_benefit, disc_rate)
 
     ## calc pv incremental net benefit per person protected
-    pv_inc_net_benefit / pv_inc_doses
+    list(cet = pv_inc_net_benefit / pv_inc_doses,
+         pv_inc_doses = pv_inc_doses,
+         pv_inc_cost_18 = calc_pv(forecast$inc_doses * 18 - red_net_cost,
+                                  disc_rate),
+         pv_inc_cost_85 = calc_pv(forecast$inc_doses * 85 - red_net_cost,
+                                  disc_rate),
+         pv_qaly_gain = calc_pv(qaly_gain, disc_rate))
 
-  }
+}
+
+calc_inc_costs <- function(price_per_dose, forecast, cost_params, disc_rate) {
+
+}

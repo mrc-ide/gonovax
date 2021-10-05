@@ -79,8 +79,8 @@ test_that("compare baseline works as expected", {
   expect_true(all(tmp[2, ] != z$cases_averted_per_dose[1, ]))
 
   ## test cost eff threshold
-  expect_equal(z$cet_20k, calc_cost_eff_threshold(20000, z, cp, 0))
-  expect_equal(z$cet_30k, calc_cost_eff_threshold(30000, z, cp, 0))
+  expect_equal(z$cet_20k, calc_cost_eff_threshold(20000, z, cp, 0)$cet)
+  expect_equal(z$cet_30k, calc_cost_eff_threshold(30000, z, cp, 0)$cet)
 
   calc_cost <- function(x, cp, qc) {
     Qu <- cp$unit_cost_screen_uninfected * t(x$screened)
@@ -98,6 +98,19 @@ test_that("compare baseline works as expected", {
   expect_equal(calc_pv(calc_cost(bl, cp, 3e4) - calc_cost(yy, cp, 3e4), 0) /
                  calc_pv(z$inc_doses, 0),
                z$cet_30k)
+
+  cost_20k <- calc_cost_eff_threshold(20000, z, cp, 0)
+  cost_30k <- calc_cost_eff_threshold(30000, z, cp, 0)
+
+  expect_equal(cost_20k$pv_inc_doses, cost_30k$pv_inc_doses)
+  expect_equal(cost_20k$pv_inc_cost_18, cost_30k$pv_inc_cost_18)
+  expect_equal(cost_20k$pv_inc_cost_85, cost_30k$pv_inc_cost_85)
+  expect_equal(cost_20k$pv_qaly_gain, cost_30k$pv_qaly_gain)
+
+
+  pv_cost <- cost_20k$cet * cost_20k$pv_inc_doses
+  pv_cost_exc_qaly <- cost_20k$pv_inc_doses * 18 - cost_20k$pv_inc_cost_18
+  expect_equal(pv_cost - pv_cost_exc_qaly, cost_20k$pv_qaly_gain * 20000)
 
 })
 
