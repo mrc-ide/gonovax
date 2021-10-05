@@ -103,15 +103,12 @@ test_that("compare baseline works as expected", {
   cost_30k <- calc_cost_eff_threshold(30000, z, cp, 0)
 
   expect_equal(cost_20k$pv_inc_doses, cost_30k$pv_inc_doses)
-  expect_equal(cost_20k$pv_inc_cost_18, cost_30k$pv_inc_cost_18)
-  expect_equal(cost_20k$pv_inc_cost_85, cost_30k$pv_inc_cost_85)
+  expect_equal(cost_20k$pv_red_net_cost, cost_30k$pv_red_net_cost)
   expect_equal(cost_20k$pv_qaly_gain, cost_30k$pv_qaly_gain)
 
+  pv_cost_qaly <- with(cost_20k, cet * pv_inc_doses - pv_red_net_cost)
 
-  pv_cost <- cost_20k$cet * cost_20k$pv_inc_doses
-  pv_cost_exc_qaly <- cost_20k$pv_inc_doses * 18 - cost_20k$pv_inc_cost_18
-  expect_equal(pv_cost - pv_cost_exc_qaly, cost_20k$pv_qaly_gain * 20000)
-
+  expect_equal(pv_cost_qaly, cost_20k$pv_qaly_gain * 20000)
 })
 
 

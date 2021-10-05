@@ -155,21 +155,13 @@ function(cost_qaly, forecast, cost_params, disc_rate) {
 
     red_net_cost <- t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen)
     inc_net_benefit <- red_net_cost + red_qaly_cost
+    pv_inc_net_benefit <- calc_pv(inc_net_benefit, disc_rate)
 
     pv_inc_doses <- calc_pv(forecast$inc_doses, disc_rate)
-    pv_inc_net_benefit <- calc_pv(inc_net_benefit, disc_rate)
 
     ## calc pv incremental net benefit per person protected
     list(cet = pv_inc_net_benefit / pv_inc_doses,
          pv_inc_doses = pv_inc_doses,
-         pv_inc_cost_18 = calc_pv(forecast$inc_doses * 18 - red_net_cost,
-                                  disc_rate),
-         pv_inc_cost_85 = calc_pv(forecast$inc_doses * 85 - red_net_cost,
-                                  disc_rate),
+         pv_red_net_cost = calc_pv(red_net_cost, disc_rate),
          pv_qaly_gain = calc_pv(qaly_gain, disc_rate))
-
-}
-
-calc_inc_costs <- function(price_per_dose, forecast, cost_params, disc_rate) {
-
 }
