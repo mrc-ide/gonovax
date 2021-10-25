@@ -1,4 +1,4 @@
-getw# Key to indices
+# Key to indices
 # i = Activity group
 ## 1: Low
 ## 2: High
@@ -7,7 +7,7 @@ getw# Key to indices
 ## 2: Bexsero
 ## 3: Waned
 
-n_group <- 2
+n_group <- 1               #changed n_group to 1 as only using high activity group 
 n_vax   <- user(1)
 
 ## calibrate time-varying parameters
@@ -17,7 +17,7 @@ dim(tt) <- user()
 beta  <- interpolate(tt, beta_t,  "linear")
 eta_l <- interpolate(tt, eta_l_t, "linear")
 eta_h <- interpolate(tt, eta_h_t, "linear")
-eta[1] <- eta_l
+eta[1] <- eta_l                                        #was going to haze out low activity lines but we're just going to not put anyone into the low group?? I think?
 eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
@@ -41,13 +41,13 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 entrants[, 1] <- enr * q[i]
 
-# calculate mixing matrix, probability of infection and force of infection
-C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
-prop_C[] <- sum(C[i, ]) / sum(N[i, ])
-Np[]    <- sum(N[i, ]) * p[i]
+# calculate mixing matrix, probability of infection and force of infection 
+#C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
+#prop_C[] <- sum(C[i, ]) / sum(N[i, ])
+#Np[]    <- sum(N[i, ]) * p[i]
 
-foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])
-lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
+#foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])                                            #foi_LH = combined FOI for both groups ????
+#lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))      #removed lambda so we can have it as an input
 
 n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
@@ -164,6 +164,7 @@ psi       <- user()
 nu        <- user()
 mu        <- user()
 rho       <- user()
+lambda    <- user()              #added lambda as an input
 
 ## vaccination parameters
 # vaccination routes
