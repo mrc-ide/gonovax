@@ -43,13 +43,16 @@ entrants[, 1] <- enr * q[i]
 
 # calculate mixing matrix, probability of infection and force of infection 
 #C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
-#prop_C[] <- sum(C[i, ]) / sum(N[i, ])
-#Np[]    <- sum(N[i, ]) * p[i]
+#prop_C[] <- sum(C[i, ]) / sum(N[i, ])                       #proportion contagious by activity group (but summed over their vaccination strata)
+#Np[]    <- sum(N[i, ]) * p[i]                              #Number in each activity group (summed across strata)* pi of that group 
+                                                            # pi is prop of all partnerships that involve a member of the group j, without this , no mixing matrix?
+                                                            # = Number of partnerships formed within that group 
 
 #foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])                                            #foi_LH = combined FOI for both groups ????
+                                                                                      #prop. contagious * proportion of partnerships in group i compared to all partnerships??
 #lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))      #removed lambda so we can have it as an input
 
-n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
+n_UI[, ]     <- lambda * (1 - vea[j]) * U[i, j]          #changed lambda[i] to constant 
 n_AT[, ]     <- eta[i] * A[i, j]
 n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
@@ -126,13 +129,13 @@ dim(A0) <- c(n_group, n_vax)
 dim(S0) <- c(n_group, n_vax)
 dim(T0) <- c(n_group, n_vax)
 
-dim(C)  <- c(n_group, n_vax)
+#dim(C)  <- c(n_group, n_vax)           #no longer need C so no longer need dimensions
 dim(N)  <- c(n_group, n_vax)
 dim(entrants) <- c(n_group, n_vax)
-dim(Np)     <- n_group
-dim(prop_C) <- n_group
-dim(foi_LH) <- n_group
-dim(lambda) <- n_group
+#dim(Np)     <- n_group
+#dim(prop_C) <- n_group
+#dim(foi_LH) <- n_group
+#dim(lambda) <- n_group
 
 dim(n_UI)     <- c(n_group, n_vax)
 dim(n_AT)     <- c(n_group, n_vax)
@@ -150,7 +153,7 @@ dim(cum_vaccinated) <- c(n_group, n_vax)
 dim(cum_vbe)        <- c(n_group, n_vax)
 
 ## Parameters
-p[]     <- user()
+#p[]     <- user()
 q[]     <- user()
 
 enr       <- user()
@@ -158,7 +161,7 @@ exr       <- user()
 beta_t[]  <- user()
 eta_l_t[] <- user()
 eta_h_t[] <- user()
-epsilon   <- user()
+#epsilon   <- user()
 sigma     <- user()
 psi       <- user()
 nu        <- user()
@@ -176,7 +179,7 @@ vod[, , ] <- user()
 vea[] <- user() # efficacy against acquisition
 ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
-vei[] <- user() # efficacy against infectiousness
+#vei[] <- user() # efficacy against infectiousness
 
 w[, ]    <- user()
 vax_t[]  <- user()
@@ -187,13 +190,13 @@ dim(beta_t)  <- length(tt)
 dim(eta_l_t) <- length(tt)
 dim(eta_h_t) <- length(tt)
 
-dim(p)    <- n_group
+#dim(p)    <- n_group
 dim(q)    <- n_group
 dim(eta)  <- n_group
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
 dim(ves)  <- n_vax
-dim(vei)  <- n_vax
+#dim(vei)  <- n_vax
 dim(vbe)   <- c(n_group, n_vax, n_vax)
 dim(vod)   <- c(n_group, n_vax, n_vax)
 dim(vos)   <- c(n_group, n_vax, n_vax)
