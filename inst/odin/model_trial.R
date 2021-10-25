@@ -14,7 +14,7 @@ n_vax   <- user(1)
 # tt runs from t0 = 2009, to t10 = 2019
 tt[] <- user()
 dim(tt) <- user()
-beta  <- interpolate(tt, beta_t,  "linear")
+#beta  <- interpolate(tt, beta_t,  "linear")
 eta_l <- interpolate(tt, eta_l_t, "linear")
 eta_h <- interpolate(tt, eta_h_t, "linear")
 eta[1] <- eta_l                                        #was going to haze out low activity lines but we're just going to not put anyone into the low group?? I think?
@@ -91,7 +91,7 @@ output(tot_treated) <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 # output time-varying params for checking
-output(beta) <- beta
+#output(beta) <- beta
 output(eta) <- eta
 
 ## Set up compartments
@@ -158,7 +158,7 @@ q[]     <- user()
 
 enr       <- user()
 exr       <- user()
-beta_t[]  <- user()
+#beta_t[]  <- user()
 eta_l_t[] <- user()
 eta_h_t[] <- user()
 #epsilon   <- user()
@@ -186,7 +186,7 @@ vax_t[]  <- user()
 vax_y[]  <- user()
 
 ## par dimensions
-dim(beta_t)  <- length(tt)
+#dim(beta_t)  <- length(tt)
 dim(eta_l_t) <- length(tt)
 dim(eta_h_t) <- length(tt)
 
