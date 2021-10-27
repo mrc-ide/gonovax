@@ -1,4 +1,4 @@
-# Key to indices
+model_trial <- odin::odin({# Key to indices
 # i = Activity group
 ## 1: Low
 ## 2: High
@@ -39,14 +39,17 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
-entrants[, 1] <- enr * q[i]
+entrants[, 1] <- enr  #* q[i]
 
 # calculate mixing matrix, probability of infection and force of infection 
 #C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
-#prop_C[] <- sum(C[i, ]) / sum(N[i, ])                       #proportion contagious by activity group (but summed over their vaccination strata)
-#Np[]    <- sum(N[i, ]) * p[i]                              #Number in each activity group (summed across strata)* pi of that group 
-                                                            # pi is prop of all partnerships that involve a member of the group j, without this , no mixing matrix?
-                                                            # = Number of partnerships formed within that group 
+#prop_C[] <- sum(C[i, ]) / sum(N[i, ])                      #proportion contagious by activity group (but summed over their vaccination strata)
+#Np[]    <- sum(N[i, ]) * p[i]                              #Np is the number in each activity group summed across vaccination stratum multiplied by
+                                                            #the number of partnerships formed within each activity group
+                                                            #i.e annual number of partnerships formed each year involving MSM group i 
+
+                                                        
+                                                            
 
 #foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])                                            #foi_LH = combined FOI for both groups ????
                                                                                       #prop. contagious * proportion of partnerships in group i compared to all partnerships??
@@ -154,7 +157,7 @@ dim(cum_vbe)        <- c(n_group, n_vax)
 
 ## Parameters
 #p[]     <- user()
-q[]     <- user()
+#q[]     <- user()
 
 enr       <- user()
 exr       <- user()
@@ -190,8 +193,8 @@ vax_y[]  <- user()
 dim(eta_l_t) <- length(tt)
 dim(eta_h_t) <- length(tt)
 
-#dim(p)    <- n_group
-dim(q)    <- n_group
+#dim(p)    <- n_group              #don't need p as this is the number of partnerships formed within each activity 
+#dim(q)    <- n_group              #don't need q as this is the proportion of enrolled individuals that will be in each activity group 
 dim(eta)  <- n_group
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
@@ -214,4 +217,4 @@ dim(wS)   <- c(n_group, n_vax, n_vax)
 dim(wT)   <- c(n_group, n_vax, n_vax)
 
 output(N)   <- N
-output(lambda) <- lambda
+output(lambda) <- lambda})
