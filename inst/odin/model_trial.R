@@ -1,4 +1,3 @@
-model_trial <- odin::odin({# Key to indices
 # i = Activity group
 ## 1: Low
 ## 2: High
@@ -217,4 +216,4 @@ dim(wS)   <- c(n_group, n_vax, n_vax)
 dim(wT)   <- c(n_group, n_vax, n_vax)
 
 output(N)   <- N
-output(lambda) <- lambda})
+output(lambda) <- lambda
