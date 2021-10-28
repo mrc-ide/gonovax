@@ -1,8 +1,6 @@
 #Call in model_trial
-source("C:/Users/Dariya/OneDrive - Imperial College London/Documents/gonovax/inst/odin/model_trial.R")
 
-
-######### testing #########
+######### testing ########
 context("trial model check")
 
 test_that("no new infections if lambda is 0", {
@@ -27,7 +25,7 @@ test_that("no new infections if lambda is 0", {
   
     expect_true(all(y$I ==0))             #incubating remain at 0
     expect_true(all(y$S ==0))             #no symptomatic infections
-    expect_true(all(cum_incid == 0))
+    expect_true(all(y$cum_incid == 0))
 })
 
 
@@ -70,5 +68,6 @@ test_that("number of individuals always >= 0", {
   
 })
 
-test_that("")
+### lets test if this runs lol
+  devtools::test_active_file()
   
