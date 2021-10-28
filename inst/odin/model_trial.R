@@ -40,21 +40,8 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 entrants[, 1] <- enr  #* q[i]
 
-# calculate mixing matrix, probability of infection and force of infection 
-#C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
-#prop_C[] <- sum(C[i, ]) / sum(N[i, ])                      #proportion contagious by activity group (but summed over their vaccination strata)
-#Np[]    <- sum(N[i, ]) * p[i]                              #Np is the number in each activity group summed across vaccination stratum multiplied by
-                                                            #the number of partnerships formed within each activity group
-                                                            #i.e annual number of partnerships formed each year involving MSM group i 
 
-                                                        
-                                                            
-
-#foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])                                            #foi_LH = combined FOI for both groups ????
-                                                                                      #prop. contagious * proportion of partnerships in group i compared to all partnerships??
-#lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))      #removed lambda so we can have it as an input
-
-n_UI[, ]     <- lambda * (1 - vea[j]) * U[i, j]          #changed lambda[i] to constant 
+n_UI[, ]     <- lambda * (1 - vea[j]) * U[i, j]  #changed lambda[i] to constant 
 n_AT[, ]     <- eta[i] * A[i, j]
 n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
@@ -91,10 +78,6 @@ deriv(cum_vbe[, ]) <- n_vbe[i, j, j]
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
-
-# output time-varying params for checking
-#output(beta) <- beta
-output(eta) <- eta
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vbector
