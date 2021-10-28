@@ -6,17 +6,14 @@
 ## 2: Bexsero
 ## 3: Waned
 
-n_group <- 1               #changed n_group to 1 as only using high activity group 
+n_group <- 2                
 n_vax   <- user(1)
 
 ## calibrate time-varying parameters
 # tt runs from t0 = 2009, to t10 = 2019
 tt[] <- user()
 dim(tt) <- user()
-#beta  <- interpolate(tt, beta_t,  "linear")
-eta_l <- interpolate(tt, eta_l_t, "linear")
-eta_h <- interpolate(tt, eta_h_t, "linear")
-eta[1] <- eta_l                                        #was going to haze out low activity lines but we're just going to not put anyone into the low group?? I think?
+eta[1] <- eta_l                                     
 eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
@@ -164,24 +161,17 @@ vod[, , ] <- user()
 vea[] <- user() # efficacy against acquisition
 ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
-#vei[] <- user() # efficacy against infectiousness
 
 w[, ]    <- user()
 vax_t[]  <- user()
 vax_y[]  <- user()
 
 ## par dimensions
-#dim(beta_t)  <- length(tt)
-dim(eta_l_t) <- length(tt)
-dim(eta_h_t) <- length(tt)
-
-#dim(p)    <- n_group              #don't need p as this is the number of partnerships formed within each activity 
-#dim(q)    <- n_group              #don't need q as this is the proportion of enrolled individuals that will be in each activity group 
 dim(eta)  <- n_group
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
 dim(ves)  <- n_vax
-#dim(vei)  <- n_vax
+
 dim(vbe)   <- c(n_group, n_vax, n_vax)
 dim(vod)   <- c(n_group, n_vax, n_vax)
 dim(vos)   <- c(n_group, n_vax, n_vax)
