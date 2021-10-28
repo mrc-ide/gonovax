@@ -1,3 +1,4 @@
+#can't see to commit this 
 # i = Activity group
 ## 1: Low
 ## 2: High
@@ -130,21 +131,18 @@ dim(cum_vaccinated) <- c(n_group, n_vax)
 dim(cum_vbe)        <- c(n_group, n_vax)
 
 ## Parameters
-#p[]     <- user()
-#q[]     <- user()
+eta_l     <- user()
+eta_h     <- user() 
 
 enr       <- user()
 exr       <- user()
-#beta_t[]  <- user()
-eta_l_t[] <- user()
-eta_h_t[] <- user()
-#epsilon   <- user()
+
 sigma     <- user()
 psi       <- user()
 nu        <- user()
 mu        <- user()
 rho       <- user()
-lambda    <- user()              #added lambda as an input
+lambda    <- user()         
 
 ## vaccination parameters
 # vaccination routes
