@@ -111,13 +111,8 @@ dim(A0) <- c(n_group, n_vax)
 dim(S0) <- c(n_group, n_vax)
 dim(T0) <- c(n_group, n_vax)
 
-#dim(C)  <- c(n_group, n_vax)           #no longer need C so no longer need dimensions
 dim(N)  <- c(n_group, n_vax)
 dim(entrants) <- c(n_group, n_vax)
-#dim(Np)     <- n_group
-#dim(prop_C) <- n_group
-#dim(foi_LH) <- n_group
-#dim(lambda) <- n_group
 
 dim(n_UI)     <- c(n_group, n_vax)
 dim(n_AT)     <- c(n_group, n_vax)
