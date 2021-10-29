@@ -1,4 +1,3 @@
-#can't see to commit this 
 # i = Activity group
 ## 1: Low
 ## 2: High
