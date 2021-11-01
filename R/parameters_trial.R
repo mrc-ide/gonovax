@@ -20,7 +20,6 @@ gono_params_trial <- function(n = NULL) {
   }
 
 
-
 #edit transform function also
 
 transform0_trial <- function(pars) {          #pars = each individual row of all columns of the csv
@@ -36,12 +35,38 @@ transform0_trial <- function(pars) {          #pars = each individual row of all
   })
   
   
-  pars$tt <- c(0, 1e3)                 #adds list element of time 
- # pars$beta <-  rep(pars$beta, 2)      #adds a second dimension 
- # pars$eta_l <- rep(pars$eta_l, 2)
- # pars$eta_h <- rep(pars$eta_h, 2)
- #1 pars$beta <- pars$eta_h <- NULL           #not too sure what this bit does     why go to the effort of checking just to make it null? 
-                                            #come back to it!
-  
+  pars$tt <- c(0, 1e3)        #delete? 
+
   pars
+}
+
+### next step set up demographics correctly 
+
+demographic_params_trial <- function() {
+  list(N0 = 6e5,
+       #enr = 12000,         #annual enrollment - no enrollment during the trial 
+       #exr = 1 / 50         #exr?        - no one leaves the trial 
+  )
+}
+
+
+##^^ test this
+
+
+initial_params <- function(pars, n_vax = 1, coverage = 1) {
+  
+  stopifnot(length(coverage) == n_vax)
+  stopifnot(sum(coverage) == 1)
+  
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+  # separate into 1:low and 2:high activity groups and by coverage
+  N0 <- pars$N0 * outer(pars$q, coverage)
+  
+  # set initial asymptomatic prevalence in each group (unvaccinated only)
+  A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
+  
+  # set initial uninfecteds
+  U0 <- round(N0) - A0
+  
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
