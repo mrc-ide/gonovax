@@ -29,9 +29,9 @@ deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
  # n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ])
   n_AU[i, j] + sum(wA[i, j, ])
   
-deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j] 
+deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j]  + sum(wS[i, j, ])
 # -  exr * S[i, j]
-  + sum(wS[i, j, ])
+
   
 #deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
@@ -134,7 +134,7 @@ dim(cum_screened)   <- c(n_group, n_vax)
 #dim(cum_vbe)        <- c(n_group, n_vax)
 
 ## Parameters
-move[]      <- user()
+#move[]      <- user() taking out temporarily 
 
 eta_l     <- user()
 eta_h     <- user() 
@@ -165,7 +165,7 @@ vax_t[]  <- user()
 vax_y[]  <- user()
 
 ## par dimensions
-dim(move) <- n_group
+#dim(move) <- n_group   taking out temporarily 
 
 dim(eta)  <- n_group
 dim(vea)  <- n_vax
