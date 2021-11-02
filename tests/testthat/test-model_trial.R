@@ -127,7 +127,7 @@ test_that("no-one is treated when mu and eta = 0", {
 })
 
 
-test_that("Bex model runs with no vaccination", {
+test_that("Bex model runs with no vaccination", {                                              #come back to this later 
   tt <- seq.int(0, 5) / 365
   params0 <- model_params(gono_params = gono_params(1)[[1]])
   mod0 <- model(user = params0, unused_user_action = "ignore")
@@ -152,115 +152,8 @@ test_that("Bex model runs with no vaccination", {
   
 })
 
-test_that("Bex model runs with vbe", {
-  tt <- seq.int(0, 2) / 365
-  # with perfect efficacy
-  params <- model_params(gono_params = gono_params(1)[[1]],
-                         vax_params = vax_params_xvwv(vbe = 1, vea = 1))
-  mod <- model(user = params, unused_user_action = "ignore")
-  y <- mod$run(t = tt)
-  y <- mod$transform_variables(y)
-  expect_equal(y$U,
-               array(c(505266, 505270.782413465, 505276.010170825,
-                       89303, 89292.2121354773, 89281.4753785608,
-                       0, 27.9444015916977, 55.8871954695537,
-                       0, 4.93136498677018, 9.862446259333,
-                       0, 3.82796084566103e-05, 0.000153112453356132,
-                       0, 6.75495729408945e-06, 2.70176968895868e-05),
-                     dim = c(3, 2, 3)))
-  # check some people are being vaccinated
-  expect_true(all(y$U[-1, , 2] > 0))
-  # check no compartments are leaking
-  expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
-  # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , 1] == 0))
-  expect_false(all(y$A[, , 1] == 0))
-  expect_false(all(y$S[, , 1] == 0))
-  expect_false(all(y$T[, , 1] == 0))
-  # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , 2] == 0))
-  expect_true(all(y$A[, , 2] == 0))
-  expect_true(all(y$S[, , 2] == 0))
-  expect_true(all(y$T[, , 2] == 0))
-})
 
-test_that("Check vaccination on screening in Bex model", {
-  tt <- seq.int(0, 2) / 365
-  # with perfect efficacy
-  params <-
-    model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
-                                              strategy = "VoS", vea = 1))
-  mod <- model(user = params, unused_user_action = "ignore")
-  y <- mod$run(t = tt)
-  y <- mod$transform_variables(y)
-  expect_equal(y$U,
-               array(c(505266, 504689.65898183, 504114.492415873,
-                       89303, 89189.5072358554, 89076.2208839755,
-                       0, 609.068445893679, 1217.40743007721,
-                       0, 107.642503971552, 215.142050698242,
-                       0, 0.000834155028318817, 0.0033338806826574,
-                       0, 0.000147420094481985, 0.000589147144744636),
-                     dim = c(3L, 2L, 3L)))
-  # check some people are being vaccinated
-  expect_true(all(y$U[-1, , 2] > 0))
-  expect_true(all(y$cum_vaccinated[-1, , 1] > 0))
-  expect_true(all(y$cum_vaccinated[, , 2] == 0))
-  # check all those treated were vaccinated
-  expect_true(all(y$cum_vaccinated[, , 1] == y$cum_screened[, , 1]))
-  # check no compartments are leaking
-  expect_true(all(apply(y$N, 1, sum) - 6e5 < 1e-6))
-  # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , 1] == 0))
-  expect_false(all(y$A[, , 1] == 0))
-  expect_false(all(y$S[, , 1] == 0))
-  expect_false(all(y$T[, , 1] == 0))
-  # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , 2] == 0))
-  expect_true(all(y$A[, , 2] == 0))
-  expect_true(all(y$S[, , 2] == 0))
-  expect_true(all(y$T[, , 2] == 0))
-})
-
-test_that("Check vaccination on diagnosis in Bex model", {
-  tt <- seq.int(0, 2) / 365
-  # with perfect efficacy
-  params <-
-    model_params(gono_params = gono_params(1)[[1]],
-                 vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
-                                              strategy = "VoD", vea = 1))
-  mod <- model(user = params, unused_user_action = "ignore")
-  y <- mod$run(t = tt)
-  y <- mod$transform_variables(y)
-  expect_equal(y$U,
-               array(c(505266, 505298.314652489, 505330.328904702,
-                       89303, 89297.0812095395, 89291.0874630527,
-                       0, 0.412133420953426, 1.56834473390679,
-                       0, 0.06199394863926, 0.249176144196752,
-                       0, 3.81264799241714e-07, 2.93702682328813e-06,
-                       0, 5.68712159308333e-08, 4.53390060409456e-07),
-                     dim = c(3L, 2L, 3L)))
-  # check some people are being vaccinated
-  expect_true(all(y$U[-1, , 2] > 0))
-  expect_true(all(y$cum_vaccinated[-1, , 1] > 0))
-  expect_true(all(y$cum_vaccinated[, , 2] == 0))
-  # check all those treated were vaccinated
-  expect_true(all(y$cum_vaccinated == y$cum_treated))
-  # check no compartments are leaking
-  expect_true(all(apply(y$N, 1, sum) - 6e5 < 1e-6))
-  # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , 1] == 0))
-  expect_false(all(y$A[, , 1] == 0))
-  expect_false(all(y$S[, , 1] == 0))
-  expect_false(all(y$T[, , 1] == 0))
-  # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , 2] == 0))
-  expect_true(all(y$A[, , 2] == 0))
-  expect_true(all(y$S[, , 2] == 0))
-  expect_true(all(y$T[, , 2] == 0))
-})
-
-test_that("can initialise after time 0", {
+test_that("can initialise after time 0", {                                                    #come back to this 
   
   ## check with single parameter set
   params <- model_params(gono_params = gono_params(1)[[1]])
@@ -295,7 +188,9 @@ test_that("can initialise after time 0", {
   
 })
 
-test_that("t_stop is working correctly", {
+
+
+test_that("t_stop is working correctly", {                                                    #come back to this later 
   ## check with single parameter set
   vp <- vax_params_xvwv(vbe = 0, uptake = 1, strategy = "VoD", vea = 1,
                         t_stop = 2 / 365)
@@ -311,7 +206,9 @@ test_that("t_stop is working correctly", {
   
 })
 
-test_that("aggregated time series output correctly", {
+
+
+test_that("aggregated time series output correctly", {                                        #come back to this later - do we need it ? 
   ## check with single parameter set
   params <- model_params(gono_params = gono_params(1)[[1]])
   mod <- model(user = params, unused_user_action = "ignore")
@@ -321,41 +218,6 @@ test_that("aggregated time series output correctly", {
   expect_equal(y$tot_treated, apply(y$cum_treated, 1, sum))
   expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
   
-})
-
-test_that("time-varying eta works as expected", {
-  gono_pars <- gono_params(1)[[1]]
-  params <- model_params(gono_params = gono_pars)
-  params$tt <- c(0, 1, 2)
-  gono_pars$eta <- 1
-  params$eta_l_t <- params$eta_h_t <- gono_pars$eta * c(1, 2, 2)
-  params$beta_t <- rep(gono_pars$beta[1], 3)
-  mod <- model(user = params, unused_user_action = "ignore")
-  tt <- seq(0, 2, by = 1 / 12)
-  y <- mod$run(tt)
-  y <- mod$transform_variables(y)
-  plot(tt[-1] + 2009, diff(rowSums(y$cum_screened)))
-  
-  expect_equal(y$eta[, 1], approx(params$tt, params$eta_l_t, tt)$y)
-  expect_equal(y$eta[, 2], approx(params$tt, params$eta_h_t, tt)$y)
-  
-  # check can vary wrt group
-  params$eta_l_t[] <- gono_pars$eta
-  mod <- model(user = params, unused_user_action = "ignore")
-  y <- mod$run(tt)
-  y <- mod$transform_variables(y)
-  matplot(apply(y$cum_screened, 2, diff), type = "l")
-  
-  expect_equal(y$eta[, 1], approx(params$tt, params$eta_l_t, tt)$y)
-  expect_equal(y$eta[, 2], approx(params$tt, params$eta_h_t, tt)$y)
-  
-  # check can switch off screening in a group
-  params$eta_l_t[] <- 0
-  mod <- model(user = params, unused_user_action = "ignore")
-  y1 <- mod$run(tt)
-  y1 <- mod$transform_variables(y1)
-  expect_equal(sum(y1$cum_screened[, 1, ]), 0)
-  expect_true(all(y1$cum_screened[-1, 2, ] > 0))
 })
 
 
