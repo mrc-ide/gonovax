@@ -96,19 +96,20 @@ test_that("there are no asymptomatic infections when psi = 1", {
   expect_true(all(unlist(y) >= 0))
 })
 
-test_that("there are no infections when A0 = 0", {
+test_that("all individuals are uninfected at t = 0", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   params$lambda <- 1.5
-  params$A0[, ] <- 0
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   
-  expect_true(all(y$I == 0))
-  expect_true(all(y$A == 0))
-  expect_true(all(y$S == 0))
-  expect_true(all(unlist(y) >= 0))
+  expect_true(all(y$I[, , ][1,] == 0))
+  expect_true(all(y$A[, , ][1,] == 0))
+  expect_true(all(y$S[, , ][1,] == 0))
+  expect_true(all(y$T[, , ][1,] == 0))
+  expect_true(all(y$U[, , ][1,2] > 0))
+
 })
 
 test_that("no-one is treated when mu and eta = 0", {
