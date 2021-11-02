@@ -18,19 +18,23 @@ eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, ]) <-  - n_UI[i, j] - exr * U[i, j] +
+deriv(U[, ]) <-  - n_UI[i, j] + #- exr * U[i, j] +
   n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) #-
 #sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ]) #+ entrants[i, j]
 
-deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ])
+#deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ])
+deriv(I[, ]) <- n_UI[i, j] - (sigma) * I[i, j] + sum(wI[i, j, ])
 
 deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
-  n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ])
-
-deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j] -
-  exr * S[i, j] + sum(wS[i, j, ])
-
-deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
+ # n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ])
+  n_AU[i, j] + sum(wA[i, j, ])
+  
+deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j] 
+# -  exr * S[i, j]
+  + sum(wS[i, j, ])
+  
+#deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
+deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
   sum(wT[i, j, ])
 
 ## Update population size
@@ -130,13 +134,13 @@ dim(cum_screened)   <- c(n_group, n_vax)
 #dim(cum_vbe)        <- c(n_group, n_vax)
 
 ## Parameters
-move      <- user()
+move[]      <- user()
 
 eta_l     <- user()
 eta_h     <- user() 
 
-enr       <- user()
-exr       <- user()
+#enr       <- user()
+#exr       <- user()
 
 sigma     <- user()
 psi       <- user()
