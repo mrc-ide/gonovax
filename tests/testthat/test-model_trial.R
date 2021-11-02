@@ -1,10 +1,8 @@
-#Call in model_trial
-
-######### testing ########
+######### testing #######
 context("trial model check")
 
 test_that("no new infections if lambda is 0", {
-  params <- gonovax::model_params(gono_params = gonovax::gono_params(1)[[1]])                #gono_params() and model_params() generate params for testing
+  params <- gonovax::model_params(gono_params = gonovax::gono_params_trial(1)[[1]])                #gono_params() and model_params() generate params for testing
   params$lambda <- 0                                                             #set lambda to 0
   mod <- model_trial$new(user = params, unused_user_action = "ignore")     
   tt <- seq.int(0, 5) / 365                                             
@@ -18,7 +16,7 @@ test_that("no new infections if lambda is 0", {
 })
 
 test_that("number of individuals always >= 0", {
-  params <- model_params(gono_params = gono_params(1)[[1]]) 
+  params <- model_params(gono_params = gono_params_trial(1)[[1]]) 
   
   params$lambda <- 2
   mod <- model_trial$new(user = params, unused_user_action = "ignore")     
@@ -48,4 +46,17 @@ test_that("number of individuals always >= 0", {
 
 ### lets test if this runs lol
 devtools::test_active_file()
-  
+
+
+
+
+######### testing running model with some things changed 
+
+
+params <- gonovax::model_params_trial(gono_params_trial = gonovax::gono_params_trial(1)[[1]])                #gono_params() and model_params() generate params for testing
+params$lambda <- 0                                                             #set lambda to 0
+mod <- model_trial$new(user = params, unused_user_action = "ignore")     
+tt <- seq.int(0, 5) / 365                                             
+y <- mod$run(t = tt)                                                 
+y <- mod$transform_variables(y)                                                #turns into list
+
