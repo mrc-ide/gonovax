@@ -1,6 +1,6 @@
 
 
-## gonoparams , the oG to tweak:
+## gonoparams , the oG to tweak :
 gono_params_trial <- function(n = NULL) {
   if (is.null(cache$gono_params_trial)) {
     gp <- read_csv(gonovax_file("extdata/gono_params_updated.csv"))
