@@ -43,36 +43,47 @@ transform0_trial <- function(pars) {          #pars = each individual row of all
 ### next step set up demographics correctly 
 
 demographic_params_trial <- function() {
-  list(N0 = 6e5
-       #,
-       #enr = 12000,         #annual enrollment - no enrollment during the trial 
-       #exr = 1 / 50         #exr?        - no one leaves the trial 
+  list(N0 = 6e5,
+       move = c(0, 1),
+       enr = 12000,         #annual enrollment - no enrollment during the trial 
+       exr = 1 / 50         #exr?        - no one leaves the trial 
   )
 }
 
 
-##^^ test this
 
-
-initial_params <- function(pars, n_vax = 1, coverage = 1) {
+initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
   
   stopifnot(length(coverage) == n_vax)
   stopifnot(sum(coverage) == 1)
-  
-  #move all to high
-  move <- c(0,1)           #usually written as 1 and defined as q = c(0.85, 0.15) in demographic parameters 
   
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
   # separate into 1:low and 2:high activity groups and by coverage
   N0 <- pars$N0 * outer(pars$move, coverage)
   
-  print(N0)
-  
-  # set initial asymptomatic prevalence in each group (unvaccinated only)  #seeding infections 
-  A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
+#   set initial asymptomatic prevalence in each group (unvaccinated only)  #seeding infections 
+ A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
   
   # set initial uninfecteds
   U0 <- round(N0) - A0
   
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+}
+
+
+
+####           #changin for init_params_trial or demographic_params_trial won't work! 
+
+model_params_trial <- function(gono_params_trial = NULL,
+                        demographic_params_trial = NULL,
+                        initial_params_trial = NULL,
+                        vax_params = NULL) {
+  gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
+  demographic_params_trial <- demographic_params_trial  %||% demographic_params_trial()
+  ret <- c(demographic_params_trial, gono_params_trial)
+  vax_params <- vax_params %||% vax_params0()
+  
+  cov <- c(1, rep(0, vax_params$n_vax - 1))
+  initial_params_trial <- initial_params_trial%||% initial_params_trial(ret, vax_params$n_vax, cov)
+  c(ret, initial_params_trial, vax_params)
 }
