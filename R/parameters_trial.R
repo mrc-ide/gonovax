@@ -44,9 +44,7 @@ transform0_trial <- function(pars) {          #pars = each individual row of all
 
 demographic_params_trial <- function() {
   list(N0 = 6e5,
-       move = c(0, 1),
-       enr = 12000,         #annual enrollment - no enrollment during the trial 
-       exr = 1 / 50         #exr?        - no one leaves the trial 
+       move = c(0, 1)
   )
 }
 
