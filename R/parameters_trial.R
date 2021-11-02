@@ -60,7 +60,7 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
   N0 <- pars$N0 * outer(pars$move, coverage)
   
 #   set initial asymptomatic prevalence in each group (unvaccinated only)  #seeding infections 
- A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
+# A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))                                   #lambda is constant and we don't need to seed infections
   
   # set initial uninfecteds
   U0 <- round(N0) - A0
