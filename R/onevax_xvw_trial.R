@@ -1,7 +1,7 @@
 
 #get a set of params to play about with 
-params <- gonovax::model_params_trial(gono_params_trial = gonovax::gono_params_trial(1)[[1]])         
-params$lambda <- 0
+#params <- gonovax::model_params_trial(gono_params_trial = gonovax::gono_params_trial(1)[[1]])         
+#params$lambda <- 0
 
 #tweak function 
 initial_params_xvw_trial <- function(pars, coverage = 0) {
@@ -12,30 +12,10 @@ initial_params_xvw_trial <- function(pars, coverage = 0) {
 }
 
 #test
-initial_params_xvw_trialset <- initial_params_xvw_trial(params, coverage = 0.5)
+#initial_params_xvw_trialset <- initial_params_xvw_trial(params, coverage = 0.5)             #works! 
 
 ### initial conditions = 3 stratum, with 50% in non vaccinated, 50% in vaccinated 
 
-
-##' @name vax_params_xvw
-##' @title Create vaccination parameters for use in onevax_xvw model
-##' @param vea scalar indicating efficacy of the vaccine against acquisition
-##' (between 0-1)
-##' @param vei scalar indicating efficacy of the vaccine against infectiousness
-##' (between 0-1)
-##' @param ved scalar indicating efficacy of the vaccine against duration
-##' (between 0-1)
-##' @param ves scalar indicating efficacy of the vaccine against symptoms
-##' (between 0-1)
-##' @param dur scalar indicating duration of the vaccine (in years)
-##' @param vbe scalar indicating pc of population vaccinated before entry
-##'  (between 0-1)
-##' @param uptake scalar indicating pc of population vaccinated as part
-##'  of strategy
-##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
-##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
-##' @param t_stop time at which vaccination should stop (years)
-##' @return A list parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                            dur = 1e3,
@@ -43,7 +23,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                            #strategy = "VbE", vbe = 0,
                            t_stop = 99) {
   
-  assert_character(strategy)
+ # assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -55,10 +35,10 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
   # 1:x -> 2:v <-> 3:w
-#  i_eligible <- 1
-# i_v <- 2
-#  i_w <- n_vax <- 3
-  
+  # i_eligible <- 1
+   i_v <- 2
+   i_w <- n_vax <- 3
+   
   # compartments to which vaccine efficacy applies
   ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
@@ -105,7 +85,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @inheritParams vax_params_xvw
 ##' @export
 
-run_onevax_xvw_trial <- function(tt, gono_params_trial, init_params_trial = NULL, dur = 1e3,
+run_onevax_xvw_trial <- function(tt, gono_params_trial, initial_params_trial = NULL, dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0, 
                            #vbe = coverage,
                            #uptake = 0, strategy = "VbE",
@@ -116,19 +96,20 @@ run_onevax_xvw_trial <- function(tt, gono_params_trial, init_params_trial = NULL
                   c(1, length(gono_params_trial))))
   assert_scalar_unit_interval(coverage)
   
-  vax_params <- Map(vax_params_xvw_trial, uptake = uptake, dur = dur,
+  vax_params <- Map(vax_params_xvw_trial, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
+                    #uptake = uptake,
                     #MoreArgs = list(strategy = strategy, t_stop = t_stop,
                      #               vbe = vbe))
                     MoreArgs = list(t_stop = t_stop))
                                     
   
-  if (is.null(init_params_trial)) {
+  if (is.null(initial_params_trial)) {
     pars <- lapply(gono_params_trial, model_params_trial)
-    init_params_trial <- Map(initial_params_xvw_trial, pars = pars, coverage = coverage)
+    initial_params_trial <- Map(initial_params_xvw_trial, pars = pars, coverage = coverage)
   }
   
-  ret <- Map(run, gono_params_trial = gono_params_trial, init_params = init_params_trial,
+  ret <- Map(run, gono_params_trial = gono_params_trial, initial_params_trial = init_params_trial,
              vax_params_trial = vax_params_trial,
              MoreArgs = list(tt = tt))
   
