@@ -87,25 +87,4 @@ model_params_trial <- function(gono_params_trial = NULL,
 }
 
 
-################ vax
-#edit this 
-
-create_vax_map <- function(n_vax, v, i_u, i_v) {
-  
-  # ensure vaccine input is of correct length
-  n_group <- 2
-  stopifnot(length(v) %in% c(1, n_group))
-  stopifnot(all((v >= 0) & (v <= 1)))
-  stopifnot(length(i_v) == length(i_u))
-  stopifnot(max(i_u, i_v) <= n_vax)
-  
-  # set up vaccination matrix
-  vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
-  
-  for (i in seq_along(i_u)) {
-    vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v
-  }
-  
-  vax_map
-}
+#############
