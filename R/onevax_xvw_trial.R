@@ -1,9 +1,5 @@
+#initial_params_xvw
 
-#get a set of params to play about with 
-#params <- gonovax::model_params_trial(gono_params_trial = gonovax::gono_params_trial(1)[[1]])         
-#params$lambda <- 0
-
-#tweak function 
 initial_params_xvw_trial <- function(pars, coverage = 0) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 3
