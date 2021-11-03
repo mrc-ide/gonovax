@@ -79,9 +79,33 @@ model_params_trial <- function(gono_params_trial = NULL,
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <- demographic_params_trial  %||% demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
-  vax_params <- vax_params %||% vax_params0()
+  vax_params <- vax_params %||% vax_params0()                                               #vax_params0() is the conditions for no vaccination
   
   cov <- c(1, rep(0, vax_params$n_vax - 1))
   initial_params_trial <- initial_params_trial%||% initial_params_trial(ret, vax_params$n_vax, cov)
   c(ret, initial_params_trial, vax_params)
+}
+
+
+################ vax
+#edit this 
+
+create_vax_map <- function(n_vax, v, i_u, i_v) {
+  
+  # ensure vaccine input is of correct length
+  n_group <- 2
+  stopifnot(length(v) %in% c(1, n_group))
+  stopifnot(all((v >= 0) & (v <= 1)))
+  stopifnot(length(i_v) == length(i_u))
+  stopifnot(max(i_u, i_v) <= n_vax)
+  
+  # set up vaccination matrix
+  vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
+  
+  for (i in seq_along(i_u)) {
+    vax_map[, i_u[i], i_u[i]] <-  v
+    vax_map[, i_v[i], i_u[i]] <- -v
+  }
+  
+  vax_map
 }
