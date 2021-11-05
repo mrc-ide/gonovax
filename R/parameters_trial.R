@@ -49,7 +49,6 @@ demographic_params_trial <- function() {
 }
 
 
-
 initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
   
   stopifnot(length(coverage) == n_vax)
@@ -75,15 +74,21 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
                         initial_params_trial = NULL,
-                        vax_params = NULL) {
+                        vax_params = NULL, coverage = 0) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <- demographic_params_trial  %||% demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
   vax_params <- vax_params %||% vax_params0()                                               #vax_params0() is the conditions for no vaccination
   
-  cov <- c(1, rep(0, vax_params$n_vax - 1))
-  initial_params_trial <- initial_params_trial%||% initial_params_trial(ret, vax_params$n_vax, cov)
-  c(ret, initial_params_trial, vax_params)
+  if (coverage == 0){
+    cov <- c(1, rep(0, vax_params$n_vax - 1))         #vector that will dictate into which stratum individuals will go re the vaccine coverage 
+    initial_params <- initial_params_trial%||% initial_params_trial(ret, vax_params$n_vax, cov)
+
+  } else {
+    initial_params <- initial_params_xvw_trial(pars = ret, coverage = coverage)
+  }
+  
+  c(ret, initial_params, vax_params)
 }
 
 

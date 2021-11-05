@@ -1,10 +1,10 @@
 #initial_params_xvw
 
-initial_params_xvw_trial <- function(ret = ret, coverage = 0) {
+initial_params_xvw_trial <- function(pars, coverage = 0) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 3
   cov <- c(1 - coverage, coverage, 0)
-  initial_params_trial(ret, n_vax, cov)
+  initial_params_trial(pars, n_vax, cov)
 }
 
 #test
@@ -47,9 +47,9 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei   = vei * ve,
        ved   = ved * ve,
        ves   = ves * ve,
-       w     = create_waning_map(n_vax, i_v, i_w, 1 / dur)
-   #    vax_t = c(0, t_stop),
-  #     vax_y = c(1, 0)
+       w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
+       vax_t = c(0, t_stop),
+       vax_y = c(1, 0)
   )
 }
 
