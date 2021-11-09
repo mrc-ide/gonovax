@@ -4,7 +4,8 @@ initial_params_xvw_trial <- function(pars, coverage = 0) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 3
   cov <- c(1 - coverage, coverage, 0)
-  initial_params_trial(pars, n_vax, cov)
+
+ initial_params_trial(pars, n_vax, cov)
 }
 
 #test
@@ -79,31 +80,30 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @inheritParams vax_params_xvw
 ##' @export
 
-run_onevax_xvw_trial <- function(tt, gono_params_trial, initial_params_trial = NULL, dur = 1e3,    #duration here is where we can establish waning (1/dur??)
+run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL, dur = 1e3,    #duration here is where we can establish waning (1/dur??)
                            vea = 0, vei = 0, ved = 0, ves = 0, 
-                           coverage = 0, lambda = 0,
+                           coverage = 0, 
                            t_stop = 99) {
-  
+ 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
-                  c(1, length(gono_params_trial))))
+                  c(1, length(gono_params))))
   assert_scalar_unit_interval(coverage)
   
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     MoreArgs = list(t_stop = t_stop))
-  
+
   if (is.null(initial_params_trial)) {                         #if initial_params not provided it will generate them   
-    pars <- lapply(gono_params_trial, model_params_trial)
-    pars$lambda <- lambda 
-    initial_params_trial <- Map(initial_params_xvw_trial, pars = pars, coverage = coverage)
+    pars <- lapply(gono_params, model_params_trial)
+    init_params_trial <- Map(initial_params_xvw_trial, pars = pars, coverage = coverage)
   }
-  
-  ret <- Map(run_trial, gono_params = gono_params_trial, init_params = initial_params_trial,    # why is demographic params not included in this ?
+ 
+  ret <- Map(run_trial, gono_params = gono_params, init_params = init_params_trial,    # why is demographic params not included in this ?
              vax_params = vax_params,                                                     #assumed to form within model_params inside the if statement? 
              MoreArgs = list(tt = tt))                                                          #this is the bit that runs it! wait isn't this what we did before?
-  
-  # name outputs
-  ret <- lapply(ret, name_outputs, c("X", "V", "W"))
+ 
+
+
   
   ret
 } 
