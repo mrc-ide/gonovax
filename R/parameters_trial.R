@@ -1,12 +1,11 @@
 
-
-## gonoparams , the oG to tweak :
+## imports the gonorrhoea fitted NHPs and transforms into list format
 gono_params_trial <- function(n = NULL) {
   if (is.null(cache$gono_params_trial)) {
     gp <- read_csv(gonovax_file("extdata/gono_params_updated.csv"))
-    gp$lambda <- 1.5                                                    #come back to this later!!! your lambda will be different 
+    gp$lambda <- 1.5   #come back to this later!! Your lambda will be different 
     cache$gono_params_trial <-
-      lapply(seq_len(nrow(gp)), function(i) transform0_trial(gp[i, ]))    #returns a 1000 element-length list with each element transformed 
+      lapply(seq_len(nrow(gp)), function(i) transform0_trial(gp[i, ]))   
   }
   
   pars <- cache$gono_params_trial
@@ -21,14 +20,14 @@ gono_params_trial <- function(n = NULL) {
   }
 
 
-#edit transform function also
 
-transform0_trial <- function(pars) {          #pars = each individual row of all columns of the csv
-  # reformat time-varying pars     #note, no longer time varying
+## transforms the imported parameters into workable format 
+
+transform0_trial <- function(pars) {         
+
+  pars <- as.list(pars)              #converts each row of csv into list 
   
-  pars <- as.list(pars)          #makes each row of csv a list 
-  
-  check_gono_params(pars)            #checking they're positive scalars
+  check_gono_params(pars)          
   with(pars, {
     assert_scalar_positive(beta)
     assert_scalar_positive(eta_h)
@@ -36,12 +35,14 @@ transform0_trial <- function(pars) {          #pars = each individual row of all
   })
   
   
-  pars$tt <- c(0, 1e3)        #delete? 
+  pars$tt <- c(0, 1e3)        
 
   pars
+  
 }
 
-### next step set up demographics correctly 
+
+## sets up total trial size and the proportion of this moving to high activity
 
 demographic_params_trial <- function() {
   list(N0 = 6e5,
@@ -50,28 +51,28 @@ demographic_params_trial <- function() {
 }
 
 
+
+## sets up the starting conditions for state variables of each activity group
+
 initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
   
   stopifnot(length(coverage) == n_vax)
   stopifnot(sum(coverage) == 1)
   
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
-  # separate into 1:low and 2:high activity groups and by coverage
   
+  # separate into 1:low and 2:high activity groups and by coverage
   N0 <- pars$N0 * outer(pars$move, coverage)
   
-#   set initial asymptomatic prevalence in each group (unvaccinated only)  #seeding infections 
-# A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))                                   #lambda is constant and we don't need to seed infections
-  
-  # set initial uninfecteds
-  U0 <- round(N0) - A0
+  # put the vaccinated and placebo individuals all to uninfected 
+  U0 <- round(N0)
   
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 }
 
 
 
-####           #changin for init_params_trial or demographic_params_trial won't work! 
+### generates vector of all starting conditions
 
 model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
@@ -80,10 +81,10 @@ model_params_trial <- function(gono_params_trial = NULL,
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <- demographic_params_trial  %||% demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
-  vax_params <- vax_params %||% vax_params0()                                               #vax_params0() is the conditions for no vaccination
+  vax_params <- vax_params %||% vax_params0()                                          
   
   if (coverage == 0){
-    cov <- c(1, rep(0, vax_params$n_vax - 1))         #vector that will dictate into which stratum individuals will go re the vaccine coverage 
+    cov <- c(1, rep(0, vax_params$n_vax - 1))        
     initial_params <- initial_params_trial%||% initial_params_trial(ret, vax_params$n_vax, cov)
 
   } else {
@@ -92,6 +93,3 @@ model_params_trial <- function(gono_params_trial = NULL,
   
   c(ret, initial_params, vax_params)
 }
-
-
-#############
