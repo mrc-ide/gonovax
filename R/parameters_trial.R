@@ -85,7 +85,7 @@ model_params_trial <- function(gono_params_trial = NULL,
   if (coverage == 0) {
     cov <- c(1, rep(0, vax_params$n_vax - 1))
 a <- initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
-    initial_params_trial <- a
+    initial_params <- a
 
   } else {
     initial_params <- initial_params_xvw_trial(pars = ret, coverage = coverage)
