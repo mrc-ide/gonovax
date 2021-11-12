@@ -2,6 +2,8 @@
 context("trial model check")
 
 test_that("no new infections if lambda is 0", {
+  
+  # no vaccination
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   params$lambda <- 0
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
@@ -13,6 +15,22 @@ test_that("no new infections if lambda is 0", {
   expect_true(all(y$I == 0))             #incubating remain at 0
   expect_true(all(y$S == 0))             #no symptomatic infections
   expect_true(all(y$cum_incid == 0))
+  
+  # presence of vaccination
+  
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]], vax_params = vax_params_xvw_trial(),
+                         coverage = 0.5)
+  tt <- seq.int(0, 5) / 365
+  params$lambda <- 0
+  mod2 <- model_trial$new(user = params, unused_user_action = "ignore")
+  y <- mod2$run(t=tt)
+  
+  y <- mod2$transform_variables(y)
+
+  expect_true(all(y$I == 0))
+  expect_true(all(y$S == 0))
+  expect_true(all(y$cum_incid == 0))
+
 })
 
 test_that("number of individuals always >= 0", {
