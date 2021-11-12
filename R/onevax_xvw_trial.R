@@ -62,8 +62,8 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 
   if (is.null(initial_params_trial)) {
     pars <- lapply(gono_params, model_params_trial)
-    ipt <- Map(initial_params_xvw_trial, pars = pars, coverage = coverage)
-    init_params_trial <- ipt
+    init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
+                             coverage = coverage)
   }
 
   ret <- Map(run_trial, gono_params = gono_params,
