@@ -20,6 +20,9 @@ model_params_trial(
 \item{initial_params_trial}{A list of starting conditions}
 
 \item{vax_params}{A vector of vaccination params}
+
+\item{coverage}{A scalar indicating the percentage of the trial cohort that
+is vaccinated}
 }
 \value{
 A list of inputs to the model many of which are fixed and
