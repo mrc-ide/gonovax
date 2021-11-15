@@ -90,7 +90,7 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 ##' @param gono_params_trial A dataframe of natural history parameters
 ##' @param demographic_params_trial A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
-##' @param init_params_trial A list of starting conditions
+##' @param initial_params_trial A list of starting conditions
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
