@@ -91,7 +91,7 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 ##' @param demographic_params_trial A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param coverage A scalar indicating the percentage of the trial cohort that
-##'  is vaccinated 
+##'  is vaccinated
 ##' @param initial_params_trial A list of starting conditions
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
