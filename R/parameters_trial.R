@@ -1,5 +1,10 @@
+##' @name gono_params_trial
+##' @title Posterior parameters of gonorrhoea natural history
+##' @param n an integer vector (or value) containing the indices of the required
+##' parameter sets (1:982). If `n = NULL` the full parameter set is returned
+##' @return A list of parameters
+##' @export
 
-## imports the gonorrhoea fitted NHPs and transforms into list format
 gono_params_trial <- function(n = NULL) {
   if (is.null(cache$gono_params_trial)) {
     gp <- read_csv(gonovax_file("extdata/gono_params_updated.csv"))
@@ -50,7 +55,16 @@ demographic_params_trial <- function() {
 
 
 
-## sets up the starting conditions for state variables of each activity group
+##' Create initial conditions for the model trial
+##' @name initial_params_trial
+##' @title Initial conditions for the model trial where the entire cohort is
+##' in the high sexual activity group.
+##' @param pars A parameter list containing `N0`, and `move` elements.
+##' @param n_vax an integer indicating the number of vaccine compartments
+##' @param coverage a vector of length `n_vax` that sums to 1 denoting the
+##' initial proportion in each vaccine stratum
+##' @return A list of initial model states
+##' @export
 
 initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 
@@ -69,8 +83,19 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 }
 
 
-
 ### generates vector of all starting conditions
+
+##' @name model_params_trial
+##' @title Parameters for the vaccination trial model
+##' @param gono_params_trial A dataframe of natural history parameters
+##' @param demographic_params_trial A dataframe of demographic parameters
+##' @param vax_params A vector of vaccination params
+##' @param init_params_trial A list of starting conditions
+##' @return A list of inputs to the model many of which are fixed and
+##'   represent data. These correspond largely to `user()` calls
+##'   within the odin code, though some are also used in processing
+##'   just before the model is run.
+##' @export
 
 model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,

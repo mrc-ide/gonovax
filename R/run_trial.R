@@ -1,5 +1,13 @@
+##' @name run_trial
+##' @title Run odin model of gonorrhoea vaccine trial with or without
+##' vaccination
+##' @param tt a numeric vector of times at which the model state is output
+##' @param gono_params a data frame of parameters
+##' @param init_params = NULL
+##' @param vax_params = NULL
+##' @param transform = TRUE
+##' @export run
 
-## runs model_trial.R
 
 run_trial <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
                 transform = TRUE) {

@@ -1,5 +1,11 @@
-## sets up the starting conditions for the state variables in the presence of
-## vaccination
+
+##' Create initial conditions for the model in a vaccine trial
+##' @name initial_params_xvw_trial
+##' @title Initial conditions for the model in a vaccine trial
+##' @param pars A parameter list containing `N0`, and `move` elements.
+##' @param coverage  scalar giving coverage of vaccination in trial cohort.
+##' @return A list of initial conditions.
+##' @export
 
 initial_params_xvw_trial <- function(pars, coverage = 0) {
   assert_scalar_unit_interval(coverage)
@@ -9,9 +15,23 @@ initial_params_xvw_trial <- function(pars, coverage = 0) {
  initial_params_trial(pars, n_vax, cov)
 }
 
-
 ## sets up vaccination efficacies, who experiences the effects of vaccination,
 ## how waning occurs
+
+##' @name vax_params_xvw_trial
+##' @title Create vaccination parameters for use in onevax_xvw_trial model,
+##' assign who experiences vaccine effects, and how waning occurs.
+##' @param vea scalar indicating efficacy of the vaccine against acquisition
+##' (between 0-1)
+##' @param vei scalar indicating efficacy of the vaccine against infectiousness
+##' (between 0-1)
+##' @param ved scalar indicating efficacy of the vaccine against duration
+##' (between 0-1)
+##' @param ves scalar indicating efficacy of the vaccine against symptoms
+##' (between 0-1)
+##' @param dur scalar indicating duration of the vaccine (in years)
+##' @param t_stop time at which vaccination should stop (years)
+##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                            dur = 1e3,
@@ -45,6 +65,28 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
 ## runs the trial model when supplied NHPs
+
+##' @name run_onevax_xvw_trial
+##' @title Run model with single vaccine for input parameter sets, either from
+##' initialisation or from equilibrium, those with waned vaccines are not
+##' eligible for re-vaccination.
+##' @param gono_params list of gono params for a vaccination trial
+##' @param vea scalar or numeric vector with same length as `gono_params` giving
+##'  efficacy of the vaccine against acquisition (between 0-1)
+##' @param vei scalar or numeric vector with same length as `gono_params` giving
+##'  efficacy of the vaccine against infectiousness (between 0-1)
+##' @param ved scalar or numeric vector with same length as `gono_params` giving
+##'  efficacy of the vaccine against duration (between 0-1)
+##' @param ves scalar or numeric vector with same length as `gono_params` giving
+##'  efficacy of the vaccine against symptoms (between 0-1)
+##' @param dur  scalar or numeric vector with same length as `gono_params`
+##'  giving duration of the vaccine (in years)
+##' @param coverage scalar giving coverage of vaccination in the trial, default
+##'  0.
+##' @inheritParams run_trial
+##' @inheritParams vax_params_xvw_trial
+##' @export
+
 
 run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            dur = 1e3,
