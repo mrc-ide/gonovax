@@ -24,6 +24,9 @@ run_onevax_xvw_trial(
 
 \item{gono_params}{list of gono params for a vaccination trial}
 
+\item{initial_params_trial}{list of initial conditions for model trial. Set
+default as NULL.}
+
 \item{dur}{scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)}
 

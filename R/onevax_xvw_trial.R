@@ -71,6 +71,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' initialisation or from equilibrium, those with waned vaccines are not
 ##' eligible for re-vaccination.
 ##' @param gono_params list of gono params for a vaccination trial
+##' @param initial_params_trial list of initial conditions for model trial. Set
+##' default as NULL.
 ##' @param vea scalar or numeric vector with same length as `gono_params` giving
 ##'  efficacy of the vaccine against acquisition (between 0-1)
 ##' @param vei scalar or numeric vector with same length as `gono_params` giving
