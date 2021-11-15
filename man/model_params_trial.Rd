@@ -17,9 +17,9 @@ model_params_trial(
 
 \item{demographic_params_trial}{A dataframe of demographic parameters}
 
-\item{vax_params}{A vector of vaccination params}
+\item{initial_params_trial}{A list of starting conditions}
 
-\item{init_params_trial}{A list of starting conditions}
+\item{vax_params}{A vector of vaccination params}
 }
 \value{
 A list of inputs to the model many of which are fixed and
