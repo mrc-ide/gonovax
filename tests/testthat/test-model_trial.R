@@ -151,8 +151,7 @@ test_that("Model works with vaccination and waning", {
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                        vea = 0, vei = 0, ved = 0, ves = 0,
-                       coverage = 0.5,
-                       t_stop = 99)
+                       coverage = 0.5)
 
   #Total N in high group in X and  V is equal and non zero at t = 0
   expect_true(all(y[[1]]$N[, , 1][, 2][1] == y[[1]]$N[, , 2][, 2][1]))
@@ -173,8 +172,7 @@ test_that("VEa behaves as expected ", {
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 1, vei = 0, ved = 0, ves = 0,
-                            coverage = 0.5,
-                            t_stop = 99)
+                            coverage = 0.5)
 
   # VEa = 1, no infections in V, X >0, W >0 (after t=0)
 
@@ -187,8 +185,7 @@ test_that("VEa behaves as expected ", {
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0,
-                            coverage = 0.5,
-                            t_stop = 99)
+                            coverage = 0.5)
 
 
   x <- as.numeric(y[[1]]$cum_incid[, , 1][, 2][6])
@@ -204,8 +201,7 @@ test_that("VEs behaves as expected ", {
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 1,
-                            coverage = 0.5,
-                            t_stop = 99)
+                            coverage = 0.5)
 
 
   # VEs = 1 symptomatic diagnoses in V = 0, but for X & W > 0
@@ -224,8 +220,7 @@ test_that("VEd behaves as expected ", {
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 1, ves = 0,
-                            coverage = 0.5,
-                            t_stop = 99)
+                            coverage = 0.5)
 
   # VEd = 1 cumulative incid in V > X + W
 
@@ -242,13 +237,11 @@ test_that("VEi behaves as expected ", {
   tt <- seq.int(0, 5) / 365
   y0 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                              vea = 0, vei = 0, ved = 0, ves = 0,
-                             coverage = 0.5,
-                             t_stop = 99)
+                             coverage = 0.5)
 
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                            vea = 0, vei = 1, ved = 0, ves = 0,
-                           coverage = 0.5,
-                           t_stop = 99)
+                           coverage = 0.5)
 
   # Incidence in V is the same for VEi = 0 and VEi = 1
 
@@ -269,8 +262,3 @@ test_that("aggregated time series output correctly", {
   expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
 
 })
-
-
-#notes: have missed out:
-# 'test_that("can initialise after time 0"'
-# 'test_that("t_stop is working correctly"'

@@ -33,15 +33,14 @@ initial_params_xvw_trial <- function(pars, coverage = 0) {
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                           dur = 1e3,
-                           t_stop = 99) {
+                           dur = 1e3) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
   assert_scalar_unit_interval(ves)
   assert_scalar_positive(dur)
-  assert_scalar_positive(t_stop)
+
 
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
    i_v <- 2
@@ -57,7 +56,6 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        ved   = ved * ve,
        ves   = ves * ve,
        w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
-       vax_t = c(0, t_stop),
        vax_y = c(1, 0)
   )
 }
@@ -92,16 +90,14 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0,
-                           coverage = 0,
-                           t_stop = 99) {
+                           coverage = 0) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
   assert_scalar_unit_interval(coverage)
 
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
-                    vea = vea, vei = vei, ved = ved, ves = ves,
-                    MoreArgs = list(t_stop = t_stop))
+                    vea = vea, vei = vei, ved = ved, ves = ves)
 
   if (is.null(initial_params_trial)) {
     pars <- lapply(gono_params, model_params_trial)
