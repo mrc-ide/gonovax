@@ -128,7 +128,6 @@ ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
 
 w[, ]    <- user()
-vax_y[]  <- user()
 
 ## par dimensions
 
@@ -138,7 +137,6 @@ dim(ved)  <- n_vax
 dim(ves)  <- n_vax
 
 dim(w)    <- c(n_vax, n_vax)
-dim(vax_y) <- user()
 
 dim(wU)   <- c(n_group, n_vax, n_vax)
 dim(wI)   <- c(n_group, n_vax, n_vax)
