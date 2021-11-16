@@ -30,7 +30,6 @@ initial_params_xvw_trial <- function(pars, coverage = 0) {
 ##' @param ves scalar indicating efficacy of the vaccine against symptoms
 ##' (between 0-1)
 ##' @param dur scalar indicating duration of the vaccine (in years)
-##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
