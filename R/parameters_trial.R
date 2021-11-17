@@ -56,7 +56,7 @@ check_gono_params_trial <- function(pars) {
 
 demographic_params_trial <- function() {
   list(N0 = 6e5,
-       move = c(0, 1)
+       q = c(0, 1)
   )
 }
 
