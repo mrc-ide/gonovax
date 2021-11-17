@@ -50,6 +50,7 @@ check_gono_params_trial <- function(pars) {
     assert_scalar_positive(nu)
     assert_scalar_positive(mu)
     assert_scalar_positive(rho)
+    assert_scalar_positive(lambda)
   })
 }
 
