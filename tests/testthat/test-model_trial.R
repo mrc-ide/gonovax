@@ -81,7 +81,6 @@ expect_true(all(y$T[, 1, ] == 0))
 
 })
 
-############ variatons of Lilith's tests:
 
 test_that("there are no symptomatic infections when psi = 0", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
