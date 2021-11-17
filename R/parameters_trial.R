@@ -35,9 +35,6 @@ transform0_trial <- function(pars) {
     assert_scalar_positive(eta_l)
   })
 
-
-  pars$tt <- c(0, 1e3)
-
   pars
 
 }

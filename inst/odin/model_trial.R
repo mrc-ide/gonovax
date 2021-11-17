@@ -9,9 +9,7 @@
 n_group <- 2
 n_vax   <- user(1)
 
-## calibrate time-varying parameters
-tt[] <- user()
-dim(tt) <- user()
+## assign low and high activity etas to the correct level
 eta[1] <- eta_l
 eta[2] <- eta_h
 
