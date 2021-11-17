@@ -142,8 +142,8 @@ model_trial_ <- R6::R6Class(
       output_dde = "model_trial_output_dde"),
     dll = "gonovax",
     user = c("A0", "eta_h", "eta_l", "I0", "lambda", "mu", "nu", "psi",
-             "rho", "S0", "sigma", "T0", "tt", "U0", "vax_t", "vax_y", "vea",
-             "ved", "ves", "w", "n_vax"),
+             "rho", "S0", "sigma", "T0", "tt", "U0", "vea", "ved", "ves",
+             "w", "n_vax"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they

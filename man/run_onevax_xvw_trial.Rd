@@ -15,8 +15,7 @@ run_onevax_xvw_trial(
   vei = 0,
   ved = 0,
   ves = 0,
-  coverage = 0,
-  t_stop = 99
+  coverage = 0
 )
 }
 \arguments{
@@ -44,8 +43,6 @@ efficacy of the vaccine against symptoms (between 0-1)}
 
 \item{coverage}{scalar giving coverage of vaccination in the trial, default
 0.}
-
-\item{t_stop}{time at which vaccination should stop (years)}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

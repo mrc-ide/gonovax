@@ -5,14 +5,7 @@
 \title{Create vaccination parameters for use in onevax_xvw_trial model,
 assign who experiences vaccine effects, and how waning occurs.}
 \usage{
-vax_params_xvw_trial(
-  vea = 0,
-  vei = 0,
-  ved = 0,
-  ves = 0,
-  dur = 1000,
-  t_stop = 99
-)
+vax_params_xvw_trial(vea = 0, vei = 0, ved = 0, ves = 0, dur = 1000)
 }
 \arguments{
 \item{vea}{scalar indicating efficacy of the vaccine against acquisition
@@ -28,8 +21,6 @@ vax_params_xvw_trial(
 (between 0-1)}
 
 \item{dur}{scalar indicating duration of the vaccine (in years)}
-
-\item{t_stop}{time at which vaccination should stop (years)}
 }
 \value{
 A list of parameters in the model input format
