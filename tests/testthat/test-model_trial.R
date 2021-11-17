@@ -73,11 +73,11 @@ y <- mod$run(t = tt)
 y <- mod$transform_variables(y)
 
 #low activity group empty
-expect_true(all(y$U[, 1, 1] == 0))
-expect_true(all(y$I[, 1, 1] == 0))
-expect_true(all(y$A[, 1, 1] == 0))
-expect_true(all(y$S[, 1, 1] == 0))
-expect_true(all(y$T[, 1, 1] == 0))
+expect_true(all(y$U[, 1, ] == 0))
+expect_true(all(y$I[, 1, ] == 0))
+expect_true(all(y$A[, 1, ] == 0))
+expect_true(all(y$S[, 1, ] == 0))
+expect_true(all(y$T[, 1, ] == 0))
 
 })
 
