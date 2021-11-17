@@ -8,7 +8,7 @@ in the high sexual activity group.}
 initial_params_trial(pars, n_vax = 1, coverage = 1)
 }
 \arguments{
-\item{pars}{A parameter list containing `N0`, and `move` elements.}
+\item{pars}{A parameter list containing `N0`, and `q` elements.}
 
 \item{n_vax}{an integer indicating the number of vaccine compartments}
 

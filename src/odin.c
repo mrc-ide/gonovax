@@ -2867,23 +2867,21 @@ SEXP model_trial_metadata(SEXP internal_p) {
   SET_STRING_ELT(variable_names, 9, mkChar("cum_screened"));
   SET_VECTOR_ELT(ret, 0, variable_length);
   UNPROTECT(2);
-  SEXP output_length = PROTECT(allocVector(VECSXP, 4));
-  SEXP output_names = PROTECT(allocVector(STRSXP, 4));
+  SEXP output_length = PROTECT(allocVector(VECSXP, 3));
+  SEXP output_names = PROTECT(allocVector(STRSXP, 3));
   setAttrib(output_length, R_NamesSymbol, output_names);
   SET_VECTOR_ELT(output_length, 0, R_NilValue);
   SET_VECTOR_ELT(output_length, 1, R_NilValue);
-  SET_VECTOR_ELT(output_length, 2, R_NilValue);
-  SET_VECTOR_ELT(output_length, 3, allocVector(INTSXP, 2));
-  int * dim_N = INTEGER(VECTOR_ELT(output_length, 3));
+  SET_VECTOR_ELT(output_length, 2, allocVector(INTSXP, 2));
+  int * dim_N = INTEGER(VECTOR_ELT(output_length, 2));
   dim_N[0] = internal->dim_N_1;
   dim_N[1] = internal->dim_N_2;
   SET_STRING_ELT(output_names, 0, mkChar("tot_treated"));
   SET_STRING_ELT(output_names, 1, mkChar("tot_attended"));
-  SET_STRING_ELT(output_names, 2, mkChar("lambda"));
-  SET_STRING_ELT(output_names, 3, mkChar("N"));
+  SET_STRING_ELT(output_names, 2, mkChar("N"));
   SET_VECTOR_ELT(ret, 1, output_length);
   UNPROTECT(2);
-  SET_VECTOR_ELT(ret, 2, ScalarInteger(internal->dim_N + 3));
+  SET_VECTOR_ELT(ret, 2, ScalarInteger(internal->dim_N + 2));
   UNPROTECT(2);
   return ret;
 }
@@ -3007,7 +3005,7 @@ void model_trial_rhs(model_trial_internal* internal, double t, double * state, d
   }
   for (int i = 1; i <= internal->dim_I_1; ++i) {
     for (int j = 1; j <= internal->dim_I_2; ++j) {
-      dstatedt[internal->dim_U + i - 1 + internal->dim_I_1 * (j - 1)] = internal->n_UI[internal->dim_n_UI_1 * (j - 1) + i - 1] - (internal->sigma) * I[internal->dim_I_1 * (j - 1) + i - 1] + odin_sum3(internal->wI, i - 1, i, j - 1, j, 0, internal->dim_wI_3, internal->dim_wI_1, internal->dim_wI_12);
+      dstatedt[internal->dim_U + i - 1 + internal->dim_I_1 * (j - 1)] = internal->n_UI[internal->dim_n_UI_1 * (j - 1) + i - 1] - internal->sigma * I[internal->dim_I_1 * (j - 1) + i - 1] + odin_sum3(internal->wI, i - 1, i, j - 1, j, 0, internal->dim_wI_3, internal->dim_wI_1, internal->dim_wI_12);
     }
   }
   for (int i = 1; i <= internal->dim_S_1; ++i) {
@@ -3028,7 +3026,6 @@ void model_trial_rhs(model_trial_internal* internal, double t, double * state, d
   if (output) {
     double * cum_treated = state + internal->offset_variable_cum_treated;
     double * cum_screened = state + internal->offset_variable_cum_screened;
-    output[2] = internal->lambda;
     output[1] = odin_sum1(cum_treated, 0, internal->dim_cum_treated) + odin_sum1(cum_screened, 0, internal->dim_cum_screened);
     output[0] = odin_sum1(cum_treated, 0, internal->dim_cum_treated);
     for (int i = 1; i <= internal->dim_N_1; ++i) {
@@ -3036,7 +3033,7 @@ void model_trial_rhs(model_trial_internal* internal, double t, double * state, d
         internal->N[i - 1 + internal->dim_N_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] + I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1] + T[internal->dim_T_1 * (j - 1) + i - 1];
       }
     }
-    memcpy(output + 3, internal->N, internal->dim_N * sizeof(double));
+    memcpy(output + 2, internal->N, internal->dim_N * sizeof(double));
   }
 }
 void model_trial_rhs_dde(size_t neq, double t, double * state, double * dstatedt, void * internal) {
@@ -3054,7 +3051,6 @@ void model_trial_output_dde(size_t n_eq, double t, double * state, size_t n_outp
   double * T = state + internal->offset_variable_T;
   double * cum_treated = state + internal->offset_variable_cum_treated;
   double * cum_screened = state + internal->offset_variable_cum_screened;
-  output[2] = internal->lambda;
   output[1] = odin_sum1(cum_treated, 0, internal->dim_cum_treated) + odin_sum1(cum_screened, 0, internal->dim_cum_screened);
   output[0] = odin_sum1(cum_treated, 0, internal->dim_cum_treated);
   for (int i = 1; i <= internal->dim_N_1; ++i) {
@@ -3062,12 +3058,12 @@ void model_trial_output_dde(size_t n_eq, double t, double * state, size_t n_outp
       internal->N[i - 1 + internal->dim_N_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] + I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1] + T[internal->dim_T_1 * (j - 1) + i - 1];
     }
   }
-  memcpy(output + 3, internal->N, internal->dim_N * sizeof(double));
+  memcpy(output + 2, internal->N, internal->dim_N * sizeof(double));
 }
 SEXP model_trial_rhs_r(SEXP internal_p, SEXP t, SEXP state) {
   SEXP dstatedt = PROTECT(allocVector(REALSXP, LENGTH(state)));
   model_trial_internal *internal = model_trial_get_internal(internal_p, 1);
-  SEXP output_ptr = PROTECT(allocVector(REALSXP, internal->dim_N + 3));
+  SEXP output_ptr = PROTECT(allocVector(REALSXP, internal->dim_N + 2));
   setAttrib(dstatedt, install("output"), output_ptr);
   UNPROTECT(1);
   double *output = REAL(output_ptr);
