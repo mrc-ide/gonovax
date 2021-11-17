@@ -2,7 +2,7 @@
 ##' Create initial conditions for the model in a vaccine trial
 ##' @name initial_params_xvw_trial
 ##' @title Initial conditions for the model in a vaccine trial
-##' @param pars A parameter list containing `N0`, and `move` elements.
+##' @param pars A parameter list containing `N0`, and `q` elements.
 ##' @param coverage  scalar giving coverage of vaccination in trial cohort.
 ##' @return A list of initial conditions.
 ##' @export
