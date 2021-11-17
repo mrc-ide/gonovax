@@ -90,7 +90,7 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 }
 
 
-### generates vector of all starting conditions
+### generates list of all parameters needed to run the model
 
 ##' @name model_params_trial
 ##' @title Parameters for the vaccination trial model
