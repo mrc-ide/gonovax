@@ -18,7 +18,7 @@ eta[2] <- eta_h
 deriv(U[, ]) <-  - n_UI[i, j] +
   n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
 
-deriv(I[, ]) <- n_UI[i, j] - (sigma) * I[i, j] + sum(wI[i, j, ])
+deriv(I[, ]) <- n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
 
 deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
   n_AU[i, j] + sum(wA[i, j, ])
