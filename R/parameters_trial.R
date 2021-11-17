@@ -7,8 +7,7 @@
 
 gono_params_trial <- function(n = NULL) {
   if (is.null(cache$gono_params_trial)) {
-    gp <- read_csv(gonovax_file("extdata/gono_params_updated.csv"))
-    gp$lambda <- 1.5   #come back to this later!! Your lambda will be different
+    gp <- read_csv(gonovax_file("extdata/gono_params_trial.csv"))
     cache$gono_params_trial <-
       lapply(seq_len(nrow(gp)), function(i) transform0_trial(gp[i, ]))
   }
