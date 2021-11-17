@@ -111,8 +111,8 @@ model_params_trial <- function(gono_params_trial = NULL,
                         initial_params_trial = NULL,
                         vax_params = NULL, coverage = 0) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
-  dpt <- demographic_params_trial  %||% demographic_params_trial()
-  demographic_params_trial <- dpt
+  demographic_params_trial <- demographic_params_trial  %||%
+   demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
   vax_params <- vax_params %||% vax_params0()
 
