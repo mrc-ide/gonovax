@@ -29,7 +29,7 @@ gono_params_trial <- function(n = NULL) {
 
 transform0_trial <- function(pars) {
   pars <- as.list(pars)              #converts each row of csv into list
-  check_gono_params(pars)
+  check_gono_params_trial(pars)
   with(pars, {
     assert_scalar_positive(beta)
     assert_scalar_positive(eta_h)
@@ -41,6 +41,17 @@ transform0_trial <- function(pars) {
 
   pars
 
+}
+
+check_gono_params_trial <- function(pars) {
+  with(pars, {
+    assert_scalar_unit_interval(psi)
+    assert_scalar_unit_interval(epsilon)
+    assert_scalar_positive(sigma)
+    assert_scalar_positive(nu)
+    assert_scalar_positive(mu)
+    assert_scalar_positive(rho)
+  })
 }
 
 
