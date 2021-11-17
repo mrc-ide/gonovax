@@ -52,7 +52,8 @@ check_gono_params_trial <- function(pars) {
 }
 
 
-## sets up total trial size and the proportion that are in the high activity group
+## sets up total trial size and the proportion that are in the high activity
+## group
 
 demographic_params_trial <- function() {
   list(N0 = 6e5,
