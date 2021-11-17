@@ -81,7 +81,7 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
 
   # separate into 1:low and 2:high activity groups and by coverage
-  N0 <- pars$N0 * outer(pars$move, coverage)
+  N0 <- pars$N0 * outer(pars$q, coverage)
 
   # put the vaccinated and placebo individuals all to uninfected
   U0 <- round(N0)
