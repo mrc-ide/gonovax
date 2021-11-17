@@ -132,7 +132,7 @@ test_that("all individuals are uninfected at t = 0", {
 
 test_that("no-one is treated when mu and eta = 0", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-  params$mu <- params$eta_h[] <- params$eta_l[] <-  0
+  params$mu <- params$eta_h <- params$eta_l <-  0
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
 
   tt <- seq.int(0, 5) / 365
