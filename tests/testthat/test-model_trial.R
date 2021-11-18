@@ -150,8 +150,7 @@ test_that("Model works with vaccination and waning", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                       vea = 0, vei = 0, ved = 0, ves = 0,
-                       coverage = 0.5)
+                       vea = 0, vei = 0, ved = 0, ves = 0)
 
   #Total N in high group in X and  V is equal and non zero at t = 0
   expect_true(all(y[[1]]$N[1, 2, 1] == y[[1]]$N[1, 2, 2]))
@@ -173,8 +172,7 @@ test_that("VEa behaves as expected ", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                            vea = 1, vei = 0, ved = 0, ves = 0,
-                            coverage = 0.5)
+                            vea = 1, vei = 0, ved = 0, ves = 0)
 
   # VEa = 1, no infections in V, X >0, W >0 (after t=0)
 
@@ -189,8 +187,7 @@ test_that("VEa behaves as expected ", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                            vea = 0, vei = 0, ved = 0, ves = 0,
-                            coverage = 0.5)
+                            vea = 0, vei = 0, ved = 0, ves = 0)
 
 
   x <- as.numeric(y[[1]]$cum_incid[6, 2, 1])
@@ -208,8 +205,7 @@ test_that("VEs behaves as expected ", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                            vea = 0, vei = 0, ved = 0, ves = 1,
-                            coverage = 0.5)
+                            vea = 0, vei = 0, ved = 0, ves = 1)
 
 
   # VEs = 1 symptomatic diagnoses in V = 0, but for X & W > 0
@@ -230,8 +226,7 @@ test_that("VEd behaves as expected ", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                            vea = 0, vei = 0, ved = 1, ves = 0,
-                            coverage = 0.5)
+                            vea = 0, vei = 0, ved = 1, ves = 0)
 
   # VEd = 1 cumulative incid in V > X + W
 
@@ -250,12 +245,10 @@ test_that("VEi behaves as expected ", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y0 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                             vea = 0, vei = 0, ved = 0, ves = 0,
-                             coverage = 0.5)
+                             vea = 0, vei = 0, ved = 0, ves = 0)
 
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                           vea = 0, vei = 1, ved = 0, ves = 0,
-                           coverage = 0.5)
+                           vea = 0, vei = 1, ved = 0, ves = 0)
 
   # Incidence in V is the same for VEi = 0 and VEi = 1
 

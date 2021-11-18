@@ -3,14 +3,14 @@
 ##' @name initial_params_xvw_trial
 ##' @title Initial conditions for the model in a vaccine trial
 ##' @param pars A parameter list containing `N0`, and `q` elements.
-##' @param coverage  scalar giving coverage of vaccination in trial cohort.
+##' @param p_v  scalar giving p_v of vaccination in trial cohort.
 ##' @return A list of initial conditions.
 ##' @export
 
-initial_params_xvw_trial <- function(pars, coverage = 0.5) {
-  assert_scalar_unit_interval(coverage)
+initial_params_xvw_trial <- function(pars, p_v = 0.5) {
+  assert_scalar_unit_interval(p_v)
   n_vax <- 3
-  cov <- c(1 - coverage, coverage, 0)
+  cov <- c(1 - p_v, p_v, 0)
 
  initial_params_trial(pars, n_vax, cov)
 }
@@ -79,7 +79,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  efficacy of the vaccine against symptoms (between 0-1)
 ##' @param dur  scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of the vaccine (in years)
-##' @param coverage scalar giving coverage of vaccination in the trial, default
+##' @param p_v scalar giving p_v of vaccination in the trial, default
 ##'  0.
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
@@ -89,11 +89,11 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0,
-                           coverage = 0) {
+                           p_v = 0.5) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
-  assert_scalar_unit_interval(coverage)
+  assert_scalar_unit_interval(p_v)
 
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves)
@@ -101,7 +101,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
   if (is.null(initial_params_trial)) {
     pars <- lapply(gono_params, model_params_trial)
     init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
-                             coverage = coverage)
+                             p_v = p_v)
   }
 
   ret <- Map(run_trial, gono_params = gono_params,

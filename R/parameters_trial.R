@@ -68,20 +68,20 @@ demographic_params_trial <- function() {
 ##' in the high sexual activity group.
 ##' @param pars A parameter list containing `N0`, and `q` elements.
 ##' @param n_vax an integer indicating the number of vaccine compartments
-##' @param coverage a vector of length `n_vax` that sums to 1 denoting the
+##' @param p_v a vector of length `n_vax` that sums to 1 denoting the
 ##' initial proportion in each vaccine stratum
 ##' @return A list of initial model states
 ##' @export
 
-initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
+initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
 
-  stopifnot(length(coverage) == n_vax)
-  stopifnot(sum(coverage) == 1)
+  stopifnot(length(p_v) == n_vax)
+  stopifnot(sum(p_v) == 1)
 
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
 
-  # separate into 1:low and 2:high activity groups and by coverage
-  N0 <- pars$N0 * outer(pars$q, coverage)
+  # separate into 1:low and 2:high activity groups and by p_v
+  N0 <- pars$N0 * outer(pars$q, p_v)
 
   # put the vaccinated and placebo individuals all to uninfected
   U0 <- round(N0)
@@ -97,7 +97,7 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 ##' @param gono_params_trial A dataframe of natural history parameters
 ##' @param demographic_params_trial A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
-##' @param coverage A scalar indicating the percentage of the trial cohort that
+##' @param p_v A scalar indicating the percentage of the trial cohort that
 ##'  is vaccinated
 ##' @param initial_params_trial A list of starting conditions
 ##' @return A list of inputs to the model many of which are fixed and
@@ -109,20 +109,20 @@ initial_params_trial <- function(pars, n_vax = 1, coverage = 1) {
 model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
                         initial_params_trial = NULL,
-                        vax_params = NULL, coverage = 0) {
+                        vax_params = NULL, p_v = 0) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <- demographic_params_trial  %||%
    demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
   vax_params <- vax_params %||% vax_params0()
 
-  if (coverage == 0) {
+  if (p_v == 0) {
     cov <- c(1, rep(0, vax_params$n_vax - 1))
     initial_params <-
       initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
 
   } else {
-    initial_params <- initial_params_xvw_trial(pars = ret, coverage = coverage)
+    initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v)
   }
 
   c(ret, initial_params, vax_params)
