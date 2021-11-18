@@ -32,7 +32,6 @@ transform0_trial <- function(pars) {
   check_gono_params_trial(pars)
   with(pars, {
     assert_scalar_positive(eta_h)
-    assert_scalar_positive(eta_l)
   })
 
   pars
