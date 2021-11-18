@@ -66,7 +66,6 @@ test_that("number of individuals always >= 0", {
 test_that("all individuals are in the high activity group", {
 
 params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-params$lambda <- 1.5
 mod <- model_trial$new(user = params, unused_user_action = "ignore")
 tt <- seq.int(0, 5) / 365
 y <- mod$run(t = tt)
@@ -84,7 +83,6 @@ expect_true(all(y$T[, 1, ] == 0))
 
 test_that("there are no symptomatic infections when psi = 0", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-  params$lambda <- 1.5
   params$psi <- 0
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
@@ -99,7 +97,6 @@ test_that("there are no symptomatic infections when psi = 0", {
 
 test_that("there are no asymptomatic infections when psi = 1", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-  params$lambda <- 1.5
   params$psi <- 1                   #proportion symptomatic
   params$S0[, ] <- params$A0[, ]    #moves starting individuals from A to S
   params$A0[, ] <- 0                #so still infections seeded
@@ -116,7 +113,6 @@ test_that("there are no asymptomatic infections when psi = 1", {
 
 test_that("all individuals are uninfected at t = 0", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-  params$lambda <- 1.5
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
@@ -251,7 +247,6 @@ test_that("VEi behaves as expected ", {
 
 test_that("aggregated time series output correctly", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-  params$lambda <- 1.5
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt)
