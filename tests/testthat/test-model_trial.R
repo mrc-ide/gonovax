@@ -34,26 +34,10 @@ test_that("no new infections if lambda is 0", {
 
 })
 
-test_that("number of individuals always >= 0", {
+test_that("number of individuals always >= 0 even at high lambda", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-
-  params$lambda <- 2
-  mod <- model_trial$new(user = params, unused_user_action = "ignore")
-  tt <- seq.int(0, 5) / 365
-  y <- mod$run(t = tt)
-  y <- mod$transform_variables(y)
-
-  expect_true(all(unlist(y) >= 0))
-
-  params$lambda <- 3
-  mod <- model_trial$new(user = params, unused_user_action = "ignore")
-  tt <- seq.int(0, 5) / 365
-  y <- mod$run(t = tt)
-  y <- mod$transform_variables(y)
-
-  expect_true(all(unlist(y) >= 0))
-
-  params$lambda <- 4
+  
+  params$lambda <- 10
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
