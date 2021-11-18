@@ -276,3 +276,20 @@ test_that("aggregated time series output correctly", {
   expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
+
+test_that("outputs for vaccination run as expected", {
+  
+gp <- gono_params_trial(1)[1]
+tt <- seq.int(0, 5) / 365
+y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5)
+
+expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
+                          297547.433626743, 296334.908051234, 295135.061477033,
+                          293950.297077376, 0, 0, 0, 0, 0, 0, 3e+05,
+                          299383.713797674, 298770.717502468, 298162.935800213,
+                          297562.116361515, 296969.7952273, 0, 0, 0, 0, 0, 0, 0,
+                          0.819388141002698, 1.63374216215416, 2.4431142416253,
+                          3.24757521226149, 4.04721268804341),
+                        dim = c(6, 2, 3)))
+})
