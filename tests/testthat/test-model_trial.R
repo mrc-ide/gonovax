@@ -122,11 +122,11 @@ test_that("all individuals are uninfected at t = 0", {
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
 
-  expect_true(all(y$I[, , ][1, ] == 0))
-  expect_true(all(y$A[, , ][1, ] == 0))
-  expect_true(all(y$S[, , ][1, ] == 0))
-  expect_true(all(y$T[, , ][1, ] == 0))
-  expect_true(all(y$U[, , ][1, 2] > 0))
+  expect_true(all(y$I[1, , ] == 0))
+  expect_true(all(y$A[1, , ] == 0))
+  expect_true(all(y$S[1, , ] == 0))
+  expect_true(all(y$T[1, , ] == 0))
+  expect_true(all(y$U[1, 2, ] > 0))
 
 })
 
@@ -152,14 +152,14 @@ test_that("Model works with vaccination and waning", {
                        coverage = 0.5)
 
   #Total N in high group in X and  V is equal and non zero at t = 0
-  expect_true(all(y[[1]]$N[, , 1][, 2][1] == y[[1]]$N[, , 2][, 2][1]))
-  expect_true(all(y[[1]]$N[, , 1][, 2][1] > 0))
-  expect_true(all(y[[1]]$N[, , 2][, 2][1] > 0))
+  expect_true(all(y[[1]]$N[1, 2, 1] == y[[1]]$N[1, 2, 2]))
+  expect_true(all(y[[1]]$N[1, 2, 1] > 0))
+  expect_true(all(y[[1]]$N[1, 2, 2] > 0))
 
   #Total N in waning is 0 at t =0 and increases over time
-  expect_true(all(y[[1]]$N[, , 3][, 2][1] == 0))
-  length_tt <- length(y[[1]]$N[, , 3][, 2])
-  expect_true(all(y[[1]]$N[, , 3][, 2][2:length_tt] > 0))
+  expect_true(all(y[[1]]$N[1, 2, 3] == 0))
+  length_tt <- length(y[[1]]$N[, 2, 3])
+  expect_true(all(y[[1]]$N[2:length_tt, 2, 3] > 0))
 
 
 })
@@ -174,9 +174,9 @@ test_that("VEa behaves as expected ", {
 
   # VEa = 1, no infections in V, X >0, W >0 (after t=0)
 
-  expect_true(all(y[[1]]$cum_incid[, , 2][, 2] == 0))
-  expect_true(all(y[[1]]$cum_incid[, , 1][, 2][2:6] > 0))
-  expect_true(all(y[[1]]$cum_incid[, , 3][, 2][2:6] > 0))
+  expect_true(all(y[[1]]$cum_incid[, 2, 2] == 0))
+  expect_true(all(y[[1]]$cum_incid[2:6, 2, 1] > 0))
+  expect_true(all(y[[1]]$cum_incid[2:6, 2, 3] > 0))
 
   # VEa = 0, infections in X = V + W
   gp <- gono_params_trial(1)[1]
@@ -186,9 +186,9 @@ test_that("VEa behaves as expected ", {
                             coverage = 0.5)
 
 
-  x <- as.numeric(y[[1]]$cum_incid[, , 1][, 2][6])
-  vw <- as.numeric(y[[1]]$cum_incid[, , 2][, 2][6]) +
-    as.numeric(y[[1]]$cum_incid[, , 3][, 2][6])
+  x <- as.numeric(y[[1]]$cum_incid[6, 2, 1])
+  vw <- as.numeric(y[[1]]$cum_incid[6, 2, 2]) +
+    as.numeric(y[[1]]$cum_incid[6, 2, 3])
   expect_equal(x, vw)
 
 })
@@ -203,12 +203,12 @@ test_that("VEs behaves as expected ", {
 
 
   # VEs = 1 symptomatic diagnoses in V = 0, but for X & W > 0
-  expect_true(all(y[[1]]$cum_diag_s[, , 2][, 2] == 0))
-  expect_true(all(y[[1]]$cum_diag_s[, , 1][, 2][2:6] > 0))
-  expect_true(all(y[[1]]$cum_diag_s[, , 3][, 2][2:6] > 0))
+  expect_true(all(y[[1]]$cum_diag_s[, 2, 2] == 0))
+  expect_true(all(y[[1]]$cum_diag_s[2:6, 2, 1] > 0))
+  expect_true(all(y[[1]]$cum_diag_s[2:6, 2, 3] > 0))
 
-  # VEs = 1 asymptomatic diagnoses in V = total diagnoses in V
-  expect_true(all(y[[1]]$cum_diag_a[, , 2][, 2][2:6] > 0))
+  # VEs = 1 asymptomatic diagnoses in V > 0
+  expect_true(all(y[[1]]$cum_diag_a[2:6, 2, 2] > 0))
 
 })
 
@@ -222,8 +222,8 @@ test_that("VEd behaves as expected ", {
 
   # VEd = 1 cumulative incid in V > X + W
 
-  v <- y[[1]]$cum_incid[, , 2][, 2][6]
-  xw <- y[[1]]$cum_incid[, , 1][, 2][6] + y[[1]]$cum_incid[, , 3][, 2][6]
+  v <- y[[1]]$cum_incid[6, 2 ,2]
+  xw <- y[[1]]$cum_incid[6, 2, 1] + y[[1]]$cum_incid[6, 2, 3]
 
   expect_true(v > xw)
 
@@ -243,8 +243,8 @@ test_that("VEi behaves as expected ", {
 
   # Incidence in V is the same for VEi = 0 and VEi = 1
 
-  expect_equal(y0[[1]]$cum_incid[, , 2][, 2][6],
-               y[[1]]$cum_incid[, , 2][, 2][6])
+  expect_equal(y0[[1]]$cum_incid[6, 2, 2],
+               y[[1]]$cum_incid[6, 2, 2])
 
 })
 
