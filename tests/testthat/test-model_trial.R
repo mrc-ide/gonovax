@@ -21,8 +21,7 @@ test_that("no new infections if lambda is 0", {
   # presence of vaccination
 
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]],
-                               vax_params = vax_params_xvw_trial(),
-                         coverage = 0.5)
+                               vax_params = vax_params_xvw_trial(), p_v = 0.5)
   tt <- seq.int(0, 5) / 365
   params$lambda <- 0
   mod2 <- model_trial$new(user = params, unused_user_action = "ignore")
