@@ -222,7 +222,7 @@ test_that("VEd behaves as expected ", {
 
   # VEd = 1 cumulative incid in V > X + W
 
-  v <- y[[1]]$cum_incid[6, 2 ,2]
+  v <- y[[1]]$cum_incid[6, 2 , 2]
   xw <- y[[1]]$cum_incid[6, 2, 1] + y[[1]]$cum_incid[6, 2, 3]
 
   expect_true(v > xw)
