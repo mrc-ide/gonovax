@@ -164,7 +164,7 @@ test_that("Model works with vaccination and waning", {
   expect_true(all(y[[1]]$N[2:length_tt, 2, 3] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
 })
 
@@ -183,7 +183,7 @@ test_that("VEa behaves as expected ", {
   expect_true(all(y[[1]]$cum_incid[2:6, 2, 3] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
   # VEa = 0, infections in X = V + W
   gp <- gono_params_trial(1)[1]
@@ -199,7 +199,7 @@ test_that("VEa behaves as expected ", {
   expect_equal(x, vw)
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
 })
 
@@ -221,7 +221,7 @@ test_that("VEs behaves as expected ", {
   expect_true(all(y[[1]]$cum_diag_a[2:6, 2, 2] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
 })
 
@@ -241,7 +241,7 @@ test_that("VEd behaves as expected ", {
   expect_true(v > xw)
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
 })
 
@@ -263,10 +263,10 @@ test_that("VEi behaves as expected ", {
                y[[1]]$cum_incid[6, 2, 2])
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
   expect_true(all(unlist(y0) >= 0))
-  expect_true(all(rowSums(y0$N) == params$N0))
+  expect_true(all(round(rowSums(y0[[1]]$N)) == params$N0))
 
 })
 
