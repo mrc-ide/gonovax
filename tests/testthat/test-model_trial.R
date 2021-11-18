@@ -36,7 +36,7 @@ test_that("no new infections if lambda is 0", {
 
 test_that("number of individuals always >= 0 even at high lambda", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-  
+
   params$lambda <- 10
   mod <- model_trial$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
@@ -202,7 +202,7 @@ test_that("VEd behaves as expected ", {
 
   # VEd = 1 cumulative incid in V > X + W
 
-  v <- y[[1]]$cum_incid[6, 2 , 2]
+  v <- y[[1]]$cum_incid[6, 2, 2]
   xw <- y[[1]]$cum_incid[6, 2, 1] + y[[1]]$cum_incid[6, 2, 3]
 
   expect_true(v > xw)
