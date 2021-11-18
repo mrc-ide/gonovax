@@ -278,7 +278,7 @@ test_that("aggregated time series output correctly", {
 })
 
 test_that("outputs for vaccination run as expected", {
-  
+
 gp <- gono_params_trial(1)[1]
 tt <- seq.int(0, 5) / 365
 y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
