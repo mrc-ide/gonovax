@@ -15,9 +15,9 @@ test_that("no new infections if lambda is 0", {
   expect_true(all(y$I == 0))             #incubating remain at 0
   expect_true(all(y$S == 0))             #no symptomatic infections
   expect_true(all(y$cum_incid == 0))
-  expect_true(all(unlist(y) >= 0))               #no compartments negative
-  expect_true(all(rowSums(y$N) == params$N0))    #number of participants
-                                                 #doesn't change
+  expect_true(all(unlist(y) >= 0))                     #no compartments negative
+  expect_true(all(round(rowSums(y$N)) == params$N0))   #number of participants
+                                                       #doesn't change
   # presence of vaccination
 
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]],
@@ -35,7 +35,7 @@ test_that("no new infections if lambda is 0", {
   expect_true(all(y$cum_incid == 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -49,7 +49,7 @@ test_that("number of individuals always >= 0 even at high lambda", {
   y <- mod$transform_variables(y)
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -69,7 +69,7 @@ expect_true(all(y$S[, 1, ] == 0))
 expect_true(all(y$T[, 1, ] == 0))
 
 expect_true(all(unlist(y) >= 0))
-expect_true(all(rowSums(y$N) == params$N0))
+expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -88,7 +88,7 @@ test_that("there are no symptomatic infections when psi = 0", {
   expect_true(all(unlist(y) >= 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -107,7 +107,7 @@ expect_true(any(y$I > 0))
   expect_true(all(y$cum_diag_s[-1, , ] >= 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -125,7 +125,7 @@ test_that("all individuals are uninfected at t = 0", {
   expect_true(all(y$U[1, 2, ] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -141,7 +141,7 @@ test_that("no-one is treated when mu and eta = 0", {
   expect_true(all(y$cum_treated == 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -164,7 +164,7 @@ test_that("Model works with vaccination and waning", {
   expect_true(all(y[[1]]$N[2:length_tt, 2, 3] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -183,7 +183,7 @@ test_that("VEa behaves as expected ", {
   expect_true(all(y[[1]]$cum_incid[2:6, 2, 3] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
   # VEa = 0, infections in X = V + W
   gp <- gono_params_trial(1)[1]
@@ -199,7 +199,7 @@ test_that("VEa behaves as expected ", {
   expect_equal(x, vw)
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -221,7 +221,7 @@ test_that("VEs behaves as expected ", {
   expect_true(all(y[[1]]$cum_diag_a[2:6, 2, 2] > 0))
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -241,7 +241,7 @@ test_that("VEd behaves as expected ", {
   expect_true(v > xw)
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -263,7 +263,7 @@ test_that("VEi behaves as expected ", {
                y[[1]]$cum_incid[6, 2, 2])
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
   expect_true(all(unlist(y0) >= 0))
   expect_true(all(rowSums(y0$N) == params$N0))
@@ -281,6 +281,6 @@ test_that("aggregated time series output correctly", {
   expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
 
   expect_true(all(unlist(y) >= 0))
-  expect_true(all(rowSums(y$N) == params$N0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
