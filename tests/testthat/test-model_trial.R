@@ -239,3 +239,4 @@ test_that("aggregated time series output correctly", {
   expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
 
 })
+
