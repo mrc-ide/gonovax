@@ -3,7 +3,7 @@
 ##' @name initial_params_xvw_trial
 ##' @title Initial conditions for the model in a vaccine trial
 ##' @param pars A parameter list containing `N0`, and `q` elements.
-##' @param p_v  scalar giving p_v of vaccination in trial cohort.
+##' @param p_v scalar giving proportion of the trial cohort vaccinated
 ##' @return A list of initial conditions.
 ##' @export
 
@@ -79,8 +79,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  efficacy of the vaccine against symptoms (between 0-1)
 ##' @param dur  scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of the vaccine (in years)
-##' @param p_v scalar giving p_v of vaccination in the trial, default
-##'  0.
+##' @param p_v scalar giving proportion of the trial cohort vaccinated, default
+##'  is 0.5.
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
 ##' @export

@@ -61,7 +61,6 @@ demographic_params_trial <- function() {
 }
 
 
-
 ##' Create initial conditions for the model trial
 ##' @name initial_params_trial
 ##' @title Initial conditions for the model trial where the entire cohort is
@@ -69,7 +68,7 @@ demographic_params_trial <- function() {
 ##' @param pars A parameter list containing `N0`, and `q` elements.
 ##' @param n_vax an integer indicating the number of vaccine compartments
 ##' @param p_v a vector of length `n_vax` that sums to 1 denoting the
-##' initial proportion in each vaccine stratum
+##' proportion in each vaccine stratum
 ##' @return A list of initial model states
 ##' @export
 

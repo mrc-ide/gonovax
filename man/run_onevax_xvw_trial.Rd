@@ -41,8 +41,8 @@ efficacy of the vaccine against duration (between 0-1)}
 \item{ves}{scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against symptoms (between 0-1)}
 
-\item{p_v}{scalar giving p_v of vaccination in the trial, default
-0.}
+\item{p_v}{scalar giving proportion of the trial cohort vaccinated, default
+is 0.5.}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

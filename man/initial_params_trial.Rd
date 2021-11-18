@@ -13,7 +13,7 @@ initial_params_trial(pars, n_vax = 1, p_v = 1)
 \item{n_vax}{an integer indicating the number of vaccine compartments}
 
 \item{p_v}{a vector of length `n_vax` that sums to 1 denoting the
-initial proportion in each vaccine stratum}
+proportion in each vaccine stratum}
 }
 \value{
 A list of initial model states

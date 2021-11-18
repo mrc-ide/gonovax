@@ -9,7 +9,7 @@ initial_params_xvw_trial(pars, p_v = 0.5)
 \arguments{
 \item{pars}{A parameter list containing `N0`, and `q` elements.}
 
-\item{p_v}{scalar giving p_v of vaccination in trial cohort.}
+\item{p_v}{scalar giving proportion of the trial cohort vaccinated}
 }
 \value{
 A list of initial conditions.
