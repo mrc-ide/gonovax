@@ -7,7 +7,7 @@
 ##' @return A list of initial conditions.
 ##' @export
 
-initial_params_xvw_trial <- function(pars, coverage = 0) {
+initial_params_xvw_trial <- function(pars, coverage = 0.5) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 3
   cov <- c(1 - coverage, coverage, 0)
