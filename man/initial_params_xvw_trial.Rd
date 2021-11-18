@@ -4,12 +4,12 @@
 \alias{initial_params_xvw_trial}
 \title{Initial conditions for the model in a vaccine trial}
 \usage{
-initial_params_xvw_trial(pars, coverage = 0)
+initial_params_xvw_trial(pars, p_v = 0.5)
 }
 \arguments{
-\item{pars}{A parameter list containing `N0`, and `move` elements.}
+\item{pars}{A parameter list containing `N0`, and `q` elements.}
 
-\item{coverage}{scalar giving coverage of vaccination in trial cohort.}
+\item{p_v}{scalar giving p_v of vaccination in trial cohort.}
 }
 \value{
 A list of initial conditions.

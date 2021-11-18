@@ -9,7 +9,7 @@ model_params_trial(
   demographic_params_trial = NULL,
   initial_params_trial = NULL,
   vax_params = NULL,
-  coverage = 0
+  p_v = 0
 )
 }
 \arguments{
@@ -21,7 +21,7 @@ model_params_trial(
 
 \item{vax_params}{A vector of vaccination params}
 
-\item{coverage}{A scalar indicating the percentage of the trial cohort that
+\item{p_v}{A scalar indicating the percentage of the trial cohort that
 is vaccinated}
 }
 \value{

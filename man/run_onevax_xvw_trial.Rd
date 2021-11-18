@@ -15,7 +15,7 @@ run_onevax_xvw_trial(
   vei = 0,
   ved = 0,
   ves = 0,
-  coverage = 0
+  p_v = 0.5
 )
 }
 \arguments{
@@ -41,7 +41,7 @@ efficacy of the vaccine against duration (between 0-1)}
 \item{ves}{scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against symptoms (between 0-1)}
 
-\item{coverage}{scalar giving coverage of vaccination in the trial, default
+\item{p_v}{scalar giving p_v of vaccination in the trial, default
 0.}
 }
 \description{

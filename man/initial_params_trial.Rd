@@ -5,14 +5,14 @@
 \title{Initial conditions for the model trial where the entire cohort is
 in the high sexual activity group.}
 \usage{
-initial_params_trial(pars, n_vax = 1, coverage = 1)
+initial_params_trial(pars, n_vax = 1, p_v = 1)
 }
 \arguments{
 \item{pars}{A parameter list containing `N0`, and `q` elements.}
 
 \item{n_vax}{an integer indicating the number of vaccine compartments}
 
-\item{coverage}{a vector of length `n_vax` that sums to 1 denoting the
+\item{p_v}{a vector of length `n_vax` that sums to 1 denoting the
 initial proportion in each vaccine stratum}
 }
 \value{
