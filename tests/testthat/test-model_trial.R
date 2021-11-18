@@ -161,6 +161,7 @@ test_that("Model works with vaccination and waning", {
   length_tt <- length(y[[1]]$N[, 2, 3])
   expect_true(all(y[[1]]$N[2:length_tt, 2, 3] > 0))
 
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
@@ -178,6 +179,8 @@ test_that("VEa behaves as expected ", {
   expect_true(all(y[[1]]$cum_incid[, 2, 2] == 0))
   expect_true(all(y[[1]]$cum_incid[2:6, 2, 1] > 0))
   expect_true(all(y[[1]]$cum_incid[2:6, 2, 3] > 0))
+
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
 
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
@@ -215,6 +218,8 @@ test_that("VEs behaves as expected ", {
   # VEs = 1 asymptomatic diagnoses in V > 0
   expect_true(all(y[[1]]$cum_diag_a[2:6, 2, 2] > 0))
 
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
+
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
@@ -233,6 +238,8 @@ test_that("VEd behaves as expected ", {
   xw <- y[[1]]$cum_incid[6, 2, 1] + y[[1]]$cum_incid[6, 2, 3]
 
   expect_true(v > xw)
+
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
 
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
@@ -254,6 +261,8 @@ test_that("VEi behaves as expected ", {
   expect_equal(y0[[1]]$cum_incid[6, 2, 2],
                y[[1]]$cum_incid[6, 2, 2])
 
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
+
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
@@ -271,6 +280,8 @@ test_that("aggregated time series output correctly", {
   y <- mod$transform_variables(y)
   expect_equal(y$tot_treated, apply(y$cum_treated, 1, sum))
   expect_equal(y$tot_attended, apply(y$cum_screened, 1, sum) + y$tot_treated)
+
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
 
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y$N)) == params$N0))
