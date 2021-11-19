@@ -1,0 +1,128 @@
+##' @name gono_params_trial
+##' @title Posterior parameters of gonorrhoea natural history
+##' @param n an integer vector (or value) containing the indices of the required
+##' parameter sets (1:982). If `n = NULL` the full parameter set is returned
+##' @return A list of parameters
+##' @export
+
+gono_params_trial <- function(n = NULL) {
+  if (is.null(cache$gono_params_trial)) {
+    gp <- read_csv(gonovax_file("extdata/gono_params_trial.csv"))
+    cache$gono_params_trial <-
+      lapply(seq_len(nrow(gp)), function(i) transform0_trial(gp[i, ]))
+  }
+
+  pars <- cache$gono_params_trial
+  n_pars <- length(pars)
+  # if n not supplied, return all parameters
+  i  <- n %||% seq_len(n_pars)
+  # limit to parameter sets available
+  i <- i[(i > 0) & (i <= n_pars)]
+
+  pars[i]
+
+  }
+
+
+
+## transforms the imported parameters into workable format
+
+transform0_trial <- function(pars) {
+  pars <- as.list(pars)              #converts each row of csv into list
+  check_gono_params_trial(pars)
+  with(pars, {
+    assert_scalar_positive(eta_h)
+  })
+
+  pars
+
+}
+
+check_gono_params_trial <- function(pars) {
+  with(pars, {
+    assert_scalar_unit_interval(psi)
+    assert_scalar_unit_interval(epsilon)
+    assert_scalar_positive(sigma)
+    assert_scalar_positive(nu)
+    assert_scalar_positive(mu)
+    assert_scalar_positive(rho)
+    assert_scalar_positive(lambda)
+  })
+}
+
+
+## sets up total trial size and the proportion that are in the high activity
+## group
+
+demographic_params_trial <- function() {
+  list(N0 = 6e5,
+       q = c(0, 1)
+  )
+}
+
+
+##' Create initial conditions for the model trial
+##' @name initial_params_trial
+##' @title Initial conditions for the model trial where the entire cohort is
+##' in the high sexual activity group.
+##' @param pars A parameter list containing `N0`, and `q` elements.
+##' @param n_vax an integer indicating the number of vaccine compartments
+##' @param p_v a vector of length `n_vax` that sums to 1 denoting the
+##' proportion in each vaccine stratum
+##' @return A list of initial model states
+##' @export
+
+initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
+
+  stopifnot(length(p_v) == n_vax)
+  stopifnot(sum(p_v) == 1)
+
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
+  # separate into 1:low and 2:high activity groups and by p_v
+  N0 <- pars$N0 * outer(pars$q, p_v)
+
+  # put the vaccinated and placebo individuals all to uninfected
+  U0 <- round(N0)
+
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+}
+
+
+### generates list of all parameters needed to run the model
+
+##' @name model_params_trial
+##' @title Parameters for the vaccination trial model
+##' @param gono_params_trial A dataframe of natural history parameters
+##' @param demographic_params_trial A dataframe of demographic parameters
+##' @param vax_params A vector of vaccination params
+##' @param p_v A scalar indicating the percentage of the trial cohort that
+##'  is vaccinated
+##' @param initial_params_trial A list of starting conditions
+##' @return A list of inputs to the model many of which are fixed and
+##'   represent data. These correspond largely to `user()` calls
+##'   within the odin code, though some are also used in processing
+##'   just before the model is run.
+##' @export
+
+model_params_trial <- function(gono_params_trial = NULL,
+                        demographic_params_trial = NULL,
+                        initial_params_trial = NULL,
+                        vax_params = NULL, p_v = 0) {
+  gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
+  demographic_params_trial <- demographic_params_trial  %||%
+   demographic_params_trial()
+  ret <- c(demographic_params_trial, gono_params_trial)
+  vax_params <- vax_params %||% vax_params0()
+
+  if (p_v == 0) {
+    cov <- c(1, rep(0, vax_params$n_vax - 1))
+    initial_params <-
+      initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
+
+  } else {
+    initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v)
+  }
+
+  c(ret, initial_params, vax_params)
+}

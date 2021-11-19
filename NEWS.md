@@ -1,3 +1,7 @@
+# gonovax 0.3.8
+
+* add vaccination of trial cohort
+
 # gonovax 0.3.7
 
 * Output costs and benefits separately to allow ICER calculation
