@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • gonovax</title>
+<title>Initial conditions for the model trial where the entire cohort is
+in the high sexual activity group. — initial_params_trial • gonovax</title>
 
 
 <!-- jquery -->
@@ -39,7 +40,9 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Initial conditions for the model trial where the entire cohort is
+in the high sexual activity group. — initial_params_trial" />
+<meta property="og:description" content="Create initial conditions for the model trial" />
 
 
 
@@ -58,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -117,18 +120,45 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Initial conditions for the model trial where the entire cohort is
+in the high sexual activity group.</h1>
+    
+    <div class="hidden name"><code>initial_params_trial.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <dl>
-        <dt><a href="getting_started.html">Getting started</a></dt>
-        <dd></dt>
-      </dl>
+    <div class="ref-description">
+    <p>Create initial conditions for the model trial</p>
     </div>
+
+    <pre class="usage"><span class='fu'>initial_params_trial</span><span class='op'>(</span><span class='va'>pars</span>, n_vax <span class='op'>=</span> <span class='fl'>1</span>, p_v <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>pars</th>
+      <td><p>A parameter list containing `N0`, and `q` elements.</p></td>
+    </tr>
+    <tr>
+      <th>n_vax</th>
+      <td><p>an integer indicating the number of vaccine compartments</p></td>
+    </tr>
+    <tr>
+      <th>p_v</th>
+      <td><p>a vector of length `n_vax` that sums to 1 denoting the
+proportion in each vaccine stratum</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list of initial model states</p>
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 

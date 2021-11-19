@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.8</span>
       </span>
     </div>
 
@@ -194,6 +194,12 @@ over-dispersion</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="gono_params_trial.html">gono_params_trial()</a></code> </p>
+        </td>
+        <td><p>Posterior parameters of gonorrhoea natural history</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="gonovax_data.html">gonovax_data()</a></code> </p>
         </td>
         <td><p>Get gonovax data</p></td>
@@ -215,6 +221,19 @@ over-dispersion</p></td>
           <p><code><a href="initial_params.html">initial_params_xvw()</a></code> <code><a href="initial_params.html">initial_params()</a></code> </p>
         </td>
         <td><p>Initial conditions for the model</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="initial_params_trial.html">initial_params_trial()</a></code> </p>
+        </td>
+        <td><p>Initial conditions for the model trial where the entire cohort is
+in the high sexual activity group.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="initial_params_xvw_trial.html">initial_params_xvw_trial()</a></code> </p>
+        </td>
+        <td><p>Initial conditions for the model in a vaccine trial</p></td>
       </tr><tr>
         
         <td>
@@ -249,6 +268,12 @@ This is an odin model.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="model_params_trial.html">model_params_trial()</a></code> </p>
+        </td>
+        <td><p>Parameters for the vaccination trial model</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="restart_params.html">restart_params()</a></code> </p>
         </td>
         <td><p>Create initial conditions to start the model from the end of a run</p></td>
@@ -276,6 +301,14 @@ eligible for revaccination.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="run_onevax_xvw_trial.html">run_onevax_xvw_trial()</a></code> </p>
+        </td>
+        <td><p>Run model with single vaccine for input parameter sets, either from
+initialisation or from equilibrium, those with waned vaccines are not
+eligible for re-vaccination.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="run_onevax_xvwr.html">run_onevax_xvwr()</a></code> </p>
         </td>
         <td><p>run model with single vaccine for input parameter sets, either from
@@ -289,6 +322,13 @@ for revaccination (R), and return to the R stratum</p></td>
         <td><p>run model with single vaccine for input parameter sets, either from
 initialisation or from equilibrium, those with waned vaccines are eligible
 for revaccination, and return to the V compartment</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="run_trial.html">run_trial()</a></code> </p>
+        </td>
+        <td><p>Run odin model of gonorrhoea vaccine trial with or without
+vaccination</p></td>
       </tr><tr>
         
         <td>
@@ -316,6 +356,13 @@ for revaccination, and return to the V compartment</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="vax_params_xvw_trial.html">vax_params_xvw_trial()</a></code> </p>
+        </td>
+        <td><p>Create vaccination parameters for use in onevax_xvw_trial model,
+assign who experiences vaccine effects, and how waning occurs.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="vax_params_xvwr.html">vax_params_xvwr()</a></code> </p>
         </td>
         <td><p>create vaccination parameters for use in onevax_xvwr model</p></td>
@@ -340,7 +387,7 @@ for revaccination, and return to the V compartment</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Lilith Whittles.</p>
+  <p>Developed by Lilith Whittles, Dariya Nikitin.</p>
 </div>
 
 <div class="pkgdown">
