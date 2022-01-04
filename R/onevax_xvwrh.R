@@ -1,6 +1,22 @@
-##' @name vax_params_xvwr
-##' @title create vaccination parameters for use in onevax_xvwr model
-##' @inheritParams vax_params_xvwv
+##' Create initial conditions for the model
+##' @name initial_params
+##' @title Initial conditions for the model
+##' @param pars A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
+##'   elements.
+##' @param coverage  scalar giving initial coverage of vaccination
+##' @param hes proportion of population vaccine hesitant
+##' @return A list of initial conditions
+##' @export
+initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
+  assert_scalar_unit_interval(coverage)
+  n_vax <- 5
+  cov <- c(1 - coverage, coverage, 0, 0, hes)
+  initial_params(pars, n_vax, cov)
+}
+
+##' @name vax_params_xvwrh
+##' @title create vaccination parameters for use in onevax_xvwrh model
+##' @inheritParams vax_params_xvwvh
 ##' @param vea_revax scalar indicating efficacy of revaccination against
 ##'  acquisition (between 0-1)
 ##' @param vei_revax scalar indicating efficacy of revaccination against
@@ -12,7 +28,7 @@
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
 ##' @return A list parameters in the model input format
-vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
+vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
                             dur = 1e3, dur_revax = dur, uptake = 0,
@@ -35,11 +51,14 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_positive(t_stop)
   # waned vaccinees move to own stratum, but are eligible for re-vaccination
   # re-vaccination is into a fourth stratum (r)
+  # a proportion of all 'n' exist only in the hesitant compartment
+  # there is no movement between the willing (x,v,w,r) and hesitant (h)
   # 1:x -> 2:v -> 3:w <-> 4:r
+  # 5:h 
   i_eligible <- c(1, 3)
   i_w <- 3
   i_v <- c(2, 4)
-  n_vax <- 4
+  n_vax <- 5                   #number of compartments?
   
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
