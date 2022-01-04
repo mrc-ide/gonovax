@@ -3,14 +3,16 @@
 ##' @title Initial conditions for the model
 ##' @param pars A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
-##' @param coverage  scalar giving initial coverage of vaccination
+##' @param coverage  scalar giving initial coverage of vaccination in willing
+##'  population
 ##' @param hes proportion of population vaccine hesitant
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 5
-  cov <- c(1 - coverage, coverage, 0, 0, hes)
+  willing <- 1-hes
+  cov <- c((willing * (1-coverage)), (willing*coverage), 0, 0, hes)
   initial_params(pars, n_vax, cov)
 }
 
@@ -80,7 +82,10 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   )
 }
 
-##' @name run_onevax_xvwr
+
+## need to add in hesitancy 
+
+##' @name run_onevax_xvwrh
 ##' @title run model with single vaccine for input parameter sets, either from
 ##' initialisation or from equilibrium, those with waned vaccines are eligible
 ##' for revaccination (R), and return to the R stratum
@@ -98,23 +103,25 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  primary
 ##' @param dur_revax scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of protection for revaccination, default to same as primary
+##' @param hes Proportion of individuals in the population who are vaccine
+##'  hesitant
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
-run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
+run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                             dur = 1e3, vea = 0, vei = 0, ved = 0, ves = 0,
                             dur_revax = dur,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
                             vbe = 0, uptake = 0, strategy = "VbE",
-                            t_stop = 99) {
+                            t_stop = 99, hes = 0) {
   
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur,
                              vea_revax, vei_revax, ved_revax, ves_revax,
                              dur_revax)) %in%
                   c(1, length(gono_params))))
   
-  vax_params <- Map(vax_params_xvwr, uptake = uptake, dur = dur,
+  vax_params <- Map(vax_params_xvwrh, uptake = uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,
@@ -124,14 +131,15 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
   
   if (is.null(init_params)) {
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
+               init_params = init_params_xvwrh,                                  #equilibrium isn't provided
                MoreArgs = list(tt = tt))
   } else {
-    ret <- Map(run, gono_params = gono_params, init_params = init_params,
+    ret <- Map(run, gono_params = gono_params, init_params = init_params,        #equilibrium is provided
                vax_params = vax_params,
                MoreArgs = list(tt = tt))
   }
   
   # name outputs
-  ret <- lapply(ret, name_outputs, c("X", "V", "W", "R"))
+  ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret
 }
