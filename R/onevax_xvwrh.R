@@ -13,6 +13,7 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   n_vax <- 5
   willing <- 1-hes
   cov <- c((willing * (1-coverage)), (willing*coverage), 0, 0, hes)
+  browser() 
   initial_params(pars, n_vax, cov)
 }
 
@@ -130,11 +131,14 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                                     t_stop = t_stop, vbe = vbe))
   
   if (is.null(init_params)) {
+    
+    pars <- lapply(gono_params, model_params)
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
-               init_params = init_params_xvwrh,                                  #equilibrium isn't provided
+               init_params = initial_params_xvwrh(pars = pars, hes = hes),                               #equilibrium isn't provided
                MoreArgs = list(tt = tt))
+    
   } else {
-    ret <- Map(run, gono_params = gono_params, init_params = init_params,        #equilibrium is provided
+    ret <- Map(run, gono_params = gono_params, init_params = init_params,        #equilibrium is provided , assuming with hesitancy
                vax_params = vax_params,
                MoreArgs = list(tt = tt))
   }
