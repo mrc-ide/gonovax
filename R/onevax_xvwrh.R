@@ -131,14 +131,10 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   
   if (is.null(init_params)) {
     
-    demographic_params <- demographic_params()
-    ret <- c(demographic_params, gono_params)
-    vax_params0 <- vax_params0()
-    
-    pars <- c(ret, vax_params0)
-    
+    pars <- lapply(gono_params, model_params)                                    #this makes a list! 
+    init_params <- lapply(pars, inital_params_xvwrh, hes)                       #this also makes a list 
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
-               init_params = initial_params_xvwrh(pars = pars, hes = hes),                               #equilibrium isn't provided
+               init_params = init_params,                                        #equilibrium isn't provided
                MoreArgs = list(tt = tt))
     
   } else {
