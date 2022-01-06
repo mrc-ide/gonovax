@@ -13,7 +13,7 @@ test_that("run_onevax_xvwrh works correctly", {
     expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3, max(tt)))
     
     # and no-one else
-    expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:3]), 0)
+    expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
     
     # check can restart
     init_params <- lapply(y2, restart_params)
@@ -28,6 +28,25 @@ test_that("run_onevax_xvwrh works correctly", {
       expect_equal(y2[[i]]$T[length(tt), , ], y3[[i]]$T[1, , ])
     }
     
+    # check that hesitancy stratum works and are also getting infected 
+    
+    y_h <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0.3)
+    
+    # population split between non-vaccinated and hesitant only
+    for (i in seq_along(y_h)) {
+    expect_true(all(y_h[[i]]$N[1, , 5] > 0))
+    expect_true(all(y_h[[i]]$N[1, , 1] > 0))
+    expect_true(all(y_h[[i]]$N[1, , 2] = 0))
+    expect_true(all(y_h[[i]]$N[1, , 3] = 0))
+    expect_true(all(y_h[[i]]$N[1, , 4] = 0))
+    }
+    
+    # incidence in hesitant population increasing
+    
+    for (i in seq_along(y_h)) {
+    expect_true(all(y_h[[i]]$cum_incid[-1, ,5] > 0))
+    }
+
     uptake <- c(0.5, 1)
     # check VoD is working correctly
     y3e <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1e3, strategy = "VoD",
@@ -121,7 +140,7 @@ test_that("run_onevax_xvwrh works correctly", {
       # efficacy is perfect in R
       expect_equal(sum(y7e[[i]]$cum_incid[, , 4]), 0)
       # but not in XWV
-      expect_true(all(y7e[[i]]$cum_incid[-1, , -4] > 0))
+      expect_true(all(y7e[[i]]$cum_incid[-1, , -c(3)] > 0))                 #no one is getting ill in the hesitant group!!! :O 
     }
 })
 

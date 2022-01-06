@@ -11,8 +11,13 @@
 initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 5
+  
   willing <- 1-hes
-  cov <- c((willing * (1-coverage)), (willing*coverage), 0, 0, hes)
+  x_init <- willing*(1-coverage)
+  v_init <- willing*coverage
+  cov <- c(x_init, v_init, 0, 0, hes)
+  print(cov)
+  
   initial_params(pars, n_vax, cov)
 }
 
@@ -132,9 +137,9 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   if (is.null(init_params)) {
     
     pars <- lapply(gono_params, model_params)                                    #this makes a list! 
-    init_params <- lapply(pars, initial_params_xvwrh, hes)                       #this also makes a list 
+    init_params <- lapply(pars, initial_params_xvwrh, hes = hes)                       #this also makes a list 
     
-  browser()
+  
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
                init_params = init_params,                                        #equilibrium isn't provided
                MoreArgs = list(tt = tt))
