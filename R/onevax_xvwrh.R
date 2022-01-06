@@ -1,5 +1,5 @@
 ##' Create initial conditions for the model
-##' @name initial_params
+##' @name initial_params_xvwrh
 ##' @title Initial conditions for the model
 ##' @param pars A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
 ##'   elements.
@@ -11,19 +11,18 @@
 initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   assert_scalar_unit_interval(coverage)
   n_vax <- 5
-  
-  willing <- 1-hes
-  x_init <- willing*(1-coverage)
-  v_init <- willing*coverage
+
+  willing <- 1 - hes
+  x_init <- willing * (1 - coverage)
+  v_init <- willing * coverage
   cov <- c(x_init, v_init, 0, 0, hes)
-  print(cov)
-  
+
   initial_params(pars, n_vax, cov)
 }
 
 ##' @name vax_params_xvwrh
 ##' @title create vaccination parameters for use in onevax_xvwrh model
-##' @inheritParams vax_params_xvwvh
+##' @inheritParams vax_params_xvwrh
 ##' @param vea_revax scalar indicating efficacy of revaccination against
 ##'  acquisition (between 0-1)
 ##' @param vei_revax scalar indicating efficacy of revaccination against
@@ -41,7 +40,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             dur = 1e3, dur_revax = dur, uptake = 0,
                             strategy = "VbE",
                             vbe = 0, t_stop = 99) {
-  
+
   assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -61,34 +60,33 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # a proportion of all 'n' exist only in the hesitant compartment
   # there is no movement between the willing (x,v,w,r) and hesitant (h)
   # 1:x -> 2:v -> 3:w <-> 4:r
-  # 5:h 
+  # 5:h
   i_eligible <- c(1, 3)
   i_w <- 3
   i_v <- c(2, 4)
-  n_vax <- 5                   #number of compartments?
-  
+
+  #number of compartments
+  n_vax <- 5
+
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-  
+
   p <- set_strategy(strategy, uptake)
-  
+
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
        vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
        vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea   = c(0, vea, 0, vea_revax,0),
-       vei   = c(0, vei, 0, vei_revax,0),
-       ved   = c(0, ved, 0, ved_revax,0),
-       ves   = c(0, ves, 0, ves_revax,0),
+       vea   = c(0, vea, 0, vea_revax, 0),
+       vei   = c(0, vei, 0, vei_revax, 0),
+       ved   = c(0, ved, 0, ved_revax, 0),
+       ves   = c(0, ves, 0, ves_revax, 0),
        w     = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
   )
 }
-
-
-## need to add in hesitancy 
 
 ##' @name run_onevax_xvwrh
 ##' @title run model with single vaccine for input parameter sets, either from
@@ -120,12 +118,12 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                             ved_revax = ved, ves_revax = ves,
                             vbe = 0, uptake = 0, strategy = "VbE",
                             t_stop = 99, hes = 0) {
-  
+
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur,
                              vea_revax, vei_revax, ved_revax, ves_revax,
                              dur_revax)) %in%
                   c(1, length(gono_params))))
-  
+
   vax_params <- Map(vax_params_xvwrh, uptake = uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
@@ -133,23 +131,22 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                     ved_revax = ved_revax, ves_revax = ves_revax,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
-  
+
   if (is.null(init_params)) {
-    
-    pars <- lapply(gono_params, model_params)                                    #this makes a list! 
-    init_params <- lapply(pars, initial_params_xvwrh, hes = hes)                       #this also makes a list 
-    
-  
+
+    pars <- lapply(gono_params, model_params)
+    init_params <- lapply(pars, initial_params_xvwrh, hes = hes)
+
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
-               init_params = init_params,                                        #equilibrium isn't provided
+               init_params = init_params,
                MoreArgs = list(tt = tt))
-    
+
   } else {
-    ret <- Map(run, gono_params = gono_params, init_params = init_params,        #equilibrium is provided , assuming with hesitancy
+    ret <- Map(run, gono_params = gono_params, init_params = init_params,
                vax_params = vax_params,
                MoreArgs = list(tt = tt))
   }
-  
+
   # name outputs
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret
