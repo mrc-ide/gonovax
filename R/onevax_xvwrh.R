@@ -72,10 +72,10 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
        vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
        vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea   = c(0, vea, 0, vea_revax),
-       vei   = c(0, vei, 0, vei_revax),
-       ved   = c(0, ved, 0, ved_revax),
-       ves   = c(0, ves, 0, ves_revax),
+       vea   = c(0, vea, 0, vea_revax,0),
+       vei   = c(0, vei, 0, vei_revax,0),
+       ved   = c(0, ved, 0, ved_revax,0),
+       ves   = c(0, ves, 0, ves_revax,0),
        w     = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
@@ -132,7 +132,9 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   if (is.null(init_params)) {
     
     pars <- lapply(gono_params, model_params)                                    #this makes a list! 
-    init_params <- lapply(pars, inital_params_xvwrh, hes)                       #this also makes a list 
+    init_params <- lapply(pars, initial_params_xvwrh, hes)                       #this also makes a list 
+    
+  browser()
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
                init_params = init_params,                                        #equilibrium isn't provided
                MoreArgs = list(tt = tt))
