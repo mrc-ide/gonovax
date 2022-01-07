@@ -2,7 +2,7 @@
 % Please edit documentation in R/onevax_xvwrh.R
 \name{vax_params_xvwrh}
 \alias{vax_params_xvwrh}
-\title{create vaccination parameters for use in onevax_xvwrh model}
+\title{create vaccination parameters for use in vax_params_xvwv model}
 \usage{
 vax_params_xvwrh(
   vea = 0,
@@ -22,6 +22,18 @@ vax_params_xvwrh(
 )
 }
 \arguments{
+\item{vea}{scalar indicating efficacy of the vaccine against acquisition
+(between 0-1)}
+
+\item{vei}{scalar indicating efficacy of the vaccine against infectiousness
+(between 0-1)}
+
+\item{ved}{scalar indicating efficacy of the vaccine against duration
+(between 0-1)}
+
+\item{ves}{scalar indicating efficacy of the vaccine against symptoms
+(between 0-1)}
+
 \item{vea_revax}{scalar indicating efficacy of revaccination against
 acquisition (between 0-1)}
 
@@ -34,12 +46,25 @@ duration of infection (between 0-1)}
 \item{ves_revax}{scalar indicating efficacy of revaccination against
 symptoms (between 0-1)}
 
+\item{dur}{scalar indicating duration of the vaccine (in years)}
+
 \item{dur_revax}{duration of protection for revaccination,
 default to same as primary}
+
+\item{uptake}{scalar indicating pc of population vaccinated as part
+of strategy}
+
+\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+
+\item{vbe}{scalar indicating pc of population vaccinated before entry
+(between 0-1)}
+
+\item{t_stop}{time at which vaccination should stop (years)}
 }
 \value{
 A list parameters in the model input format
 }
 \description{
-create vaccination parameters for use in onevax_xvwrh model
+create vaccination parameters for use in vax_params_xvwv model
 }
