@@ -32,7 +32,7 @@ test_that("run_onevax_xvwrh works correctly", {
     y_h <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0.3)
 
     # population split between non-vaccinated and hesitant only
-    
+
     for (i in seq_along(y_h)) {
     expect_true(all(y_h[[i]]$N[1, , 5] > 0))
     expect_true(all(y_h[[i]]$N[1, , 1] > 0))
@@ -46,16 +46,16 @@ test_that("run_onevax_xvwrh works correctly", {
     for (i in seq_along(y_h)) {
     expect_true(all(y_h[[i]]$cum_incid[-1, , 5] > 0))
     }
-    
-    # if proportion hesitant is 0%, = outputs same as xvwr model 
-    
+
+    # if proportion hesitant is 0%, = outputs same as xvwr model
+
     y_h2 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0)
     y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3, vbe = 1)
 
-    expect_equal(rowSums(y_h2[[1]]$N[ , , 1]), rowSums(y_xvwr[[1]]$N[ , , 1]))
-    expect_equal(rowSums(y_h2[[1]]$N[ , , 2]), rowSums(y_xvwr[[1]]$N[ , , 2]))
-    expect_equal(rowSums(y_h2[[1]]$N[ , , 3]), rowSums(y_xvwr[[1]]$N[ , , 3]))
-    
+    expect_equal(rowSums(y_h2[[1]]$N[, , 1]), rowSums(y_xvwr[[1]]$N[, , 1]))
+    expect_equal(rowSums(y_h2[[1]]$N[, , 2]), rowSums(y_xvwr[[1]]$N[, , 2]))
+    expect_equal(rowSums(y_h2[[1]]$N[, , 3]), rowSums(y_xvwr[[1]]$N[, , 3]))
+
     uptake <- c(0.5, 1)
     # check VoD is working correctly
     y3e <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1e3, strategy = "VoD",
