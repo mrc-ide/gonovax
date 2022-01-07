@@ -2,7 +2,7 @@
 % Please edit documentation in R/onevax_xvwrh.R
 \name{vax_params_xvwrh}
 \alias{vax_params_xvwrh}
-\title{create vaccination parameters for use in vax_params_xvwv model}
+\title{create vaccination parameters for use in onevax_xvwrh model}
 \usage{
 vax_params_xvwrh(
   vea = 0,
@@ -66,5 +66,5 @@ of strategy}
 A list parameters in the model input format
 }
 \description{
-create vaccination parameters for use in vax_params_xvwv model
+create vaccination parameters for use in onevax_xvwrh model
 }
