@@ -22,7 +22,7 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
 
 ##' @name vax_params_xvwrh
 ##' @title create vaccination parameters for use in onevax_xvwrh model
-##' @inheritParams vax_params_xvwrh
+##' @inheritParams vax_params_xvwv
 ##' @param vea_revax scalar indicating efficacy of revaccination against
 ##'  acquisition (between 0-1)
 ##' @param vei_revax scalar indicating efficacy of revaccination against
