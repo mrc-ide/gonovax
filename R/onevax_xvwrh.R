@@ -39,7 +39,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             ved_revax = ved, ves_revax = ves,
                             dur = 1e3, dur_revax = dur, uptake = 0,
                             strategy = "VbE",
-                            vbe = 0, t_stop = 99) {
+                            vbe = 0, t_stop = 99, hes = 0) {
 
   assert_character(strategy)
   assert_scalar_unit_interval(vea)
@@ -82,6 +82,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei   = c(0, vei, 0, vei_revax, 0),
        ved   = c(0, ved, 0, ved_revax, 0),
        ves   = c(0, ves, 0, ves_revax, 0),
+       willing = c((1-hes), 0, 0, 0, hes),
        w     = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
@@ -128,7 +129,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,
-                    ved_revax = ved_revax, ves_revax = ves_revax,
+                    ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 
