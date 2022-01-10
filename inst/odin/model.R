@@ -40,7 +40,7 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
-entrants[, j] <- enr * q[i] * willing
+entrants[, ] <- enr * q[i] * willing[j]
 
 # calculate mixing matrix, probability of infection and force of infection
 C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
