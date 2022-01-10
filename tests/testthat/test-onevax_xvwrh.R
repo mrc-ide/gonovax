@@ -31,7 +31,7 @@ test_that("run_onevax_xvwrh works correctly", {
 
     y_h <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0.3)
 
-    # population split between non-vaccinated and hesitant only
+    # initial population split between non-vaccinated and hesitant only
 
     for (i in seq_along(y_h)) {
     expect_true(all(y_h[[i]]$N[1, , 5] > 0))
