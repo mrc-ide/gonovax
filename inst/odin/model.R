@@ -39,7 +39,8 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
 
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
-entrants[, 1] <- enr * q[i]
+
+entrants[, j] <- enr * q[i] * willing
 
 # calculate mixing matrix, probability of infection and force of infection
 C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
@@ -153,6 +154,7 @@ dim(cum_vbe)        <- c(n_group, n_vax)
 p[]     <- user()
 q[]     <- user()
 
+willing[] <- user()
 enr       <- user()
 exr       <- user()
 beta_t[]  <- user()
@@ -188,6 +190,7 @@ dim(eta_h_t) <- length(tt)
 
 dim(p)    <- n_group
 dim(q)    <- n_group
+dim(willing) <- n_vax
 dim(eta)  <- n_group
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
