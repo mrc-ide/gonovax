@@ -18,7 +18,8 @@ vax_params_xvwrh(
   uptake = 0,
   strategy = "VbE",
   vbe = 0,
-  t_stop = 99
+  t_stop = 99,
+  hes = 0
 )
 }
 \arguments{
@@ -61,6 +62,8 @@ of strategy}
 (between 0-1)}
 
 \item{t_stop}{time at which vaccination should stop (years)}
+
+\item{hes}{proportion of population vaccine hesitant}
 }
 \value{
 A list parameters in the model input format

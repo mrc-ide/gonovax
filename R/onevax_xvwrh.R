@@ -33,6 +33,7 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
 ##'  symptoms (between 0-1)
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
+##' @param hes proportion of population vaccine hesitant
 ##' @return A list parameters in the model input format
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             vea_revax = vea, vei_revax = vei,
