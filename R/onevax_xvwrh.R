@@ -136,16 +136,11 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 
     pars <- lapply(gono_params, model_params)
     init_params <- lapply(pars, initial_params_xvwrh, hes = hes)
+    }
 
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
                init_params = init_params,
                MoreArgs = list(tt = tt))
-
-  } else {
-    ret <- Map(run, gono_params = gono_params, init_params = init_params,
-               vax_params = vax_params,
-               MoreArgs = list(tt = tt))
-  }
 
   # name outputs
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
