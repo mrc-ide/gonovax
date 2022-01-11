@@ -16,9 +16,7 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   x_init <- willing * (1 - coverage)
   v_init <- willing * coverage
   cov <- c(x_init, v_init, 0, 0, hes)
-
-  #initial_params(pars, n_vax, cov)
-    
+  
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
     
