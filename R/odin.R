@@ -22,7 +22,7 @@ model_ <- R6::R6Class(
     user = c("A0", "beta_t", "enr", "epsilon", "eta_h_t", "eta_l_t", "exr",
              "I0", "mu", "nu", "p", "psi", "q", "rho", "S0", "sigma", "T0",
              "tt", "U0", "vax_t", "vax_y", "vbe", "vea", "ved", "vei", "ves",
-             "vod", "vos", "w", "n_vax"),
+             "vod", "vos", "w", "willing", "n_vax"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
