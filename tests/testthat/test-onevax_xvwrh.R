@@ -41,31 +41,31 @@ test_that("run_onevax_xvwrh works correctly", {
     expect_true(all(y_h[[i]]$N[1, , 3] == 0))
     expect_true(all(y_h[[i]]$N[1, , 4] == 0))
     }
-    
+
     # incidence in hesitant population increasing
-    
+
     for (i in seq_along(y_h)) {
       expect_true(all(y_h[[i]]$cum_incid[-1, , 5] > 0))
     }
 
     # yearly population entrants enter X and H strata
-    # in accordance with assigned proportion of hesitancy 'hes'  
-    
-     # H and X stratum sizes remain constant in time 
-   
+    # in accordance with assigned proportion of hesitancy 'hes'
+
+     # H and X stratum sizes remain constant in time
+
     y_h2 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, hes = 0.3)
-    
+
     expect_equal(y_h2[[1]]$N[, 1, 1])
     expect_equal(y_h2[[1]]$N[, 2, 1])
     expect_equal(y_h2[[1]]$N[, 1, 5])
     expect_equal(y_h2[[1]]$N[, 2, 5])
-    
+
     # H and X stratum equal when no vaccination and hes = 0.5
-    
+
     y_h3 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, hes = 0.5)
-    
+
     expect_equal(y_h2[[1]]$N[, , 1], y_h2[[1]]$N[, , 5])
-    
+
     # if proportion hesitant is 0%, = outputs same as xvwr model
 
     y_h3 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0)
@@ -172,7 +172,6 @@ test_that("run_onevax_xvwrh works correctly", {
       # but not in XWV
       expect_true(all(y7e[[i]]$cum_incid[-1, , -c(4)] > 0))
     }
-    
 
-    
+
 })
