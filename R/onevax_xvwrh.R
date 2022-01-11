@@ -163,3 +163,54 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret
 }
+
+############## ADD DOCUMENTATION
+
+## restart hesitancy function --> ensures that after a baseline run (no vaccination, no hesitancy)
+# --> the correct starting conditins exist in the equilibrated X and H stratum
+
+restart_hes <- function(y, n_vax = NULL, hes = 0) {
+  
+  dim_y <- dim(y[["U"]])
+  
+  for (i in dim_y[1]) {
+    if (rowSums(y$N[, , n_vax])[i] > 0) {
+      stop
+    }
+  }
+  
+  ### make sure this stop function works ^^^
+  ### add stop if theres been vaccination too! 
+  
+  i_t <- dim_y[1]                            # number of timepoints
+  n_vax <- n_vax %||% dim_y[3]               # number of strata 
+  
+  n_vax_input <- dim_y[3]
+  i_vax <- seq_len(min(n_vax,  n_vax_input)) # sequence from 1 --> number of strata
+  
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))  #creates blank array, 2activity groups by number of strata and assigns to all compartments at new time zero
+  # set compartments in each group
+  U0[, i_vax] <- y$U[i_t, , i_vax]  # takes the number in compartment U, for both activity groups, at the final timepoint for all strata, writes into
+  I0[, i_vax] <- y$I[i_t, , i_vax]
+  A0[, i_vax] <- y$A[i_t, , i_vax]
+  S0[, i_vax] <- y$S[i_t, , i_vax]
+  T0[, i_vax] <- y$T[i_t, , i_vax]
+  
+  # move correct number from equilibrium X to H
+  U0[, n_vax] <- h <- U0[, 1] * hes 
+  U0[, 1] <- U0[, 1] - h
+  
+  I0[, n_vax] <- h <- I0[, 1] * hes 
+  I0[, 1] <- I0[, 1] - h
+  
+  A0[, n_vax] <- h <- A0[, 1] * hes 
+  A0[, 1] <- A0[, 1] - h
+  
+  S0[, n_vax] <- h <- S0[, 1] * hes 
+  S0[, 1] <- S0[, 1] - h
+  
+  T0[, n_vax] <- h <- T0[, 1] * hes 
+  T0[, 1] <- T0[, 1] - h
+  
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
+}
