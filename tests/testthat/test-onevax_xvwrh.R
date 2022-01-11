@@ -18,13 +18,14 @@ test_that("run_onevax_xvwrh works correctly", {
                                                                    max(tt)))
     # check this is still the case when hesitancy > 0
     y2.1 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0.5)
-    
-    expect_equal(diff(rowSums(y2.1[[1]]$cum_vaccinated[, , 1])), rep((12e3)/2,
+
+    expect_equal(diff(rowSums(y2.1[[1]]$cum_vaccinated[, , 1])), rep((12e3) / 2,
                                                                    max(tt)))
     # check no vaccination in hesitant entrants for vbe = 100%
-    
-    expect_equal((rowSums(y2.1[[1]]$cum_vaccinated[, , 5])), rep(0, max(tt)+1))
-    
+
+    expect_equal((rowSums(y2.1[[1]]$cum_vaccinated[, , 5])), rep(0,
+                                                                 max(tt) + 1))
+
     # check can restart
     init_params <- lapply(y2, restart_params)
     y3 <- run_onevax_xvwrh(seq(max(tt), length.out = 2, by = 1),
@@ -74,9 +75,9 @@ test_that("run_onevax_xvwrh works correctly", {
     y_h3 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, hes = 0.5)
 
     expect_equal(y_h3[[1]]$N[, , 1], y_h3[[1]]$N[, , 5])
-    
+
       # Number of infections in X and H equal for no vaccination and hes = 0.5
-    
+
     expect_equal(y_h3[[1]]$cum_incid[, , 1], y_h3[[1]]$cum_incid[, , 5])
 
     # if proportion hesitant is 0%, = outputs same as xvwr model
@@ -87,7 +88,7 @@ test_that("run_onevax_xvwrh works correctly", {
     expect_equal(rowSums(y_h4[[1]]$N[, , 1]), rowSums(y_xvwr[[1]]$N[, , 1]))
     expect_equal(rowSums(y_h4[[1]]$N[, , 2]), rowSums(y_xvwr[[1]]$N[, , 2]))
     expect_equal(rowSums(y_h4[[1]]$N[, , 3]), rowSums(y_xvwr[[1]]$N[, , 3]))
-    
+
     expect_equal(rowSums(y_h4[[1]]$U[, , 1]), rowSums(y_xvwr[[1]]$U[, , 1]))
     expect_equal(rowSums(y_h4[[1]]$U[, , 2]), rowSums(y_xvwr[[1]]$U[, , 2]))
     expect_equal(rowSums(y_h4[[1]]$U[, , 3]), rowSums(y_xvwr[[1]]$U[, , 3]))
