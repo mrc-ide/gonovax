@@ -17,7 +17,24 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   v_init <- willing * coverage
   cov <- c(x_init, v_init, 0, 0, hes)
 
-  initial_params(pars, n_vax, cov)
+  #initial_params(pars, n_vax, cov)
+    
+  stopifnot(length(cov) == n_vax)
+  stopifnot(sum(cov) == 1)
+    
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+    
+  # separate into 1:low and 2:high activity groups and by coverage
+  N0 <- pars$N0 * outer(pars$q, cov)
+  # set initial asymptomatic prevalence in each group (X AND H)
+  A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
+  A0[, n_vax] <- round(N0[, n_vax] * c(pars$prev_Asl, pars$prev_Ash))
+  
+  # set initial uninfecteds
+  U0 <- round(N0) - A0
+    
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+  
 }
 
 ##' @name vax_params_xvwrh
