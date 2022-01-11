@@ -8,14 +8,23 @@ test_that("run_onevax_xvwrh works correctly", {
     # check no-one is vaccinated with v switched off
     expect_true(all(y1$cum_vaccinated == 0))
 
-    y2 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1)
     # check 100% vbe vaccinates all new entrants
-    expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
-                                                                   max(tt)))
+    y2 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1)
 
     # and no-one else
     expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
 
+    expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
+                                                                   max(tt)))
+    # check this is still the case when hesitancy > 0
+    y2.1 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0.5)
+    
+    expect_equal(diff(rowSums(y2.1[[1]]$cum_vaccinated[, , 1])), rep((12e3)/2,
+                                                                   max(tt)))
+    # check no vaccination in hesitant entrants for vbe = 100%
+    
+    expect_equal((rowSums(y2.1[[1]]$cum_vaccinated[, , 5])), rep(0, max(tt)+1))
+    
     # check can restart
     init_params <- lapply(y2, restart_params)
     y3 <- run_onevax_xvwrh(seq(max(tt), length.out = 2, by = 1),
@@ -55,25 +64,25 @@ test_that("run_onevax_xvwrh works correctly", {
 
     y_h2 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, hes = 0.3)
 
-    expect_equal(y_h2[[1]]$N[, 1, 1])
-    expect_equal(y_h2[[1]]$N[, 2, 1])
-    expect_equal(y_h2[[1]]$N[, 1, 5])
-    expect_equal(y_h2[[1]]$N[, 2, 5])
+    expect_equal(y_h2[[1]]$N[1, 1, 1], y_h2[[1]]$N[5, 1, 1])
+    expect_equal(y_h2[[1]]$N[1, 2, 1], y_h2[[1]]$N[5, 2, 1])
+    expect_equal(y_h2[[1]]$N[1, 1, 5], y_h2[[1]]$N[5, 1, 5])
+    expect_equal(y_h2[[1]]$N[1, 2, 5], y_h2[[1]]$N[5, 2, 5])
 
     # H and X stratum equal when no vaccination and hes = 0.5
 
     y_h3 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, hes = 0.5)
 
-    expect_equal(y_h2[[1]]$N[, , 1], y_h2[[1]]$N[, , 5])
+    expect_equal(y_h3[[1]]$N[, , 1], y_h3[[1]]$N[, , 5])
 
     # if proportion hesitant is 0%, = outputs same as xvwr model
 
-    y_h3 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0)
+    y_h4 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1, hes = 0)
     y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3, vbe = 1)
 
-    expect_equal(rowSums(y_h3[[1]]$N[, , 1]), rowSums(y_xvwr[[1]]$N[, , 1]))
-    expect_equal(rowSums(y_h3[[1]]$N[, , 2]), rowSums(y_xvwr[[1]]$N[, , 2]))
-    expect_equal(rowSums(y_h3[[1]]$N[, , 3]), rowSums(y_xvwr[[1]]$N[, , 3]))
+    expect_equal(rowSums(y_h4[[1]]$N[, , 1]), rowSums(y_xvwr[[1]]$N[, , 1]))
+    expect_equal(rowSums(y_h4[[1]]$N[, , 2]), rowSums(y_xvwr[[1]]$N[, , 2]))
+    expect_equal(rowSums(y_h4[[1]]$N[, , 3]), rowSums(y_xvwr[[1]]$N[, , 3]))
 
 
     uptake <- c(0.5, 1)
