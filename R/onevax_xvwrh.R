@@ -74,9 +74,6 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved_revax <- min(ved_revax, 1 - 1e-10)
 
   p <- set_strategy(strategy, uptake)
-  
-  print(create_vax_map(n_vax, vbe, i_eligible, i_v))
-  print(create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)))
 
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
