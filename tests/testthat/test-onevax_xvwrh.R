@@ -191,5 +191,40 @@ test_that("run_onevax_xvwrh works correctly", {
       expect_true(all(y7e[[i]]$cum_incid[-1, , -c(4)] > 0))
     }
 
+  ## test restart with hesitancy is working
+
+  y8 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3)
+
+  i_p <- lapply(y8, restart_hes, n_vax = 5, hes = 0.5)
+  y_hesres <- run_onevax_xvwrh(tt, gp, init_params = i_p, vea = 0, dur = 1e3,
+                               hes = 0.5)
+
+  # final timepoint y8 run = 2 * first timepoint of y_hesres run (as hes = 0.5)
+  # (for XVWR)
+  for (i in seq_along(y8)) {
+    expect_equal(y8[[i]]$U[length(tt), , 1:4], y_hesres[[i]]$U[1, , 1:4] * 2)
+    expect_equal(y8[[i]]$I[length(tt), , 1:4], y_hesres[[i]]$I[1, , 1:4] * 2)
+    expect_equal(y8[[i]]$A[length(tt), , 1:4], y_hesres[[i]]$A[1, , 1:4] * 2)
+    expect_equal(y8[[i]]$S[length(tt), , 1:4], y_hesres[[i]]$S[1, , 1:4] * 2)
+    expect_equal(y8[[i]]$T[length(tt), , 1:4], y_hesres[[i]]$T[1, , 1:4] * 2)
+  }
+
+  # restart_hes moves X -> H only, and correctly
+
+  for (i in seq_along(y_hesres)) {
+    expect_equal(y_hesres[[i]]$U[, , 1], y_hesres[[i]]$U[, , 5])
+    expect_equal(y_hesres[[i]]$I[, , 1], y_hesres[[i]]$I[, , 5])
+    expect_equal(y_hesres[[i]]$A[, , 1], y_hesres[[i]]$A[, , 5])
+    expect_equal(y_hesres[[i]]$S[, , 1], y_hesres[[i]]$S[, , 5])
+    expect_equal(y_hesres[[i]]$T[, , 1], y_hesres[[i]]$T[, , 5])
+
+    expect_equal(rowSums(y8[[i]]$U[, , 2:4]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$I[, , 2:4]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$A[, , 2:4]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$S[, , 2:4]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$T[, , 2:4]), rep(0, length(tt)))
+
+  }
+
 
 })
