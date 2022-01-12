@@ -167,7 +167,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ############## ADD DOCUMENTATION
 
 ## restart hesitancy function --> ensures that after a baseline run (no vaccination, no hesitancy)
-# --> the correct starting conditins exist in the equilibrated X and H stratum
+# --> the correct starting conditions exist in the equilibrated X and H stratum
 
 restart_hes <- function(y, n_vax = NULL, hes = 0) {
   
