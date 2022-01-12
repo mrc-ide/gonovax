@@ -164,33 +164,44 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   ret
 }
 
-############## ADD DOCUMENTATION
+##' @name restart_hes
+##' @title uses XVWRH model run in the absence of vaccination or hesitancy.
+##' Saves down the number of individuals in each compartment, and moves
+##' a given proportion (hes) of them from the X to the H strata to generate
+##' new initial conditions in the presence of hesitancy.
+##' @param y output of runonevax_xvwrh in absence of vaccination and hes = 0,
+##' usually to equilibrium
+##' @param n_vax number of stratum in model run y
+##' @param hesproportion of population vaccine hesitant
+##' @return A list of initial conditions to restart a model with n_vax
+##' vaccination levels, and a populated hestitant stratum in the given
+##' proportion 'hes'
+##' @export
 
-## restart hesitancy function --> ensures that after a baseline run (no vaccination, no hesitancy)
-# --> the correct starting conditions exist in the equilibrated X and H stratum
+restart_hes <- function(y, n_vax = 5, hes = 0) {
 
-restart_hes <- function(y, n_vax = NULL, hes = 0) {
-  
   dim_y <- dim(y[["U"]])
-  
-  for (i in dim_y[1]) {
-    if (rowSums(y$N[, , n_vax])[i] > 0) {
-      stop
-    }
+
+   if (rowSums(y$N[, , n_vax])[dim_y[1]] > 0) {
+    stop("Provided model run already contains hesitancy > 0")
+   }
+
+  if (rowSums(y$N[, , 2])[dim_y[1]] > 0) {
+    stop("Provided model run has vaccination, baseline run should have all V
+          = 0")
   }
-  
-  ### make sure this stop function works ^^^
-  ### add stop if theres been vaccination too! 
-  
-  i_t <- dim_y[1]                            # number of timepoints
-  n_vax <- n_vax %||% dim_y[3]               # number of strata 
+
+  i_t <- dim_y[1]                     # number of timepoints
+  n_vax <- n_vax %||% dim_y[3]        # number of strata 
   
   n_vax_input <- dim_y[3]
-  i_vax <- seq_len(min(n_vax,  n_vax_input)) # sequence from 1 --> number of strata
+  i_vax <- seq_len(min(n_vax,  n_vax_input))
   
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))  #creates blank array, 2activity groups by number of strata and assigns to all compartments at new time zero
-  # set compartments in each group
-  U0[, i_vax] <- y$U[i_t, , i_vax]  # takes the number in compartment U, for both activity groups, at the final timepoint for all strata, writes into
+  #create blank array, 2activity groups by number of strata
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))  
+  
+  # set compartments new initial conditions based on final position of y
+  U0[, i_vax] <- y$U[i_t, , i_vax]
   I0[, i_vax] <- y$I[i_t, , i_vax]
   A0[, i_vax] <- y$A[i_t, , i_vax]
   S0[, i_vax] <- y$S[i_t, , i_vax]
