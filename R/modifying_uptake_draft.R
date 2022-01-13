@@ -3,6 +3,31 @@
 # primary uptake will be calculated outside of the model
 # booster uptake will be chosen later, for now use 0.3 but can tweak later
 
+## drafting generating inputs
+
+# no w
+sequence <- seq(0, 1, 0.1)
+
+uptake <- (expand.grid(sequence,sequence)) 
+names(uptake)[1] <- "r1"
+names(uptake)[2] <- "r2"
+
+#get proportion of people protected from primary vaccination (not thinking about doses per person protected yet)
+uptake <- uptake %>% mutate(primary = r1*r2)
+
+#add proportion for booster vaccination
+uptake <- uptake %>% mutate(booster = 0.3)
+
+#a test run where w = 0, will look like:
+tt <- seq(0, 5)
+gp <- gonovax::gono_params(1:2)
+y1 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, primary_uptake = uptake$primary, booster_uptake = uptake$booster)[[1]]
+
+#now need to make sure they are supplied in the correct way! 
+
+######### functions to modify #####################
+
+### ADD DOCUMENTATION FOR NEW UPTAKE PARAMETERS ##
 
 ##' @name vax_params_xvwrh
 ##' @title create vaccination parameters for use in onevax_xvwrh model
@@ -22,8 +47,8 @@
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
-                             dur = 1e3, dur_revax = dur, uptake = 0,
-                             strategy = "VbE",
+                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
+                             booster_uptake = 0, strategy = "VbE",
                              vbe = 0, t_stop = 99, hes = 0) {
   
   assert_character(strategy)
@@ -46,12 +71,15 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # there is no movement between the willing (x,v,w,r) and hesitant (h)
   # 1:x -> 2:v -> 3:w <-> 4:r
   # 5:h
-  i_eligible <- c(1, 3)
+  i_eligible <- c(1, 3)             #X and W are eligible for vaccination 
   i_w <- 3
-  i_v <- c(2, 4)
+  i_v <- c(2, 4)                    #V(2) and R(4) are protected 
   
   #number of compartments
   n_vax <- 5
+  
+  #make uptake vector
+  uptake <- c(primary_uptake, booster_uptake)
   
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
@@ -73,6 +101,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vax_y = c(1, 0)
   )
 }
+
+### ADD DOCUMENTATION FOR NEW UPTAKE PARAMETERS ##
 
 ##' @name run_onevax_xvwrh
 ##' @title run model with single vaccine for input parameter sets, either from
@@ -102,7 +132,8 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              dur_revax = dur,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
-                             vbe = 0, uptake = 0, strategy = "VbE",
+                             vbe = 0, primary_uptake = 0,
+                             booster_uptake = 0, strategy = "VbE",
                              t_stop = 99, hes = 0) {
   
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur,
@@ -110,7 +141,8 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              dur_revax)) %in%
                   c(1, length(gono_params))))
   
-  vax_params <- Map(vax_params_xvwrh, uptake = uptake, dur = dur,
+  vax_params <- Map(vax_params_xvwrh, primary_uptake = primary_uptake,
+                    booster_uptake = booster_uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,
@@ -133,6 +165,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   ret
 }
 
+### ADD DOCUMENTATION FOR NEW UPTAKE PARAMETERS ##
 
 ##' @name create_vax_map
 ##' @title Create mapping for movement between strata due to vaccination
@@ -144,7 +177,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v, i_u, i_v) {
+create_vax_map <- function(n_vax, v, i_u, i_v) {           #note to self look at the vax map and see if its right!? 
   
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -163,3 +196,55 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   
   vax_map
 }
+
+
+## need to also modify set strategy I think?
+
+set_strategy <- function(strategy, uptake) {
+  
+  if (length(uptake) != 2) {
+    stop("uptake must be length 2")                #changed uptake to length 2! to ensure X and W experience different uptakes
+  }
+  
+  if (strategy == "VbE") {
+    vos <- vod <- 0
+  } else if (strategy == "VoD") {
+    vod <- uptake
+    vos <- 0
+  } else if (strategy == "VoA") {
+    vod <- uptake
+    vos <- uptake
+  } else if (strategy == "VoD(H)") {
+    vod <- c(0, uptake)
+    vos <- 0
+  } else if (strategy == "VoA(H)") {
+    vod <- c(0, uptake)
+    vos <- c(0, uptake)
+  } else if (strategy == "VoD(L)+VoA(H)") {
+    vod <- uptake
+    vos <- c(0, uptake)
+  } else if (strategy == "VoS") {
+    vod <- 0
+    vos <- uptake
+  } else {
+    stop("strategy not recognised")
+  }
+  
+  list(vod = vod, vos = vos)
+}
+
+check_gono_params <- function(pars) {
+  with(pars, {
+    assert_scalar_unit_interval(psi)
+    assert_scalar_unit_interval(prev_Asl)
+    assert_scalar_unit_interval(prev_Ash)
+    assert_scalar_unit_interval(epsilon)
+    assert_scalar_positive(sigma)
+    assert_scalar_positive(nu)
+    assert_scalar_positive(mu)
+    assert_scalar_positive(rho)
+  })
+}
+
+
+
