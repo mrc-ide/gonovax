@@ -1,3 +1,7 @@
+### Need to modify these both so we can differentiate between primary vaccination (r1r2) and booster vaccination
+## 
+
+
 # Key to indices
 # i = Activity group
 ## 1: Low
