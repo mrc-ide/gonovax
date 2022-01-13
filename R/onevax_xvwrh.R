@@ -172,7 +172,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @param y output of runonevax_xvwrh in absence of vaccination and hes = 0,
 ##' usually to equilibrium
 ##' @param n_vax number of stratum in model run y
-##' @param hesproportion of population vaccine hesitant
+##' @param hes proportion of population vaccine hesitant
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'

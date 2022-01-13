@@ -15,7 +15,7 @@ usually to equilibrium}
 
 \item{n_vax}{number of stratum in model run y}
 
-\item{hesproportion}{of population vaccine hesitant}
+\item{hes}{proportion of population vaccine hesitant}
 }
 \value{
 A list of initial conditions to restart a model with n_vax
