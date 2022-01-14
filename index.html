@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -74,28 +70,28 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="gonovax" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#gonovax" class="anchor"></a>gonovax</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="gonovax">gonovax<a class="anchor" aria-label="anchor" href="#gonovax"></a>
+</h1></div>
 <!-- badges: start -->
 
 <p>This package implements a compartmental model of gonorrhoea infection with vaccination.</p>
 <p><img src="reference/figures/vax_diagram.png" align="center" style="border: none; float: center;" width="800px"></p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>You will need a compiler to install dependencies for the package, and to build the models. Use <code><a href="https://rdrr.io/pkg/pkgbuild/man/has_build_tools.html">pkgbuild::check_build_tools()</a></code> to see if your system is usable.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You will need a compiler to install dependencies for the package, and to build the models. Use <code><a href="https://rdrr.io/pkg/pkgbuild/man/has_build_tools.html" class="external-link">pkgbuild::check_build_tools()</a></code> to see if your system is usable.</p>
 <p>You will need the packages <code>odin</code> and <code>mcstate</code>, which can be installed using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/odin"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/mcstate"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/odin"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/mcstate"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>The package can then be installed directly from GitHub with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/gonovax"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/gonovax"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="license" class="section level2">
-<h2 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h2>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
 <p>MIT © Imperial College of Science, Technology and Medicine</p>
 </div>
 </div>
@@ -103,40 +99,52 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing gonovax</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Lilith Whittles <br><small class="roles"> Author, maintainer </small>  </li>
 <li>Dariya Nikitin <br><small class="roles"> Author </small>  </li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.repostatus.org/#concept"><img src="https://www.repostatus.org/badges/latest/concept.svg" alt="Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept."></a></li>
-<li><a href="https://github.com/mrc-ide/gonovax/actions"><img src="https://github.com/mrc-ide/gonovax/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://www.codefactor.io/repository/github/mrc-ide/gonovax"><img src="https://www.codefactor.io/repository/github/mrc-ide/gonovax/badge?s=1d60596994e72a75be157e74ec8e23948e90fc31" alt="CodeFactor"></a></li>
-<li><a href="https://codecov.io/gh/mrc-ide/gonovax"><img src="https://codecov.io/gh/mrc-ide/gonovax/branch/master/graph/badge.svg?token=9u8S3v45AX" alt="codecov"></a></li>
+<li><a href="https://www.repostatus.org/#concept" class="external-link"><img src="https://www.repostatus.org/badges/latest/concept.svg" alt="Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept."></a></li>
+<li><a href="https://github.com/mrc-ide/gonovax/actions" class="external-link"><img src="https://github.com/mrc-ide/gonovax/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://www.codefactor.io/repository/github/mrc-ide/gonovax" class="external-link"><img src="https://www.codefactor.io/repository/github/mrc-ide/gonovax/badge?s=1d60596994e72a75be157e74ec8e23948e90fc31" alt="CodeFactor"></a></li>
+<li><a href="https://codecov.io/gh/mrc-ide/gonovax" class="external-link"><img src="https://codecov.io/gh/mrc-ide/gonovax/branch/master/graph/badge.svg?token=9u8S3v45AX" alt="codecov"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Lilith Whittles, Dariya Nikitin.</p>
+  <p></p>
+<p>Developed by Lilith Whittles, Dariya Nikitin.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -144,6 +152,8 @@
 
   
 
+
+  
 
   </body>
 </html>
