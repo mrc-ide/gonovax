@@ -48,15 +48,21 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
 ##'  symptoms (between 0-1)
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
+##' @param primary_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking primary 
+##'  vaccination as part of strategy 
+##' @param booster_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking booster 
+##'  vaccination after primary vaccination protection has waned
 ##' @param hes proportion of population vaccine hesitant
 ##' @return A list parameters in the model input format
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                            vea_revax = vea, vei_revax = vei,
-                            ved_revax = ved, ves_revax = ves,
-                            dur = 1e3, dur_revax = dur, uptake = 0,
-                            strategy = "VbE",
-                            vbe = 0, t_stop = 99, hes = 0) {
-
+                             vea_revax = vea, vei_revax = vei,
+                             ved_revax = ved, ves_revax = ves,
+                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
+                             booster_uptake = 0, strategy = "VbE",
+                             vbe = 0, t_stop = 99, hes = 0) {
+  
   assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -77,23 +83,26 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # there is no movement between the willing (x,v,w,r) and hesitant (h)
   # 1:x -> 2:v -> 3:w <-> 4:r
   # 5:h
-  i_eligible <- c(1, 3)
+  i_eligible <- c(1, 3)             #X and W are eligible for vaccination 
   i_w <- 3
-  i_v <- c(2, 4)
-
+  i_v <- c(2, 4)                    #V(2) and R(4) are protected 
+  
   #number of compartments
   n_vax <- 5
-
+  
+  #make uptake vector
+  uptake <- c(primary_uptake, booster_uptake)
+  
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-
-  p <- set_strategy(strategy, uptake)
-
+  
+  p <- set_strategy_booster(strategy, uptake)
+  
   list(n_vax = n_vax,
-       vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
-       vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v),
+       vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),
+       vos   = create_vax_map_booster(n_vax, p$vos, i_eligible, i_v),
        vea   = c(0, vea, 0, vea_revax, 0),
        vei   = c(0, vei, 0, vei_revax, 0),
        ved   = c(0, ved, 0, ved_revax, 0),
@@ -125,40 +134,48 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  giving duration of protection for revaccination, default to same as primary
 ##' @param hes Proportion of individuals in the population who are vaccine
 ##'  hesitant
+##' @param primary_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking primary 
+##'  vaccination as part of strategy 
+##' @param booster_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking booster 
+##'  vaccination after primary vaccination protection has waned
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
-                            dur = 1e3, vea = 0, vei = 0, ved = 0, ves = 0,
-                            dur_revax = dur,
-                            vea_revax = vea, vei_revax = vei,
-                            ved_revax = ved, ves_revax = ves,
-                            vbe = 0, uptake = 0, strategy = "VbE",
-                            t_stop = 99, hes = 0) {
-
+                             dur = 1e3, vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur_revax = dur,
+                             vea_revax = vea, vei_revax = vei,
+                             ved_revax = ved, ves_revax = ves,
+                             vbe = 0, primary_uptake = 0,
+                             booster_uptake = 0, strategy = "VbE",
+                             t_stop = 99, hes = 0) {
+  
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur,
                              vea_revax, vei_revax, ved_revax, ves_revax,
                              dur_revax)) %in%
                   c(1, length(gono_params))))
-
-  vax_params <- Map(vax_params_xvwrh, uptake = uptake, dur = dur,
+  
+  vax_params <- Map(vax_params_xvwrh, primary_uptake = primary_uptake,
+                    booster_uptake = booster_uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
-
+  
   if (is.null(init_params)) {
-
+    
     pars <- lapply(gono_params, model_params)
     init_params <- lapply(pars, initial_params_xvwrh, hes = hes)
-    }
-
-    ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
-               init_params = init_params,
-               MoreArgs = list(tt = tt))
-
+  }
+  
+  ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
+             init_params = init_params,
+             MoreArgs = list(tt = tt))
+  
   # name outputs
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret
@@ -225,4 +242,83 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
 
+}
+
+
+##' @name create_vax_map_booster
+##' @title Create mapping for movement between strata due to vaccination where
+##' primary vaccination and booster vaccination can be different %s of uptake
+##' to one another
+##' @param n_vax Integer in (0, 5) denoting total number of strata
+##' @param v vector of length 2 indicating % of population vaccinated according 
+##' to the strategy, each value will apply to the eligible stratum separately
+##' @param i_u indices of strata eligible for vaccination
+##' @param i_v indices of strata being vaccinated
+##' @return an array of the mapping
+
+create_vax_map_booster <- function(n_vax, v, i_u, i_v) {           #note to self look at the vax map and see if its right!? 
+  
+  # ensure vaccine input is of correct length
+  n_group <- 2
+  stopifnot(length(v) %in% c(1, n_group))
+  stopifnot(all((v >= 0) & (v <= 1)))
+  stopifnot(length(i_v) == length(i_u))
+  stopifnot(max(i_u, i_v) <= n_vax)
+  
+  # set up vaccination matrix
+  vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
+  
+  for (i in seq_along(i_u)) {
+    vax_map[, i_u[i], i_u[i]] <-  v[i]
+    vax_map[, i_v[i], i_u[i]] <- -v[i]
+  }
+  
+  vax_map
+}
+
+
+set_strategy_booster <- function(strategy, uptake) {
+  
+  if (length(uptake) != 2) {
+    stop("uptake must be length 2")
+  }
+
+  if (strategy == "VbE") {
+    vos <- vod <- 0
+  } else if (strategy == "VoD") {
+    vod <- uptake
+    vos <- 0
+  } else if (strategy == "VoA") {
+    vod <- uptake
+    vos <- uptake
+  } else if (strategy == "VoD(H)") {
+    vod <- c(0, uptake)
+    vos <- 0
+  } else if (strategy == "VoA(H)") {
+    vod <- c(0, uptake)
+    vos <- c(0, uptake)
+  } else if (strategy == "VoD(L)+VoA(H)") {
+    vod <- uptake
+    vos <- c(0, uptake)
+  } else if (strategy == "VoS") {
+    vod <- 0
+    vos <- uptake
+  } else {
+    stop("strategy not recognised")
+  }
+  
+  list(vod = vod, vos = vos)
+}
+
+check_gono_params <- function(pars) {
+  with(pars, {
+    assert_scalar_unit_interval(psi)
+    assert_scalar_unit_interval(prev_Asl)
+    assert_scalar_unit_interval(prev_Ash)
+    assert_scalar_unit_interval(epsilon)
+    assert_scalar_positive(sigma)
+    assert_scalar_positive(nu)
+    assert_scalar_positive(mu)
+    assert_scalar_positive(rho)
+  })
 }
