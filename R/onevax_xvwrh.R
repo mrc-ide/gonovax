@@ -74,7 +74,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(ves_revax)
   assert_scalar_positive(dur)
   assert_scalar_positive(dur_revax)
-  assert_scalar_unit_interval(uptake)
+  assert_scalar_unit_interval(primary_uptake)
+  assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
   # waned vaccinees move to own stratum, but are eligible for re-vaccination
@@ -97,8 +98,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
   
-  p <- set_strategy_booster(strategy, uptake)
-  
+  p <- set_strategy_booster(strategy, uptake) 
+
   list(n_vax = n_vax,
        vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v),
        vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),
@@ -152,7 +153,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              booster_uptake = 0, strategy = "VbE",
                              t_stop = 99, hes = 0) {
   
-  stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur,
+  stopifnot(all(lengths(list(booster_uptake, primary_uptake, vea, vei, ved, ves, dur,
                              vea_revax, vei_revax, ved_revax, ves_revax,
                              dur_revax)) %in%
                   c(1, length(gono_params))))
@@ -165,7 +166,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
-  
+
   if (is.null(init_params)) {
     
     pars <- lapply(gono_params, model_params)
@@ -258,7 +259,7 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
 
 create_vax_map_booster <- function(n_vax, v, i_u, i_v) {           #note to self look at the vax map and see if its right!? 
   
-  # ensure vaccine input is of correct length
+  # ensure vaccine input is of correct length             vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v)
   n_group <- 2
   stopifnot(length(v) %in% c(1, n_group))
   stopifnot(all((v >= 0) & (v <= 1)))
@@ -268,11 +269,15 @@ create_vax_map_booster <- function(n_vax, v, i_u, i_v) {           #note to self
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
   
+  if (length(v) == 1){
+    v <- c(v,v)
+  }
+  
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v[i]
     vax_map[, i_v[i], i_u[i]] <- -v[i]
   }
-  
+  print(vax_map)
   vax_map
 }
 
@@ -284,24 +289,28 @@ set_strategy_booster <- function(strategy, uptake) {
   }
 
   if (strategy == "VbE") {
-    vos <- vod <- 0
+    vos <- vod <- c(0,0)
   } else if (strategy == "VoD") {
     vod <- uptake
-    vos <- 0
+    vos <- c(0,0)
   } else if (strategy == "VoA") {
     vod <- uptake
     vos <- uptake
   } else if (strategy == "VoD(H)") {
-    vod <- c(0, uptake)
-    vos <- 0
+    #vod <- c(0, uptake)
+    vod <- uptake
+    vos <- c(0,0)
   } else if (strategy == "VoA(H)") {
-    vod <- c(0, uptake)
-    vos <- c(0, uptake)
+    #vod <- c(0, uptake)
+    #vos <- c(0, uptake) temporary until i come up with a solution 
+    vod <- uptake
+    vos <- uptake
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- uptake
-    vos <- c(0, uptake)
+    #vos <- c(0, uptake)
+    vos <- uptake
   } else if (strategy == "VoS") {
-    vod <- 0
+    vod <- c(0,0)
     vos <- uptake
   } else {
     stop("strategy not recognised")
