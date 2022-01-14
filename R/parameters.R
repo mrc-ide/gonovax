@@ -128,9 +128,9 @@ initial_params <- function(pars, n_vax = 1, coverage = 1) {
   stopifnot(sum(coverage) == 1)
 
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
   # separate into 1:low and 2:high activity groups and by coverage
   N0 <- pars$N0 * outer(pars$q, coverage)
-
   # set initial asymptomatic prevalence in each group (unvaccinated only)
   A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
 

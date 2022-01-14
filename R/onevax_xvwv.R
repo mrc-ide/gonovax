@@ -50,6 +50,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei   = vei * ve,
        ved   = ved * ve,
        ves   = ves * ve,
+       willing = c(1, 0, 0),
        w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
        vax_t = c(0, t_stop),
        vax_y = c(1, 0)
