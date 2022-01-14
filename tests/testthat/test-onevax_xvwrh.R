@@ -225,6 +225,17 @@ test_that("run_onevax_xvwrh works correctly", {
     expect_equal(rowSums(y8[[i]]$T[, , 2:4]), rep(0, length(tt)))
 
   }
+  
+  # restart_hes gives error if baseline model run provided already has hesitancy
 
+  y9 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, hes = 0.5)
+
+  expect_error(lapply(y9, restart_hes, n_vax = 5, hes = 0.5))
+
+  # restart_hes gives error if baseline model run provided contains vaccinated
+
+  y10 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1)
+  
+  expect_error(lapply(y10, restart_hes, n_vax = 5, hes = 0.5))
 
 })
