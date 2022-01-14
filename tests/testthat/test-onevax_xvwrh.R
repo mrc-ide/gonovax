@@ -2,7 +2,7 @@
 
 test_that("run_onevax_xvwrh works correctly", {
     tt <- seq(0, 5)
-    gp <- gonovax::gono_params(1:2)
+    gp <- gono_params(1:2)
     y1 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3)[[1]]
 
     # check no-one is vaccinated with v switched off
