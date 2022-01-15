@@ -99,8 +99,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   list(n_vax = n_vax,
        vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v),
-       vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),      #add strategy argument here??
-       vos   = create_vax_map_booster(n_vax, p$vos, i_eligible, i_v),      #and here?? 
+       vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),
+       vos   = create_vax_map_booster(n_vax, p$vos, i_eligible, i_v),
        vea   = c(0, vea, 0, vea_revax, 0),
        vei   = c(0, vei, 0, vei_revax, 0),
        ved   = c(0, ved, 0, ved_revax, 0),
