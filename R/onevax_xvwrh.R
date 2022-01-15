@@ -91,19 +91,16 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   #number of compartments
   n_vax <- 5
   
-  #make uptake vector
-  uptake <- c(primary_uptake, booster_uptake)
-  
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
   
-  p <- set_strategy_booster(strategy, uptake) 
+  p <- set_strategy_booster(strategy, primary_uptake, booster_uptake) 
 
   list(n_vax = n_vax,
        vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v),
-       vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),
-       vos   = create_vax_map_booster(n_vax, p$vos, i_eligible, i_v),
+       vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),      #add strategy argument here??
+       vos   = create_vax_map_booster(n_vax, p$vos, i_eligible, i_v),      #and here?? 
        vea   = c(0, vea, 0, vea_revax, 0),
        vei   = c(0, vei, 0, vei_revax, 0),
        ved   = c(0, ved, 0, ved_revax, 0),
@@ -246,10 +243,10 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
 }
 
 
-##' @name create_vax_map_booster
-##' @title Create mapping for movement between strata due to vaccination where
+##' @name create_vax_map
+##' @title Create mapping for movement between strata due to vaccination where              #note to self add strategy to documenation 
 ##' primary vaccination and booster vaccination can be different %s of uptake
-##' to one another
+##' to one another                                                                   #note to self may need to revert this documentation back to the previous documentation 
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
 ##' @param v vector of length 2 indicating % of population vaccinated according 
 ##' to the strategy, each value will apply to the eligible stratum separately
@@ -257,61 +254,64 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
 
-create_vax_map_booster <- function(n_vax, v, i_u, i_v) {           #note to self look at the vax map and see if its right!? 
+create_vax_map_booster <- function(n_vax, v, i_u, i_v) {                  #  vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v), 
   
-  # ensure vaccine input is of correct length             vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v)
+  #change vbe input to matrix
+  if (length(v) == 1) {
+    v <- matrix(rep(v,4), nrow =2)
+  }
+  
+  # ensure vaccine input is of correct length             
   n_group <- 2
-  stopifnot(length(v) %in% c(1, n_group))
+  #stopifnot(length(v) %in% c(1, n_group))
   stopifnot(all((v >= 0) & (v <= 1)))
   stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
   
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
-  
-  if (length(v) == 1){
-    v <- c(v,v)
-  }
-  
-  for (i in seq_along(i_u)) {
-    vax_map[, i_u[i], i_u[i]] <-  v[i]
-    vax_map[, i_v[i], i_u[i]] <- -v[i]
-  }
+
+  for (i in seq_along(i_u)){ 
+    vax_map[, i_u[i], i_u[i]] <-  v[i, ]
+    vax_map[, i_v[i], i_u[i]] <- -v[i, ]
+ }
+
   print(vax_map)
   vax_map
+  
 }
 
 
-set_strategy_booster <- function(strategy, uptake) {
+set_strategy_booster <- function(strategy, primary_uptake, booster_uptake) {
   
-  if (length(uptake) != 2) {
-    stop("uptake must be length 2")
+ if (length(primary_uptake) != 1) {
+    stop("primary vaccination uptake must be length 1")
+ }
+
+ if (length(booster_uptake) != 1) {
+    stop("booster vaccination uptake must be length 1")
   }
 
   if (strategy == "VbE") {
-    vos <- vod <- c(0,0)
+    vos <- vod <- matrix(rep(0,4), nrow =2)
   } else if (strategy == "VoD") {
-    vod <- uptake
-    vos <- c(0,0)
+    vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake, booster_uptake), nrow =2, byrow = TRUE)
+    vos <- matrix(rep(0,4), nrow =2)
   } else if (strategy == "VoA") {
-    vod <- uptake
-    vos <- uptake
+    vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake, booster_uptake), nrow =2, byrow = TRUE)
+    vos <- matrix(c(primary_uptake, primary_uptake, booster_uptake, booster_uptake), nrow =2, byrow = TRUE)
   } else if (strategy == "VoD(H)") {
-    #vod <- c(0, uptake)
-    vod <- uptake
-    vos <- c(0,0)
+    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2, byrow = TRUE)
+    vos <- matrix(rep(0,4), nrow =2)
   } else if (strategy == "VoA(H)") {
-    #vod <- c(0, uptake)
-    #vos <- c(0, uptake) temporary until i come up with a solution 
-    vod <- uptake
-    vos <- uptake
+    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2, byrow = TRUE)
+    vos <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2, byrow = TRUE)
   } else if (strategy == "VoD(L)+VoA(H)") {
-    vod <- uptake
-    #vos <- c(0, uptake)
-    vos <- uptake
+    vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake, booster_uptake), nrow =2, byrow = TRUE)
+    vos <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2, byrow = TRUE)
   } else if (strategy == "VoS") {
-    vod <- c(0,0)
-    vos <- uptake
+    vod <- matrix(rep(0,4), nrow =2)
+    vos <- matrix(c(primary_uptake, primary_uptake, booster_uptake, booster_uptake), nrow =2, byrow = TRUE)
   } else {
     stop("strategy not recognised")
   }
