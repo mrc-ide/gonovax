@@ -225,7 +225,6 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
     vax_map[, i_v[i], i_u[i]] <- -v[i, ]
   }
 
-  print(vax_map)
   vax_map
 
 }
