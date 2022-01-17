@@ -11,11 +11,18 @@
 ##'  symptoms (between 0-1)
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
+##' @param primary_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking primary 
+##'  vaccination as part of strategy 
+##' @param booster_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking booster 
+##'  vaccination after primary vaccination protection has waned
 ##' @return A list parameters in the model input format
 vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
-                            dur = 1e3, dur_revax = dur, uptake = 0,
+                            dur = 1e3, dur_revax = dur, primary_uptake = 0,
+                            booster_uptake = 0,
                             strategy = "VbE",
                             vbe = 0, t_stop = 99) {
 
@@ -30,7 +37,8 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(ves_revax)
   assert_scalar_positive(dur)
   assert_scalar_positive(dur_revax)
-  assert_scalar_unit_interval(uptake)
+  assert_scalar_unit_interval(primary_uptake)
+  assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
   # waned vaccinees move to own stratum, but are eligible for re-vaccination
@@ -45,7 +53,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
 
-  p <- set_strategy(strategy, uptake)
+  p <- set_strategy(strategy, primary_uptake, booster_uptake)
 
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
@@ -80,6 +88,12 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  primary
 ##' @param dur_revax scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of protection for revaccination, default to same as primary
+##' @param primary_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking primary 
+##'  vaccination as part of strategy 
+##' @param booster_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking booster 
+##'  vaccination after primary vaccination protection has waned
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
@@ -88,15 +102,17 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                             dur_revax = dur,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
-                            vbe = 0, uptake = 0, strategy = "VbE",
+                            vbe = 0, primary_uptake = 0,
+                            booster_uptake = 0, strategy = "VbE",
                             t_stop = 99) {
 
-  stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur,
-                             vea_revax, vei_revax, ved_revax, ves_revax,
-                             dur_revax)) %in%
+  stopifnot(all(lengths(list(primary_uptake, booster_uptake, vea, vei, ved,
+                             ves, dur, vea_revax, vei_revax, ved_revax,
+                             ves_revax, dur_revax)) %in%
                   c(1, length(gono_params))))
 
-  vax_params <- Map(vax_params_xvwr, uptake = uptake, dur = dur,
+  vax_params <- Map(vax_params_xvwr, primary_uptake = uptake,
+                    booster_uptake = booster_uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,

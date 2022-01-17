@@ -57,7 +57,7 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
-  p <- set_strategy(strategy, uptake)
+  p <- set_strategy(strategy, primary_uptake = uptake)
 
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
