@@ -9,9 +9,9 @@ create_vax_map(n_vax, v, i_u, i_v)
 \arguments{
 \item{n_vax}{Integer in (0, 5) denoting total number of strata}
 
-\item{v}{numeric indicating % of population vaccinated on screening a scalar
-will apply to both activity groups, a vector of length 2 will apply to each
-activity group separately}
+\item{v}{a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
+% of population vaccinated according to the strategy. For vod & vos each
+value will apply to the eligible stratum separately}
 
 \item{i_u}{indices of strata eligible for vaccination}
 

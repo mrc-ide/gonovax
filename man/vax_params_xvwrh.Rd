@@ -15,7 +15,8 @@ vax_params_xvwrh(
   ves_revax = ves,
   dur = 1000,
   dur_revax = dur,
-  uptake = 0,
+  primary_uptake = 0,
+  booster_uptake = 0,
   strategy = "VbE",
   vbe = 0,
   t_stop = 99,
@@ -52,8 +53,13 @@ symptoms (between 0-1)}
 \item{dur_revax}{duration of protection for revaccination,
 default to same as primary}
 
-\item{uptake}{scalar indicating pc of population vaccinated as part
-of strategy}
+\item{primary_uptake}{scalar or numeric vector with same length as
+'gono_params' giving proportion of population undertaking primary
+vaccination as part of strategy}
+
+\item{booster_uptake}{scalar or numeric vector with same length as
+'gono_params' giving proportion of population undertaking booster
+vaccination after primary vaccination protection has waned}
 
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}
