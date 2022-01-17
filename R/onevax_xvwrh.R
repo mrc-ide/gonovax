@@ -95,12 +95,12 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
   
-  p <- set_strategy_booster(strategy, primary_uptake, booster_uptake) 
+  p <- set_strategy(strategy, primary_uptake, booster_uptake) 
 
   list(n_vax = n_vax,
-       vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v),
-       vod   = create_vax_map_booster(n_vax, p$vod, i_eligible, i_v),
-       vos   = create_vax_map_booster(n_vax, p$vos, i_eligible, i_v),
+       vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
+       vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+       vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
        vea   = c(0, vea, 0, vea_revax, 0),
        vei   = c(0, vei, 0, vei_revax, 0),
        ved   = c(0, ved, 0, ved_revax, 0),
