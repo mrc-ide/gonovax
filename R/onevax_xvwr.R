@@ -52,7 +52,6 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-
   p <- set_strategy(strategy, primary_uptake, booster_uptake)
 
   list(n_vax = n_vax,
@@ -111,7 +110,7 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                              ves_revax, dur_revax)) %in%
                   c(1, length(gono_params))))
 
-  vax_params <- Map(vax_params_xvwr, primary_uptake = uptake,
+  vax_params <- Map(vax_params_xvwr, primary_uptake = primary_uptake,
                     booster_uptake = booster_uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
