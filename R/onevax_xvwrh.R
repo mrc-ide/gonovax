@@ -257,13 +257,12 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
 create_vax_map_booster <- function(n_vax, v, i_u, i_v) {                  #  vbe   = create_vax_map_booster(n_vax, vbe, i_eligible, i_v), 
   
   #change vbe input to matrix
-  if (length(v) == 1) {
-    v <- matrix(rep(v,4), nrow =2)
+  if (length(v) == 1) {v
+    v <- matrix(c(rep(v,2), rep(0,2)), nrow = 2, byrow = TRUE)
   }
   
   # ensure vaccine input is of correct length             
   n_group <- 2
-  #stopifnot(length(v) %in% c(1, n_group))
   stopifnot(all((v >= 0) & (v <= 1)))
   stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
