@@ -237,5 +237,84 @@ test_that("run_onevax_xvwrh works correctly", {
   y10 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1)
 
   expect_error(lapply(y10, restart_hes, n_vax = 5, hes = 0.5))
-
+  
+  # check create_vax_map and set_strategy working as expected
+    
+    # check errors generated when stop() if loops activated
+  
+  expect_error(run_onevax_xvwrh(tt, gp, vea = 0, vbe =1, dur = 1e3, primary_uptake = 2))
+  expect_error(set_strategy("VbE", primary_uptake = c(0,0.5)))
+  expect_error(set_strategy("VbE", primary_uptake = 1, booster_uptake = c(0,0.5)))
+  
+    # primary and booster vaccination can be different and map correctly
+  
+  primary_uptake = 0.75
+  booster_uptake = 0.5
+  
+  v <- set_strategy("VoA", primary_uptake, booster_uptake)  
+  vax_map <- create_vax_map(n_vax = 5, v$vos, i_u = c(1,3), i_v = c(2,4)) 
+  
+  x_vaxmap <- vax_map[, 1, 1]
+  w_vaxmap <- vax_map[, 3, 3]
+  
+  expect_equal(x_vaxmap[1], x_vaxmap[2])
+  expect_equal(w_vaxmap[1], w_vaxmap[2])
+  expect_true(x_vaxmap[1] != w_vaxmap[1])
+  expect_equal(x_vaxmap, w_vaxmap*1.5)
+  
+    # primary and booster vaccination can be different and map correctly for
+    # strategies where only high activity groups receive vaccination
+  
+  v2 <- set_strategy("VoD(H)", primary_uptake, booster_uptake) 
+  v3 <- set_strategy("VoA(H)", primary_uptake, booster_uptake) 
+  v4 <- set_strategy("VoD(L)+VoA(H)", primary_uptake, booster_uptake) 
+  
+  vax_map_v2_vod <- create_vax_map(n_vax = 5, v2$vod, i_u = c(1,3),
+                                   i_v = c(2,4))
+  vax_map_v3_vod <- create_vax_map(n_vax = 5, v3$vod, i_u = c(1,3),
+                                   i_v = c(2,4))
+  vax_map_v3_vos <- create_vax_map(n_vax = 5, v3$vos, i_u = c(1,3),
+                                   i_v = c(2,4))
+  vax_map_v4_vos <- create_vax_map(n_vax = 5, v4$vos, i_u = c(1,3),
+                                   i_v = c(2,4))
+  
+   # low activity groups 0 according to strategy
+  expect_equal(rowSums(vax_map_v2_vod[1, , c(1,3)]), c(rep(0,5)))
+  expect_equal(rowSums(vax_map_v3_vod[1, , c(1,3)]), c(rep(0,5)))
+  expect_equal(rowSums(vax_map_v3_vos[1, , c(1,3)]), c(rep(0,5)))
+  expect_equal(rowSums(vax_map_v4_vos[1, , c(1,3)]), c(rep(0,5)))
+  
+   # high activity groups not 0 according to strategy, and match primary and
+   # booster uptake values 
+  expect_equal(rowSums(vax_map_v2_vod[2, , c(1,3)]), c(primary_uptake,
+                      -primary_uptake, booster_uptake, -booster_uptake, 0))
+  
+  expect_equal(rowSums(vax_map_v3_vod[2, , c(1,3)]), c(primary_uptake,
+                      -primary_uptake, booster_uptake, -booster_uptake, 0))
+  
+  expect_equal(rowSums(vax_map_v3_vos[2, , c(1,3)]), c(primary_uptake,
+                      -primary_uptake, booster_uptake, -booster_uptake, 0))
+  
+  expect_equal(rowSums(vax_map_v4_vos[2, , c(1,3)]), c(primary_uptake,
+                      -primary_uptake, booster_uptake, -booster_uptake, 0))
+  
+  # check vbe working correctly
+  
+  vbe = 1
+  vax_map_vbe <- create_vax_map(n_vax = 5, v = vbe, i_u = c(1,3), i_v = c(2,4)) 
+  
+  expect_equal(vax_map_vbe[, 1, 1], c(vbe, vbe))
+  expect_equal(vax_map_vbe[, 3, 3], c(0,0))                                      
+  
+  # check primary and booster vaccination works the same in xvwrh and xvwr when
+  # hes = 0
+  
+  y_xvwrh <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, primary_uptake = 0.75,
+                              booster_uptake = 0.5, strategy = "VoD(L)+VoA(H)" )
+  y_xvwr  <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3, primary_uptake = 0.75,
+                             booster_uptake = 0.5, strategy = "VoD(L)+VoA(H)")
+  
+  expect_equal(y_xvwrh[[1]]$cum_incid[, , -5] , y_xvwr[[1]]$cum_incid)
+  expect_equal(y_xvwrh[[1]]$cum_vaccinated[, , -5] , y_xvwr[[1]]$cum_vaccinated)
+  
 })
