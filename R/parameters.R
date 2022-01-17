@@ -255,7 +255,7 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
 }
 
 
-set_strategy <- function(strategy, primary_uptake, booster_uptake) {
+set_strategy <- function(strategy, primary_uptake, booster_uptake = primary_uptake) {
   
   if (length(primary_uptake) != 1) {
     stop("primary vaccination uptake must be length 1")
