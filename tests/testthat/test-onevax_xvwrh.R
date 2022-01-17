@@ -93,6 +93,7 @@ test_that("run_onevax_xvwrh works correctly", {
     expect_equal(rowSums(y_h4[[1]]$U[, , 2]), rowSums(y_xvwr[[1]]$U[, , 2]))
     expect_equal(rowSums(y_h4[[1]]$U[, , 3]), rowSums(y_xvwr[[1]]$U[, , 3]))
 
+   
     uptake <- c(0.5, 1)
 
     # check VoD is working correctly
@@ -260,6 +261,8 @@ test_that("run_onevax_xvwrh works correctly", {
   expect_equal(x_vaxmap[1], x_vaxmap[2])
   expect_equal(w_vaxmap[1], w_vaxmap[2])
   expect_true(x_vaxmap[1] != w_vaxmap[1])
+  expect_true(x_vaxmap[1] == primary_uptake)
+  expect_true(w_vaxmap[1] == booster_uptake)
   expect_equal(x_vaxmap, w_vaxmap*1.5)
   
     # primary and booster vaccination can be different and map correctly for
