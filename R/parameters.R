@@ -198,20 +198,20 @@ model_params <- function(gono_params = NULL,
 ##' @title Create mapping for movement between strata due to vaccination
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
 ##' @param v a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
-##' % of population vaccinated according to the strategy. For vod & vos each 
+##' % of population vaccinated according to the strategy. For vod & vos each
 ##' value will apply to the eligible stratum separately
 ##' @param i_u indices of strata eligible for vaccination
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
 
 create_vax_map <- function(n_vax, v, i_u, i_v) {
-  
+
   #change vbe input to matrix
-  if (length(v) == 1) {v
-    v <- matrix(c(rep(v,2), rep(0,2)), nrow = 2, byrow = TRUE)
+  if (length(v) == 1) {
+    v <- matrix(c(rep(v, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
   }
 
-  # ensure vaccine input is of correct length             
+  # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(all((v >= 0) & (v <= 1)))
   stopifnot(length(i_v) == length(i_u))
@@ -220,7 +220,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
-  for (i in seq_along(i_u)){ 
+  for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v[i, ]
     vax_map[, i_v[i], i_u[i]] <- -v[i, ]
   }
@@ -255,49 +255,50 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
 }
 
 
-set_strategy <- function(strategy, primary_uptake, booster_uptake = primary_uptake) {
-  
+set_strategy <- function(strategy, primary_uptake,
+                         booster_uptake = primary_uptake) {
+
   if (length(primary_uptake) != 1) {
     stop("primary vaccination uptake must be length 1")
   }
-  
+
   if (length(booster_uptake) != 1) {
     stop("booster vaccination uptake must be length 1")
   }
-  
+
   if (strategy == "VbE") {
-    vos <- vod <- matrix(rep(0,4), nrow =2)
+    vos <- vod <- matrix(rep(0, 4), nrow = 2)
   } else if (strategy == "VoD") {
     vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
-                    booster_uptake), nrow =2, byrow = TRUE)
-    vos <- matrix(rep(0,4), nrow =2)
+                    booster_uptake), nrow = 2, byrow = TRUE)
+    vos <- matrix(rep(0, 4), nrow = 2)
   } else if (strategy == "VoA") {
     vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
-                    booster_uptake), nrow =2, byrow = TRUE)
+                    booster_uptake), nrow = 2, byrow = TRUE)
     vos <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
-                    booster_uptake), nrow =2, byrow = TRUE)
+                    booster_uptake), nrow = 2, byrow = TRUE)
   } else if (strategy == "VoD(H)") {
-    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2,
+    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow = 2,
                   byrow = TRUE)
-    vos <- matrix(rep(0,4), nrow =2)
+    vos <- matrix(rep(0, 4), nrow = 2)
   } else if (strategy == "VoA(H)") {
-    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2,
+    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow = 2,
                   byrow = TRUE)
-    vos <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2,
+    vos <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow = 2,
                   byrow = TRUE)
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
-                    booster_uptake), nrow =2, byrow = TRUE)
-    vos <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow =2,
+                    booster_uptake), nrow = 2, byrow = TRUE)
+    vos <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow = 2,
                   byrow = TRUE)
   } else if (strategy == "VoS") {
-    vod <- matrix(rep(0,4), nrow =2)
+    vod <- matrix(rep(0, 4), nrow = 2)
     vos <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
-                    booster_uptake), nrow =2, byrow = TRUE)
+                    booster_uptake), nrow = 2, byrow = TRUE)
   } else {
     stop("strategy not recognised")
   }
-  
+
   list(vod = vod, vos = vos)
 }
 

@@ -49,10 +49,10 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
 ##' @param primary_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking primary 
-##'  vaccination as part of strategy 
+##'  'gono_params' giving proportion of population undertaking primary
+##'  vaccination as part of strategy
 ##' @param booster_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking booster 
+##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned
 ##' @param hes proportion of population vaccine hesitant
 ##' @return A list parameters in the model input format
@@ -62,7 +62,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              dur = 1e3, dur_revax = dur, primary_uptake = 0,
                              booster_uptake = 0, strategy = "VbE",
                              vbe = 0, t_stop = 99, hes = 0) {
-  
+
   assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -84,18 +84,18 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # there is no movement between the willing (x,v,w,r) and hesitant (h)
   # 1:x -> 2:v -> 3:w <-> 4:r
   # 5:h
-  i_eligible <- c(1, 3)             #X and W are eligible for vaccination 
+  i_eligible <- c(1, 3)             #X and W are eligible for vaccination
   i_w <- 3
-  i_v <- c(2, 4)                    #V(2) and R(4) are protected 
-  
+  i_v <- c(2, 4)                    #V(2) and R(4) are protected
+
   #number of compartments
   n_vax <- 5
-  
+
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-  
-  p <- set_strategy(strategy, primary_uptake, booster_uptake) 
+
+  p <- set_strategy(strategy, primary_uptake, booster_uptake)
 
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
@@ -133,10 +133,10 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param hes Proportion of individuals in the population who are vaccine
 ##'  hesitant
 ##' @param primary_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking primary 
-##'  vaccination as part of strategy 
+##'  'gono_params' giving proportion of population undertaking primary
+##'  vaccination as part of strategy
 ##' @param booster_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking booster 
+##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
@@ -149,12 +149,12 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              vbe = 0, primary_uptake = 0,
                              booster_uptake = 0, strategy = "VbE",
                              t_stop = 99, hes = 0) {
-  
-  stopifnot(all(lengths(list(booster_uptake, primary_uptake, vea, vei, ved, ves, dur,
-                             vea_revax, vei_revax, ved_revax, ves_revax,
-                             dur_revax)) %in%
+
+  stopifnot(all(lengths(list(booster_uptake, primary_uptake, vea, vei,
+                             ved, ves, dur, vea_revax, vei_revax, ved_revax,
+                             ves_revax, dur_revax)) %in%
                   c(1, length(gono_params))))
-  
+
   vax_params <- Map(vax_params_xvwrh, primary_uptake = primary_uptake,
                     booster_uptake = booster_uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
@@ -165,15 +165,15 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                                     t_stop = t_stop, vbe = vbe))
 
   if (is.null(init_params)) {
-    
+
     pars <- lapply(gono_params, model_params)
     init_params <- lapply(pars, initial_params_xvwrh, hes = hes)
   }
-  
+
   ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
              init_params = init_params,
              MoreArgs = list(tt = tt))
-  
+
   # name outputs
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret

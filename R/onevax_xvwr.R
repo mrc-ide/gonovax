@@ -12,10 +12,10 @@
 ##' @param dur_revax duration of protection for revaccination,
 ##'  default to same as primary
 ##' @param primary_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking primary 
-##'  vaccination as part of strategy 
+##'  'gono_params' giving proportion of population undertaking primary
+##'  vaccination as part of strategy
 ##' @param booster_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking booster 
+##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned
 ##' @return A list parameters in the model input format
 vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
@@ -88,10 +88,10 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param dur_revax scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of protection for revaccination, default to same as primary
 ##' @param primary_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking primary 
-##'  vaccination as part of strategy 
+##'  'gono_params' giving proportion of population undertaking primary
+##'  vaccination as part of strategy
 ##' @param booster_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking booster 
+##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
