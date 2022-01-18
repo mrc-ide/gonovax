@@ -50,36 +50,61 @@ test_that("vax_map works correctly", {
 
   # indices of y [group, -to, -from]
   # test onevax map
-  y <- create_vax_map(n_vax = 2, v = c(0.1, 0.2), i_u = 1, i_v = 2)
+  y <- create_vax_map(n_vax = 2, v = 0.1, i_u = 1, i_v = 2)
   expect_equal(y[1, , 1], c(0.1, -0.1))
-  expect_equal(y[2, , 1], c(0.2, -0.2))
   expect_true(all(y[, , 2] == 0))
 
   # test onevax_xvwv waning map
-  y <- create_vax_map(n_vax = 3, v = c(0.1, 0.2), i_u = c(1, 3), i_v = c(2, 2))
+  y <- create_vax_map(n_vax = 3, v = 0.1, i_u = c(1, 3), i_v = c(2, 2))
+
   expect_equal(y[1, , 1], c(0.1, -0.1, 0))
-  expect_equal(y[2, , 1], c(0.2, -0.2, 0))
+  expect_equal(y[1, , 3], c(rep(0, 3)))
+  expect_true(all(y[, , 2] == 0))
+
+  p <- set_strategy(strategy = "VoD", primary_uptake = 0.1)
+  y <- create_vax_map(n_vax = 3, v = p$vod, i_u = c(1, 3), i_v = c(2, 2))
+
+  expect_equal(y[1, , 1], c(0.1, -0.1, 0))
   expect_equal(y[1, , 3], c(0, -0.1, 0.1))
-  expect_equal(y[2, , 3], c(0, -0.2, 0.2))
   expect_true(all(y[, , 2] == 0))
 
   # test onevax_xvwr waning map
-  y <- create_vax_map(n_vax = 4, v = c(0.1, 0.2), i_u = c(1, 3), i_v = c(2, 4))
+  y <- create_vax_map(n_vax = 4, v = 0.1, i_u = c(1, 3), i_v = c(2, 4))
+
   expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0))
-  expect_equal(y[2, , 1], c(0.2, -0.2, 0, 0))
-  expect_equal(y[1, , 3], c(0, 0, 0.1, -0.1))
-  expect_equal(y[2, , 3], c(0, 0, 0.2, -0.2))
   expect_true(all(y[, , 2] == 0))
+  expect_true(all(y[, , 3] == 0))
   expect_true(all(y[, , 4] == 0))
 
-  # test onevax_xvwr waning map with single v input
-  y <- create_vax_map(n_vax = 4, v = 0.1, i_u = c(1, 3), i_v = c(2, 4))
+  y <- create_vax_map(n_vax = 4, v = p$vod, i_u = c(1, 3), i_v = c(2, 4))
+
   expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0))
   expect_equal(y[2, , 1], c(0.1, -0.1, 0, 0))
   expect_equal(y[1, , 3], c(0, 0, 0.1, -0.1))
   expect_equal(y[2, , 3], c(0, 0, 0.1, -0.1))
+
   expect_true(all(y[, , 2] == 0))
   expect_true(all(y[, , 4] == 0))
+
+  # test onevax_xvwrh waning map
+  y <- create_vax_map(n_vax = 5, v = 0.1, i_u = c(1, 3), i_v = c(2, 4))
+
+  expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0, 0))
+  expect_true(all(y[, , 2] == 0))
+  expect_true(all(y[, , 3] == 0))
+  expect_true(all(y[, , 4] == 0))
+  expect_true(all(y[, , 5] == 0))
+
+  y <- create_vax_map(n_vax = 5, v = p$vod, i_u = c(1, 3), i_v = c(2, 4))
+
+  expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0, 0))
+  expect_equal(y[2, , 1], c(0.1, -0.1, 0, 0, 0))
+  expect_equal(y[1, , 3], c(0, 0, 0.1, -0.1, 0))
+  expect_equal(y[2, , 3], c(0, 0, 0.1, -0.1, 0))
+
+  expect_true(all(y[, , 2] == 0))
+  expect_true(all(y[, , 4] == 0))
+  expect_true(all(y[, , 5] == 0))
 
 })
 
@@ -185,13 +210,28 @@ test_that("transform_fixed works as expected", {
 test_that("set_strategy works as expected", {
 
   i <- 0.234
-  expect_equal(set_strategy("VbE", i), list(vod = 0, vos = 0))
-  expect_equal(set_strategy("VoD", i), list(vod = i, vos = 0))
-  expect_equal(set_strategy("VoD(H)", i), list(vod = c(0, i), vos = 0))
-  expect_equal(set_strategy("VoA", i), list(vod = i, vos = i))
-  expect_equal(set_strategy("VoA(H)", i), list(vod = c(0, i), vos = c(0, i)))
-  expect_equal(set_strategy("VoD(L)+VoA(H)", i), list(vod = i, vos = c(0, i)))
-  expect_equal(set_strategy("VoS", i), list(vod = 0, vos = i))
+  j <- 0.468
+  expect_equal(set_strategy("VbE", i, j),
+               list(vod = matrix(c(rep(0, 4)), nrow = 2),
+                    vos = matrix(c(rep(0, 4)), nrow = 2)))
+  expect_equal(set_strategy("VoD", i, j),
+               list(vod = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE),
+                    vos = matrix(c(rep(0, 4)), nrow = 2)))
+  expect_equal(set_strategy("VoD(H)", i, j),
+               list(vod = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE),
+                    vos = matrix(c(rep(0, 4)), nrow = 2)))
+  expect_equal(set_strategy("VoA", i, j),
+               list(vod = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE),
+                    vos = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE)))
+  expect_equal(set_strategy("VoA(H)", i, j),
+               list(vod = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE),
+                    vos = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE)))
+  expect_equal(set_strategy("VoD(L)+VoA(H)", i, j),
+               list(vod = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE),
+                    vos = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE)))
+  expect_equal(set_strategy("VoS", i, j),
+               list(vod = matrix(c(rep(0, 4)), nrow = 2),
+                    vos = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE)))
 
   expect_error(set_strategy("hello", i), "strategy not recognised")
   expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
