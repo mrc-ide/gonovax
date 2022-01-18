@@ -197,11 +197,11 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
 
   dim_y <- dim(y[["U"]])
 
-   if (rowSums(y$N[, , n_vax])[dim_y[1]] > 0) {
+   if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
     stop("Provided model run already contains hesitancy > 0")
    }
 
-  if (rowSums(y$N[, , 2])[dim_y[1]] > 0) {
+  if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
     stop("Provided model run has vaccination, baseline run should have all V
           = 0")
   }
