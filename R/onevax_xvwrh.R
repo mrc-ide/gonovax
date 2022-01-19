@@ -147,7 +147,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
                              vbe = 0, primary_uptake = 0,
-                             booster_uptake = 0, strategy = "VbE",
+                             booster_uptake = primary_uptake, strategy = "VbE",
                              t_stop = 99, hes = 0) {
 
   stopifnot(all(lengths(list(booster_uptake, primary_uptake, vea, vei,
