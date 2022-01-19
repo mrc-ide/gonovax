@@ -268,9 +268,8 @@ uptake <- c(primary_uptake, booster_uptake)
   } else if (strategy == "VoA") {
     vod <- vos <- cbind(uptake, uptake)
   } else if (strategy == "VoD(H)") {
-    vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow = 2,
-                  byrow = TRUE)
-    vos <- matrix(rep(0, 4), nrow = 2)
+    vod <- cbind(0, uptake)
+    vos <- matrix(0, 2, 2)
   } else if (strategy == "VoA(H)") {
     vod <- matrix(c(0, primary_uptake, 0, booster_uptake), nrow = 2,
                   byrow = TRUE)
