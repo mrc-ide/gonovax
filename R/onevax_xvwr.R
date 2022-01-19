@@ -92,7 +92,8 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  vaccination as part of strategy
 ##' @param booster_uptake scalar or numeric vector with same length as
 ##'  'gono_params' giving proportion of population undertaking booster
-##'  vaccination after primary vaccination protection has waned. Defaults to supplied value of `primary_uptake`.
+##'  vaccination after primary vaccination protection has waned.
+##'   Defaults to supplied value of `primary_uptake`.
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
