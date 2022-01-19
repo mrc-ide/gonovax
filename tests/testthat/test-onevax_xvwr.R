@@ -26,7 +26,7 @@ test_that("run_onevax_xvwr works correctly", {
     expect_equal(y2[[i]]$T[length(tt), , ], y3[[i]]$T[1, , ])
   }
 
-  primary_uptake <- booster_uptake <- 0.5
+  primary_uptake <- booster_uptake <- c(0.25, 0.5)
   # check VoD is working correctly
   y3e <- run_onevax_xvwr(tt, gp, vea = 1, dur = 1e3, strategy = "VoD",
                          primary_uptake = primary_uptake)
@@ -35,7 +35,7 @@ test_that("run_onevax_xvwr works correctly", {
     # no-one in stratum V is vaccinated again
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , 2]), 0)
     # uptake % of treated are vaccinated
-    expect_equal(y3e[[i]]$cum_vaccinated[, , -2] / primary_uptake,
+    expect_equal(y3e[[i]]$cum_vaccinated[, , -2] / primary_uptake[i],
                  y3e[[i]]$cum_treated[, , -2])
     # efficacy is perfect
     expect_equal(sum(y3e[[i]]$cum_treated[, , 2]), 0)
@@ -52,7 +52,7 @@ test_that("run_onevax_xvwr works correctly", {
   for (i in seq_along(y4e)) {
     # no-one in stratum V is vaccinated again
   expect_equal(sum(y4e[[i]]$cum_vaccinated[, , 2]), 0)
-  expect_equal(y4e[[i]]$cum_vaccinated[, , c(1, 3)] / primary_uptake,
+  expect_equal(y4e[[i]]$cum_vaccinated[, , c(1, 3)] / primary_uptake[i],
                y4e[[i]]$cum_screened[, , c(1, 3)] +
                  y4e[[i]]$cum_treated[, , c(1, 3)])
   expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
@@ -66,10 +66,10 @@ test_that("run_onevax_xvwr works correctly", {
     # no-one in stratum V is vaccinated again
     expect_equal(sum(y5e[[i]]$cum_vaccinated[, , 2]), 0)
     # only treated L are vaccinated
-    expect_equal(y5e[[i]]$cum_vaccinated[, 1, c(1, 3)] / primary_uptake,
+    expect_equal(y5e[[i]]$cum_vaccinated[, 1, c(1, 3)] / primary_uptake[i],
                  y5e[[i]]$cum_treated[, 1, c(1, 3)])
     # all attending H are vaccinated
-    expect_equal(y5e[[i]]$cum_vaccinated[, 2, c(1, 3)] / primary_uptake,
+    expect_equal(y5e[[i]]$cum_vaccinated[, 2, c(1, 3)] / primary_uptake[i],
                  y5e[[i]]$cum_treated[, 2, c(1, 3)] +
                    y5e[[i]]$cum_screened[, 2, c(1, 3)])
   }
@@ -94,10 +94,10 @@ test_that("run_onevax_xvwr works correctly", {
     # no-one in stratum V is vaccinated again
     expect_equal(sum(y6e[[i]]$cum_vaccinated[, , 2]), 0)
     # only treated L are vaccinated
-    expect_equal(y6e[[i]]$cum_vaccinated[, 1, c(1, 3)] / primary_uptake,
+    expect_equal(y6e[[i]]$cum_vaccinated[, 1, c(1, 3)] / primary_uptake[i],
                  y6e[[i]]$cum_treated[, 1, c(1, 3)])
     # all attending H are vaccinated
-    expect_equal(y6e[[i]]$cum_vaccinated[, 2, c(1, 3)] / primary_uptake,
+    expect_equal(y6e[[i]]$cum_vaccinated[, 2, c(1, 3)] / primary_uptake[i],
                  y6e[[i]]$cum_treated[, 2, c(1, 3)] +
                    y6e[[i]]$cum_screened[, 2, c(1, 3)])
     # stratum V empties immediately
@@ -118,10 +118,10 @@ test_that("run_onevax_xvwr works correctly", {
     # no-one in stratum V is vaccinated again
     expect_equal(sum(y7e[[i]]$cum_vaccinated[, , 2]), 0)
     # only treated L are vaccinated
-    expect_equal(y7e[[i]]$cum_vaccinated[, 1, c(1, 3)] / primary_uptake,
+    expect_equal(y7e[[i]]$cum_vaccinated[, 1, c(1, 3)] / primary_uptake[i],
                  y7e[[i]]$cum_treated[, 1, c(1, 3)])
     # all attending H are vaccinated
-    expect_equal(y7e[[i]]$cum_vaccinated[, 2, c(1, 3)] / primary_uptake,
+    expect_equal(y7e[[i]]$cum_vaccinated[, 2, c(1, 3)] / primary_uptake[i],
                  y7e[[i]]$cum_treated[, 2, c(1, 3)] +
                    y7e[[i]]$cum_screened[, 2, c(1, 3)])
     # efficacy is perfect in R
