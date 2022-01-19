@@ -272,43 +272,43 @@ test_that("initial params works as expected", {
   expect_error(initial_params(pars, coverage = -1))
   expect_error(initial_params(pars, n_vax = 3, coverage = c(1, 0)))
   expect_error(initial_params(pars, n_vax = 3, coverage = c(1, 1, 0)))
-}) 
+})
   
 test_that("create_vax_map and set_strategy working as expected", {
 
   # check errors generated when stop() if loops activated
-  
+
   expect_error(run_onevax_xvwrh(tt, gp, vea = 0, vbe = 1, dur = 1e3,
                                 primary_uptake = 2))
   expect_error(set_strategy("VbE", primary_uptake = c(0, 0.5)))
   expect_error(set_strategy("VbE", primary_uptake = 1,
                             booster_uptake = c(0, 0.5)))
-  
+
   # primary and booster vaccination can be different and map correctly
-  
+
   primary_uptake <- 0.75
   booster_uptake <- 0.5
-  
+
   v <- set_strategy("VoA", primary_uptake, booster_uptake)
   vax_map <- create_vax_map(n_vax = 5, v$vos, i_u = c(1, 3), i_v = c(2, 4))
-  
+
   x_vaxmap <- vax_map[, 1, 1]
   w_vaxmap <- vax_map[, 3, 3]
-  
+
   expect_equal(x_vaxmap[1], x_vaxmap[2])
   expect_equal(w_vaxmap[1], w_vaxmap[2])
   expect_true(x_vaxmap[1] != w_vaxmap[1])
   expect_true(x_vaxmap[1] == primary_uptake)
   expect_true(w_vaxmap[1] == booster_uptake)
   expect_equal(x_vaxmap, w_vaxmap * 1.5)
-  
+
   # primary and booster vaccination can be different and map correctly for
   # strategies where only high activity groups receive vaccination
-  
+
   v2 <- set_strategy("VoD(H)", primary_uptake, booster_uptake)
   v3 <- set_strategy("VoA(H)", primary_uptake, booster_uptake)
   v4 <- set_strategy("VoD(L)+VoA(H)", primary_uptake, booster_uptake)
-  
+
   vax_map_v2_vod <- create_vax_map(n_vax = 5, v2$vod, i_u = c(1, 3),
                                    i_v = c(2, 4))
   vax_map_v3_vod <- create_vax_map(n_vax = 5, v3$vod, i_u = c(1, 3),
@@ -317,13 +317,13 @@ test_that("create_vax_map and set_strategy working as expected", {
                                    i_v = c(2, 4))
   vax_map_v4_vos <- create_vax_map(n_vax = 5, v4$vos, i_u = c(1, 3),
                                    i_v = c(2, 4))
-  
+
   # low activity groups 0 according to strategy
   expect_equal(rowSums(vax_map_v2_vod[1, , c(1, 3)]), c(rep(0, 5)))
   expect_equal(rowSums(vax_map_v3_vod[1, , c(1, 3)]), c(rep(0, 5)))
   expect_equal(rowSums(vax_map_v3_vos[1, , c(1, 3)]), c(rep(0, 5)))
   expect_equal(rowSums(vax_map_v4_vos[1, , c(1, 3)]), c(rep(0, 5)))
-  
+
   # high activity groups not 0 according to strategy, and match primary and
   # booster uptake values
   expect_equal(rowSums(vax_map_v2_vod[2, , c(1, 3)]),
