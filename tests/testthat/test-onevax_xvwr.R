@@ -36,7 +36,7 @@ test_that("run_onevax_xvwr works correctly", {
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , 2]), 0)
     # uptake % of treated are vaccinated
     expect_equal(y3e[[i]]$cum_vaccinated[, , -2] / primary_uptake,
-                 y3e[[i]]$cum_treated[, , -2])
+                 y3e[[i]]$cum_treated[, , -2])                                  
     # efficacy is perfect
     expect_equal(sum(y3e[[i]]$cum_treated[, , 2]), 0)
     # no-one is lost
