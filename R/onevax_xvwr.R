@@ -22,7 +22,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
-                            booster_uptake = 0,
+                            booster_uptake = primary_uptake,
                             strategy = "VbE",
                             vbe = 0, t_stop = 99) {
 
