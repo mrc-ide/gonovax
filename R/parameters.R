@@ -276,9 +276,8 @@ uptake <- c(primary_uptake, booster_uptake)
     vod <- cbind(uptake, uptake)
     vos <- cbind(0, uptake)
   } else if (strategy == "VoS") {
-    vod <- matrix(rep(0, 4), nrow = 2)
-    vos <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
-                    booster_uptake), nrow = 2, byrow = TRUE)
+    vod <- matrix(0, 2, 2)
+    vos <- cbind(uptake, uptake)
   } else {
     stop("strategy not recognised")
   }
