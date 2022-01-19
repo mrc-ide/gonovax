@@ -259,7 +259,7 @@ set_strategy <- function(strategy, primary_uptake,
   if (length(booster_uptake) != 1) {
     stop("booster vaccination uptake must be length 1")
   }
-
+uptake <- c(primary_uptake, booster_uptake)
   if (strategy == "VbE") {
     vos <- vod <- matrix(rep(0, 4), nrow = 2)
   } else if (strategy == "VoD") {
