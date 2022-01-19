@@ -261,7 +261,7 @@ set_strategy <- function(strategy, primary_uptake,
   }
 uptake <- c(primary_uptake, booster_uptake)
   if (strategy == "VbE") {
-    vos <- vod <- matrix(rep(0, 4), nrow = 2)
+    vos <- vod <- matrix(0, 2, 2)
   } else if (strategy == "VoD") {
     vod <- matrix(c(primary_uptake, primary_uptake, booster_uptake,
                     booster_uptake), nrow = 2, byrow = TRUE)
