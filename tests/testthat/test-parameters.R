@@ -278,8 +278,6 @@ test_that("create_vax_map and set_strategy working as expected", {
 
   # check errors generated when stop() if loops activated
 
-  expect_error(run_onevax_xvwrh(tt, gp, vea = 0, vbe = 1, dur = 1e3,
-                                primary_uptake = 2))
   expect_error(set_strategy("VbE", primary_uptake = c(0, 0.5)))
   expect_error(set_strategy("VbE", primary_uptake = 1,
                             booster_uptake = c(0, 0.5)))
@@ -352,16 +350,5 @@ test_that("create_vax_map and set_strategy working as expected", {
 
   expect_equal(vax_map_vbe[, 1, 1], c(vbe, vbe))
   expect_equal(vax_map_vbe[, 3, 3], c(0, 0))
-
-  # check primary and booster vaccination works the same in xvwrh and xvwr when
-  # hes is 0
-
-  y_xvwrh <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, primary_uptake = 0.75,
-                              booster_uptake = 0.5, strategy = "VoD(L)+VoA(H)")
-  y_xvwr  <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3, primary_uptake = 0.75,
-                             booster_uptake = 0.5, strategy = "VoD(L)+VoA(H)")
-
-  expect_equal(y_xvwrh[[1]]$cum_incid[, , -5], y_xvwr[[1]]$cum_incid)
-  expect_equal(y_xvwrh[[1]]$cum_vaccinated[, , -5], y_xvwr[[1]]$cum_vaccinated)
 
 })
