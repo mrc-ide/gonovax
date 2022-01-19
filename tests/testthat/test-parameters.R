@@ -219,6 +219,9 @@ test_that("transform_fixed works as expected", {
 
 test_that("set_strategy works as expected", {
 
+  # different primary and booster uptakes work as expected
+  # and different strategies vod and vos maps as expected
+
   i <- 0.234
   j <- 0.468
   expect_equal(set_strategy("VbE", i, j),
@@ -245,6 +248,11 @@ test_that("set_strategy works as expected", {
 
   expect_error(set_strategy("hello", i), "strategy not recognised")
   expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
+  
+  # booster_uptake defaults to primary_uptake
+
+  expect_equal(set_strategy("VoA", primary_uptake = 0.5),
+  set_strategy("VoA", primary_uptake = 0.5, booster_uptake = 0.5))
 
 })
 

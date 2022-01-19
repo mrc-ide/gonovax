@@ -129,4 +129,14 @@ test_that("run_onevax_xvwr works correctly", {
     # but not in XWV
     expect_true(all(y7e[[i]]$cum_incid[-1, , -4] > 0))
   }
+
+  # check booster_uptake defaults to primary_uptake
+
+  y_prim_only <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3,
+         primary_uptake = 0.75, strategy = "VoD(L)+VoA(H)")
+  y_prim_boost <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3,
+        primary_uptake = 0.75, booster_uptake = 0.75,
+                                   strategy = "VoD(L)+VoA(H)")
+
+  expect_equal(y_prim_only, y_prim_boost)
 })

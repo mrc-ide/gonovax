@@ -257,6 +257,15 @@ test_that("run_onevax_xvwrh works correctly", {
 
   expect_equal(y_xvwrh[[1]]$cum_incid[, , -5], y_xvwr[[1]]$cum_incid)
   expect_equal(y_xvwrh[[1]]$cum_vaccinated[, , -5], y_xvwr[[1]]$cum_vaccinated)
+  
+  # check booster_uptake defaults to primary_uptake
 
+  y_prim_only <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3,
+                primary_uptake = 0.75, strategy = "VoD(L)+VoA(H)")
+  y_prim_boost <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3,
+                primary_uptake = 0.75, booster_uptake = 0.75,
+                strategy = "VoD(L)+VoA(H)")
+
+  expect_equal(y_prim_only, y_prim_boost)
 
 })
