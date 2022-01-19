@@ -29,8 +29,7 @@ test_that("run_onevax_xvwr works correctly", {
   primary_uptake <- booster_uptake <- 0.5
   # check VoD is working correctly
   y3e <- run_onevax_xvwr(tt, gp, vea = 1, dur = 1e3, strategy = "VoD",
-                         primary_uptake = primary_uptake,
-                         booster_uptake = booster_uptake)
+                         primary_uptake = primary_uptake)
 
   for (i in seq_along(y3e)) {
     # no-one in stratum V is vaccinated again
