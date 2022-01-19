@@ -22,7 +22,7 @@ run_onevax_xvwr(
   ves_revax = ves,
   vbe = 0,
   primary_uptake = 0,
-  booster_uptake = 0,
+  booster_uptake = primary_uptake,
   strategy = "VbE",
   t_stop = 99
 )
