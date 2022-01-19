@@ -211,7 +211,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   stopifnot(all((v >= 0) & (v <= 1)))
   stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
-  stopifnot(all(dim(v) == c(n_group, 2)))
+  stopifnot(all(dim(v) == c(n_group, i_u)))
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
