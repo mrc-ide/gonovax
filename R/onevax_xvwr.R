@@ -48,14 +48,15 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_w <- 3
   i_v <- c(2, 4)
   n_vax <- 4
+  n_group <- 2
 
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-  p <- set_strategy(strategy, primary_uptake, booster_uptake)
+  p <- set_strategy(strategy, c(primary_uptake, booster_uptake))
 
   #change vbe input to matrix format
-  vbe <- matrix(c(rep(vbe, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+  vbe <- rbind(rep(vbe, n_group), 0)
 
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),

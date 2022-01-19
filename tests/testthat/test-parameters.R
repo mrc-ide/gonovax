@@ -57,21 +57,21 @@ test_that("vax_map works correctly", {
   # test onevax map
 
   #change vbe input to matrix format
-  v <- 0.1
-  v <- matrix(c(rep(v, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+  v <- matrix(rep(0.1, 2), ncol = 2)
 
   y <- create_vax_map(n_vax = 2, v = v, i_u = 1, i_v = 2)
   expect_equal(y[1, , 1], c(0.1, -0.1))
   expect_true(all(y[, , 2] == 0))
 
   # test onevax_xvwv waning map
+  v <- rbind(rep(0.1, 2), 0)
   y <- create_vax_map(n_vax = 3, v = v, i_u = c(1, 3), i_v = c(2, 2))
 
   expect_equal(y[1, , 1], c(0.1, -0.1, 0))
   expect_equal(y[1, , 3], c(rep(0, 3)))
   expect_true(all(y[, , 2] == 0))
 
-  p <- set_strategy(strategy = "VoD", primary_uptake = 0.1)
+  p <- set_strategy(strategy = "VoD", uptake = rep(0.1, 2))
   y <- create_vax_map(n_vax = 3, v = p$vod, i_u = c(1, 3), i_v = c(2, 2))
 
   expect_equal(y[1, , 1], c(0.1, -0.1, 0))
@@ -224,35 +224,29 @@ test_that("set_strategy works as expected", {
 
   i <- 0.234
   j <- 0.468
-  expect_equal(set_strategy("VbE", i, j),
+  expect_equal(set_strategy("VbE", c(i, j)),
                list(vod = matrix(c(rep(0, 4)), nrow = 2),
                     vos = matrix(c(rep(0, 4)), nrow = 2)))
-  expect_equal(set_strategy("VoD", i, j),
+  expect_equal(set_strategy("VoD", c(i, j)),
                list(vod = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE),
                     vos = matrix(c(rep(0, 4)), nrow = 2)))
-  expect_equal(set_strategy("VoD(H)", i, j),
+  expect_equal(set_strategy("VoD(H)", c(i, j)),
                list(vod = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE),
                     vos = matrix(c(rep(0, 4)), nrow = 2)))
-  expect_equal(set_strategy("VoA", i, j),
+  expect_equal(set_strategy("VoA", c(i, j)),
                list(vod = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE),
                     vos = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE)))
-  expect_equal(set_strategy("VoA(H)", i, j),
+  expect_equal(set_strategy("VoA(H)", c(i, j)),
                list(vod = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE),
                     vos = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE)))
-  expect_equal(set_strategy("VoD(L)+VoA(H)", i, j),
+  expect_equal(set_strategy("VoD(L)+VoA(H)", c(i, j)),
                list(vod = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE),
                     vos = matrix(c(0, i, 0, j), nrow = 2, byrow = TRUE)))
-  expect_equal(set_strategy("VoS", i, j),
+  expect_equal(set_strategy("VoS", c(i, j)),
                list(vod = matrix(c(rep(0, 4)), nrow = 2),
                     vos = matrix(c(i, i, j, j), nrow = 2, byrow = TRUE)))
 
   expect_error(set_strategy("hello", i), "strategy not recognised")
-  expect_error(set_strategy("VbE", c(i, i)), "uptake must be length 1")
-
-  # booster_uptake defaults to primary_uptake
-
-  expect_equal(set_strategy("VoA", primary_uptake = 0.5),
-  set_strategy("VoA", primary_uptake = 0.5, booster_uptake = 0.5))
 
 })
 
@@ -284,18 +278,12 @@ test_that("initial params works as expected", {
   
 test_that("create_vax_map and set_strategy working as expected", {
 
-  # check errors generated when stop() if loops activated
-
-  expect_error(set_strategy("VbE", primary_uptake = c(0, 0.5)))
-  expect_error(set_strategy("VbE", primary_uptake = 1,
-                            booster_uptake = c(0, 0.5)))
-
   # primary and booster vaccination can be different and map correctly
 
-  primary_uptake <- 0.75
+  uptake <- 0.75
   booster_uptake <- 0.5
 
-  v <- set_strategy("VoA", primary_uptake, booster_uptake)
+  v <- set_strategy("VoA", c(uptake, booster_uptake))
   vax_map <- create_vax_map(n_vax = 5, v$vos, i_u = c(1, 3), i_v = c(2, 4))
 
   x_vaxmap <- vax_map[, 1, 1]
@@ -304,16 +292,16 @@ test_that("create_vax_map and set_strategy working as expected", {
   expect_equal(x_vaxmap[1], x_vaxmap[2])
   expect_equal(w_vaxmap[1], w_vaxmap[2])
   expect_true(x_vaxmap[1] != w_vaxmap[1])
-  expect_true(x_vaxmap[1] == primary_uptake)
+  expect_true(x_vaxmap[1] == uptake)
   expect_true(w_vaxmap[1] == booster_uptake)
   expect_equal(x_vaxmap, w_vaxmap * 1.5)
 
   # primary and booster vaccination can be different and map correctly for
   # strategies where only high activity groups receive vaccination
 
-  v2 <- set_strategy("VoD(H)", primary_uptake, booster_uptake)
-  v3 <- set_strategy("VoA(H)", primary_uptake, booster_uptake)
-  v4 <- set_strategy("VoD(L)+VoA(H)", primary_uptake, booster_uptake)
+  v2 <- set_strategy("VoD(H)", c(uptake, booster_uptake))
+  v3 <- set_strategy("VoA(H)", c(uptake, booster_uptake))
+  v4 <- set_strategy("VoD(L)+VoA(H)", c(uptake, booster_uptake))
 
   vax_map_v2_vod <- create_vax_map(n_vax = 5, v2$vod, i_u = c(1, 3),
                                    i_v = c(2, 4))
@@ -333,19 +321,19 @@ test_that("create_vax_map and set_strategy working as expected", {
   # high activity groups not 0 according to strategy, and match primary and
   # booster uptake values
   expect_equal(rowSums(vax_map_v2_vod[2, , c(1, 3)]),
-               c(primary_uptake, -primary_uptake,
+               c(uptake, -uptake,
                  booster_uptake, -booster_uptake, 0))
 
   expect_equal(rowSums(vax_map_v3_vod[2, , c(1, 3)]),
-               c(primary_uptake, -primary_uptake,
+               c(uptake, -uptake,
                  booster_uptake, -booster_uptake, 0))
 
   expect_equal(rowSums(vax_map_v3_vos[2, , c(1, 3)]),
-               c(primary_uptake, -primary_uptake,
+               c(uptake, -uptake,
                  booster_uptake, -booster_uptake, 0))
 
   expect_equal(rowSums(vax_map_v4_vos[2, , c(1, 3)]),
-               c(primary_uptake, -primary_uptake,
+               c(uptake, -uptake,
                  booster_uptake, -booster_uptake, 0))
 
   # check vbe working correctly

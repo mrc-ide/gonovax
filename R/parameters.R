@@ -211,7 +211,8 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   stopifnot(all((v >= 0) & (v <= 1)))
   stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
-  stopifnot(all(dim(v) == c(n_group, length(i_u))))
+
+  stopifnot(all(dim(v) == c(length(i_u), n_group)))
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
@@ -250,37 +251,31 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
 }
 
 
-set_strategy <- function(strategy, primary_uptake,
-                         booster_uptake = primary_uptake) {
+set_strategy <- function(strategy, uptake) {
 
-  if (length(primary_uptake) != 1) {
-    stop("primary vaccination uptake must be length 1")
-  }
-
-  if (length(booster_uptake) != 1) {
-    stop("booster vaccination uptake must be length 1")
-  }
-
-uptake <- c(primary_uptake, booster_uptake)
+  n_group <- 2
+  novax <- matrix(0, length(uptake), n_group)
+  vax_lh <- vax_h <- matrix(uptake, length(uptake), n_group)
+  vax_h[, 1] <- 0
 
   if (strategy == "VbE") {
-    vos <- vod <- matrix(0, 2, 2)
+    vos <- vod <- novax
   } else if (strategy == "VoD") {
-    vod <- cbind(uptake, uptake, deparse.level = 0)
-    vos <- matrix(0, 2, 2)
+    vod <- vax_lh
+    vos <- novax
   } else if (strategy == "VoA") {
-    vod <- vos <- cbind(uptake, uptake, deparse.level = 0)
+    vod <- vos <- vax_lh
   } else if (strategy == "VoD(H)") {
-    vod <- cbind(0, uptake, deparse.level = 0)
-    vos <- matrix(0, 2, 2)
+    vod <- vax_h
+    vos <- novax
   } else if (strategy == "VoA(H)") {
-    vod <- vos <- cbind(0, uptake, deparse.level = 0)
+    vod <- vos <- vax_h
   } else if (strategy == "VoD(L)+VoA(H)") {
-    vod <- cbind(uptake, uptake, deparse.level = 0)
-    vos <- cbind(0, uptake, deparse.level = 0)
+    vod <- vax_lh
+    vos <- vax_h
   } else if (strategy == "VoS") {
-    vod <- matrix(0, 2, 2)
-    vos <- cbind(uptake, uptake, deparse.level = 0)
+    vod <- novax
+    vos <- vax_lh
   } else {
     stop("strategy not recognised")
   }

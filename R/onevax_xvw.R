@@ -52,15 +52,16 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_eligible <- 1
   i_v <- 2
   i_w <- n_vax <- 3
+  n_group <- 2
 
   # compartments to which vaccine efficacy applies
   ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
-  p <- set_strategy(strategy, primary_uptake = uptake)
+  p <- set_strategy(strategy, uptake)
 
   #change vbe input to matrix format
-  vbe <- matrix(c(rep(vbe, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+  vbe <- matrix(vbe, ncol = n_group)
 
   list(n_vax = n_vax,
        vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
