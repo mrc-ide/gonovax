@@ -21,7 +21,8 @@ run_onevax_xvwrh(
   ved_revax = ved,
   ves_revax = ves,
   vbe = 0,
-  uptake = 0,
+  primary_uptake = 0,
+  booster_uptake = primary_uptake,
   strategy = "VbE",
   t_stop = 99,
   hes = 0
@@ -71,8 +72,14 @@ primary}
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
-\item{uptake}{scalar or numeric vector with same length as `gono_params`
-giving pc of population vaccinated as part of strategy}
+\item{primary_uptake}{scalar or numeric vector with same length as
+'gono_params' giving proportion of population undertaking primary
+vaccination as part of strategy}
+
+\item{booster_uptake}{scalar or numeric vector with same length as
+'gono_params' giving proportion of population undertaking booster
+vaccination after primary vaccination protection has waned.
+ Defaults to supplied value of `primary_uptake`.}
 
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}

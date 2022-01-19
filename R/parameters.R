@@ -197,9 +197,9 @@ model_params <- function(gono_params = NULL,
 ##' @name create_vax_map
 ##' @title Create mapping for movement between strata due to vaccination
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
-##' @param v numeric indicating % of population vaccinated on screening a scalar
-##' will apply to both activity groups, a vector of length 2 will apply to each
-##' activity group separately
+##' @param v a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
+##' % of population vaccinated according to the strategy. For vod & vos each
+##' value will apply to the eligible stratum separately
 ##' @param i_u indices of strata eligible for vaccination
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
@@ -208,21 +208,23 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
-  stopifnot(length(v) %in% c(1, n_group))
   stopifnot(all((v >= 0) & (v <= 1)))
   stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
+
+  stopifnot(all(dim(v) == c(length(i_u), n_group)))
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
   for (i in seq_along(i_u)) {
-    vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v
+    vax_map[, i_u[i], i_u[i]] <-  v[i, ]
+    vax_map[, i_v[i], i_u[i]] <- -v[i, ]
   }
 
   vax_map
-  }
+
+}
 
 ##' @name create_waning_map
 ##' @title Create mapping for movement between strata due to vaccine waning
@@ -248,32 +250,32 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
   w
 }
 
+
 set_strategy <- function(strategy, uptake) {
 
-  if (length(uptake) != 1) {
-    stop("uptake must be length 1")
-  }
+  n_group <- 2
+  novax <- matrix(0, length(uptake), n_group)
+  vax_lh <- vax_h <- matrix(uptake, length(uptake), n_group)
+  vax_h[, 1] <- 0
 
   if (strategy == "VbE") {
-    vos <- vod <- 0
+    vos <- vod <- novax
   } else if (strategy == "VoD") {
-    vod <- uptake
-    vos <- 0
+    vod <- vax_lh
+    vos <- novax
   } else if (strategy == "VoA") {
-    vod <- uptake
-    vos <- uptake
+    vod <- vos <- vax_lh
   } else if (strategy == "VoD(H)") {
-    vod <- c(0, uptake)
-    vos <- 0
+    vod <- vax_h
+    vos <- novax
   } else if (strategy == "VoA(H)") {
-    vod <- c(0, uptake)
-    vos <- c(0, uptake)
+    vod <- vos <- vax_h
   } else if (strategy == "VoD(L)+VoA(H)") {
-    vod <- uptake
-    vos <- c(0, uptake)
+    vod <- vax_lh
+    vos <- vax_h
   } else if (strategy == "VoS") {
-    vod <- 0
-    vos <- uptake
+    vod <- novax
+    vos <- vax_lh
   } else {
     stop("strategy not recognised")
   }
