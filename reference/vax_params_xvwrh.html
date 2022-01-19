@@ -68,7 +68,8 @@
   ves_revax <span class="op">=</span> <span class="va">ves</span>,
   dur <span class="op">=</span> <span class="fl">1000</span>,
   dur_revax <span class="op">=</span> <span class="va">dur</span>,
-  uptake <span class="op">=</span> <span class="fl">0</span>,
+  primary_uptake <span class="op">=</span> <span class="fl">0</span>,
+  booster_uptake <span class="op">=</span> <span class="va">primary_uptake</span>,
   strategy <span class="op">=</span> <span class="st">"VbE"</span>,
   vbe <span class="op">=</span> <span class="fl">0</span>,
   t_stop <span class="op">=</span> <span class="fl">99</span>,
@@ -107,9 +108,14 @@ symptoms (between 0-1)</p></dd>
 <dt>dur_revax</dt>
 <dd><p>duration of protection for revaccination,
 default to same as primary</p></dd>
-<dt>uptake</dt>
-<dd><p>scalar indicating pc of population vaccinated as part
-of strategy</p></dd>
+<dt>primary_uptake</dt>
+<dd><p>scalar or numeric vector with same length as
+'gono_params' giving proportion of population undertaking primary
+vaccination as part of strategy</p></dd>
+<dt>booster_uptake</dt>
+<dd><p>scalar or numeric vector with same length as
+'gono_params' giving proportion of population undertaking booster
+vaccination after primary vaccination protection has waned</p></dd>
 <dt>strategy</dt>
 <dd><p>single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"</p></dd>
@@ -138,7 +144,7 @@ of strategy</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>

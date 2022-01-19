@@ -65,9 +65,9 @@
     <dl><dt>n_vax</dt>
 <dd><p>Integer in (0, 5) denoting total number of strata</p></dd>
 <dt>v</dt>
-<dd><p>numeric indicating <!-- % of population vaccinated on screening a scalar -->
-will apply to both activity groups, a vector of length 2 will apply to each
-activity group separately</p></dd>
+<dd><p>a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
+<!-- % of population vaccinated according to the strategy. For vod &amp; vos each -->
+value will apply to the eligible stratum separately</p></dd>
 <dt>i_u</dt>
 <dd><p>indices of strata eligible for vaccination</p></dd>
 <dt>i_v</dt>
@@ -90,7 +90,7 @@ activity group separately</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>
