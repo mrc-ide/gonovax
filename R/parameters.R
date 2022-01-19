@@ -265,21 +265,21 @@ uptake <- c(primary_uptake, booster_uptake)
   if (strategy == "VbE") {
     vos <- vod <- matrix(0, 2, 2)
   } else if (strategy == "VoD") {
-    vod <- cbind(uptake, uptake)
+    vod <- cbind(uptake, uptake, deparse.level = 0)
     vos <- matrix(0, 2, 2)
   } else if (strategy == "VoA") {
-    vod <- vos <- cbind(uptake, uptake)
+    vod <- vos <- cbind(uptake, uptake, deparse.level = 0)
   } else if (strategy == "VoD(H)") {
-    vod <- cbind(0, uptake)
+    vod <- cbind(0, uptake, deparse.level = 0)
     vos <- matrix(0, 2, 2)
   } else if (strategy == "VoA(H)") {
-    vod <- vod <- cbind(0, uptake)
+    vod <- vos <- cbind(0, uptake, deparse.level = 0)
   } else if (strategy == "VoD(L)+VoA(H)") {
-    vod <- cbind(uptake, uptake)
-    vos <- cbind(0, uptake)
+    vod <- cbind(uptake, uptake, deparse.level = 0)
+    vos <- cbind(0, uptake, deparse.level = 0)
   } else if (strategy == "VoS") {
     vod <- matrix(0, 2, 2)
-    vos <- cbind(uptake, uptake)
+    vos <- cbind(uptake, uptake, deparse.level = 0)
   } else {
     stop("strategy not recognised")
   }
