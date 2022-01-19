@@ -53,7 +53,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
   p <- set_strategy(strategy, primary_uptake, booster_uptake)
-  
+
   #change vbe input to matrix format
   vbe <- matrix(c(rep(vbe, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
 

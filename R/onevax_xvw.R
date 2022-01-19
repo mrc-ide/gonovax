@@ -58,7 +58,7 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   p <- set_strategy(strategy, primary_uptake = uptake)
-  
+
   #change vbe input to matrix format
   vbe <- matrix(c(rep(vbe, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
 
