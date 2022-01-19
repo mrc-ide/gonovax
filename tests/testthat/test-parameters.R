@@ -50,12 +50,17 @@ test_that("vax_map works correctly", {
 
   # indices of y [group, -to, -from]
   # test onevax map
-  y <- create_vax_map(n_vax = 2, v = 0.1, i_u = 1, i_v = 2)
+
+  #change vbe input to matrix format
+  v <- 0.1
+  v <- matrix(c(rep(v, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+
+  y <- create_vax_map(n_vax = 2, v = v, i_u = 1, i_v = 2)
   expect_equal(y[1, , 1], c(0.1, -0.1))
   expect_true(all(y[, , 2] == 0))
 
   # test onevax_xvwv waning map
-  y <- create_vax_map(n_vax = 3, v = 0.1, i_u = c(1, 3), i_v = c(2, 2))
+  y <- create_vax_map(n_vax = 3, v = v, i_u = c(1, 3), i_v = c(2, 2))
 
   expect_equal(y[1, , 1], c(0.1, -0.1, 0))
   expect_equal(y[1, , 3], c(rep(0, 3)))
@@ -69,7 +74,7 @@ test_that("vax_map works correctly", {
   expect_true(all(y[, , 2] == 0))
 
   # test onevax_xvwr waning map
-  y <- create_vax_map(n_vax = 4, v = 0.1, i_u = c(1, 3), i_v = c(2, 4))
+  y <- create_vax_map(n_vax = 4, v = v, i_u = c(1, 3), i_v = c(2, 4))
 
   expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0))
   expect_true(all(y[, , 2] == 0))
@@ -87,7 +92,7 @@ test_that("vax_map works correctly", {
   expect_true(all(y[, , 4] == 0))
 
   # test onevax_xvwrh waning map
-  y <- create_vax_map(n_vax = 5, v = 0.1, i_u = c(1, 3), i_v = c(2, 4))
+  y <- create_vax_map(n_vax = 5, v = v, i_u = c(1, 3), i_v = c(2, 4))
 
   expect_equal(y[1, , 1], c(0.1, -0.1, 0, 0, 0))
   expect_true(all(y[, , 2] == 0))
