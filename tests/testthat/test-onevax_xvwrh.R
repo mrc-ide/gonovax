@@ -247,4 +247,16 @@ test_that("run_onevax_xvwrh works correctly", {
 
   expect_error(lapply(y10, restart_hes, n_vax = 5, hes = 0.5))
 
+  # check primary and booster vaccination works the same in xvwrh and xvwr when
+  # hes is 0
+  
+  y_xvwrh <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, primary_uptake = 0.75,
+                              booster_uptake = 0.5, strategy = "VoD(L)+VoA(H)")
+  y_xvwr  <- run_onevax_xvwr(tt, gp, vea = 0, dur = 1e3, primary_uptake = 0.75,
+                             booster_uptake = 0.5, strategy = "VoD(L)+VoA(H)")
+  
+  expect_equal(y_xvwrh[[1]]$cum_incid[, , -5], y_xvwr[[1]]$cum_incid)
+  expect_equal(y_xvwrh[[1]]$cum_vaccinated[, , -5], y_xvwr[[1]]$cum_vaccinated)  
+
+
 })
