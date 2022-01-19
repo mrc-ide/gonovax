@@ -31,12 +31,12 @@ test_that("run_onevax_xvwrh works correctly", {
     uptake <- c(0, 2.5, 0.5, 0.75, 1)
     expect_error(y <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1,
                                   primary_uptake = uptake))
-    
+
     uptake <- c(0.5, 1)
-    expect_equal(length(gp), length(uptake)) 
+    expect_equal(length(gp), length(uptake))
     expect_invisible(y <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3, vbe = 1,
                                   primary_uptake = uptake))
-    
+
     # check can restart
     init_params <- lapply(y2, restart_params)
     y3 <- run_onevax_xvwrh(seq(max(tt), length.out = 2, by = 1),
