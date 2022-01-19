@@ -146,12 +146,12 @@ test_that("run_onevax_xvwrh works correctly", {
 
     # check length of uptake vector must be 1 or length(gp)
     expect_error(run_onevax_xvwrh(tt, gp, vea = 1, dur = 1e3, strategy = "VbE",
-                                 uptake = c(0, 0.5, 1)))
+                                 primary_uptake = c(0, 0.5, 1)))
     # check length of vea must be 1
     expect_error(run_onevax_xvwrh(tt, gp, vea = c(0, 1, 1), dur = 1e3,
-                                 strategy = "VbE", uptake = 1))
+                                 strategy = "VbE", primary_uptake = 1))
     expect_error(run_onevax_xvwrh(tt, gp, vea = 1, dur = c(0, 1e2, 1e3),
-                                 strategy = "VbE", uptake = 1))
+                                 strategy = "VbE", primary_uptake = 1))
 
     ## test revax is working
 
