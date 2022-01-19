@@ -16,7 +16,7 @@ vax_params_xvwr(
   dur = 1000,
   dur_revax = dur,
   primary_uptake = 0,
-  booster_uptake = 0,
+  booster_uptake = primary_uptake,
   strategy = "VbE",
   vbe = 0,
   t_stop = 99

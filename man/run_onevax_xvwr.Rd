@@ -77,7 +77,8 @@ vaccination as part of strategy}
 
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
-vaccination after primary vaccination protection has waned}
+vaccination after primary vaccination protection has waned.
+ Defaults to supplied value of `primary_uptake`.}
 
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}
