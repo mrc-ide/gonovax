@@ -37,11 +37,16 @@ test_that("can select specific parameter sets", {
 })
 
 test_that("vax_map works correctly", {
-  # check error when input more than n_group vaccine uptake
+  # check error when input not matrix
   expect_error(create_vax_map(n_vax = 2, v = rep(0, 3), i_u = 1, i_v = 2))
+
   # check error when uptake not in 0-1
-  expect_error(create_vax_map(n_vax = 2, v = c(0, 2), i_u = 1, i_v = 2))
-  expect_error(create_vax_map(n_vax = 2, v = c(0, -1), i_u = 1, i_v = 2))
+  v <- matrix(c(rep(2, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+  expect_error(create_vax_map(n_vax = 2, v = v, i_u = 1, i_v = 2))
+
+  v <- matrix(c(rep(-1, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+  expect_error(create_vax_map(n_vax = 2, v = v, i_u = 1, i_v = 2))
+
   # check error length(i_u) != length(i_v)
   expect_error(create_vax_map(n_vax = 3, v = c(0.1, 0.2), i_u = c(1, 3),
                               i_v = 2))
@@ -267,9 +272,10 @@ test_that("initial params works as expected", {
   expect_error(initial_params(pars, coverage = -1))
   expect_error(initial_params(pars, n_vax = 3, coverage = c(1, 0)))
   expect_error(initial_params(pars, n_vax = 3, coverage = c(1, 1, 0)))
+}) 
   
-  # check create_vax_map and set_strategy working as expected
-  
+test_that("create_vax_map and set_strategy working as expected", {
+
   # check errors generated when stop() if loops activated
   
   expect_error(run_onevax_xvwrh(tt, gp, vea = 0, vbe = 1, dur = 1e3,
