@@ -206,11 +206,6 @@ model_params <- function(gono_params = NULL,
 
 create_vax_map <- function(n_vax, v, i_u, i_v) {
 
-  #change vbe input to matrix
-  if (length(v) == 1) {
-    v <- matrix(c(rep(v, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
-  }
-
   # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(all((v >= 0) & (v <= 1)))

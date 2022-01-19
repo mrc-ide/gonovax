@@ -314,7 +314,9 @@ test_that("run_onevax_xvwrh works correctly", {
   # check vbe working correctly
 
   vbe <- 1
-  vax_map_vbe <- create_vax_map(n_vax = 5, v = vbe, i_u = c(1, 3),
+  v <- matrix(c(rep(vbe, 2), rep(0, 2)), nrow = 2, byrow = TRUE)
+
+  vax_map_vbe <- create_vax_map(n_vax = 5, v = v, i_u = c(1, 3),
                                 i_v = c(2, 4))
 
   expect_equal(vax_map_vbe[, 1, 1], c(vbe, vbe))
