@@ -2,6 +2,7 @@
 
 export(aggregate)
 export(compare)
+export(compare_baseline)
 export(dbetabinom)
 export(extract_flows)
 export(gono_params)
