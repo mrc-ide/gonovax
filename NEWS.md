@@ -1,3 +1,7 @@
+# gonovax 0.3.10
+
+* document and export compare_baseline function
+
 # gonovax 0.3.9
 
 * allows proportion of population to be vaccine hesistant, allows primary and booster vaccination uptakes to be different proportions
