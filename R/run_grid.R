@@ -72,7 +72,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @title compare model runs with vaccination to a baseline runs
 ##' @param y list of model runs, e.g. created by `run_onevax_xvwv`, each list
 ##' entry refers to a different parameter set
-##' @param baseline list of baseline runs e.g. created by `run_onevax_xvwv`. 
+##' @param baseline list of baseline runs e.g. created by `run_onevax_xvwv`.
 ##' Should be same length as `y`
 ##' @param cost_params list of cost effectiveness parameters, containing entries
 ##' `qaly_loss_per_diag_s`, `unit_cost_manage_symptomatic`,
@@ -89,7 +89,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' diag_s = annual number of symptomatic diagnoses in model run
 ##' treated = annual number treated in model run
 ##' screened = annual number screened in model run
-##' vaccinated = annual number vaccinated in model run 
+##' vaccinated = annual number vaccinated in model run
 ##' (includes those getting vbe and boosters)
 ##' vbe = annual number vaccinated before entry in model run
 ##' revaccinated = annual number receiving booster in model run
@@ -108,18 +108,18 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' inc_cum_doses = cumulative number of doses compared to baseline. Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
-##' cases_averted_per_dose = cumulative number of cases (i.e. diagnoses) 
+##' cases_averted_per_dose = cumulative number of cases (i.e. diagnoses)
 ##' averted per dose of vaccine
-##' cases_averted_per_dose_pv = present value of cases_averted_per_dose 
-##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0) 
+##' cases_averted_per_dose_pv = present value of cases_averted_per_dose
+##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0)
 ##' pv_inc_doses = present value of number of doses compared to baseline
-##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0) 
+##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0)
 ##' pv_red_net_cost = present value of the reduction in net costs compared to
 ##' baseline (i.e. sum of annual reduction in costs discounted at rate
-##'  `disc_rate` to time 0)  
+##'  `disc_rate` to time 0)
 ##' pv_qaly_gain = present value of the QALYs gained due to vaccination
 ##' compared to baseline (i.e. QALYs gained each year discounted at rate
-##'  `disc_rate` to time 0, and summed) 
+##'  `disc_rate` to time 0, and summed)
 ##' cet_20k = cost effectiveness threshold (i.e. £ value per dose at which
 ##' vaccination becomes cost-effective) calculated using £20,000 / QALY.
 ##' (pv_red_net_cost + pv_qaly_gain * £20,000) / pv_inc_doses
