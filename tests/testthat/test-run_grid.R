@@ -122,6 +122,43 @@ test_that("compare baseline works as expected", {
 
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(18, cost),
                cost$pv_inc_doses * (85 - 18))
+  
+  ## test doses wasted calculated correctly
+ 
+      # no doses wasted when second_uptake dose 1
+  z <- compare_baseline(y, bl, uptake_second_dose = 1, cp, 0)
+  
+  expect_equal(z$inc_cum_doses_wasted, matrix(rep(0,6), 3, 2))
+  expect_equal(z$inc_doses_wasted, matrix(rep(0,6), 3, 2))
+  
+      # regardless of first dose uptake
+  gp <- gonovax::gono_params(1:2)
+  ip <- lapply(run_onevax_xvwrh(0:1, gp, vea = 0, dur = 1), restart_hes)
+  tt <- 1:4
+  
+  bl <- extract_flows(run_onevax_xvwrh(tt, gp, ip, vea = 0, dur = 1))     #obtain baseline 
+  
+  y_f <- run_onevax_xvwrh(tt, gp, ip, vea = 0.5, dur = 1, vbe = 0.5,
+                        primary_uptake = 0.1, booster_uptake = 1,              # first dose = 0.1, second dose = 1
+                        strategy = "VoD")
+  
+  z_f <- compare_baseline(y_f, bl, uptake_second_dose = 1, cp, 0)
+  
+  expect_equal(z_f$inc_cum_doses_wasted, matrix(rep(0,6), 3, 2))
+  expect_equal(z_f$inc_doses_wasted, matrix(rep(0,6), 3, 2))
+  
+      # regardless of hesitancy
+  ip <- lapply(run_onevax_xvwrh(0:1, gp, vea = 0, dur = 1), restart_hes, hes = 0.3)
+  
+  y_h <- run_onevax_xvwrh(tt, gp, ip, vea = 0.5, dur = 1, vbe = 0.5,
+                        primary_uptake = 1, strategy = "VoD", hes = 0.3)        # first and second dose uptake = 1
+  
+  z_h <- compare_baseline(y, bl, uptake_second_dose = 1, cp, 0)
+  
+  expect_equal(z_h$inc_cum_doses_wasted, matrix(rep(0,6), 3, 2))
+  expect_equal(z_h$inc_doses_wasted, matrix(rep(0,6), 3, 2))
+   
+  
 })
 
 
