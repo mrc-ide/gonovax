@@ -160,17 +160,17 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-  
-  ## calculate incremental vaccine doses wasted                                 #come back to this 
+
+  ## calculate incremental vaccine doses wasted
   ret$inc_doses_wasted <- calc_doses(ret, uptake_second_dose, TRUE,
                                      wasted = TRUE)
   ret$inc_cum_doses_wasted <- apply(ret$inc_doses_wasted, 2, cumsum)
-  
+
   ## calculate incremental primary and booster vaccination
   ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
   ret$inc_cum_booster <- apply(ret$inc_revaccinated, 2, cumsum)
-  
+
   ret
 }
 
@@ -182,16 +182,17 @@ calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE,
     forecast$inc_vaccinated - forecast$inc_revaccinated - forecast$inc_vbe
   n_primary_doses_pp <- 1 + 1 / uptake_second_dose
   inc_primary_doses <- t(inc_primary_vaccination) * n_primary_doses_pp
-  
-  if(wasted == TRUE){
-      
+
+  if (wasted == TRUE) {
+
     n_primary_doses_full_pp <- 2   #for full protection
-    inc_primary_doses_protect <- t(inc_primary_vaccination) * n_primary_doses_full_pp          
-    
+    inc_primary_doses_protect <- t(inc_primary_vaccination) *
+      n_primary_doses_full_pp
+
     doses_wasted <- inc_primary_doses - inc_primary_doses_protect
-    
+
     t(doses_wasted)
-    
+
   } else {
 
     n_vbe_pp <- 2 # all vbe get two doses
@@ -200,16 +201,16 @@ calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE,
       n_revax_doses_pp <- 1
       } else {
       n_revax_doses_pp <- n_primary_doses_pp
-    }
-   
+      }
+
     inc_vbe_doses <- t(forecast$inc_vbe) * n_vbe_pp
     inc_revax_doses <- t(forecast$inc_revaccinated) * n_revax_doses_pp
 
     inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
-   
+
   t(inc_doses)
-  
-  } 
+
+  }
 
 }
 
