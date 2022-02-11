@@ -157,7 +157,42 @@ test_that("compare baseline works as expected", {
   
   expect_equal(z_h$inc_cum_doses_wasted, matrix(rep(0,6), 3, 2))
   expect_equal(z_h$inc_doses_wasted, matrix(rep(0,6), 3, 2))
-   
+  
+  ## test that cumulative primary and booster vaccination calc correctly
+  gp <- gono_params(1:2)
+  
+  cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
+             unit_cost_manage_symptomatic = c(98, 99),
+             unit_cost_manage_asymptomatic = c(93, 94),
+             unit_cost_screen_uninfected = c(70, 71))
+  
+  ip <- lapply(run_onevax_xvwrh(0:1, gp, vea = 0, dur = 1), restart_hes)
+  tt <- 1:4
+  
+  bl <- extract_flows(run_onevax_xvwrh(tt, gp, ip, vea = 0, dur = 1e50)) 
+  
+  y <- run_onevax_xvwrh(tt, gp, ip, vea = 1, dur = 1, vbe = 0, 
+                          primary_uptake = 1, booster_uptake = 0,         
+                          strategy = "VoD")    
+  z <- compare_baseline(y, bl, uptake_second_dose = 1, cp, 0)
+
+  # number undergoing primary vaccination is equal to total people vaccinated when
+  # booster uptake = 0
+  
+  expect_equal((z$inc_cum_primary[ ,1])[length(tt)-1],
+               (z$inc_cum_vaccinated[ ,1])[length(tt)-1] ) 
+  
+  # number booster vaccinations is equal to
+      # inc_cum_vaccinated - inc_cum_primary
+      # sum re-vaccinated
+  
+  y <- run_onevax_xvwrh(tt, gp, ip, vea = 1, dur = 1, vbe = 0, 
+                        primary_uptake = 1, booster_uptake = 0.5,         
+                        strategy = "VoD")
+  z <- compare_baseline(y, bl, uptake_second_dose = 1, cp, 0)
+  
+  expect_equal((z$inc_cum_vaccinated[ ,1])[length(tt)-1] - (z$inc_cum_primary[ ,1])[length(tt)-1], (z$inc_cum_booster[ ,1])[length(tt)-1])
+  expect_equal(sum((z$inc_revaccinated[,1])), (z$inc_cum_booster[ ,1])[length(tt)-1])
   
 })
 
