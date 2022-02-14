@@ -197,7 +197,7 @@ calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE,
   n_primary_doses_pp <- 1 + 1 / uptake_second_dose
   inc_primary_doses <- t(inc_primary_vaccination) * n_primary_doses_pp
 
-  if (wasted == TRUE) {
+  if (wasted) {
 
     n_primary_doses_full_pp <- 2   #for full protection
     inc_primary_doses_protect <- t(inc_primary_vaccination) *
