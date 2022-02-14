@@ -81,7 +81,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @param uptake_second_dose numeric (0-1) either length 1 or same as `y`
 ##' @param disc_rate discount rate for cost-effectiveness output per annum,
 ##'  default = 0
-##' @return A list of matrices with rows = time point and columns = parameter set
+##' @return A list of matrices with rows = time point and columns
+##' = parameter set
 ##' list entries are:
 ##' cum_treated = cumulative number treated in model run
 ##' cum_vaccinated = cumulative vaccinated treated in model run
@@ -132,8 +133,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
 ##' inc_doses_wasted = annual number of first doses wasted by not following up
 ##' with second dose (both doses needed for primary vaccination protection)
-##' inc_cum_doses_wasted = cumulative number of first doses wasted from the 
-##' start of vaccine programme 
+##' inc_cum_doses_wasted = cumulative number of first doses wasted from the
+##' start of vaccine programme
 ##' inc_primary = annual number of individuals receiving primary vaccination
 ##' (first and second dose)
 ##' inc_cum_primary = cumulative number of individuals receiving primary
