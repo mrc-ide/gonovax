@@ -202,7 +202,7 @@ test_that("compare baseline works as expected", {
   # vaccinated when booster uptake = 0
 
     expect_equal(z$inc_cum_primary[length(tt) - 1, 1],
-               (z$inc_cum_vaccinated[, 1])[length(tt) - 1])
+               z$inc_cum_vaccinated[length(tt) - 1, 1])
 
   # number booster vaccinations is equal to
       # inc_cum_vaccinated - inc_cum_primary
@@ -212,12 +212,13 @@ test_that("compare baseline works as expected", {
                         primary_uptake = 1, booster_uptake = 0.5,
                         strategy = "VoD")
   z <- compare_baseline(y, bl, uptake_second_dose = 1, cp, 0)
-
-  expect_equal((z$inc_cum_vaccinated[, 1])[length(tt) - 1] -
-                 (z$inc_cum_primary[, 1])[length(tt) - 1],
-               (z$inc_cum_revaccinated[, 1])[length(tt) - 1])
-  expect_equal(sum((z$inc_revaccinated[, 1])),
-               (z$inc_cum_revaccinated[, 1])[length(tt) - 1])
+  
+  expect_equal(z$inc_cum_vaccinated[length(tt) -1, 1] -
+                 z$inc_cum_primary[length(tt) - 1, 1],
+               z$inc_cum_revaccinated[length(tt) - 1, 1])
+  
+  expect_equal(sum(z$inc_revaccinated[, 1]),
+               z$inc_cum_revaccinated[length(tt) - 1, 1])
 
 })
 
