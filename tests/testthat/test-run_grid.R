@@ -201,7 +201,7 @@ test_that("compare baseline works as expected", {
   # number undergoing primary vaccination is equal to total people
   # vaccinated when booster uptake = 0
 
-    expect_equal((z$inc_cum_primary[, 1])[length(tt) - 1],
+    expect_equal(z$inc_cum_primary[length(tt) - 1, 1],
                (z$inc_cum_vaccinated[, 1])[length(tt) - 1])
 
   # number booster vaccinations is equal to
