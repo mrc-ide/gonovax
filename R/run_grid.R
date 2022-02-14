@@ -143,6 +143,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' vaccination#
 ##' inc_cum_revaccinated = cumulative number of individuals receiving booster
 ##' vaccination (revaccination)
+##' inc_cum_vbe = cumulative number of individuals vaccinated before entry
 ##' @export
 compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
                               disc_rate) {
@@ -184,6 +185,7 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
   ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
+  ret$inc_cum_vbe <- apply(ret$inc_vbe, 2, cumsum)
 
   ret
 }

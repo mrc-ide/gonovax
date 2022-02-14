@@ -24,7 +24,8 @@ length 1 or same as `y`}
 default = 0}
 }
 \value{
-A list of matrices with rows = time point and columns = parameter set
+A list of matrices with rows = time point and columns
+= parameter set
 list entries are:
 cum_treated = cumulative number treated in model run
 cum_vaccinated = cumulative vaccinated treated in model run
@@ -71,18 +72,21 @@ vaccination becomes cost-effective) calculated using £30,000 / QALY
 (pv_red_net_cost + pv_qaly_gain * £30,000) / pv_inc_doses
 inc_costs_18 = present value of incremental costs assuming £18 / dose.
 Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
+inc_costs_50 = present value of incremental costs assuming £50 / dose.
+Incremental costs are calculated as: pv_inc_doses * £50 - pv_red_net_cost
 inc_costs_85 = present value of incremental costs assuming £85 / dose
 Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
 inc_doses_wasted = annual number of first doses wasted by not following up
 with second dose (both doses needed for primary vaccination protection)
-inc_cum_doses_wasted = cumulative number of first doses wasted from the 
-start of vaccine programme 
+inc_cum_doses_wasted = cumulative number of first doses wasted from the
+start of vaccine programme
 inc_primary = annual number of individuals receiving primary vaccination
 (first and second dose)
 inc_cum_primary = cumulative number of individuals receiving primary
 vaccination#
-inc_cum_booster = cumulative number of individuals receiving booster
+inc_cum_revaccinated = cumulative number of individuals receiving booster
 vaccination (revaccination)
+inc_cum_vbe = cumulative number of individuals vaccinated before entry
 }
 \description{
 compare model runs with vaccination to a baseline runs
