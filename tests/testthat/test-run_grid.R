@@ -196,9 +196,9 @@ test_that("compare baseline works as expected", {
 
   expect_equal((z$inc_cum_vaccinated[, 1])[length(tt) - 1] -
                  (z$inc_cum_primary[, 1])[length(tt) - 1],
-               (z$inc_cum_booster[, 1])[length(tt) - 1])
+               (z$inc_cum_revaccinated[, 1])[length(tt) - 1])
   expect_equal(sum((z$inc_revaccinated[, 1])),
-               (z$inc_cum_booster[, 1])[length(tt) - 1])
+               (z$inc_cum_revaccinated[, 1])[length(tt) - 1])
 
 })
 
