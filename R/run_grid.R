@@ -129,6 +129,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' (pv_red_net_cost + pv_qaly_gain * £30,000) / pv_inc_doses
 ##' inc_costs_18 = present value of incremental costs assuming £18 / dose.
 ##' Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
+##' inc_costs_50 = present value of incremental costs assuming £50 / dose.
+##' Incremental costs are calculated as: pv_inc_doses * £50 - pv_red_net_cost
 ##' inc_costs_85 = present value of incremental costs assuming £85 / dose
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
 ##' inc_doses_wasted = annual number of first doses wasted by not following up
@@ -170,6 +172,7 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ## calculate incremental cost of vaccination assuming £18 and £85 per dose
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
+  ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
 
   ## calculate incremental vaccine doses wasted
