@@ -222,7 +222,7 @@ return(t(doses_wasted))
 
     inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
 
-  t(inc_doses)
+return(t(inc_doses))
 
   }
 
