@@ -205,7 +205,7 @@ calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE,
 
     doses_wasted <- inc_primary_doses - inc_primary_doses_protect
 
-    t(doses_wasted)
+return(t(doses_wasted))
 
   } else {
 
