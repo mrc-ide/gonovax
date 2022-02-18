@@ -20,7 +20,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
       </span>
     </div>
 
@@ -62,18 +62,18 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">set_strategy</span><span class="op">(</span><span class="va">strategy</span>, include_vbe <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">set_strategy</span><span class="op">(</span>strategy <span class="op">=</span> <span class="cn">NULL</span>, include_vbe <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>strategy</dt>
-<dd><p>single character string in "VbE", "VoD", "VoD(H)",
+<dd><p>single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)", "VoS" describing who is offered
-vaccination</p></dd>
+vaccination. defaults to no vaccination.</p></dd>
 <dt>include_vbe</dt>
 <dd><p>single logical indicating whether vaccination before
-entry is offered.</p></dd>
+entry is offered. Defaults to FALSE.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>

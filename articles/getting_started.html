@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
       </span>
     </div>
 
@@ -163,11 +163,12 @@
 <p><code>y</code> is now a list of model runs of length <code>n_par</code>, each entry contains a list of model outputs. Each of these list entries <code>y[[i]]</code> is a list of model output arrays with dimensions: time, group (L, H), and vaccine status (X, V, W) where applicable</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
-<span class="co">#&gt;  [1] "t"              "U"              "I"              "A"             </span>
-<span class="co">#&gt;  [5] "S"              "T"              "cum_incid"      "cum_diag_a"    </span>
-<span class="co">#&gt;  [9] "cum_diag_s"     "cum_treated"    "cum_screened"   "cum_offered"   </span>
-<span class="co">#&gt; [13] "cum_vaccinated" "cum_vbe"        "tot_treated"    "tot_attended"  </span>
-<span class="co">#&gt; [17] "beta"           "eta"            "lambda"         "N"</span>
+<span class="co">#&gt;  [1] "t"               "U"               "I"               "A"              </span>
+<span class="co">#&gt;  [5] "S"               "T"               "cum_incid"       "cum_diag_a"     </span>
+<span class="co">#&gt;  [9] "cum_diag_s"      "cum_treated"     "cum_screened"    "cum_offered"    </span>
+<span class="co">#&gt; [13] "cum_vaccinated"  "cum_vbe"         "cum_offered_vbe" "tot_treated"    </span>
+<span class="co">#&gt; [17] "tot_attended"    "beta"            "eta"             "lambda"         </span>
+<span class="co">#&gt; [21] "N"</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span>
 <span class="co">#&gt; [1] 11  2  3</span>
 <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span>
@@ -183,7 +184,7 @@
 <span class="co"># cumulative incidence in unvaccinated group L over time</span>
 <span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">[</span>, <span class="st">"L"</span>, <span class="st">"X"</span><span class="op">]</span>
 <span class="co">#&gt;  [1]     0.00 12019.16 17752.48 20517.99 21988.09 22851.44 23405.84 23790.58</span>
-<span class="co">#&gt;  [9] 24076.17 24301.00 24487.20</span></code></pre></div>
+<span class="co">#&gt;  [9] 24076.18 24301.00 24487.20</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="graphical-representations-of-results">Graphical representations of results<a class="anchor" aria-label="anchor" href="#graphical-representations-of-results"></a>

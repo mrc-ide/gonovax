@@ -23,7 +23,7 @@ for revaccination, and return to the V compartment"><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@ for revaccination, and return to the V compartment</p>
   ves <span class="op">=</span> <span class="fl">0</span>,
   vbe <span class="op">=</span> <span class="fl">0</span>,
   uptake <span class="op">=</span> <span class="fl">0</span>,
-  strategy <span class="op">=</span> <span class="st">"VbE"</span>,
+  strategy <span class="op">=</span> <span class="cn">NULL</span>,
   t_stop <span class="op">=</span> <span class="fl">99</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -113,8 +113,8 @@ efficacy of the vaccine against symptoms (between 0-1)</p></dd>
 <dd><p>scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy</p></dd>
 <dt>strategy</dt>
-<dd><p>single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"</p></dd>
+<dd><p>single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination</p></dd>
 <dt>t_stop</dt>
 <dd><p>time at which vaccination should stop (years)</p></dd>
 </dl></div>

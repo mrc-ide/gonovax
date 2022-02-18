@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
       </span>
     </div>
 
@@ -70,7 +70,7 @@
   dur_revax <span class="op">=</span> <span class="va">dur</span>,
   primary_uptake <span class="op">=</span> <span class="fl">0</span>,
   booster_uptake <span class="op">=</span> <span class="va">primary_uptake</span>,
-  strategy <span class="op">=</span> <span class="st">"VbE"</span>,
+  strategy <span class="op">=</span> <span class="cn">NULL</span>,
   vbe <span class="op">=</span> <span class="fl">0</span>,
   t_stop <span class="op">=</span> <span class="fl">99</span>,
   hes <span class="op">=</span> <span class="fl">0</span>
@@ -117,8 +117,8 @@ vaccination as part of strategy</p></dd>
 'gono_params' giving proportion of population undertaking booster
 vaccination after primary vaccination protection has waned</p></dd>
 <dt>strategy</dt>
-<dd><p>single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"</p></dd>
+<dd><p>single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination</p></dd>
 <dt>vbe</dt>
 <dd><p>scalar indicating pc of population vaccinated before entry
 (between 0-1)</p></dd>
