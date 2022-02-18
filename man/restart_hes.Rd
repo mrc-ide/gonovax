@@ -10,10 +10,10 @@ new initial conditions in the presence of hesitancy.}
 restart_hes(y, n_vax = 5, hes = 0)
 }
 \arguments{
-\item{y}{output of runonevax_xvwrh in absence of vaccination and hes = 0,
-usually to equilibrium}
+\item{y}{a transformed model run output}
 
-\item{n_vax}{number of stratum in model run y}
+\item{n_vax}{an integer indicating the number of vaccine compartments,
+consistent with the input}
 
 \item{hes}{proportion of population vaccine hesitant}
 }

@@ -27,8 +27,7 @@ initial_params_xvw <- function(pars, coverage = 0) {
 ##' @param dur scalar indicating duration of the vaccine (in years)
 ##' @param vbe scalar indicating pc of population vaccinated before entry
 ##'  (between 0-1)
-##' @param uptake scalar indicating pc of population vaccinated as part
-##'  of strategy
+##' @param uptake scalar indicating pc of those offered who accept vaccination
 ##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
 ##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
 ##' @param t_stop time at which vaccination should stop (years)
@@ -54,27 +53,25 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_w <- n_vax <- 3
   n_group <- 2
 
-  # compartments to which vaccine efficacy applies
-  ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
-  p <- set_strategy(strategy, uptake)
+  # If uptake of VbE > 0 consider that all adolescents are offered vaccine
+  p <- set_strategy(strategy, vbe > 0)
 
-  #change vbe input to matrix format
-  vbe <- matrix(vbe, ncol = n_group)
-
-  list(n_vax = n_vax,
-       vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
-       vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea   = vea * ve,
-       vei   = vei * ve,
-       ved   = ved * ve,
-       ves   = ves * ve,
+  list(n_vax   = n_vax,
        willing = c(1, 0, 0),
-       w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
-       vax_t = c(0, t_stop),
-       vax_y = c(1, 0)
+       u       = matrix(uptake, n_group, n_vax),
+       u_vbe   = vbe,
+       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vea     = c(0, vea, 0),
+       vei     = c(0, vei, 0),
+       ved     = c(0, ved, 0),
+       ves     = c(0, ves, 0),
+       w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
+       vax_t   = c(0, t_stop),
+       vax_y   = c(1, 0)
   )
 }
 

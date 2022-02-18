@@ -29,7 +29,7 @@ extract_flows <- function(y) {
 
   # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
-                  "cum_vaccinated", "cum_vbe")
+                  "cum_vaccinated", "cum_vbe", "cum_offered")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
@@ -115,7 +115,8 @@ name_outputs <- function(res, strata_names) {
   group_names <- c("L", "H")
   state_names <- c("U", "I", "A", "S", "T", "N",
                    "cum_incid", "cum_diag_a", "cum_diag_s",
-                   "cum_treated", "cum_screened", "cum_vaccinated")
+                   "cum_treated", "cum_screened", "cum_vaccinated",
+                   "cum_offered", "cum_vbe")
 
   for (nm in state_names) {
     dimnames(res[[nm]]) <- list(NULL, group_names, strata_names)
