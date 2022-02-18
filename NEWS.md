@@ -1,3 +1,7 @@
+# gonovax 0.3.11
+
+* output the cumulative number offered vaccination
+
 # gonovax 0.3.10
 
 * document and export compare_baseline function
