@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -63,11 +63,10 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>n_vax</dt>
-<dd><p>Integer in (0, 5) denoting total number of strata</p></dd>
+<dd><p>Integer denoting total number of strata</p></dd>
 <dt>v</dt>
-<dd><p>a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
-<!-- % of population vaccinated according to the strategy. For vod &amp; vos each -->
-value will apply to the eligible stratum separately</p></dd>
+<dd><p>0-1 vector of length two indicating whether activity group
+should be offered vaccination.</p></dd>
 <dt>i_u</dt>
 <dd><p>indices of strata eligible for vaccination</p></dd>
 <dt>i_v</dt>
