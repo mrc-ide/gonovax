@@ -195,13 +195,13 @@ test_that("run_onevax_xvwrh works correctly", {
                      y6e[[i]]$cum_screened[, 2,  c(1, 3)])
       # and no-one else
       expect_equal(sum(y6e[[i]]$cum_offered[, , -c(1, 3)]), 0)
-  
+
       # uptake % of offered are vaccinated
       expect_equal(y6e[[i]]$cum_offered[, , 1] * primary_uptake[i],
                    y6e[[i]]$cum_vaccinated[, , 1])
       expect_equal(y6e[[i]]$cum_offered[, , 3] * booster_uptake[i],
                    y6e[[i]]$cum_vaccinated[, , 3])
-  
+
       # stratum V empties immediately
       expect_equal(sum(y6e[[i]]$N[, , 2]), 0, tolerance = 1e-5)
       expect_true(all(y6e[[i]]$cum_vaccinated[, , 3] <=
@@ -227,7 +227,7 @@ test_that("run_onevax_xvwrh works correctly", {
                      y7e[[i]]$cum_screened[, 2,  c(1, 3)])
       # and no-one else
       expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 3)]), 0)
-  
+
       # uptake % of offered are vaccinated
       expect_equal(y7e[[i]]$cum_offered[, , 1] * primary_uptake[i],
                    y7e[[i]]$cum_vaccinated[, , 1])

@@ -29,7 +29,7 @@ extract_flows <- function(y) {
 
   # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
-                  "cum_vaccinated", "cum_vbe")
+                  "cum_vaccinated", "cum_vbe", "cum_offered")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
