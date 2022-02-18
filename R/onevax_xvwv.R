@@ -1,21 +1,6 @@
 ##' @name vax_params_xvwv
 ##' @title create vaccination parameters for use in onevax_xvwv model
-##' @param vea scalar indicating efficacy of the vaccine against acquisition
-##' (between 0-1)
-##' @param vei scalar indicating efficacy of the vaccine against infectiousness
-##' (between 0-1)
-##' @param ved scalar indicating efficacy of the vaccine against duration
-##' (between 0-1)
-##' @param ves scalar indicating efficacy of the vaccine against symptoms
-##' (between 0-1)
-##' @param dur scalar indicating duration of the vaccine (in years)
-##' @param vbe scalar indicating pc of population vaccinated before entry
-##'  (between 0-1)
-##' @param uptake scalar indicating pc of population vaccinated as part
-##'  of strategy
-##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
-##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
-##' @param t_stop time at which vaccination should stop (years)
+##' @inheritParams vax_params_xvw
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             dur = 1e3, uptake = 0, strategy = "VbE",

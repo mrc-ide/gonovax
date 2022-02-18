@@ -10,8 +10,8 @@ initial_params_xvwrh(pars, coverage = 0, hes = 0)
 \item{pars}{A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
 elements.}
 
-\item{coverage}{scalar giving initial coverage of vaccination in willing
-population}
+\item{coverage}{a vector of length `n_vax` that sums to 1 denoting the
+initial proportion in each vaccine stratum}
 
 \item{hes}{proportion of population vaccine hesitant}
 }

@@ -27,8 +27,7 @@ initial_params_xvw <- function(pars, coverage = 0) {
 ##' @param dur scalar indicating duration of the vaccine (in years)
 ##' @param vbe scalar indicating pc of population vaccinated before entry
 ##'  (between 0-1)
-##' @param uptake scalar indicating pc of population vaccinated as part
-##'  of strategy
+##' @param uptake scalar indicating pc of those offered who accept vaccination
 ##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
 ##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
 ##' @param t_stop time at which vaccination should stop (years)

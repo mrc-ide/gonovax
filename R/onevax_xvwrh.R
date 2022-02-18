@@ -1,10 +1,7 @@
 ##' Create initial conditions for the model
 ##' @name initial_params_xvwrh
 ##' @title Initial conditions for the model
-##' @param pars A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
-##'   elements.
-##' @param coverage  scalar giving initial coverage of vaccination in willing
-##'  population
+##' @inheritParams initial_params
 ##' @param hes proportion of population vaccine hesitant
 ##' @return A list of initial conditions
 ##' @export
@@ -37,23 +34,7 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
 
 ##' @name vax_params_xvwrh
 ##' @title create vaccination parameters for use in onevax_xvwrh model
-##' @inheritParams vax_params_xvwv
-##' @param vea_revax scalar indicating efficacy of revaccination against
-##'  acquisition (between 0-1)
-##' @param vei_revax scalar indicating efficacy of revaccination against
-##'  infectiousness (between 0-1)
-##' @param ved_revax scalar indicating efficacy of revaccination against
-##'  duration of infection (between 0-1)
-##' @param ves_revax scalar indicating efficacy of revaccination against
-##'  symptoms (between 0-1)
-##' @param dur_revax duration of protection for revaccination,
-##'  default to same as primary
-##' @param primary_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking primary
-##'  vaccination as part of strategy
-##' @param booster_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking booster
-##'  vaccination after primary vaccination protection has waned
+##' @inheritParams vax_params_xvwr
 ##' @param hes proportion of population vaccine hesitant
 ##' @return A list parameters in the model input format
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
@@ -194,9 +175,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' Saves down the number of individuals in each compartment, and moves
 ##' a given proportion (hes) of them from the X to the H strata to generate
 ##' new initial conditions in the presence of hesitancy.
-##' @param y output of runonevax_xvwrh in absence of vaccination and hes = 0,
-##' usually to equilibrium
-##' @param n_vax number of stratum in model run y
+##' @inheritParams restart_params
 ##' @param hes proportion of population vaccine hesitant
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
@@ -249,5 +228,4 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
   T0[, 1] <- T0[, 1] - h
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
-
 }

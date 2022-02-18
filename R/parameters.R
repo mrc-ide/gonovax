@@ -247,7 +247,17 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
   w
 }
 
-
+##' @name set_strategy
+##' @title Translate each named vaccine strategy into a format interpretable by
+##' `create_vax_map`
+##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
+##' "VoA", "VoA(H)", "VoD(L)+VoA(H)", "VoS" describing who is offered
+##' vaccination
+##' @param include_vbe single logical indicating whether vaccination before
+##' entry is offered.
+##' @return list with entries `vod`, `vos` and `vbe` containing 0-1 vectors of
+##' length two indicating whether group L and/or H are offered vaccination via
+##' each potential vaccination route (i.e. screeing, diagnosis, entry)
 set_strategy <- function(strategy, include_vbe = FALSE) {
   # switch for vaccination in group (L, H)
   novax  <- c(0, 0)
