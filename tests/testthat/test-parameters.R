@@ -201,9 +201,9 @@ test_that("transform_fixed works as expected", {
 test_that("set_strategy works as expected", {
 
   # and different strategies vod and vos maps as expected
-  expect_equal(set_strategy("VbE"),
+  expect_equal(set_strategy(),
                list(vod = c(0, 0), vos = c(0, 0), vbe = c(0, 0)))
-  expect_equal(set_strategy("VbE", TRUE),
+  expect_equal(set_strategy(include_vbe =  TRUE),
                list(vod = c(0, 0), vos = c(0, 0), vbe = c(1, 1)))
   expect_equal(set_strategy("VoD"),
                list(vod = c(1, 1), vos = c(0, 0), vbe = c(0, 0)))

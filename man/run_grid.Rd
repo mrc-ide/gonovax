@@ -14,7 +14,7 @@ run_grid(
   eff,
   dur,
   vbe = 0,
-  strategy = "VbE",
+  strategy = NULL,
   uptake_total = 0,
   uptake_second_dose = uptake_total,
   t_stop = 99,
@@ -42,7 +42,7 @@ acquisition}
 \item{vbe}{single numeric indicating % of population vaccinated before entry
 (between 0-1), default = 0}
 
-\item{strategy}{`VbE`: vaccination before entry only (default),
+\item{strategy, }{default is null, no vaccination
 `VoD`: vaccination on diagnosis, `VoA`: vaccination on attendance,
 `VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
  screening)}

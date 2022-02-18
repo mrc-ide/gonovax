@@ -28,15 +28,14 @@ initial_params_xvw <- function(pars, coverage = 0) {
 ##' @param vbe scalar indicating pc of population vaccinated before entry
 ##'  (between 0-1)
 ##' @param uptake scalar indicating pc of those offered who accept vaccination
-##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
-##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
+##' @param strategy single character string in "VoD", "VoD(H)",
+##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination
 ##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list parameters in the model input format
 vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                            dur = 1e3, uptake = 0, strategy = "VbE", vbe = 0,
+                            dur = 1e3, uptake = 0, strategy = NULL, vbe = 0,
                            t_stop = 99) {
 
-  assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -101,7 +100,7 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @export
 run_onevax_xvw <- function(tt, gono_params, init_params = NULL, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0, vbe = coverage,
-                            uptake = 0, strategy = "VbE", coverage = 0,
+                            uptake = 0, strategy = NULL, coverage = 0,
                             t_stop = 99) {
 
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%

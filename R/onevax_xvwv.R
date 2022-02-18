@@ -3,10 +3,9 @@
 ##' @inheritParams vax_params_xvw
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                            dur = 1e3, uptake = 0, strategy = "VbE",
+                            dur = 1e3, uptake = 0, strategy = NULL,
                             vbe = 0, t_stop = 99) {
 
-  assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -68,7 +67,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @export
 run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
-                            uptake = 0, strategy = "VbE",
+                            uptake = 0, strategy = NULL,
                             t_stop = 99) {
 
 

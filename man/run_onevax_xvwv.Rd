@@ -17,7 +17,7 @@ run_onevax_xvwv(
   ves = 0,
   vbe = 0,
   uptake = 0,
-  strategy = "VbE",
+  strategy = NULL,
   t_stop = 99
 )
 }
@@ -49,8 +49,8 @@ efficacy of the vaccine against symptoms (between 0-1)}
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy}
 
-\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
 \item{t_stop}{time at which vaccination should stop (years)}
 }

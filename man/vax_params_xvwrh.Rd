@@ -17,7 +17,7 @@ vax_params_xvwrh(
   dur_revax = dur,
   primary_uptake = 0,
   booster_uptake = primary_uptake,
-  strategy = "VbE",
+  strategy = NULL,
   vbe = 0,
   t_stop = 99,
   hes = 0
@@ -61,8 +61,8 @@ vaccination as part of strategy}
 'gono_params' giving proportion of population undertaking booster
 vaccination after primary vaccination protection has waned}
 
-\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}

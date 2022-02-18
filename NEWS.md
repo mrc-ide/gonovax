@@ -1,3 +1,7 @@
+# gonovax 0.3.12
+
+* calculate and return # doses wasted and number of individuals primary- and booster-vaccinated separately. Outputs incremental costs for intermediate price (£50)
+
 # gonovax 0.3.11
 
 * output the cumulative number offered vaccination

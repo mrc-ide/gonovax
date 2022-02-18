@@ -34,7 +34,7 @@ test_that("extract_flows works", {
   expect_equal(z$vaccinated, t(aggregate(y, "cum_vaccinated", as_incid = TRUE)))
   expect_equal(z$revaccinated[2, ],
                sapply(y, function(x) diff(rowSums(x$cum_vaccinated[-1, , 3]))))
-  expect_equal(z$offered, z$vaccinated)
+  expect_equal(z$offered_primary, z$vaccinated - z$revaccinated - z$vbe)
 })
 
 test_that("gonovax_year works as expected", {

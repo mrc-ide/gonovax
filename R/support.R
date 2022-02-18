@@ -29,7 +29,7 @@ extract_flows <- function(y) {
 
   # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
-                  "cum_vaccinated", "cum_vbe", "cum_offered")
+                  "cum_vaccinated", "cum_vbe")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
@@ -37,6 +37,11 @@ extract_flows <- function(y) {
   cum_newly_vaccinated <- t(aggregate(y, "cum_vaccinated", stratum = 1))
   cumulative_flows$cum_revaccinated <-
     cumulative_flows$cum_vaccinated - cum_newly_vaccinated
+
+  # extract those offered vaccination for first time (not including VbE)
+  cumulative_flows$cum_offered_primary <-
+    t(aggregate(y, "cum_offered", stratum = 1)) -
+    t(aggregate(y, "cum_offered_vbe", stratum = 1)) # i.e. non-hesitant
 
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))

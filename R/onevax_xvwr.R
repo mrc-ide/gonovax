@@ -23,10 +23,9 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             ved_revax = ved, ves_revax = ves,
                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
                             booster_uptake = primary_uptake,
-                            strategy = "VbE",
+                            strategy = NULL,
                             vbe = 0, t_stop = 99) {
 
-  assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -113,7 +112,7 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
                             vbe = 0, primary_uptake = 0,
-                            booster_uptake = primary_uptake, strategy = "VbE",
+                            booster_uptake = primary_uptake, strategy = NULL,
                             t_stop = 99) {
 
   stopifnot(all(lengths(list(primary_uptake, booster_uptake, vea, vei, ved,
