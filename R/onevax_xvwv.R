@@ -41,16 +41,16 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
-  p <- set_strategy(strategy)
-  u <- matrix(uptake, n_group, n_vax)
-
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
-  p_vbe <- rep(vbe > 0, n_group)
+  p <- set_strategy(strategy, vbe > 0)
+
+  # create uptake array
+  u <- matrix(uptake, n_group, n_vax)
 
   list(n_vax = n_vax,
        u     = u,
        u_vbe = vbe,
-       vbe   = create_vax_map(n_vax, p_vbe, i_eligible, i_v),
+       vbe   = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
        vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
        vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
        vea   = vea * ve,

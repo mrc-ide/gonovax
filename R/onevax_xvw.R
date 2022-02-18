@@ -54,27 +54,25 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_w <- n_vax <- 3
   n_group <- 2
 
-  # compartments to which vaccine efficacy applies
-  ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
-  p <- set_strategy(strategy)
-  u <- matrix(uptake, n_group, n_vax)
-
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
-  p_vbe <- rep(vbe > 0, n_group)
+  p <- set_strategy(strategy, vbe > 0)
+
+  # create uptake array
+  u <- matrix(uptake, n_group, n_vax)
 
   list(n_vax   = n_vax,
        willing = c(1, 0, 0),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p_vbe, i_eligible, i_v),
+       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
        vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
        vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea     = vea * ve,
-       vei     = vei * ve,
-       ved     = ved * ve,
-       ves     = ves * ve,
+       vea     = c(0, vea, 0),
+       vei     = c(0, vei, 0),
+       ved     = c(0, ved, 0),
+       ves     = c(0, ves, 0),
        w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)

@@ -96,30 +96,28 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
 
-  p <- set_strategy(strategy)
+  # If uptake of VbE > 0 consider that all adolescents are offered vaccine
+  p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- matrix(0, n_group, n_vax)
   u[, i_eligible[1]] <- primary_uptake
   u[, i_eligible[2]] <- booster_uptake
 
-  # If uptake of VbE > 0 consider that all adolescents are offered vaccine
-  p_vbe <- rep(vbe > 0, n_group)
-
-  list(n_vax = n_vax,
-       u     = u,
-       u_vbe = vbe,
-       vbe   = create_vax_map(n_vax, p_vbe, i_eligible, i_v),
-       vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea   = c(0, vea, 0, vea_revax, 0),
-       vei   = c(0, vei, 0, vei_revax, 0),
-       ved   = c(0, ved, 0, ved_revax, 0),
-       ves   = c(0, ves, 0, ves_revax, 0),
+  list(n_vax   = n_vax,
        willing = c((1 - hes), 0, 0, 0, hes),
-       w     = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
-       vax_t = c(0, t_stop),
-       vax_y = c(1, 0)
+       u       = u,
+       u_vbe   = vbe,
+       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vea     = c(0, vea, 0, vea_revax, 0),
+       vei     = c(0, vei, 0, vei_revax, 0),
+       ved     = c(0, ved, 0, ved_revax, 0),
+       ves     = c(0, ves, 0, ves_revax, 0),
+       w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
+       vax_t   = c(0, t_stop),
+       vax_y   = c(1, 0)
   )
 }
 
