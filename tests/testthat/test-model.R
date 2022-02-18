@@ -3,7 +3,7 @@ context("model (check)")
 test_that("there are no infections when beta is 0", {
   params <- model_params(gono_params = gono_params(1)[[1]])
   params$beta_t[] <- 0
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
 
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt)
@@ -17,7 +17,7 @@ test_that("there are no infections when beta is 0", {
 test_that("there are no symptomatic infections when psi = 0", {
   params <- model_params(gono_params = gono_params(1)[[1]])
   params$psi <- 0
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -33,7 +33,7 @@ test_that("there are no asymptomatic infections when psi = 1", {
   params$psi <- 1
   params$S0[, ] <- params$A0[, ]
   params$A0[, ] <- 0
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -47,7 +47,7 @@ test_that("there are no asymptomatic infections when psi = 1", {
 test_that("there are no infections when A0 = 0", {
   params <- model_params(gono_params = gono_params(1)[[1]])
   params$A0[, ] <- 0
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -61,7 +61,7 @@ test_that("there are no infections when A0 = 0", {
 test_that("no-one is treated when mu and eta = 0", {
   params <- model_params(gono_params = gono_params(1)[[1]])
   params$mu <- params$eta_h_t[] <- params$eta_l_t[] <-  0
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
 
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt)
@@ -78,7 +78,7 @@ test_that("the foi is calculated correctly", {
   params <- model_params(gono_params = gono_params(1)[[1]],
                          vax_params = vax_params)
   expect_true(length(params$beta_t) > 0)
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -110,13 +110,13 @@ test_that("the foi is calculated correctly", {
 test_that("Bex model runs with no vaccination", {
   tt <- seq.int(0, 5) / 365
   params0 <- model_params(gono_params = gono_params(1)[[1]])
-  mod0 <- model(user = params0, unused_user_action = "ignore")
+  mod0 <- model$new(user = params0, unused_user_action = "ignore")
   y0 <- mod0$run(t = tt)
   y0 <- mod0$transform_variables(y0)
 
   params1 <- model_params(gono_params = gono_params(1)[[1]],
                            vax_params = vax_params_xvwv(vbe = 0))
-  mod1 <- model(user = params1, unused_user_action = "ignore")
+  mod1 <- model$new(user = params1, unused_user_action = "ignore")
   y1 <- mod1$run(t = tt)
   y1 <- mod1$transform_variables(y1)
 
@@ -137,7 +137,7 @@ test_that("Bex model runs with vbe", {
   # with perfect efficacy
   params <- model_params(gono_params = gono_params(1)[[1]],
                             vax_params = vax_params_xvwv(vbe = 1, vea = 1))
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   expect_equal(y$U,
@@ -171,7 +171,7 @@ test_that("Check vaccination on screening in Bex model", {
     model_params(gono_params = gono_params(1)[[1]],
                  vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
                                               strategy = "VoS", vea = 1))
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   expect_equal(y$U,
@@ -209,7 +209,7 @@ test_that("Check vaccination on diagnosis in Bex model", {
     model_params(gono_params = gono_params(1)[[1]],
                  vax_params = vax_params_xvwv(vbe = 0, uptake = 1,
                                               strategy = "VoD", vea = 1))
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
   expect_equal(y$U,
@@ -244,7 +244,7 @@ test_that("can initialise after time 0", {
 
   ## check with single parameter set
   params <- model_params(gono_params = gono_params(1)[[1]])
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
 
   tt <- seq.int(0, 5)
   y <- mod$run(tt)
@@ -266,7 +266,7 @@ test_that("can initialise after time 0", {
 
   params2 <- model_params(gono_params = gono_params(1)[[1]],
                           init_params = inits)
-  mod2 <- model(user = params2, unused_user_action = "ignore")
+  mod2 <- model$new(user = params2, unused_user_action = "ignore")
   y2 <- mod2$run(seq.int(inits$t, 10))
   y2 <- mod2$transform_variables(y2)
 
@@ -281,7 +281,7 @@ test_that("t_stop is working correctly", {
                         t_stop = 2 / 365)
   params <- model_params(gono_params = gono_params(1)[[1]],
                          vax_params = vp)
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt, )
   y <- mod$transform_variables(y)
@@ -294,7 +294,7 @@ test_that("t_stop is working correctly", {
 test_that("aggregated time series output correctly", {
   ## check with single parameter set
   params <- model_params(gono_params = gono_params(1)[[1]])
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
@@ -310,7 +310,7 @@ test_that("time-varying eta works as expected", {
   gono_pars$eta <- 1
   params$eta_l_t <- params$eta_h_t <- gono_pars$eta * c(1, 2, 2)
   params$beta_t <- rep(gono_pars$beta[1], 3)
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq(0, 2, by = 1 / 12)
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
@@ -321,7 +321,7 @@ test_that("time-varying eta works as expected", {
 
   # check can vary wrt group
   params$eta_l_t[] <- gono_pars$eta
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   matplot(apply(y$cum_screened, 2, diff), type = "l")
@@ -331,7 +331,7 @@ test_that("time-varying eta works as expected", {
 
   # check can switch off screening in a group
   params$eta_l_t[] <- 0
-  mod <- model(user = params, unused_user_action = "ignore")
+  mod <- model$new(user = params, unused_user_action = "ignore")
   y1 <- mod$run(tt)
   y1 <- mod$transform_variables(y1)
   expect_equal(sum(y1$cum_screened[, 1, ]), 0)

@@ -196,10 +196,9 @@ model_params <- function(gono_params = NULL,
 
 ##' @name create_vax_map
 ##' @title Create mapping for movement between strata due to vaccination
-##' @param n_vax Integer in (0, 5) denoting total number of strata
-##' @param v a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
-##' % of population vaccinated according to the strategy. For vod & vos each
-##' value will apply to the eligible stratum separately
+##' @param n_vax Integer denoting total number of strata
+##' @param v 0-1 vector of length two indicating whether activity group
+##'  should be offered vaccination.
 ##' @param i_u indices of strata eligible for vaccination
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
@@ -208,22 +207,20 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
-  stopifnot(all((v >= 0) & (v <= 1)))
+  stopifnot(length(v) == n_group)
+  stopifnot(all(v %in% c(0, 1)))
   stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
-
-  stopifnot(all(dim(v) == c(length(i_u), n_group)))
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
   for (i in seq_along(i_u)) {
-    vax_map[, i_u[i], i_u[i]] <-  v[i, ]
-    vax_map[, i_v[i], i_u[i]] <- -v[i, ]
+    vax_map[, i_u[i], i_u[i]] <-  v
+    vax_map[, i_v[i], i_u[i]] <- -v
   }
 
   vax_map
-
 }
 
 ##' @name create_waning_map
@@ -250,13 +247,22 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
   w
 }
 
-
-set_strategy <- function(strategy, uptake) {
-
-  n_group <- 2
-  novax <- matrix(0, length(uptake), n_group)
-  vax_lh <- vax_h <- matrix(uptake, length(uptake), n_group)
-  vax_h[, 1] <- 0
+##' @name set_strategy
+##' @title Translate each named vaccine strategy into a format interpretable by
+##' `create_vax_map`
+##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
+##' "VoA", "VoA(H)", "VoD(L)+VoA(H)", "VoS" describing who is offered
+##' vaccination
+##' @param include_vbe single logical indicating whether vaccination before
+##' entry is offered.
+##' @return list with entries `vod`, `vos` and `vbe` containing 0-1 vectors of
+##' length two indicating whether group L and/or H are offered vaccination via
+##' each potential vaccination route (i.e. screeing, diagnosis, entry)
+set_strategy <- function(strategy, include_vbe = FALSE) {
+  # switch for vaccination in group (L, H)
+  novax  <- c(0, 0)
+  vax_lh <- c(1, 1)
+  vax_h  <- c(0, 1)
 
   if (strategy == "VbE") {
     vos <- vod <- novax
@@ -280,7 +286,13 @@ set_strategy <- function(strategy, uptake) {
     stop("strategy not recognised")
   }
 
-  list(vod = vod, vos = vos)
+  if (include_vbe) {
+    vbe <- vax_lh
+  } else {
+    vbe <- novax
+  }
+
+  list(vod = vod, vos = vos, vbe = vbe)
 }
 
 check_gono_params <- function(pars) {

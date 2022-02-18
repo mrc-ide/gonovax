@@ -66,7 +66,7 @@ test_that("mcmc runs", {
 
   ## what do results look like?
   p <- z$mcmc$pars[nrow(z$mcmc$pars), ]
-  mod <- model(user = model_params(transform0(p)),
+  mod <- model$new(user = model_params(transform0(p)),
                unused_user_action = "ignore")
   data <- cache$data
   y <- mod$run(seq(0, nrow(data)))

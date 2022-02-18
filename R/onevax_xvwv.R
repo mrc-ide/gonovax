@@ -1,21 +1,6 @@
 ##' @name vax_params_xvwv
 ##' @title create vaccination parameters for use in onevax_xvwv model
-##' @param vea scalar indicating efficacy of the vaccine against acquisition
-##' (between 0-1)
-##' @param vei scalar indicating efficacy of the vaccine against infectiousness
-##' (between 0-1)
-##' @param ved scalar indicating efficacy of the vaccine against duration
-##' (between 0-1)
-##' @param ves scalar indicating efficacy of the vaccine against symptoms
-##' (between 0-1)
-##' @param dur scalar indicating duration of the vaccine (in years)
-##' @param vbe scalar indicating pc of population vaccinated before entry
-##'  (between 0-1)
-##' @param uptake scalar indicating pc of population vaccinated as part
-##'  of strategy
-##' @param strategy single character string in "VbE", "VoD", "VoD(H)",
-##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)"
-##' @param t_stop time at which vaccination should stop (years)
+##' @inheritParams vax_params_xvw
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             dur = 1e3, uptake = 0, strategy = "VbE",
@@ -41,24 +26,23 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ve <- c(0, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
-  p <- set_strategy(strategy, rep(uptake, length(i_v)))
+  # If uptake of VbE > 0 consider that all adolescents are offered vaccine
+  p <- set_strategy(strategy, vbe > 0)
 
-  #change vbe input to matrix format
-  vbe <- rbind(rep(vbe, n_group), 0)
-
-
-  list(n_vax = n_vax,
-       vbe   = create_vax_map(n_vax, vbe, i_eligible, i_v),
-       vod   = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos   = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea   = vea * ve,
-       vei   = vei * ve,
-       ved   = ved * ve,
-       ves   = ves * ve,
+  list(n_vax   = n_vax,
        willing = c(1, 0, 0),
-       w     = create_waning_map(n_vax, i_v, i_w, 1 / dur),
-       vax_t = c(0, t_stop),
-       vax_y = c(1, 0)
+       u       = matrix(uptake, n_group, n_vax),
+       u_vbe   = vbe,
+       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vea     = vea * ve,
+       vei     = vei * ve,
+       ved     = ved * ve,
+       ves     = ves * ve,
+       w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
+       vax_t   = c(0, t_stop),
+       vax_y   = c(1, 0)
   )
 }
 

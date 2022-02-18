@@ -31,8 +31,7 @@ vax_params_xvw(
 
 \item{dur}{scalar indicating duration of the vaccine (in years)}
 
-\item{uptake}{scalar indicating pc of population vaccinated as part
-of strategy}
+\item{uptake}{scalar indicating pc of those offered who accept vaccination}
 
 \item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)"}

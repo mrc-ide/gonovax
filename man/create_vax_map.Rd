@@ -7,11 +7,10 @@
 create_vax_map(n_vax, v, i_u, i_v)
 }
 \arguments{
-\item{n_vax}{Integer in (0, 5) denoting total number of strata}
+\item{n_vax}{Integer denoting total number of strata}
 
-\item{v}{a matrix of dimensions 2x2 (vod, vos) or a scalar (vbe) indicating
-% of population vaccinated according to the strategy. For vod & vos each
-value will apply to the eligible stratum separately}
+\item{v}{0-1 vector of length two indicating whether activity group
+should be offered vaccination.}
 
 \item{i_u}{indices of strata eligible for vaccination}
 
