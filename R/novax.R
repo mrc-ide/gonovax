@@ -3,8 +3,12 @@
 ##' @title create vaccination parameters for use in novax model (null)
 ##' @return A list parameters in the model input format
 vax_params0 <- function() {
-  v <- array(0, dim = c(2, 1, 1))
+  n_group <- 2
+  n_vax <- 1
+  v <- array(0, dim = c(n_group, n_vax, n_vax))
   list(n_vax = 1,
+       u_vbe = 0,
+       u = matrix(0, n_group, n_vax),
        vbe = v,
        vos = v,
        vod = v,
