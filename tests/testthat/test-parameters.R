@@ -201,14 +201,22 @@ test_that("transform_fixed works as expected", {
 test_that("set_strategy works as expected", {
 
   # and different strategies vod and vos maps as expected
-  expect_equal(set_strategy("VbE"), list(vod = c(0, 0), vos = c(0, 0)))
-  expect_equal(set_strategy("VoD"), list(vod = c(1, 1), vos = c(0, 0)))
-  expect_equal(set_strategy("VoD(H)"), list(vod = c(0, 1), vos = c(0, 0)))
-  expect_equal(set_strategy("VoA"),  list(vod = c(1, 1), vos = c(1, 1)))
-  expect_equal(set_strategy("VoA(H)"), list(vod = c(0, 1), vos = c(0, 1)))
+  expect_equal(set_strategy("VbE"),
+               list(vod = c(0, 0), vos = c(0, 0), vbe = c(0, 0)))
+  expect_equal(set_strategy("VbE", TRUE),
+               list(vod = c(0, 0), vos = c(0, 0), vbe = c(1, 1)))
+  expect_equal(set_strategy("VoD"),
+               list(vod = c(1, 1), vos = c(0, 0), vbe = c(0, 0)))
+  expect_equal(set_strategy("VoD(H)"),
+               list(vod = c(0, 1), vos = c(0, 0), vbe = c(0, 0)))
+  expect_equal(set_strategy("VoA"),
+               list(vod = c(1, 1), vos = c(1, 1), vbe = c(0, 0)))
+  expect_equal(set_strategy("VoA(H)"),
+               list(vod = c(0, 1), vos = c(0, 1), vbe = c(0, 0)))
   expect_equal(set_strategy("VoD(L)+VoA(H)"),
-               list(vod = c(1, 1), vos = c(0, 1)))
-  expect_equal(set_strategy("VoS"), list(vod = c(0, 0), vos = c(1, 1)))
+               list(vod = c(1, 1), vos = c(0, 1), vbe = c(0, 0)))
+  expect_equal(set_strategy("VoS"),
+               list(vod = c(0, 0), vos = c(1, 1), vbe = c(0, 0)))
 
   expect_error(set_strategy("hello"), "strategy not recognised")
 
