@@ -41,10 +41,9 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
                              dur = 1e3, dur_revax = dur, primary_uptake = 0,
-                             booster_uptake = primary_uptake, strategy = "VbE",
+                             booster_uptake = primary_uptake, strategy = NULL,
                              vbe = 0, t_stop = 99, hes = 0) {
 
-  assert_character(strategy)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -138,7 +137,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
                              vbe = 0, primary_uptake = 0,
-                             booster_uptake = primary_uptake, strategy = "VbE",
+                             booster_uptake = primary_uptake, strategy = NULL,
                              t_stop = 99, hes = 0) {
 
   stopifnot(all(lengths(list(booster_uptake, primary_uptake, vea, vei,
@@ -156,7 +155,6 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                                     t_stop = t_stop, vbe = vbe))
 
   if (is.null(init_params)) {
-
     pars <- lapply(gono_params, model_params)
     init_params <- lapply(pars, initial_params_xvwrh, hes = hes)
   }
