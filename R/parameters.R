@@ -249,10 +249,9 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
 
 
 set_strategy <- function(strategy) {
-
-  n_group <- 2
-  novax  <- rep(0, n_group)
-  vax_lh <- rep(1, n_group)
+  # switch for vaccination in group (L, H)
+  novax  <- c(0, 0)
+  vax_lh <- c(1, 1)
   vax_h  <- c(0, 1)
 
   if (strategy == "VbE") {
