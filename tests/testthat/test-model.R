@@ -153,7 +153,7 @@ test_that("Bex model runs with vbe", {
   # check no compartments are leaking
   expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
   # check all entrants are vaccinated
-  expect_equal(y$cum_entrants, y$cum_vbe)
+  expect_equal(y$cum_offered_vbe, y$cum_vbe)
   # check there are infections in unvaccinated group
   expect_false(all(y$I[, , 1] == 0))
   expect_false(all(y$A[, , 1] == 0))
