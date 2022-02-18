@@ -86,66 +86,68 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @return A list of matrices with rows = time point and columns
 ##' = parameter set
 ##' list entries are:
-##' cum_treated = cumulative number treated in model run
-##' cum_vaccinated = cumulative vaccinated treated in model run
-##' diag_a = annual number of asymptomatic diagnoses in model run
-##' diag_s = annual number of symptomatic diagnoses in model run
-##' treated = annual number treated in model run
-##' screened = annual number screened in model run
-##' vaccinated = annual number vaccinated in model run
+##' `cum_treated` = cumulative number treated in model run
+##' `cum_vaccinated` = cumulative vaccinated treated in model run
+##' `diag_a` = annual number of asymptomatic diagnoses in model run
+##' `diag_s` = annual number of symptomatic diagnoses in model run
+##' `treated` = annual number treated in model run
+##' `screened` = annual number screened in model run
+##' `vaccinated` = annual number vaccinated in model run
 ##' (includes those getting vbe and boosters)
-##' vbe = annual number vaccinated before entry in model run
-##' revaccinated = annual number receiving booster in model run
-##' inc_cum_treated = cumulative number treated compared to baseline
-##' inc_cum_vaccinated = cumulative number vaccinated compared to baseline
-##' inc_diag_a = annual number of asymptomatic diagnoses compared to baseline
-##' inc_diag_s = annual number of symptomatic diagnoses compared to baseline
-##' inc_treated = annual number treated compared to baseline
-##' inc_screened = annual number screened compared to baseline
-##' inc_vaccinated  = annual number vaccinated compared to baseline
+##' `vbe` = annual number vaccinated before entry in model run
+##' `offered` = annual number offered vaccination (does not include hesitant)
+##' `revaccinated` = annual number receiving booster in model run
+##' `offered_primary` = annual number offered primary vaccination
+##' (does not include hesitant or vbe)
+##' `inc_cum_treated` = cumulative number treated compared to baseline
+##' `inc_cum_vaccinated` = cumulative number vaccinated compared to baseline
+##' `inc_diag_a` = annual number of asymptomatic diagnoses compared to baseline
+##' `inc_diag_s` = annual number of symptomatic diagnoses compared to baseline
+##' `inc_treated` = annual number treated compared to baseline
+##' `inc_screened` = annual number screened compared to baseline
+##' `inc_vaccinated`  = annual number vaccinated compared to baseline
 ##' (includes those getting vbe and boosters)
-##' inc_vbe = annual number vaccinated before entry compared to baseline
-##' inc_revaccinated = annual number number receiving booster compared to
+##' `inc_vbe` = annual number vaccinated before entry compared to baseline
+##' `inc_offered` = annual number offered vaccination compared to baseline
+##' (does not include hesitant)
+##' `inc_revaccinated` = annual number number receiving booster compared to
 ##' baseline
-##' inc_doses = number of doses compared to baseline (per year). Assumes
+##' `inc_offered_primary` = annual number offered primary vaccination compared
+##' to baseline (does not include hesitant or vbe)
+##' `inc_primary` = annual number receiving primary vaccination
+##' compared to baseline (does not include vbe)
+##' `inc_doses` = number of doses compared to baseline (per year). Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
-##' inc_cum_doses = cumulative number of doses compared to baseline. Assumes
+##' `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
-##' cases_averted_per_dose = cumulative number of cases (i.e. diagnoses)
+##' `cases_averted_per_dose` = cumulative number of cases (i.e. diagnoses)
 ##' averted per dose of vaccine
-##' cases_averted_per_dose_pv = present value of cases_averted_per_dose
+##' `cases_averted_per_dose_pv` = present value of cases_averted_per_dose
 ##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0)
-##' pv_inc_doses = present value of number of doses compared to baseline
+##' `inc_doses_wasted` annual number of first doses given that are not followed
+##' by a second dose, compared to baseline
+##' `inc_cum_doses_wasted` cumulative number of first doses given that are not
+##'  followed by a second dose, compared to baseline
+##' `pv_inc_doses` = present value of number of doses compared to baseline
 ##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0)
-##' pv_red_net_cost = present value of the reduction in net costs compared to
+##' `pv_red_net_cost` = present value of the reduction in net costs compared to
 ##' baseline (i.e. sum of annual reduction in costs discounted at rate
 ##'  `disc_rate` to time 0)
-##' pv_qaly_gain = present value of the QALYs gained due to vaccination
+##' `pv_qaly_gain` = present value of the QALYs gained due to vaccination
 ##' compared to baseline (i.e. QALYs gained each year discounted at rate
 ##'  `disc_rate` to time 0, and summed)
-##' cet_20k = cost effectiveness threshold (i.e. £ value per dose at which
+##' `cet_20k` = cost effectiveness threshold (i.e. £ value per dose at which
 ##' vaccination becomes cost-effective) calculated using £20,000 / QALY.
 ##' (pv_red_net_cost + pv_qaly_gain * £20,000) / pv_inc_doses
-##' cet_30k = cost effectiveness threshold (i.e. £ value per dose at which
+##' `cet_30k` = cost effectiveness threshold (i.e. £ value per dose at which
 ##' vaccination becomes cost-effective) calculated using £30,000 / QALY
 ##' (pv_red_net_cost + pv_qaly_gain * £30,000) / pv_inc_doses
-##' inc_costs_18 = present value of incremental costs assuming £18 / dose.
+##' `inc_costs_18` = present value of incremental costs assuming £18 / dose.
 ##' Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
-##' inc_costs_50 = present value of incremental costs assuming £50 / dose.
+##' `inc_costs_50` = present value of incremental costs assuming £50 / dose.
 ##' Incremental costs are calculated as: pv_inc_doses * £50 - pv_red_net_cost
-##' inc_costs_85 = present value of incremental costs assuming £85 / dose
+##' `inc_costs_85` = present value of incremental costs assuming £85 / dose
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
-##' inc_doses_wasted = annual number of first doses wasted by not following up
-##' with second dose (both doses needed for primary vaccination protection)
-##' inc_cum_doses_wasted = cumulative number of first doses wasted from the
-##' start of vaccine programme
-##' inc_primary = annual number of individuals receiving primary vaccination
-##' (first and second dose)
-##' inc_cum_primary = cumulative number of individuals receiving primary
-##' vaccination#
-##' inc_cum_revaccinated = cumulative number of individuals receiving booster
-##' vaccination (revaccination)
-##' inc_cum_vbe = cumulative number of individuals vaccinated before entry
 ##' @export
 compare_baseline <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
@@ -158,8 +160,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret <- c(flows, ret)
 
   ## calculate number receiving primary vaccination
-  ret$inc_primary_vaccination <-
-    ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
+  ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
 
   ## calculate cases averted per dose, both with and without discounting
   ret$inc_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose)
@@ -167,7 +168,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
-  
+
   ## calculate vaccine doses wasted
   ret$inc_doses_wasted <-
     ret$offered_primary * uptake_first_dose * (1 - uptake_second_dose)
@@ -188,12 +189,6 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-
-  ## calculate incremental primary and booster vaccination
-  ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
-  ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
-  ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
-  ret$inc_cum_vbe <- apply(ret$inc_vbe, 2, cumsum)
 
   ret
 }
