@@ -95,7 +95,6 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `vaccinated` = annual number vaccinated in model run
 ##' (includes those getting vbe and boosters)
 ##' `vbe` = annual number vaccinated before entry in model run
-##' `offered` = annual number offered vaccination (does not include hesitant)
 ##' `revaccinated` = annual number receiving booster in model run
 ##' `offered_primary` = annual number offered primary vaccination
 ##' (does not include hesitant or vbe)
@@ -108,8 +107,6 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `inc_vaccinated`  = annual number vaccinated compared to baseline
 ##' (includes those getting vbe and boosters)
 ##' `inc_vbe` = annual number vaccinated before entry compared to baseline
-##' `inc_offered` = annual number offered vaccination compared to baseline
-##' (does not include hesitant)
 ##' `inc_revaccinated` = annual number number receiving booster compared to
 ##' baseline
 ##' `inc_offered_primary` = annual number offered primary vaccination compared
