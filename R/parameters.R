@@ -248,7 +248,7 @@ create_waning_map <- function(n_vax, i_v, i_w, z) {
 }
 
 
-set_strategy <- function(strategy) {
+set_strategy <- function(strategy, include_vbe = FALSE) {
   # switch for vaccination in group (L, H)
   novax  <- c(0, 0)
   vax_lh <- c(1, 1)
@@ -276,7 +276,13 @@ set_strategy <- function(strategy) {
     stop("strategy not recognised")
   }
 
-  list(vod = vod, vos = vos)
+  if (include_vbe) {
+    vbe <- vax_lh
+  } else {
+    vbe <- novax
+  }
+
+  list(vod = vod, vos = vos, vbe = vbe)
 }
 
 check_gono_params <- function(pars) {
