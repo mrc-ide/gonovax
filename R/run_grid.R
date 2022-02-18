@@ -12,7 +12,7 @@
 ##' @param dur numeric vector of duration in years of the vaccine
 ##' @param vbe single numeric indicating % of population vaccinated before entry
 ##'  (between 0-1), default = 0
-##' @param strategy `VbE`: vaccination before entry only (default),
+##' @param strategy, default is null, no vaccination
 ##' `VoD`: vaccination on diagnosis, `VoA`: vaccination on attendance,
 ##' `VoD(L)+VoA(H)`: targeted vaccination (i.e. all diagnosed plus group H on
 ##'  screening)
@@ -28,7 +28,7 @@
 ##' @export
 run_grid  <- function(gono_params, init_params, cost_params,
                       baseline, model,
-                      eff, dur, vbe = 0, strategy = "VbE", uptake_total = 0,
+                      eff, dur, vbe = 0, strategy = NULL, uptake_total = 0,
                       uptake_second_dose = uptake_total,
                       t_stop = 99, full_output = FALSE, disc_rate = 0) {
 
@@ -48,6 +48,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
   ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
                        .f = compare_baseline,
                        cost_params = cost_params,
+                       uptake_first_dose = uptake_total / uptake_second_dose,
                        uptake_second_dose = uptake_second_dose,
                        disc_rate = disc_rate)
 
@@ -78,6 +79,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `qaly_loss_per_diag_s`, `unit_cost_manage_symptomatic`,
 ##' `unit_cost_manage_asymptomatic`, `unit_cost_screen_uninfected`. Each entry
 ##' length 1 or same as `y`
+##' @param uptake_first_dose numeric (0-1) either length 1 or same as `y`
 ##' @param uptake_second_dose numeric (0-1) either length 1 or same as `y`
 ##' @param disc_rate discount rate for cost-effectiveness output per annum,
 ##'  default = 0
@@ -145,7 +147,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' vaccination (revaccination)
 ##' inc_cum_vbe = cumulative number of individuals vaccinated before entry
 ##' @export
-compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
+compare_baseline <- function(y, baseline, uptake_first_dose,
+                             uptake_second_dose, cost_params,
                               disc_rate) {
 
   ## compare run to baseline
@@ -154,13 +157,23 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
 
+  ## calculate number receiving primary vaccination
+  ret$inc_primary_vaccination <-
+    ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
+
   ## calculate cases averted per dose, both with and without discounting
-  ret$inc_doses <- calc_doses(ret, uptake_second_dose, TRUE)
+  ret$inc_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose)
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
+  
+  ## calculate vaccine doses wasted
+  ret$inc_doses_wasted <-
+    ret$offered_primary * uptake_first_dose * (1 - uptake_second_dose)
+  ret$inc_cum_doses_wasted <- apply(ret$inc_doses_wasted, 2, cumsum)
 
+  ## calculate costs
   costs <- calc_costs(ret, cost_params, disc_rate)
   ret <- c(ret, costs)
 
@@ -170,16 +183,11 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
   ret$cet_20k <- calc_cet(2e4, costs)
   ret$cet_30k <- calc_cet(3e4, costs)
 
-  ## calculate incremental cost of vaccination assuming £18 and £85 per dose
+  ## calculate incremental cost of vaccination assuming £18, £50, £85 per dose
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-
-  ## calculate incremental vaccine doses wasted
-  ret$inc_doses_wasted <- calc_doses(ret, uptake_second_dose, TRUE,
-                                     wasted = TRUE)
-  ret$inc_cum_doses_wasted <- apply(ret$inc_doses_wasted, 2, cumsum)
 
   ## calculate incremental primary and booster vaccination
   ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
@@ -191,44 +199,19 @@ compare_baseline <- function(y, baseline, uptake_second_dose, cost_params,
 }
 
 
-calc_doses <- function(forecast, uptake_second_dose, revax_one_dose = TRUE,
-                       wasted = FALSE) {
+calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose) {
+  n_vbe_pp <- 2 # all vbe get two doses
+  # calculate doses given per person offered primary vaccination
+  n_primary_doses_pp <- uptake_first_dose * (1 + uptake_second_dose)
+  n_booster_doses_pp <- 1 # boosters use 1 dose
+  inc_vbe_doses <- forecast$inc_vbe * n_vbe_pp
+  inc_primary_doses <- forecast$inc_offered_primary * n_primary_doses_pp
+  inc_revax_doses <- forecast$inc_revaccinated * n_booster_doses_pp
 
-  inc_primary_vaccination <-
-    forecast$inc_vaccinated - forecast$inc_revaccinated - forecast$inc_vbe
-  n_primary_doses_pp <- 1 + 1 / uptake_second_dose
-  inc_primary_doses <- t(inc_primary_vaccination) * n_primary_doses_pp
-
-  if (wasted) {
-
-    n_primary_doses_full_pp <- 2   #for full protection
-    inc_primary_doses_protect <- t(inc_primary_vaccination) *
-      n_primary_doses_full_pp
-
-    doses_wasted <- inc_primary_doses - inc_primary_doses_protect
-
-return(t(doses_wasted))
-
-  } else {
-
-    n_vbe_pp <- 2 # all vbe get two doses
-
-    if (revax_one_dose) {
-      n_revax_doses_pp <- 1
-      } else {
-      n_revax_doses_pp <- n_primary_doses_pp
-      }
-
-    inc_vbe_doses <- t(forecast$inc_vbe) * n_vbe_pp
-    inc_revax_doses <- t(forecast$inc_revaccinated) * n_revax_doses_pp
-
-    inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
-
-return(t(inc_doses))
-
-  }
-
+  inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
+  return(inc_doses)
 }
+
 
 calc_pv <- function(x, disc_rate) {
 
