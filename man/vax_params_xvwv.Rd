@@ -11,7 +11,7 @@ vax_params_xvwv(
   ves = 0,
   dur = 1000,
   uptake = 0,
-  strategy = "VbE",
+  strategy = NULL,
   vbe = 0,
   t_stop = 99
 )
@@ -33,8 +33,8 @@ vax_params_xvwv(
 
 \item{uptake}{scalar indicating pc of those offered who accept vaccination}
 
-\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}

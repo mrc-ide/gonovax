@@ -23,7 +23,7 @@ run_onevax_xvwrh(
   vbe = 0,
   primary_uptake = 0,
   booster_uptake = primary_uptake,
-  strategy = "VbE",
+  strategy = NULL,
   t_stop = 99,
   hes = 0
 )
@@ -81,8 +81,8 @@ vaccination as part of strategy}
 vaccination after primary vaccination protection has waned.
  Defaults to supplied value of `primary_uptake`.}
 
-\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
 \item{t_stop}{time at which vaccination should stop (years)}
 

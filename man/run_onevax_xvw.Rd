@@ -17,7 +17,7 @@ run_onevax_xvw(
   ves = 0,
   vbe = coverage,
   uptake = 0,
-  strategy = "VbE",
+  strategy = NULL,
   coverage = 0,
   t_stop = 99
 )
@@ -51,8 +51,8 @@ entry into population (i.e. adolescent vaccination) defaults to same as
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy}
 
-\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
-"VoA", "VoA(H)", "VoD(L)+VoA(H)"}
+\item{strategy}{single character string in "VoD", "VoD(H)",
+"VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
 \item{coverage}{scalar giving initial coverage of vaccination, default 0.}
 

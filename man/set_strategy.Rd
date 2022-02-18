@@ -5,15 +5,15 @@
 \title{Translate each named vaccine strategy into a format interpretable by
 `create_vax_map`}
 \usage{
-set_strategy(strategy, include_vbe = FALSE)
+set_strategy(strategy = NULL, include_vbe = FALSE)
 }
 \arguments{
-\item{strategy}{single character string in "VbE", "VoD", "VoD(H)",
+\item{strategy}{single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)", "VoS" describing who is offered
-vaccination}
+vaccination. defaults to no vaccination.}
 
 \item{include_vbe}{single logical indicating whether vaccination before
-entry is offered.}
+entry is offered. Defaults to FALSE.}
 }
 \value{
 list with entries `vod`, `vos` and `vbe` containing 0-1 vectors of
