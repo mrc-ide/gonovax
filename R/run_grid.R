@@ -181,7 +181,8 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$cet_20k <- calc_cet(2e4, costs)
   ret$cet_30k <- calc_cet(3e4, costs)
 
-  ## calculate incremental cost of vaccination assuming £18, £50, £85 per dose
+  ## calculate incremental cost of vaccination assuming
+  ## £18, £50, £85 per dose
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
