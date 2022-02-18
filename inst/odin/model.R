@@ -91,10 +91,11 @@ deriv(cum_treated[, ])    <- n_TU[i, j]
 deriv(cum_screened[, ])   <- screened[i, j]
 deriv(cum_offered[, ])    <- n_oos[i, j, j] + n_ood[i, j, j] + n_obe[i, j, j]
 deriv(cum_vaccinated[, ]) <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j]
-deriv(cum_vbe[, ]) <- n_vbe[i, j, j]
+deriv(cum_vbe[, ])        <- n_vbe[i, j, j]
+deriv(cum_entrants[, ])   <- entrants[i, j]
 
 # aggregated time series for fitting mcmc
-output(tot_treated) <- sum(cum_treated)
+output(tot_treated)  <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 # output time-varying params for checking
@@ -122,7 +123,8 @@ initial(cum_treated[, ])    <- 0
 initial(cum_screened[, ])   <- 0
 initial(cum_offered[, ])    <- 0
 initial(cum_vaccinated[, ]) <- 0
-initial(cum_vbe[, ]) <- 0
+initial(cum_vbe[, ])        <- 0
+initial(cum_entrants[, ])   <- 0
 
 # set up dimensions of compartments
 dim(U) <- c(n_group, n_vax)
@@ -160,6 +162,7 @@ dim(cum_screened)   <- c(n_group, n_vax)
 dim(cum_offered)    <- c(n_group, n_vax)
 dim(cum_vaccinated) <- c(n_group, n_vax)
 dim(cum_vbe)        <- c(n_group, n_vax)
+dim(cum_entrants)   <- c(n_group, n_vax)
 
 ## Parameters
 p[]     <- user() # Partner change rate in group L/H
