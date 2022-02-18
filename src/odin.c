@@ -241,15 +241,15 @@ typedef struct model_internal {
   int dim_cum_diag_s;
   int dim_cum_diag_s_1;
   int dim_cum_diag_s_2;
-  int dim_cum_entrants;
-  int dim_cum_entrants_1;
-  int dim_cum_entrants_2;
   int dim_cum_incid;
   int dim_cum_incid_1;
   int dim_cum_incid_2;
   int dim_cum_offered;
   int dim_cum_offered_1;
   int dim_cum_offered_2;
+  int dim_cum_offered_vbe;
+  int dim_cum_offered_vbe_1;
+  int dim_cum_offered_vbe_2;
   int dim_cum_screened;
   int dim_cum_screened_1;
   int dim_cum_screened_2;
@@ -415,9 +415,9 @@ typedef struct model_internal {
   double *initial_A;
   double *initial_cum_diag_a;
   double *initial_cum_diag_s;
-  double *initial_cum_entrants;
   double *initial_cum_incid;
   double *initial_cum_offered;
+  double *initial_cum_offered_vbe;
   double *initial_cum_screened;
   double *initial_cum_treated;
   double *initial_cum_vaccinated;
@@ -453,9 +453,9 @@ typedef struct model_internal {
   int offset_variable_A;
   int offset_variable_cum_diag_a;
   int offset_variable_cum_diag_s;
-  int offset_variable_cum_entrants;
   int offset_variable_cum_incid;
   int offset_variable_cum_offered;
+  int offset_variable_cum_offered_vbe;
   int offset_variable_cum_screened;
   int offset_variable_cum_treated;
   int offset_variable_cum_vaccinated;
@@ -1598,9 +1598,9 @@ void model_finalise(SEXP internal_p) {
     Free(internal->initial_A);
     Free(internal->initial_cum_diag_a);
     Free(internal->initial_cum_diag_s);
-    Free(internal->initial_cum_entrants);
     Free(internal->initial_cum_incid);
     Free(internal->initial_cum_offered);
+    Free(internal->initial_cum_offered_vbe);
     Free(internal->initial_cum_screened);
     Free(internal->initial_cum_treated);
     Free(internal->initial_cum_vaccinated);
@@ -1666,9 +1666,9 @@ SEXP model_create(SEXP user) {
   internal->initial_A = NULL;
   internal->initial_cum_diag_a = NULL;
   internal->initial_cum_diag_s = NULL;
-  internal->initial_cum_entrants = NULL;
   internal->initial_cum_incid = NULL;
   internal->initial_cum_offered = NULL;
+  internal->initial_cum_offered_vbe = NULL;
   internal->initial_cum_screened = NULL;
   internal->initial_cum_treated = NULL;
   internal->initial_cum_vaccinated = NULL;
@@ -1813,15 +1813,15 @@ SEXP model_contents(SEXP internal_p) {
   SET_VECTOR_ELT(contents, 16, ScalarInteger(internal->dim_cum_diag_s));
   SET_VECTOR_ELT(contents, 17, ScalarInteger(internal->dim_cum_diag_s_1));
   SET_VECTOR_ELT(contents, 18, ScalarInteger(internal->dim_cum_diag_s_2));
-  SET_VECTOR_ELT(contents, 19, ScalarInteger(internal->dim_cum_entrants));
-  SET_VECTOR_ELT(contents, 20, ScalarInteger(internal->dim_cum_entrants_1));
-  SET_VECTOR_ELT(contents, 21, ScalarInteger(internal->dim_cum_entrants_2));
-  SET_VECTOR_ELT(contents, 22, ScalarInteger(internal->dim_cum_incid));
-  SET_VECTOR_ELT(contents, 23, ScalarInteger(internal->dim_cum_incid_1));
-  SET_VECTOR_ELT(contents, 24, ScalarInteger(internal->dim_cum_incid_2));
-  SET_VECTOR_ELT(contents, 25, ScalarInteger(internal->dim_cum_offered));
-  SET_VECTOR_ELT(contents, 26, ScalarInteger(internal->dim_cum_offered_1));
-  SET_VECTOR_ELT(contents, 27, ScalarInteger(internal->dim_cum_offered_2));
+  SET_VECTOR_ELT(contents, 19, ScalarInteger(internal->dim_cum_incid));
+  SET_VECTOR_ELT(contents, 20, ScalarInteger(internal->dim_cum_incid_1));
+  SET_VECTOR_ELT(contents, 21, ScalarInteger(internal->dim_cum_incid_2));
+  SET_VECTOR_ELT(contents, 22, ScalarInteger(internal->dim_cum_offered));
+  SET_VECTOR_ELT(contents, 23, ScalarInteger(internal->dim_cum_offered_1));
+  SET_VECTOR_ELT(contents, 24, ScalarInteger(internal->dim_cum_offered_2));
+  SET_VECTOR_ELT(contents, 25, ScalarInteger(internal->dim_cum_offered_vbe));
+  SET_VECTOR_ELT(contents, 26, ScalarInteger(internal->dim_cum_offered_vbe_1));
+  SET_VECTOR_ELT(contents, 27, ScalarInteger(internal->dim_cum_offered_vbe_2));
   SET_VECTOR_ELT(contents, 28, ScalarInteger(internal->dim_cum_screened));
   SET_VECTOR_ELT(contents, 29, ScalarInteger(internal->dim_cum_screened_1));
   SET_VECTOR_ELT(contents, 30, ScalarInteger(internal->dim_cum_screened_2));
@@ -2010,18 +2010,18 @@ SEXP model_contents(SEXP internal_p) {
   memcpy(REAL(initial_cum_diag_s), internal->initial_cum_diag_s, internal->dim_cum_diag_s * sizeof(double));
   odin_set_dim(initial_cum_diag_s, 2, internal->dim_cum_diag_s_1, internal->dim_cum_diag_s_2);
   SET_VECTOR_ELT(contents, 192, initial_cum_diag_s);
-  SEXP initial_cum_entrants = PROTECT(allocVector(REALSXP, internal->dim_cum_entrants));
-  memcpy(REAL(initial_cum_entrants), internal->initial_cum_entrants, internal->dim_cum_entrants * sizeof(double));
-  odin_set_dim(initial_cum_entrants, 2, internal->dim_cum_entrants_1, internal->dim_cum_entrants_2);
-  SET_VECTOR_ELT(contents, 193, initial_cum_entrants);
   SEXP initial_cum_incid = PROTECT(allocVector(REALSXP, internal->dim_cum_incid));
   memcpy(REAL(initial_cum_incid), internal->initial_cum_incid, internal->dim_cum_incid * sizeof(double));
   odin_set_dim(initial_cum_incid, 2, internal->dim_cum_incid_1, internal->dim_cum_incid_2);
-  SET_VECTOR_ELT(contents, 194, initial_cum_incid);
+  SET_VECTOR_ELT(contents, 193, initial_cum_incid);
   SEXP initial_cum_offered = PROTECT(allocVector(REALSXP, internal->dim_cum_offered));
   memcpy(REAL(initial_cum_offered), internal->initial_cum_offered, internal->dim_cum_offered * sizeof(double));
   odin_set_dim(initial_cum_offered, 2, internal->dim_cum_offered_1, internal->dim_cum_offered_2);
-  SET_VECTOR_ELT(contents, 195, initial_cum_offered);
+  SET_VECTOR_ELT(contents, 194, initial_cum_offered);
+  SEXP initial_cum_offered_vbe = PROTECT(allocVector(REALSXP, internal->dim_cum_offered_vbe));
+  memcpy(REAL(initial_cum_offered_vbe), internal->initial_cum_offered_vbe, internal->dim_cum_offered_vbe * sizeof(double));
+  odin_set_dim(initial_cum_offered_vbe, 2, internal->dim_cum_offered_vbe_1, internal->dim_cum_offered_vbe_2);
+  SET_VECTOR_ELT(contents, 195, initial_cum_offered_vbe);
   SEXP initial_cum_screened = PROTECT(allocVector(REALSXP, internal->dim_cum_screened));
   memcpy(REAL(initial_cum_screened), internal->initial_cum_screened, internal->dim_cum_screened * sizeof(double));
   odin_set_dim(initial_cum_screened, 2, internal->dim_cum_screened_1, internal->dim_cum_screened_2);
@@ -2117,9 +2117,9 @@ SEXP model_contents(SEXP internal_p) {
   SET_VECTOR_ELT(contents, 228, ScalarInteger(internal->offset_variable_A));
   SET_VECTOR_ELT(contents, 229, ScalarInteger(internal->offset_variable_cum_diag_a));
   SET_VECTOR_ELT(contents, 230, ScalarInteger(internal->offset_variable_cum_diag_s));
-  SET_VECTOR_ELT(contents, 231, ScalarInteger(internal->offset_variable_cum_entrants));
-  SET_VECTOR_ELT(contents, 232, ScalarInteger(internal->offset_variable_cum_incid));
-  SET_VECTOR_ELT(contents, 233, ScalarInteger(internal->offset_variable_cum_offered));
+  SET_VECTOR_ELT(contents, 231, ScalarInteger(internal->offset_variable_cum_incid));
+  SET_VECTOR_ELT(contents, 232, ScalarInteger(internal->offset_variable_cum_offered));
+  SET_VECTOR_ELT(contents, 233, ScalarInteger(internal->offset_variable_cum_offered_vbe));
   SET_VECTOR_ELT(contents, 234, ScalarInteger(internal->offset_variable_cum_screened));
   SET_VECTOR_ELT(contents, 235, ScalarInteger(internal->offset_variable_cum_treated));
   SET_VECTOR_ELT(contents, 236, ScalarInteger(internal->offset_variable_cum_vaccinated));
@@ -2239,15 +2239,15 @@ SEXP model_contents(SEXP internal_p) {
   SET_STRING_ELT(nms, 16, mkChar("dim_cum_diag_s"));
   SET_STRING_ELT(nms, 17, mkChar("dim_cum_diag_s_1"));
   SET_STRING_ELT(nms, 18, mkChar("dim_cum_diag_s_2"));
-  SET_STRING_ELT(nms, 19, mkChar("dim_cum_entrants"));
-  SET_STRING_ELT(nms, 20, mkChar("dim_cum_entrants_1"));
-  SET_STRING_ELT(nms, 21, mkChar("dim_cum_entrants_2"));
-  SET_STRING_ELT(nms, 22, mkChar("dim_cum_incid"));
-  SET_STRING_ELT(nms, 23, mkChar("dim_cum_incid_1"));
-  SET_STRING_ELT(nms, 24, mkChar("dim_cum_incid_2"));
-  SET_STRING_ELT(nms, 25, mkChar("dim_cum_offered"));
-  SET_STRING_ELT(nms, 26, mkChar("dim_cum_offered_1"));
-  SET_STRING_ELT(nms, 27, mkChar("dim_cum_offered_2"));
+  SET_STRING_ELT(nms, 19, mkChar("dim_cum_incid"));
+  SET_STRING_ELT(nms, 20, mkChar("dim_cum_incid_1"));
+  SET_STRING_ELT(nms, 21, mkChar("dim_cum_incid_2"));
+  SET_STRING_ELT(nms, 22, mkChar("dim_cum_offered"));
+  SET_STRING_ELT(nms, 23, mkChar("dim_cum_offered_1"));
+  SET_STRING_ELT(nms, 24, mkChar("dim_cum_offered_2"));
+  SET_STRING_ELT(nms, 25, mkChar("dim_cum_offered_vbe"));
+  SET_STRING_ELT(nms, 26, mkChar("dim_cum_offered_vbe_1"));
+  SET_STRING_ELT(nms, 27, mkChar("dim_cum_offered_vbe_2"));
   SET_STRING_ELT(nms, 28, mkChar("dim_cum_screened"));
   SET_STRING_ELT(nms, 29, mkChar("dim_cum_screened_1"));
   SET_STRING_ELT(nms, 30, mkChar("dim_cum_screened_2"));
@@ -2413,9 +2413,9 @@ SEXP model_contents(SEXP internal_p) {
   SET_STRING_ELT(nms, 190, mkChar("initial_A"));
   SET_STRING_ELT(nms, 191, mkChar("initial_cum_diag_a"));
   SET_STRING_ELT(nms, 192, mkChar("initial_cum_diag_s"));
-  SET_STRING_ELT(nms, 193, mkChar("initial_cum_entrants"));
-  SET_STRING_ELT(nms, 194, mkChar("initial_cum_incid"));
-  SET_STRING_ELT(nms, 195, mkChar("initial_cum_offered"));
+  SET_STRING_ELT(nms, 193, mkChar("initial_cum_incid"));
+  SET_STRING_ELT(nms, 194, mkChar("initial_cum_offered"));
+  SET_STRING_ELT(nms, 195, mkChar("initial_cum_offered_vbe"));
   SET_STRING_ELT(nms, 196, mkChar("initial_cum_screened"));
   SET_STRING_ELT(nms, 197, mkChar("initial_cum_treated"));
   SET_STRING_ELT(nms, 198, mkChar("initial_cum_vaccinated"));
@@ -2451,9 +2451,9 @@ SEXP model_contents(SEXP internal_p) {
   SET_STRING_ELT(nms, 228, mkChar("offset_variable_A"));
   SET_STRING_ELT(nms, 229, mkChar("offset_variable_cum_diag_a"));
   SET_STRING_ELT(nms, 230, mkChar("offset_variable_cum_diag_s"));
-  SET_STRING_ELT(nms, 231, mkChar("offset_variable_cum_entrants"));
-  SET_STRING_ELT(nms, 232, mkChar("offset_variable_cum_incid"));
-  SET_STRING_ELT(nms, 233, mkChar("offset_variable_cum_offered"));
+  SET_STRING_ELT(nms, 231, mkChar("offset_variable_cum_incid"));
+  SET_STRING_ELT(nms, 232, mkChar("offset_variable_cum_offered"));
+  SET_STRING_ELT(nms, 233, mkChar("offset_variable_cum_offered_vbe"));
   SET_STRING_ELT(nms, 234, mkChar("offset_variable_cum_screened"));
   SET_STRING_ELT(nms, 235, mkChar("offset_variable_cum_treated"));
   SET_STRING_ELT(nms, 236, mkChar("offset_variable_cum_vaccinated"));
@@ -2518,12 +2518,12 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->dim_cum_diag_a_2 = internal->n_vax;
   internal->dim_cum_diag_s_1 = internal->n_group;
   internal->dim_cum_diag_s_2 = internal->n_vax;
-  internal->dim_cum_entrants_1 = internal->n_group;
-  internal->dim_cum_entrants_2 = internal->n_vax;
   internal->dim_cum_incid_1 = internal->n_group;
   internal->dim_cum_incid_2 = internal->n_vax;
   internal->dim_cum_offered_1 = internal->n_group;
   internal->dim_cum_offered_2 = internal->n_vax;
+  internal->dim_cum_offered_vbe_1 = internal->n_group;
+  internal->dim_cum_offered_vbe_2 = internal->n_vax;
   internal->dim_cum_screened_1 = internal->n_group;
   internal->dim_cum_screened_2 = internal->n_vax;
   internal->dim_cum_treated_1 = internal->n_group;
@@ -2624,9 +2624,9 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->dim_C = internal->dim_C_1 * internal->dim_C_2;
   internal->dim_cum_diag_a = internal->dim_cum_diag_a_1 * internal->dim_cum_diag_a_2;
   internal->dim_cum_diag_s = internal->dim_cum_diag_s_1 * internal->dim_cum_diag_s_2;
-  internal->dim_cum_entrants = internal->dim_cum_entrants_1 * internal->dim_cum_entrants_2;
   internal->dim_cum_incid = internal->dim_cum_incid_1 * internal->dim_cum_incid_2;
   internal->dim_cum_offered = internal->dim_cum_offered_1 * internal->dim_cum_offered_2;
+  internal->dim_cum_offered_vbe = internal->dim_cum_offered_vbe_1 * internal->dim_cum_offered_vbe_2;
   internal->dim_cum_screened = internal->dim_cum_screened_1 * internal->dim_cum_screened_2;
   internal->dim_cum_treated = internal->dim_cum_treated_1 * internal->dim_cum_treated_2;
   internal->dim_cum_vaccinated = internal->dim_cum_vaccinated_1 * internal->dim_cum_vaccinated_2;
@@ -2697,12 +2697,12 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->initial_cum_diag_a = (double*) Calloc(internal->dim_cum_diag_a, double);
   Free(internal->initial_cum_diag_s);
   internal->initial_cum_diag_s = (double*) Calloc(internal->dim_cum_diag_s, double);
-  Free(internal->initial_cum_entrants);
-  internal->initial_cum_entrants = (double*) Calloc(internal->dim_cum_entrants, double);
   Free(internal->initial_cum_incid);
   internal->initial_cum_incid = (double*) Calloc(internal->dim_cum_incid, double);
   Free(internal->initial_cum_offered);
   internal->initial_cum_offered = (double*) Calloc(internal->dim_cum_offered, double);
+  Free(internal->initial_cum_offered_vbe);
+  internal->initial_cum_offered_vbe = (double*) Calloc(internal->dim_cum_offered_vbe, double);
   Free(internal->initial_cum_screened);
   internal->initial_cum_screened = (double*) Calloc(internal->dim_cum_screened, double);
   Free(internal->initial_cum_treated);
@@ -2769,11 +2769,6 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
       internal->initial_cum_diag_s[i - 1 + internal->dim_cum_diag_s_1 * (j - 1)] = 0;
     }
   }
-  for (int i = 1; i <= internal->dim_cum_entrants_1; ++i) {
-    for (int j = 1; j <= internal->dim_cum_entrants_2; ++j) {
-      internal->initial_cum_entrants[i - 1 + internal->dim_cum_entrants_1 * (j - 1)] = 0;
-    }
-  }
   for (int i = 1; i <= internal->dim_cum_incid_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_incid_2; ++j) {
       internal->initial_cum_incid[i - 1 + internal->dim_cum_incid_1 * (j - 1)] = 0;
@@ -2782,6 +2777,11 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   for (int i = 1; i <= internal->dim_cum_offered_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_offered_2; ++j) {
       internal->initial_cum_offered[i - 1 + internal->dim_cum_offered_1 * (j - 1)] = 0;
+    }
+  }
+  for (int i = 1; i <= internal->dim_cum_offered_vbe_1; ++i) {
+    for (int j = 1; j <= internal->dim_cum_offered_vbe_2; ++j) {
+      internal->initial_cum_offered_vbe[i - 1 + internal->dim_cum_offered_vbe_1 * (j - 1)] = 0;
     }
   }
   for (int i = 1; i <= internal->dim_cum_screened_1; ++i) {
@@ -2807,9 +2807,9 @@ SEXP model_set_user(SEXP internal_p, SEXP user) {
   internal->offset_variable_A = internal->dim_I + internal->dim_U;
   internal->offset_variable_cum_diag_a = internal->dim_A + internal->dim_cum_incid + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
   internal->offset_variable_cum_diag_s = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_incid + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
-  internal->offset_variable_cum_entrants = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_cum_offered + internal->dim_cum_screened + internal->dim_cum_treated + internal->dim_cum_vaccinated + internal->dim_cum_vbe + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
   internal->offset_variable_cum_incid = internal->dim_A + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
   internal->offset_variable_cum_offered = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_cum_screened + internal->dim_cum_treated + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
+  internal->offset_variable_cum_offered_vbe = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_cum_offered + internal->dim_cum_screened + internal->dim_cum_treated + internal->dim_cum_vaccinated + internal->dim_cum_vbe + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
   internal->offset_variable_cum_screened = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_cum_treated + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
   internal->offset_variable_cum_treated = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
   internal->offset_variable_cum_vaccinated = internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_cum_offered + internal->dim_cum_screened + internal->dim_cum_treated + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U;
@@ -2947,9 +2947,9 @@ SEXP model_metadata(SEXP internal_p) {
   dim_cum_vbe[0] = internal->dim_cum_vbe_1;
   dim_cum_vbe[1] = internal->dim_cum_vbe_2;
   SET_VECTOR_ELT(variable_length, 13, allocVector(INTSXP, 2));
-  int * dim_cum_entrants = INTEGER(VECTOR_ELT(variable_length, 13));
-  dim_cum_entrants[0] = internal->dim_cum_entrants_1;
-  dim_cum_entrants[1] = internal->dim_cum_entrants_2;
+  int * dim_cum_offered_vbe = INTEGER(VECTOR_ELT(variable_length, 13));
+  dim_cum_offered_vbe[0] = internal->dim_cum_offered_vbe_1;
+  dim_cum_offered_vbe[1] = internal->dim_cum_offered_vbe_2;
   SET_STRING_ELT(variable_names, 0, mkChar("U"));
   SET_STRING_ELT(variable_names, 1, mkChar("I"));
   SET_STRING_ELT(variable_names, 2, mkChar("A"));
@@ -2963,7 +2963,7 @@ SEXP model_metadata(SEXP internal_p) {
   SET_STRING_ELT(variable_names, 10, mkChar("cum_offered"));
   SET_STRING_ELT(variable_names, 11, mkChar("cum_vaccinated"));
   SET_STRING_ELT(variable_names, 12, mkChar("cum_vbe"));
-  SET_STRING_ELT(variable_names, 13, mkChar("cum_entrants"));
+  SET_STRING_ELT(variable_names, 13, mkChar("cum_offered_vbe"));
   SET_VECTOR_ELT(ret, 0, variable_length);
   UNPROTECT(2);
   SEXP output_length = PROTECT(allocVector(VECSXP, 6));
@@ -3001,7 +3001,7 @@ SEXP model_metadata(SEXP internal_p) {
 }
 SEXP model_initial_conditions(SEXP internal_p, SEXP t_ptr) {
   model_internal *internal = model_get_internal(internal_p, 1);
-  SEXP r_state = PROTECT(allocVector(REALSXP, internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_entrants + internal->dim_cum_incid + internal->dim_cum_offered + internal->dim_cum_screened + internal->dim_cum_treated + internal->dim_cum_vaccinated + internal->dim_cum_vbe + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U));
+  SEXP r_state = PROTECT(allocVector(REALSXP, internal->dim_A + internal->dim_cum_diag_a + internal->dim_cum_diag_s + internal->dim_cum_incid + internal->dim_cum_offered + internal->dim_cum_offered_vbe + internal->dim_cum_screened + internal->dim_cum_treated + internal->dim_cum_vaccinated + internal->dim_cum_vbe + internal->dim_I + internal->dim_S + internal->dim_T + internal->dim_U));
   double * state = REAL(r_state);
   memcpy(state + 0, internal->initial_U, internal->dim_U * sizeof(double));
   memcpy(state + internal->dim_U, internal->initial_I, internal->dim_I * sizeof(double));
@@ -3016,7 +3016,7 @@ SEXP model_initial_conditions(SEXP internal_p, SEXP t_ptr) {
   memcpy(state + internal->offset_variable_cum_offered, internal->initial_cum_offered, internal->dim_cum_offered * sizeof(double));
   memcpy(state + internal->offset_variable_cum_vaccinated, internal->initial_cum_vaccinated, internal->dim_cum_vaccinated * sizeof(double));
   memcpy(state + internal->offset_variable_cum_vbe, internal->initial_cum_vbe, internal->dim_cum_vbe * sizeof(double));
-  memcpy(state + internal->offset_variable_cum_entrants, internal->initial_cum_entrants, internal->dim_cum_entrants * sizeof(double));
+  memcpy(state + internal->offset_variable_cum_offered_vbe, internal->initial_cum_offered_vbe, internal->dim_cum_offered_vbe * sizeof(double));
   UNPROTECT(1);
   return r_state;
 }
@@ -3095,11 +3095,6 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
       dstatedt[internal->offset_variable_cum_diag_s + i - 1 + internal->dim_cum_diag_s_1 * (j - 1)] = internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1];
     }
   }
-  for (int i = 1; i <= internal->dim_cum_entrants_1; ++i) {
-    for (int j = 1; j <= internal->dim_cum_entrants_2; ++j) {
-      dstatedt[internal->offset_variable_cum_entrants + i - 1 + internal->dim_cum_entrants_1 * (j - 1)] = internal->entrants[internal->dim_entrants_1 * (j - 1) + i - 1];
-    }
-  }
   for (int i = 1; i <= internal->dim_cum_treated_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_treated_2; ++j) {
       dstatedt[internal->offset_variable_cum_treated + i - 1 + internal->dim_cum_treated_1 * (j - 1)] = internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1];
@@ -3126,6 +3121,11 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   }
   for (int i = 1; i <= internal->dim_prop_C; ++i) {
     internal->prop_C[i - 1] = odin_sum2(internal->C, i - 1, i, 0, internal->dim_C_2, internal->dim_C_1) / (double) odin_sum2(internal->N, i - 1, i, 0, internal->dim_N_2, internal->dim_N_1);
+  }
+  for (int i = 1; i <= internal->dim_cum_offered_vbe_1; ++i) {
+    for (int j = 1; j <= internal->dim_cum_offered_vbe_2; ++j) {
+      dstatedt[internal->offset_variable_cum_offered_vbe + i - 1 + internal->dim_cum_offered_vbe_1 * (j - 1)] = internal->n_obe[internal->dim_n_obe_12 * (j - 1) + internal->dim_n_obe_1 * (j - 1) + i - 1];
+    }
   }
   {
      int i = 1;

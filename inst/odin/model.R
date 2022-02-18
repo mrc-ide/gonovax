@@ -84,15 +84,15 @@ wT[, , ] <- w[j, k] * T[i, k]
 
 ## outputs
 
-deriv(cum_incid[, ])      <- n_UI[i, j]
-deriv(cum_diag_a[, ])     <- n_AT[i, j]
-deriv(cum_diag_s[, ])     <- n_ST[i, j]
-deriv(cum_treated[, ])    <- n_TU[i, j]
-deriv(cum_screened[, ])   <- screened[i, j]
-deriv(cum_offered[, ])    <- n_oos[i, j, j] + n_ood[i, j, j] + n_obe[i, j, j]
-deriv(cum_vaccinated[, ]) <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j]
-deriv(cum_vbe[, ])        <- n_vbe[i, j, j]
-deriv(cum_entrants[, ])   <- entrants[i, j]
+deriv(cum_incid[, ])       <- n_UI[i, j]
+deriv(cum_diag_a[, ])      <- n_AT[i, j]
+deriv(cum_diag_s[, ])      <- n_ST[i, j]
+deriv(cum_treated[, ])     <- n_TU[i, j]
+deriv(cum_screened[, ])    <- screened[i, j]
+deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] + n_obe[i, j, j]
+deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j]
+deriv(cum_vbe[, ])         <- n_vbe[i, j, j]
+deriv(cum_offered_vbe[, ]) <- n_obe[i, j, j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated)  <- sum(cum_treated)
@@ -116,15 +116,15 @@ A0[, ] <- user()
 S0[, ] <- user()
 T0[, ] <- user()
 
-initial(cum_incid[, ])      <- 0
-initial(cum_diag_a[, ])     <- 0
-initial(cum_diag_s[, ])     <- 0
-initial(cum_treated[, ])    <- 0
-initial(cum_screened[, ])   <- 0
-initial(cum_offered[, ])    <- 0
-initial(cum_vaccinated[, ]) <- 0
-initial(cum_vbe[, ])        <- 0
-initial(cum_entrants[, ])   <- 0
+initial(cum_incid[, ])       <- 0
+initial(cum_diag_a[, ])      <- 0
+initial(cum_diag_s[, ])      <- 0
+initial(cum_treated[, ])     <- 0
+initial(cum_screened[, ])    <- 0
+initial(cum_offered[, ])     <- 0
+initial(cum_vaccinated[, ])  <- 0
+initial(cum_vbe[, ])         <- 0
+initial(cum_offered_vbe[, ]) <- 0
 
 # set up dimensions of compartments
 dim(U) <- c(n_group, n_vax)
@@ -154,15 +154,15 @@ dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 
-dim(cum_incid)      <- c(n_group, n_vax)
-dim(cum_diag_a)     <- c(n_group, n_vax)
-dim(cum_diag_s)     <- c(n_group, n_vax)
-dim(cum_treated)    <- c(n_group, n_vax)
-dim(cum_screened)   <- c(n_group, n_vax)
-dim(cum_offered)    <- c(n_group, n_vax)
-dim(cum_vaccinated) <- c(n_group, n_vax)
-dim(cum_vbe)        <- c(n_group, n_vax)
-dim(cum_entrants)   <- c(n_group, n_vax)
+dim(cum_incid)       <- c(n_group, n_vax)
+dim(cum_diag_a)      <- c(n_group, n_vax)
+dim(cum_diag_s)      <- c(n_group, n_vax)
+dim(cum_treated)     <- c(n_group, n_vax)
+dim(cum_screened)    <- c(n_group, n_vax)
+dim(cum_offered)     <- c(n_group, n_vax)
+dim(cum_vaccinated)  <- c(n_group, n_vax)
+dim(cum_vbe)         <- c(n_group, n_vax)
+dim(cum_offered_vbe) <- c(n_group, n_vax)
 
 ## Parameters
 p[]     <- user() # Partner change rate in group L/H
