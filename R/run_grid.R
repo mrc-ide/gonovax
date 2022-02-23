@@ -168,11 +168,26 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
 
   ## calculate cases averted per dose, both with and without discounting
-  ret$inc_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose)
+  ret$inc_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose,
+                              "inc_doses")
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
+  
+  ## return incremental annual and cumulative doses
+  ret$inc_primary_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose,
+                                      "inc_primary_doses")
+  ret$inc_cum_primary_doses <- apply(ret$inc_primary_doses, 2, cumsum)
+  
+  ret$inc_revaccination_doses <- calc_doses(ret, uptake_first_dose,
+                                  uptake_second_dose, "inc_revax_doses")
+  ret$inc_cum_revaccination_doses <- apply(ret$inc_revaccination_doses, 2,
+                                           cumsum)
+  
+  ret$inc_vbe_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose, 
+                                  "vbe")
+  ret$inc_cum_vbe_doses <- apply(ret$inc_vbe_doses, 2, cumsum)
 
   ## calculate vaccine doses wasted
   ret$inc_doses_wasted <-
@@ -200,7 +215,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
 }
 
 
-calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose) {
+calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose, type) {
   n_vbe_pp <- 2 # all vbe get two doses
   # calculate doses given per person offered primary vaccination
   n_primary_doses_pp <- uptake_first_dose * (1 + uptake_second_dose)
@@ -209,8 +224,19 @@ calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose) {
   inc_primary_doses <- forecast$inc_offered_primary * n_primary_doses_pp
   inc_revax_doses <- forecast$inc_revaccinated * n_booster_doses_pp
 
-  inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
-  return(inc_doses)
+  if(type == "inc_doses"){
+    inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
+    return(inc_doses)
+  } else if (type == "inc_primary_doses") {
+    return(inc_primary_doses)
+  } else if (type == "inc_revax_doses") {
+    return(inc_revax_doses)
+  } else if (type == "vbe") {
+    return(inc_vbe_doses)
+  } else {
+    print(stop("Provide a dose type"))
+  }
+
 }
 
 
