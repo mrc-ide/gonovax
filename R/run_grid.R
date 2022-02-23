@@ -121,6 +121,20 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
+##' `inc_primary_doses` = annual number of primary doses administered
+##' compared to baseline, where 2 doses are needed for full protection.
+##' `inc_cum_primary_doses` = cumulative number of primary doses administered
+##' compared to baseline, where 2 doses are needed for full protection.
+##' `inc_revaccination_doses` = annual number of booster doses 
+##' administered to waned individuals compared to baseline, where 1 dose
+##'  is needed for full protection.
+##' `inc_cum_revaccination_doses` = cumulative number of booster doses 
+##' administered to waned individuals compared to baseline, where 1 dose
+##'  is needed for full protection.
+##'  `inc_vbe_doses` = annual number of vaccinations given before entry,
+##'  where 2 doses give full protection.
+##'  `inc_cum_vbe_doses` = cumulative number of vaccinations given before entry,
+##'  where 2 doses give full protection.
 ##' `cases_averted_per_dose` = cumulative number of cases (i.e. diagnoses)
 ##' averted per dose of vaccine
 ##' `cases_averted_per_dose_pv` = present value of cases_averted_per_dose
