@@ -193,7 +193,13 @@ test_that("compare baseline works as expected", {
   expect_equal(z$inc_primary[length(tt) - 1, 1],
                z$inc_vaccinated[length(tt) - 1, 1])
 
-  # number booster vaccinations is equal to
+  # number undergoing primary vaccination over 3 years is equal to the
+  # cumulative number for the 3 years
+
+  expect_equal(sum(z$inc_primary[, ]),
+               sum(z$inc_cum_primary[length(tt) - 1, ]))
+
+   # number booster vaccinations is equal to
       # inc_vaccinated - inc_primary
       # sum re-vaccinated
 
@@ -204,6 +210,23 @@ test_that("compare baseline works as expected", {
                         cp, 0)
 
   expect_equal(z$inc_vaccinated - z$inc_primary - z$inc_vbe, z$inc_revaccinated)
+
+  # number undergoing booster vaccination over 3 years is equal to the
+  # cumulative number for the 3 years
+
+  expect_equal(sum(z$inc_revaccinated[, ]),
+               sum(z$inc_cum_revaccinated[length(tt) - 1, ]))
+
+  # cumulative primary vaccination + cumulative booster vaccination =
+  # cumulative vaccinated overall when vbe = 0
+
+  s <- sum(z$inc_cum_primary[length(tt) - 1, ]) +
+    sum(z$inc_cum_revaccinated[length(tt) - 1, ])
+
+  t <- sum(z$inc_cum_vaccinated[length(tt) - 1, ])
+
+  expect_equal(s, t)
+
 })
 
 

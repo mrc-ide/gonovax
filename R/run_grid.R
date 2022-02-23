@@ -107,12 +107,16 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `inc_vaccinated`  = annual number vaccinated compared to baseline
 ##' (includes those getting vbe and boosters)
 ##' `inc_vbe` = annual number vaccinated before entry compared to baseline
-##' `inc_revaccinated` = annual number number receiving booster compared to
+##' `inc_revaccinated` = annual number receiving booster compared to
 ##' baseline
+##' `inc_cum_revaccinated` = cumulative number revaccinated by recieving booster
+##' compared to baseline
 ##' `inc_offered_primary` = annual number offered primary vaccination compared
 ##' to baseline (does not include hesitant or vbe)
 ##' `inc_primary` = annual number receiving primary vaccination
 ##' compared to baseline (does not include vbe)
+##' `inc_cum_primary` = cumulative number of individuals receiving primary
+##' vaccination compared to baseline (does not include vbe)
 ##' `inc_doses` = number of doses compared to baseline (per year). Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
@@ -158,6 +162,10 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
 
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
+  ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
+
+  ## cumulative individuals receiving booster vaccination (revaccination)
+  ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
 
   ## calculate cases averted per dose, both with and without discounting
   ret$inc_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose)
