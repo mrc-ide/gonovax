@@ -220,12 +220,7 @@ test_that("compare baseline works as expected", {
   # cumulative primary vaccination + cumulative booster vaccination =
   # cumulative vaccinated overall when vbe = 0
 
-  s <- sum(z$inc_cum_primary[length(tt) - 1, ]) +
-    sum(z$inc_cum_revaccinated[length(tt) - 1, ])
-
-  t <- sum(z$inc_cum_vaccinated[length(tt) - 1, ])
-
-  expect_equal(s, t)
+expect_equal(z$inc_cum_primary + z$inc_cum_revaccinated, z$inc_cum_vaccinated)
 
   # cumulative doses of different types calculated correctly
   # sum of vbe, primary and revaccination doses = all doses
