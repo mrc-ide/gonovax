@@ -199,8 +199,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$inc_cum_revaccination_doses <- apply(ret$inc_revaccination_doses, 2,
                                            cumsum)
 
-  ret$inc_vbe_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose,
-                                  "vbe")
+  ret$inc_vbe_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose)
   ret$inc_cum_vbe_doses <- apply(ret$inc_vbe_doses, 2, cumsum)
 
   ## calculate vaccine doses wasted
@@ -245,10 +244,8 @@ calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose, type) {
     return(inc_primary_doses)
   } else if (type == "inc_revax_doses") {
     return(inc_revax_doses)
-  } else if (type == "vbe") {
-    return(inc_vbe_doses)
   } else {
-    print(stop("Provide a dose type"))
+    return(inc_vbe_doses)
   }
 
 }
