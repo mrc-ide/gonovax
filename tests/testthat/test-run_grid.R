@@ -226,22 +226,22 @@ test_that("compare baseline works as expected", {
   t <- sum(z$inc_cum_vaccinated[length(tt) - 1, ])
 
   expect_equal(s, t)
-  
+
   # cumulative doses of different types calculated correctly
-  # sum of vbe, primary and revaccination doses = all doses 
-  
+  # sum of vbe, primary and revaccination doses = all doses
+
   y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
                         primary_uptake = 1, booster_uptake = 0.5,
-                        strategy = "VoD")   
+                        strategy = "VoD")
   z <- compare_baseline(y, bl, uptake_first_dose = 1, uptake_second_dose = 1,
                         cp, 0)
-  
-  s <- sum(z$inc_cum_primary_doses[length(tt) - 1,] +
-             z$inc_cum_revaccination_doses[length(tt) - 1,] +
-             z$inc_cum_vbe_doses[length(tt) - 1,])
 
-  t <- sum(z$inc_cum_doses[length(tt)-1, ])
-  
+  s <- sum(z$inc_cum_primary_doses[length(tt) - 1, ] +
+             z$inc_cum_revaccination_doses[length(tt) - 1, ] +
+             z$inc_cum_vbe_doses[length(tt) - 1, ])
+
+  t <- sum(z$inc_cum_doses[length(tt) - 1, ])
+
   expect_equal(s, t)
 
 })
