@@ -196,7 +196,7 @@ test_that("compare baseline works as expected", {
   # number undergoing primary vaccination over 3 years is equal to the
   # cumulative number for the 3 years
 
-  expect_equal(sum(z$inc_primary[, ]),
+  expect_equal(sum(z$inc_primary),
                sum(z$inc_cum_primary[length(tt) - 1, ]))
 
    # number booster vaccinations is equal to
