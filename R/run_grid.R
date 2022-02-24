@@ -125,10 +125,10 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' compared to baseline, where 2 doses are needed for full protection.
 ##' `inc_cum_primary_doses` = cumulative number of primary doses administered
 ##' compared to baseline, where 2 doses are needed for full protection.
-##' `inc_revaccination_doses` = annual number of booster doses 
+##' `inc_revaccination_doses` = annual number of booster doses
 ##' administered to waned individuals compared to baseline, where 1 dose
 ##'  is needed for full protection.
-##' `inc_cum_revaccination_doses` = cumulative number of booster doses 
+##' `inc_cum_revaccination_doses` = cumulative number of booster doses
 ##' administered to waned individuals compared to baseline, where 1 dose
 ##'  is needed for full protection.
 ##'  `inc_vbe_doses` = annual number of vaccinations given before entry,
@@ -188,18 +188,18 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
-  
+
   ## return incremental annual and cumulative doses
-  ret$inc_primary_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose,
-                                      "inc_primary_doses")
+  ret$inc_primary_doses <- calc_doses(ret, uptake_first_dose,
+                                      uptake_second_dose, "inc_primary_doses")
   ret$inc_cum_primary_doses <- apply(ret$inc_primary_doses, 2, cumsum)
-  
+
   ret$inc_revaccination_doses <- calc_doses(ret, uptake_first_dose,
                                   uptake_second_dose, "inc_revax_doses")
   ret$inc_cum_revaccination_doses <- apply(ret$inc_revaccination_doses, 2,
                                            cumsum)
-  
-  ret$inc_vbe_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose, 
+
+  ret$inc_vbe_doses <- calc_doses(ret, uptake_first_dose, uptake_second_dose,
                                   "vbe")
   ret$inc_cum_vbe_doses <- apply(ret$inc_vbe_doses, 2, cumsum)
 
@@ -238,7 +238,7 @@ calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose, type) {
   inc_primary_doses <- forecast$inc_offered_primary * n_primary_doses_pp
   inc_revax_doses <- forecast$inc_revaccinated * n_booster_doses_pp
 
-  if(type == "inc_doses"){
+  if (type == "inc_doses") {
     inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
     return(inc_doses)
   } else if (type == "inc_primary_doses") {
