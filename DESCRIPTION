@@ -1,6 +1,6 @@
 Package: gonovax
 Title: Deterministic Compartmental Model of Gonorrhoea with Vaccination
-Version: 0.3.13
+Version: 0.4.3
 Authors@R:
     c( person(given = "Lilith",
            family = "Whittles",
