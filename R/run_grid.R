@@ -207,7 +207,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
 
   ## calculate vaccine doses wasted
   ret$inc_doses_wasted <-
-    ret$offered_primary * uptake_first_dose * (1 - uptake_second_dose)
+  ret$inc_offered_primary * uptake_first_dose * (1 - uptake_second_dose)
   ret$inc_cum_doses_wasted <- apply(ret$inc_doses_wasted, 2, cumsum)
 
   ## calculate costs
