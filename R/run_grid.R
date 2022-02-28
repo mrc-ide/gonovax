@@ -231,31 +231,6 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
 }
 
 
-calc_doses <- function(forecast, uptake_first_dose, uptake_second_dose,
-                       type) {
-  n_vbe_pp <- 2 # all vbe get two doses
-  # calculate doses given per person offered primary vaccination
-  n_primary_doses_pp <- uptake_first_dose * (1 + uptake_second_dose)
-  n_booster_doses_pp <- 1 # boosters use 1 dose
-  inc_vbe_doses <- forecast$inc_vbe * n_vbe_pp
-  inc_primary_doses <- forecast$inc_offered_primary * n_primary_doses_pp
-  inc_revax_doses <- forecast$inc_revaccinated * n_booster_doses_pp
-
-  if (type == "inc_doses") {
-    inc_doses <- inc_vbe_doses + inc_primary_doses + inc_revax_doses
-    return(inc_doses)
-  } else if (type == "inc_primary_doses") {
-    return(inc_primary_doses)
-  } else if (type == "inc_revax_doses") {
-    return(inc_revax_doses)
-  } else {
-    invisible(type)
-    return(inc_vbe_doses)
-  }
-
-}
-
-
 calc_pv <- function(x, disc_rate) {
 
   tt <- seq_len(nrow(x))
