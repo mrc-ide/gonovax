@@ -193,7 +193,13 @@ test_that("compare baseline works as expected", {
   expect_equal(z$inc_primary[length(tt) - 1, 1],
                z$inc_vaccinated[length(tt) - 1, 1])
 
-  # number booster vaccinations is equal to
+  # number undergoing primary vaccination over 3 years is equal to the
+  # cumulative number for the 3 years
+
+  expect_equal(sum(z$inc_primary),
+               sum(z$inc_cum_primary[length(tt) - 1, ]))
+
+   # number booster vaccinations is equal to
       # inc_vaccinated - inc_primary
       # sum re-vaccinated
 
@@ -204,6 +210,35 @@ test_that("compare baseline works as expected", {
                         cp, 0)
 
   expect_equal(z$inc_vaccinated - z$inc_primary - z$inc_vbe, z$inc_revaccinated)
+
+  # number undergoing booster vaccination over 3 years is equal to the
+  # cumulative number for the 3 years
+
+  expect_equal(sum(z$inc_revaccinated),
+               sum(z$inc_cum_revaccinated[length(tt) - 1, ]))
+
+  # cumulative primary vaccination + cumulative booster vaccination =
+  # cumulative vaccinated overall when vbe = 0
+
+expect_equal(z$inc_cum_primary + z$inc_cum_revaccinated, z$inc_cum_vaccinated)
+
+  # cumulative doses of different types calculated correctly
+  # sum of vbe, primary and revaccination doses = all doses
+
+  y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
+                        primary_uptake = 1, booster_uptake = 0.5,
+                        strategy = "VoD")
+  z <- compare_baseline(y, bl, uptake_first_dose = 1, uptake_second_dose = 1,
+                        cp, 0)
+
+  s <- sum(z$inc_cum_primary_doses[length(tt) - 1, ] +
+             z$inc_cum_booster_doses[length(tt) - 1, ] +
+             z$inc_cum_vbe_doses[length(tt) - 1, ])
+
+  t <- sum(z$inc_cum_doses[length(tt) - 1, ])
+
+  expect_equal(s, t)
+
 })
 
 
