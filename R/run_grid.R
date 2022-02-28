@@ -186,17 +186,20 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
    # all vbe get two doses
   ret$inc_vbe_doses <- ret$inc_vbe * 2
   # calculate doses given per person offered primary vaccination
-  ret$inc_primary_doses <- uptake_first_dose * (1 + uptake_second_dose) * ret$inc_offered_primary
-  # booster vaccination takes a single dose so is simply the number of people revaccinated
+  ret$inc_primary_doses <- uptake_first_dose * (1 + uptake_second_dose) *
+    ret$inc_offered_primary
+  # booster vaccination takes a single dose so is simply the number of people
+  # revaccinated
   ret$inc_booster_doses <- ret$inc_revaccinated
-  
+
   # calculate cumulative doses
   ret$inc_cum_vbe_doses <- apply(ret$inc_vbe_doses, 2, cumsum)
   ret$inc_cum_primary_doses <- apply(ret$inc_primary_doses, 2, cumsum)
   ret$inc_cum_booster_doses <- apply(ret$inc_booster_doses, 2, cumsum)
-  
 
-  ret$inc_doses <- ret$inc_primary_doses + ret$inc_booster_doses + ret$inc_vbe_doses
+
+  ret$inc_doses <- ret$inc_primary_doses + ret$inc_booster_doses +
+    ret$inc_vbe_doses
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
