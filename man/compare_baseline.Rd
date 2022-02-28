@@ -57,16 +57,34 @@ list entries are:
 `inc_vaccinated`  = annual number vaccinated compared to baseline
 (includes those getting vbe and boosters)
 `inc_vbe` = annual number vaccinated before entry compared to baseline
-`inc_revaccinated` = annual number number receiving booster compared to
+`inc_revaccinated` = annual number receiving booster compared to
 baseline
+`inc_cum_revaccinated` = cumulative number revaccinated by recieving booster
+compared to baseline
 `inc_offered_primary` = annual number offered primary vaccination compared
 to baseline (does not include hesitant or vbe)
 `inc_primary` = annual number receiving primary vaccination
 compared to baseline (does not include vbe)
+`inc_cum_primary` = cumulative number of individuals receiving primary
+vaccination compared to baseline (does not include vbe)
 `inc_doses` = number of doses compared to baseline (per year). Assumes
 primary vaccination uses 2 doses, booster uses 1 dose.
 `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
 primary vaccination uses 2 doses, booster uses 1 dose.
+`inc_primary_doses` = annual number of primary doses administered
+compared to baseline, where 2 doses are needed for full protection.
+`inc_cum_primary_doses` = cumulative number of primary doses administered
+compared to baseline, where 2 doses are needed for full protection.
+`inc_revaccination_doses` = annual number of booster doses
+administered to waned individuals compared to baseline, where 1 dose
+ is needed for full protection.
+`inc_cum_revaccination_doses` = cumulative number of booster doses
+administered to waned individuals compared to baseline, where 1 dose
+ is needed for full protection.
+ `inc_vbe_doses` = annual number of vaccinations given before entry,
+ where 2 doses give full protection.
+ `inc_cum_vbe_doses` = cumulative number of vaccinations given before entry,
+ where 2 doses give full protection.
 `cases_averted_per_dose` = cumulative number of cases (i.e. diagnoses)
 averted per dose of vaccine
 `cases_averted_per_dose_pv` = present value of cases_averted_per_dose
