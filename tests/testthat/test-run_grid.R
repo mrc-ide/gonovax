@@ -232,7 +232,7 @@ expect_equal(z$inc_cum_primary + z$inc_cum_revaccinated, z$inc_cum_vaccinated)
                         cp, 0)
 
   s <- sum(z$inc_cum_primary_doses[length(tt) - 1, ] +
-             z$inc_cum_revaccination_doses[length(tt) - 1, ] +
+             z$inc_cum_booster_doses[length(tt) - 1, ] +
              z$inc_cum_vbe_doses[length(tt) - 1, ])
 
   t <- sum(z$inc_cum_doses[length(tt) - 1, ])
