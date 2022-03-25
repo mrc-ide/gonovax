@@ -1,3 +1,7 @@
+# gonovax 0.4.1
+
+* calculate and return incremental vaccination costs for £9 per dose
+
 # gonovax 0.4.0
 
 * calculate and return annual and cumulative # individuals receiving primary and booster vaccination separately and annual and cumulative number of primary and booster doses administered 
