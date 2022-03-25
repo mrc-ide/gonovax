@@ -1,8 +1,8 @@
 ### gonovax population model whereby individuals in X become vaccinated
 # under the given vacc strategy with proportion r1 accepting 1 dose --> P
 # or proportion r1r2 accepting both doses --> V
-# individuals in P wane back to X, and can then go to P or V again after 
-# individuals in V wane to W where they can get a booster vacc to R 
+# individuals in P wane back to X, and can then go to P or V again after
+# individuals in V wane to W where they can get a booster vacc to R
 # rate of waning for P is 18 months
 # this is a modificaiton of the onevax_xvwrh model where indiviuals pass
 # linearly through the strata, now there is a branching after X
@@ -20,7 +20,7 @@
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                   hes = 0) {
   assert_scalar_unit_interval(coverage_p)
-  assert_scalar_unit_interval(coverage_v)  
+  assert_scalar_unit_interval(coverage_v)
   n_vax <- 6
   willing <- 1 - hes
   x_init <- willing * (1 - coverage_p - coverage_v)
@@ -52,7 +52,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##' @param hes proportion of population vaccine hesitant
 ##' @param r1 proportion of population offered vaccine only accepting the first
 ##' dose
-##' @param r1r2 proportion of population offered vaccine who accept both the 
+##' @param r1r2 proportion of population offered vaccine who accept both the
 ##' first and second dose
 ##' @param dur_v duration of time spent in V stratum after completing a round of
 ##' primary vaccination (fully vaccinated, accepting first and second dose)
@@ -62,11 +62,11 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
-                             dur_v = 1e3, dur_p = dur_v/2, dur_revax = dur_v,
+                             dur_v = 1e3, dur_p = dur_v / 2, dur_revax = dur_v,
                              r1 = 0, r1r2 = 0,
                              booster_uptake = r1r2, strategy = NULL,
                              vbe = 0, t_stop = 99, hes = 0) {
-
+  
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -85,22 +85,22 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_positive(t_stop)
   
   # waned partially-vaccinated individuals (P) move back to the non-vaccinated
-    # stratum (X) and are considered immunologically naive. They are eligible
-    # for another round of partial vaccination or full vaccination 
+  # stratum (X) and are considered immunologically naive. They are eligible
+  # for another round of partial vaccination or full vaccination
   # waned fully-vaccinated individuals (V) move to their own waned stratum (W)
-    # and are eligible for re-vaccination with a booster, moving into a separate
-    # stratum (R)
+  # and are eligible for re-vaccination with a booster, moving into a separate
+  # stratum (R)
   # a proportion of all 'n' exist only in the hesitant compartment (H)
   # there is no movement between the willing (X, P, V, W, R) and hesitant (H)
-
+  
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P
-
+  
   i_eligible <- c(1, 4)             #X and W are eligible for vaccination
   i_w <- 4
   i_v <- c(2, 3, 4)                    #P(2), V(3), and R(4) are protected
-
+  
   #number of compartments
   n_vax <- 6
   n_group <- 2
@@ -137,7 +137,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 ##' @name create_vax_map_branching
 ##' @title Create mapping for movement between strata due to vaccination where
-##' vaccination uptake splits off into two types (partial and full) from the 
+##' vaccination uptake splits off into two types (partial and full) from the
 ##' naive population (X)
 ##' @param n_vax Integer denoting total number of strata
 ##' @param v 0-1 vector of length two indicating whether activity group
@@ -159,7 +159,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v                 #get a coffee then tackle this ???? 
+    vax_map[, i_v[i], i_u[i]] <- -v         #get a coffee then tackle this ????
   }
   
   vax_map
