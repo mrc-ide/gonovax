@@ -62,7 +62,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
-                             dur_v = 1e3, dur_p = dur_v/2, dur_revax = dur,
+                             dur_v = 1e3, dur_p = dur_v/2, dur_revax = dur_v,
                              r1 = 0, r1r2 = 0,
                              booster_uptake = r1r2, strategy = NULL,
                              vbe = 0, t_stop = 99, hes = 0) {
@@ -114,7 +114,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- matrix(0, n_group, n_vax)
-  u[, i_eligible[1]] <- primary_uptake
+  u[, i_eligible[1]] <- r1r2 + r1
   u[, i_eligible[2]] <- booster_uptake
   
   list(n_vax   = n_vax,
@@ -132,4 +132,34 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
+}
+
+
+##' @name create_vax_map
+##' @title Create mapping for movement between strata due to vaccination
+##' @param n_vax Integer denoting total number of strata
+##' @param v 0-1 vector of length two indicating whether activity group
+##'  should be offered vaccination.
+##' @param i_u indices of strata eligible for vaccination
+##' @param i_v indices of strata being vaccinated
+##' @return an array of the mapping
+
+create_vax_map <- function(n_vax, v, i_u, i_v) {
+  
+  # ensure vaccine input is of correct length
+  n_group <- 2
+  stopifnot(length(v) == n_group)
+  stopifnot(all(v %in% c(0, 1)))
+  stopifnot(length(i_v) == length(i_u))
+  stopifnot(max(i_u, i_v) <= n_vax)
+  
+  # set up vaccination matrix
+  vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
+  
+  for (i in seq_along(i_u)) {
+    vax_map[, i_u[i], i_u[i]] <-  v
+    vax_map[, i_v[i], i_u[i]] <- -v
+  }
+  
+  vax_map
 }
