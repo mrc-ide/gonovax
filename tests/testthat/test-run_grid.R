@@ -127,6 +127,8 @@ test_that("compare baseline works as expected", {
   expect_equal(cet_30k * cost$pv_inc_doses - cost$pv_red_net_cost,
                cost$pv_qaly_gain * 30000)
 
+  expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(9, cost),
+               cost$pv_inc_doses * (85 - 9))
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(18, cost),
                cost$pv_inc_doses * (85 - 18))
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(50, cost),
