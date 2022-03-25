@@ -135,13 +135,15 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 }
 
 
-##' @name create_vax_map
-##' @title Create mapping for movement between strata due to vaccination
+##' @name create_vax_map_branching
+##' @title Create mapping for movement between strata due to vaccination where
+##' vaccination uptake splits off into two types (partial and full) from the 
+##' naive population (X)
 ##' @param n_vax Integer denoting total number of strata
 ##' @param v 0-1 vector of length two indicating whether activity group
 ##'  should be offered vaccination.
 ##' @param i_u indices of strata eligible for vaccination
-##' @param i_v indices of strata being vaccinated
+##' @param i_v indices of strata vaccinated and protected
 ##' @return an array of the mapping
 
 create_vax_map <- function(n_vax, v, i_u, i_v) {
@@ -150,7 +152,6 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   n_group <- 2
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
-  stopifnot(length(i_v) == length(i_u))
   stopifnot(max(i_u, i_v) <= n_vax)
   
   # set up vaccination matrix
@@ -158,7 +159,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v
+    vax_map[, i_v[i], i_u[i]] <- -v                 #get a coffee then tackle this ???? 
   }
   
   vax_map
