@@ -19,9 +19,9 @@
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                   hes = 0) {
-  assert_scalar_unit_interval(coverage)
+  assert_scalar_unit_interval(coverage_p)
+  assert_scalar_unit_interval(coverage_v)  
   n_vax <- 6
-  
   willing <- 1 - hes
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
@@ -32,7 +32,6 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   stopifnot(sum(cov) == 1)
   
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
-  
   # separate into 1:low and 2:high activity groups and by coverage
   N0 <- pars$N0 * outer(pars$q, cov)
   # set initial asymptomatic prevalence in each group (X AND H)
@@ -44,4 +43,80 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
   
+}
+
+
+##' @name vax_params_xpvwrh
+##' @title create vaccination parameters for use in onevax_xpvwrh model
+##' @inheritParams vax_params_xvwr
+##' @param hes proportion of population vaccine hesitant
+##' @param r1 proportion of population offered vaccine only accepting the first
+##' dose
+##' @param r2 proportion of population offered vaccine who accept the second
+##' dose, given they have already accepted the first
+##' @return A list parameters in the model input format
+vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
+                             vea_revax = vea, vei_revax = vei,
+                             ved_revax = ved, ves_revax = ves,
+                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
+                             booster_uptake = primary_uptake, strategy = NULL,
+                             vbe = 0, t_stop = 99, hes = 0) {
+
+  assert_scalar_unit_interval(vea)
+  assert_scalar_unit_interval(vei)
+  assert_scalar_unit_interval(ved)
+  assert_scalar_unit_interval(ves)
+  assert_scalar_unit_interval(vea_revax)
+  assert_scalar_unit_interval(vei_revax)
+  assert_scalar_unit_interval(ved_revax)
+  assert_scalar_unit_interval(ves_revax)
+  assert_scalar_positive(dur)
+  assert_scalar_positive(dur_revax)
+  assert_scalar_unit_interval(r1)
+  assert_scalar_unit_interval(r2)
+  assert_scalar_unit_interval(booster_uptake)
+  assert_scalar_unit_interval(vbe)
+  assert_scalar_positive(t_stop)
+
+  # waned vaccinees move to own stratum, but are eligible for re-vaccination
+  # re-vaccination is into a fourth stratum (r)
+  # a proportion of all 'n' exist only in the hesitant compartment
+  # there is no movement between the willing (x,v,w,r) and hesitant (h)
+  # 1:x -> 2:v -> 3:w <-> 4:r
+  # 5:h
+  i_eligible <- c(1, 3)             #X and W are eligible for vaccination
+  i_w <- 3
+  i_v <- c(2, 4)                    #V(2) and R(4) are protected
+  
+  #number of compartments
+  n_vax <- 5
+  n_group <- 2
+  
+  # ensure duration is not divided by 0
+  ved <- min(ved, 1 - 1e-10)
+  ved_revax <- min(ved_revax, 1 - 1e-10)
+  
+  # If uptake of VbE > 0 consider that all adolescents are offered vaccine
+  p <- set_strategy(strategy, vbe > 0)
+  
+  # set up uptake matrix rows = groups, columns = vaccine strata
+  u <- matrix(0, n_group, n_vax)
+  u[, i_eligible[1]] <- primary_uptake
+  u[, i_eligible[2]] <- booster_uptake
+  
+  list(n_vax   = n_vax,
+       willing = c((1 - hes), 0, 0, 0, hes),
+       u       = u,
+       u_vbe   = vbe,
+       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vea     = c(0, vea, 0, vea_revax, 0),
+       vei     = c(0, vei, 0, vei_revax, 0),
+       ved     = c(0, ved, 0, ved_revax, 0),
+       ves     = c(0, ves, 0, ves_revax, 0),
+       w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
+       vax_t   = c(0, t_stop),
+       vax_y   = c(1, 0)
+  )
 }
