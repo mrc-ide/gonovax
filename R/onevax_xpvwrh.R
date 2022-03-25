@@ -121,9 +121,9 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        willing = c((1 - hes), 0, 0, 0, hes),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
-       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vbe     = create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v),
+       vod     = create_vax_map_branching(n_vax, p$vod, i_eligible, i_v),
+       vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v),
        vea     = c(0, vea, 0, vea_revax, 0),
        vei     = c(0, vei, 0, vei_revax, 0),
        ved     = c(0, ved, 0, ved_revax, 0),
@@ -146,7 +146,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param i_v indices of strata vaccinated and protected
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v, i_u, i_v) {
+create_vax_map <- function(n_vax, v, i_u, i_v, r1, r1r2) {
   
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -159,8 +159,13 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v         #get a coffee then tackle this ????
-  }
+    vax_map[, i_v[i], i_u[i]] <- -v
+    vax_map[, i_v[i+1], i_u[i]] <- -v
+  }                                        #maybe split this up otherwise  getting negatives for , , 4 as well! 
+  
+  tot <- r1r2 + r1
+  prop_full <- r1r2 / tot
+  prop_part <- r1 / tot             #multiply these proportions through to , , 1
   
   vax_map
 }
