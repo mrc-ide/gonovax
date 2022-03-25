@@ -31,11 +31,11 @@ run_grid  <- function(gono_params, init_params, cost_params,
                       eff, dur, vbe = 0, strategy = NULL, uptake_total = 0,
                       uptake_second_dose = uptake_total,
                       t_stop = 99, full_output = FALSE, disc_rate = 0) {
-
+  
   tt <- seq.int(init_params[[1]]$t,
                 length.out = nrow((baseline[[1]][[1]])) + 1)
   l <- expand.grid(vea = eff, dur = dur)
-
+  
   # run model grid
   res <- furrr::future_pmap(.l = l, .f = model, tt = tt,
                             gono_params = gono_params,
@@ -43,17 +43,17 @@ run_grid  <- function(gono_params, init_params, cost_params,
                             vbe = vbe, uptake = uptake_total,
                             strategy = strategy,
                             t_stop = t_stop)
-
+  
   # compare to baseline
   ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
-                       .f = compare_baseline,
-                       cost_params = cost_params,
-                       uptake_first_dose = uptake_total / uptake_second_dose,
-                       uptake_second_dose = uptake_second_dose,
-                       disc_rate = disc_rate)
-
+                            .f = compare_baseline,
+                            cost_params = cost_params,
+                            uptake_first_dose = uptake_total / uptake_second_dose,
+                            uptake_second_dose = uptake_second_dose,
+                            disc_rate = disc_rate)
+  
   names(ret) <- sprintf("eff%.2f_dur%02d", l$vea, l$dur)
-
+  
   # prepare results
   out <- list(inputs = list(t = tt, vbe = vbe, strategy = strategy, grid = l,
                             gono_params = gono_params,
@@ -65,7 +65,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
               results = ret)
   if (full_output) out$full_results <- res
   class(out) <- "gonovax_grid"
-
+  
   out
 }
 
@@ -157,6 +157,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `cet_30k` = cost effectiveness threshold (i.e. £ value per dose at which
 ##' vaccination becomes cost-effective) calculated using £30,000 / QALY
 ##' (pv_red_net_cost + pv_qaly_gain * £30,000) / pv_inc_doses
+##' `inc_costs_9` = present value of incremental costs assuming £9 / dose.
+##' Incremental costs are calculated as: pv_inc_doses * £9 - pv_red_net_cost
 ##' `inc_costs_18` = present value of incremental costs assuming £18 / dose.
 ##' Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
 ##' `inc_costs_50` = present value of incremental costs assuming £50 / dose.
@@ -166,24 +168,24 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @export
 compare_baseline <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
-                              disc_rate) {
-
+                             disc_rate) {
+  
   ## compare run to baseline
   flows <- extract_flows(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
-
+  
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
-
+  
   ## cumulative individuals receiving booster vaccination (revaccination)
   ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
-
+  
   ## calculate cases averted per dose, both with and without discounting
   ## return incremental annual and cumulative doses
-   # all vbe get two doses
+  # all vbe get two doses
   ret$inc_vbe_doses <- ret$inc_vbe * 2
   # calculate doses given per person offered primary vaccination
   ret$inc_primary_doses <- uptake_first_dose * (1 + uptake_second_dose) *
@@ -191,48 +193,49 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   # booster vaccination takes a single dose so is simply the number of people
   # revaccinated
   ret$inc_booster_doses <- ret$inc_revaccinated
-
+  
   # calculate cumulative doses
   ret$inc_cum_vbe_doses <- apply(ret$inc_vbe_doses, 2, cumsum)
   ret$inc_cum_primary_doses <- apply(ret$inc_primary_doses, 2, cumsum)
   ret$inc_cum_booster_doses <- apply(ret$inc_booster_doses, 2, cumsum)
-
-
+  
+  
   ret$inc_doses <- ret$inc_primary_doses + ret$inc_booster_doses +
     ret$inc_vbe_doses
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
-
+  
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
-
+  
   ## calculate vaccine doses wasted
   ret$inc_doses_wasted <-
-  ret$inc_offered_primary * uptake_first_dose * (1 - uptake_second_dose)
+    ret$inc_offered_primary * uptake_first_dose * (1 - uptake_second_dose)
   ret$inc_cum_doses_wasted <- apply(ret$inc_doses_wasted, 2, cumsum)
-
+  
   ## calculate costs
   costs <- calc_costs(ret, cost_params, disc_rate)
   ret <- c(ret, costs)
-
+  
   ## calculate cost-effectiveness threshold price as incremental net benefit per
   ## person with QALY cost - £20k / £30k
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$cet_20k <- calc_cet(2e4, costs)
   ret$cet_30k <- calc_cet(3e4, costs)
-
+  
   ## calculate incremental cost of vaccination assuming
-  ## £18, £50, £85 per dose
+  ## £9, £18, £50, £85 per dose
   ## both calcs allow for discounting (i.e. are present values as at 2022)
+  ret$inc_costs_18 <- calc_inc_costs(9, costs)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-
+  
   ret
 }
 
 
 calc_pv <- function(x, disc_rate) {
-
+  
   tt <- seq_len(nrow(x))
   pv <- (1 + disc_rate) ^ - (tt - 0.5)
   ret <- apply(x * pv, 2, cumsum)
@@ -240,35 +243,35 @@ calc_pv <- function(x, disc_rate) {
 }
 
 calc_cases_averted_per_dose <- function(forecast, disc_rate = 0) {
-
+  
   pv_inc_doses <- calc_pv(forecast$inc_doses, disc_rate)
   pv_cases_averted  <- calc_pv(-forecast$inc_treated, disc_rate)
-
+  
   cases_averted_per_dose <- pv_cases_averted / pv_inc_doses
   cases_averted_per_dose[is.na(cases_averted_per_dose)] <- 0
-
+  
   cases_averted_per_dose
 }
 
 
 calc_costs <- function(forecast, cost_params, disc_rate) {
-
-    red_diag_s <- -t(forecast$inc_diag_s)
-    red_diag_a <- -t(forecast$inc_diag_a)
-    inc_screen <- t(forecast$inc_screened)
-
-    red_cost_diag_s <- red_diag_s * cost_params$unit_cost_manage_symptomatic
-    red_cost_diag_a <- red_diag_a * cost_params$unit_cost_manage_asymptomatic
-    inc_cost_screen <- inc_screen * cost_params$unit_cost_screen_uninfected
-
-    red_net_cost <- t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen)
-
-    qaly_gain <- t(red_diag_s * cost_params$qaly_loss_per_diag_s)
-
-    ## calc pv incremental net benefit per person protected
-    list(pv_inc_doses = calc_pv(forecast$inc_doses, disc_rate),
-         pv_red_net_cost = calc_pv(red_net_cost, disc_rate),
-         pv_qaly_gain = calc_pv(qaly_gain, disc_rate))
+  
+  red_diag_s <- -t(forecast$inc_diag_s)
+  red_diag_a <- -t(forecast$inc_diag_a)
+  inc_screen <- t(forecast$inc_screened)
+  
+  red_cost_diag_s <- red_diag_s * cost_params$unit_cost_manage_symptomatic
+  red_cost_diag_a <- red_diag_a * cost_params$unit_cost_manage_asymptomatic
+  inc_cost_screen <- inc_screen * cost_params$unit_cost_screen_uninfected
+  
+  red_net_cost <- t(red_cost_diag_s + red_cost_diag_a - inc_cost_screen)
+  
+  qaly_gain <- t(red_diag_s * cost_params$qaly_loss_per_diag_s)
+  
+  ## calc pv incremental net benefit per person protected
+  list(pv_inc_doses = calc_pv(forecast$inc_doses, disc_rate),
+       pv_red_net_cost = calc_pv(red_net_cost, disc_rate),
+       pv_qaly_gain = calc_pv(qaly_gain, disc_rate))
 }
 
 calc_cet <- function(cost_qaly, costs) {
