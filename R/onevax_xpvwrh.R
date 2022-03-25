@@ -52,14 +52,19 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##' @param hes proportion of population vaccine hesitant
 ##' @param r1 proportion of population offered vaccine only accepting the first
 ##' dose
-##' @param r2 proportion of population offered vaccine who accept the second
-##' dose, given they have already accepted the first
+##' @param r1r2 proportion of population offered vaccine who accept both the 
+##' first and second dose
+##' @param dur_v duration of time spent in V stratum after completing a round of
+##' primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_p duration of time spent in the P stratum, partially vaccinated
+##' (accepting only the first dose)
 ##' @return A list parameters in the model input format
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
-                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
-                             booster_uptake = primary_uptake, strategy = NULL,
+                             dur_v = 1e3, dur_p = dur_v/2, dur_revax = dur,
+                             r1 = 0, r1r2 = 0,
+                             booster_uptake = r1r2, strategy = NULL,
                              vbe = 0, t_stop = 99, hes = 0) {
 
   assert_scalar_unit_interval(vea)
@@ -70,26 +75,34 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(vei_revax)
   assert_scalar_unit_interval(ved_revax)
   assert_scalar_unit_interval(ves_revax)
-  assert_scalar_positive(dur)
+  assert_scalar_positive(dur_v)
+  assert_scalar_positive(dur_p)
   assert_scalar_positive(dur_revax)
   assert_scalar_unit_interval(r1)
-  assert_scalar_unit_interval(r2)
+  assert_scalar_unit_interval(r1r2)
   assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
-
-  # waned vaccinees move to own stratum, but are eligible for re-vaccination
-  # re-vaccination is into a fourth stratum (r)
-  # a proportion of all 'n' exist only in the hesitant compartment
-  # there is no movement between the willing (x,v,w,r) and hesitant (h)
-  # 1:x -> 2:v -> 3:w <-> 4:r
-  # 5:h
-  i_eligible <- c(1, 3)             #X and W are eligible for vaccination
-  i_w <- 3
-  i_v <- c(2, 4)                    #V(2) and R(4) are protected
   
+  # waned partially-vaccinated individuals (P) move back to the non-vaccinated
+    # stratum (X) and are considered immunologically naive. They are eligible
+    # for another round of partial vaccination or full vaccination 
+  # waned fully-vaccinated individuals (V) move to their own waned stratum (W)
+    # and are eligible for re-vaccination with a booster, moving into a separate
+    # stratum (R)
+  # a proportion of all 'n' exist only in the hesitant compartment (H)
+  # there is no movement between the willing (X, P, V, W, R) and hesitant (H)
+
+  # 1:X -> 3:V -> 4:W <-> 5:R
+  # and
+  # 1:X <-> 2:P
+
+  i_eligible <- c(1, 4)             #X and W are eligible for vaccination
+  i_w <- 4
+  i_v <- c(2, 3, 4)                    #P(2), V(3), and R(4) are protected
+
   #number of compartments
-  n_vax <- 5
+  n_vax <- 6
   n_group <- 2
   
   # ensure duration is not divided by 0
