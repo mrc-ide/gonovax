@@ -131,10 +131,10 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v,
                                           r1 = r1, r1r2 = r1r2),
        vea     = c(0, vea, 0, vea_revax, 0),
-       vei     = c(0, vei, 0, vei_revax, 0),
-       ved     = c(0, ved, 0, ved_revax, 0),
+       vei     = c(0, vei, 0, vei_revax, 0),                                #next step work out how to tweak efficacies for P and V
+       ved     = c(0, ved, 0, ved_revax, 0),                                # need to be adujustable upstream 
        ves     = c(0, ves, 0, ves_revax, 0),
-       w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
+       w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),              #then waning! 
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
