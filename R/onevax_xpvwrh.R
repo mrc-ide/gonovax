@@ -99,7 +99,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   i_eligible <- c(1, 4)             #X and W are eligible for vaccination
   i_w <- 4
-  i_v <- c(2, 3, 4)                    #P(2), V(3), and R(4) are protected
+  i_v <- c(2, 3, 5)                    #P(2), V(3), and R(5) are protected
   
   #number of compartments
   n_vax <- 6
@@ -113,17 +113,23 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   p <- set_strategy(strategy, vbe > 0)
   
   # set up uptake matrix rows = groups, columns = vaccine strata
+  # tells us where vaccinated individuals are going to be pulled from 
+
   u <- matrix(0, n_group, n_vax)
   u[, i_eligible[1]] <- r1r2 + r1
   u[, i_eligible[2]] <- booster_uptake
+
   
   list(n_vax   = n_vax,
-       willing = c((1 - hes), 0, 0, 0, hes),
+       willing = c((1 - hes), 0, 0,  0, 0, hes),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v),
-       vod     = create_vax_map_branching(n_vax, p$vod, i_eligible, i_v),
-       vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v),
+       vbe     = create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v,
+                                          r1 = r1, r1r2 = r1r2),
+       vod     = create_vax_map_branching(n_vax, p$vod, i_eligible, i_v,
+                                          r1 = r1, r1r2 = r1r2),
+       vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v,
+                                          r1 = r1, r1r2 = r1r2),
        vea     = c(0, vea, 0, vea_revax, 0),
        vei     = c(0, vei, 0, vei_revax, 0),
        ved     = c(0, ved, 0, ved_revax, 0),
@@ -146,7 +152,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param i_v indices of strata vaccinated and protected
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v, i_u, i_v, r1, r1r2) {
+create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1, r1r2) {
   
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -154,18 +160,26 @@ create_vax_map <- function(n_vax, v, i_u, i_v, r1, r1r2) {
   stopifnot(all(v %in% c(0, 1)))
   stopifnot(max(i_u, i_v) <= n_vax)
   
+  # tweak eligibility , repeat over stratum 1 column 1 for ease
+  i_u <- c(1, i_u)
+  
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
   
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
     vax_map[, i_v[i], i_u[i]] <- -v
-    vax_map[, i_v[i+1], i_u[i]] <- -v
+
   }                                        #maybe split this up otherwise  getting negatives for , , 4 as well! 
   
+  #obtain proportions
+
   tot <- r1r2 + r1
   prop_full <- r1r2 / tot
   prop_part <- r1 / tot             #multiply these proportions through to , , 1
+  
+  vax_map[, 2, 1] <- vax_map[, 2, 1] * prop_part
+  vax_map[, 3, 1] <- vax_map[, 3, 1] * prop_full
   
   vax_map
 }
