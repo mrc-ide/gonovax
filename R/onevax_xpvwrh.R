@@ -110,9 +110,9 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # and
   # 1:X <-> 2:P
   
-  i_eligible <- c(1, 4)             #X and W are eligible for vaccination
-  i_w <- 4
-  i_v <- c(2, 3, 5)                    #P(2), V(3), and R(5) are protected
+  i_eligible <- c(1, 4)                # X(1) and W(4) eligible for vaccination
+  i_w <- c(1, 4)                       # Waned vaccinees move to X(1) and W(4)
+  i_v <- c(2, 3, 5)                    # P(2), V(3), and R(5) are protected
   
   #number of compartments
   n_vax <- 6
@@ -144,13 +144,42 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v,
                                           r1 = r1, r1r2 = r1r2),
        vea     = c(0,vea_p , vea, 0, vea_revax, 0),
-       vei     = c(0,vei_p , vei, 0, vei_revax, 0),                                #next step work out how to tweak efficacies for P and V
-       ved     = c(0,ved_p , ved, 0, ved_revax, 0),                                # need to be adujustable upstream 
+       vei     = c(0,vei_p , vei, 0, vei_revax, 0),
+       ved     = c(0,ved_p , ved, 0, ved_revax, 0),
        ves     = c(0,ves_s , ves, 0, ves_revax, 0),
-       w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),              #then waning! 
+       w       = create_waning_map(n_vax, i_v,
+                                   i_w, 1 / c(dur_p, dur_v, dur_revax)),              #then waning! 
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
+}
+
+##' @name create_waning_map_branching
+##' @title Create mapping for movement between strata due to vaccine waning
+##' where waning from the partially vaccinated stratum (P) moves individuals
+##' back to a naive unvaccinated state (X), and waning from fully vaccinated
+##' stratum (V) moves individuals into a separate waned stratum (W)
+##' @param n_vax Integer in (0, 6) denoting total number of strata
+##' @param i_v indices of strata receving protection through vaccination
+##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
+##' @param z Scalar denoting rate of waning
+##' @return an array of the mapping
+
+create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
+  
+  stopifnot(z > 0)
+  stopifnot(length(z) %in% c(1, length(i_v)))
+  stopifnot(length(i_w) == 2)
+
+  # set up waning map
+  w <- array(0, dim = c(n_vax, n_vax))
+  
+  w[i_w, i_v] <-  z
+  
+  for (i in i_v) {
+    w[i, i] <- -w[i_w, i]
+  }
+  w
 }
 
 
