@@ -245,7 +245,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   y8 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3)
   
-  i_p <- lapply(y8, restart_hes, n_vax = 6, hes = 0.5)
+  i_p <- lapply(y8, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE)
   y_hesres <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
                                hes = 0.5)
   
@@ -286,7 +286,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
   
-  expect_error(lapply(y10, restart_hes, n_vax = 5, hes = 0.5))
+  expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))       ########### got to here 
   
   # check booster_uptake defaults to primary_uptake
   y_prim_only <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
