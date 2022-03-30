@@ -67,7 +67,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##' @param ves_p scalar indicating efficacy of partial vaccination against
 ##'  symptoms (between 0-1)
 ##' @return A list parameters in the model input format
-vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
+vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
                              vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
@@ -146,7 +146,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vea     = c(0, vea_p, vea, 0, vea_revax, 0),
        vei     = c(0, vei_p, vei, 0, vei_revax, 0),
        ved     = c(0, ved_p, ved, 0, ved_revax, 0),
-       ves     = c(0, ves_s, ves, 0, ves_revax, 0),
+       ves     = c(0, ves_p, ves, 0, ves_revax, 0),
        w       = create_waning_map_branching(n_vax, i_v,
                                    i_w, 1 / c(dur_p, dur_v, dur_revax)),
        vax_t   = c(0, t_stop),
@@ -218,10 +218,11 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1, r1r2) {
   }
 
   #obtain proportions
-
+ 
   tot <- r1r2 + r1
-  prop_full <- r1r2 / tot
-  prop_part <- r1 / tot
+  
+  ifelse(r1r2 > 0, prop_full <- r1r2/tot, prop_full <- 0)
+  ifelse(r1 > 0, prop_part <- r1/tot, prop_part <- 0)
 
   vax_map[, 2, 1] <- vax_map[, 2, 1] * prop_part
   vax_map[, 3, 1] <- vax_map[, 3, 1] * prop_full
@@ -281,7 +282,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1, r1r2) {
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
-run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
+run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                              dur_v = 1e3, dur_p = dur_v,
                              vea = 0, vei = 0, ved = 0, ves = 0,
                              dur_revax = dur_v,
