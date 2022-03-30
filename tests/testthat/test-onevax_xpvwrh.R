@@ -204,39 +204,41 @@ test_that("run_onevax_xpvwrh works correctly", {
     
     # stratum V empties immediately
     expect_equal(sum(y6e[[i]]$N[, , 3]), 0, tolerance = 1e-5)
-    expect_true(all(y6e[[i]]$cum_vaccinated[, , 3] <=
+    expect_true(all(y6e[[i]]$cum_vaccinated[, , 4] <=
                       y6e[[i]]$cum_vaccinated[, , 1]))
+
     # efficacy is perfect
-    expect_equal(sum(y6e[[i]]$cum_incid[, , c(2, 4)]), 0)
-    expect_true(all(y6e[[i]]$cum_incid[-1, , c(1, 3)] > 0))
+    expect_equal(sum(y6e[[i]]$cum_incid[, , c(3, 5)]), 0)
+    expect_true(all(y6e[[i]]$cum_incid[-1, , c(1, 4)] > 0))
   }
   
   y7e <- run_onevax_xpvwrh(tt, gp, vea = 0, vea_revax = 1, dur_v = 1,
                           strategy = "VoD(L)+VoA(H)",
-                          primary_uptake = primary_uptake,
+                          r1r2 = r1r2,
                           booster_uptake = booster_uptake,
                           hes = 0.3)
   
   for (i in seq_along(y7e)) {
     ## L who are treated in X or W are offered vaccination
-    expect_equal(y7e[[i]]$cum_offered[, 1, c(1, 3)],
-                 y7e[[i]]$cum_treated[, 1, c(1, 3)])
+    expect_equal(y7e[[i]]$cum_offered[, 1, c(1, 4)],
+                 y7e[[i]]$cum_treated[, 1, c(1, 4)])
     ## H who are treated or screened in X or W are offered vaccination
-    expect_equal(y7e[[i]]$cum_offered[, 2, c(1, 3)],
-                 y7e[[i]]$cum_treated[, 2,  c(1, 3)] +
-                   y7e[[i]]$cum_screened[, 2,  c(1, 3)])
+    expect_equal(y7e[[i]]$cum_offered[, 2, c(1, 4)],
+                 y7e[[i]]$cum_treated[, 2,  c(1, 4)] +
+                   y7e[[i]]$cum_screened[, 2,  c(1, 4)])
     # and no-one else
-    expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 3)]), 0)
+    expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 4)]), 0)
     
     # uptake % of offered are vaccinated
-    expect_equal(y7e[[i]]$cum_offered[, , 1] * primary_uptake[i],
+    expect_equal(y7e[[i]]$cum_offered[, , 1] * r1r2[i],
                  y7e[[i]]$cum_vaccinated[, , 1])
-    expect_equal(y7e[[i]]$cum_offered[, , 3] * booster_uptake[i],
-                 y7e[[i]]$cum_vaccinated[, , 3])
+    expect_equal(y7e[[i]]$cum_offered[, , 4] * booster_uptake[i],
+                 y7e[[i]]$cum_vaccinated[, , 4])
+
     # efficacy is perfect in R
-    expect_equal(sum(y7e[[i]]$cum_incid[, , 4]), 0)
-    # but not in XWVH
-    expect_true(all(y7e[[i]]$cum_incid[-1, , -c(4)] > 0))
+    expect_equal(sum(y7e[[i]]$cum_incid[, , 5]), 0)
+    # but not in XPWVH
+    expect_true(all(y7e[[i]]$cum_incid[-1, , -c(2, 5)] > 0))
   }
   
   ## test restart with hesitancy is working
