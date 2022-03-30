@@ -280,7 +280,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   y9 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5)
   
-  expect_error(lapply(y9, restart_hes, n_vax = 6, hes = 0.5))
+  expect_error(lapply(y9, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
   
   # restart_hes gives error if baseline model run provided contains vaccinated
   
