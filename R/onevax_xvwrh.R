@@ -175,13 +175,14 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' new initial conditions in the presence of hesitancy.
 ##' @inheritParams restart_params
 ##' @param hes proportion of population vaccine hesitant
+##' @param branching boolean to denote if xpvwrh branching model in use
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'
 ##' @export
 
-restart_hes <- function(y, n_vax = 5, hes = 0) {
-
+restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
+browser()
   dim_y <- dim(y[["U"]])
 
    if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
@@ -191,6 +192,14 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
   if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
     stop("Provided model run has vaccination, baseline run should have all V
           = 0")
+  }
+  
+  # branched xpvwrh models have 2 primary vaccination compartments to check
+  if (branching == TRUE) {
+    if (round(rowSums(y$N[, , 3])[dim_y[1]], 5) > 0) {
+      stop("Provided model run has vaccination, baseline run should have all V
+          = 0")
+    }
   }
 
   i_t <- dim_y[1]                     # number of timepoints
