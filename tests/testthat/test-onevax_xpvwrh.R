@@ -245,34 +245,34 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   y8 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3)
   
-  i_p <- lapply(y8, restart_hes, n_vax = 5, hes = 0.5)
+  i_p <- lapply(y8, restart_hes, n_vax = 6, hes = 0.5)
   y_hesres <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
                                hes = 0.5)
   
   # final timepoint y8 run = 2 * first timepoint of y_hesres run (as hes = 0.5)
   # (for XVWR)
   for (i in seq_along(y8)) {
-    expect_equal(y8[[i]]$U[length(tt), , 1:4], y_hesres[[i]]$U[1, , 1:4] * 2)
-    expect_equal(y8[[i]]$I[length(tt), , 1:4], y_hesres[[i]]$I[1, , 1:4] * 2)
-    expect_equal(y8[[i]]$A[length(tt), , 1:4], y_hesres[[i]]$A[1, , 1:4] * 2)
-    expect_equal(y8[[i]]$S[length(tt), , 1:4], y_hesres[[i]]$S[1, , 1:4] * 2)
-    expect_equal(y8[[i]]$T[length(tt), , 1:4], y_hesres[[i]]$T[1, , 1:4] * 2)
+    expect_equal(y8[[i]]$U[length(tt), , 1:5], y_hesres[[i]]$U[1, , 1:5] * 2)
+    expect_equal(y8[[i]]$I[length(tt), , 1:5], y_hesres[[i]]$I[1, , 1:5] * 2)
+    expect_equal(y8[[i]]$A[length(tt), , 1:5], y_hesres[[i]]$A[1, , 1:5] * 2)
+    expect_equal(y8[[i]]$S[length(tt), , 1:5], y_hesres[[i]]$S[1, , 1:5] * 2)
+    expect_equal(y8[[i]]$T[length(tt), , 1:5], y_hesres[[i]]$T[1, , 1:5] * 2)
   }
   
   # restart_hes moves X -> H only, and correctly
   
   for (i in seq_along(y_hesres)) {
-    expect_equal(y_hesres[[i]]$U[, , 1], y_hesres[[i]]$U[, , 5])
-    expect_equal(y_hesres[[i]]$I[, , 1], y_hesres[[i]]$I[, , 5])
-    expect_equal(y_hesres[[i]]$A[, , 1], y_hesres[[i]]$A[, , 5])
-    expect_equal(y_hesres[[i]]$S[, , 1], y_hesres[[i]]$S[, , 5])
-    expect_equal(y_hesres[[i]]$T[, , 1], y_hesres[[i]]$T[, , 5])
+    expect_equal(y_hesres[[i]]$U[, , 1], y_hesres[[i]]$U[, , 6])
+    expect_equal(y_hesres[[i]]$I[, , 1], y_hesres[[i]]$I[, , 6])
+    expect_equal(y_hesres[[i]]$A[, , 1], y_hesres[[i]]$A[, , 6])
+    expect_equal(y_hesres[[i]]$S[, , 1], y_hesres[[i]]$S[, , 6])
+    expect_equal(y_hesres[[i]]$T[, , 1], y_hesres[[i]]$T[, , 6])
     
-    expect_equal(rowSums(y8[[i]]$U[, , 2:4]), rep(0, length(tt)))
-    expect_equal(rowSums(y8[[i]]$I[, , 2:4]), rep(0, length(tt)))
-    expect_equal(rowSums(y8[[i]]$A[, , 2:4]), rep(0, length(tt)))
-    expect_equal(rowSums(y8[[i]]$S[, , 2:4]), rep(0, length(tt)))
-    expect_equal(rowSums(y8[[i]]$T[, , 2:4]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$U[, , 2:5]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$I[, , 2:5]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$A[, , 2:5]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$S[, , 2:5]), rep(0, length(tt)))
+    expect_equal(rowSums(y8[[i]]$T[, , 2:5]), rep(0, length(tt)))
     
   }
   
@@ -280,7 +280,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   y9 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5)
   
-  expect_error(lapply(y9, restart_hes, n_vax = 5, hes = 0.5))
+  expect_error(lapply(y9, restart_hes, n_vax = 6, hes = 0.5))
   
   # restart_hes gives error if baseline model run provided contains vaccinated
   
