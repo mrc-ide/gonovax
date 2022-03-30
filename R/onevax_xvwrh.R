@@ -182,7 +182,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @export
 
 restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
-browser()
+
   dim_y <- dim(y[["U"]])
 
    if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
