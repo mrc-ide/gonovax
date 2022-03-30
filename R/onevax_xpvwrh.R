@@ -147,8 +147,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei     = c(0,vei_p , vei, 0, vei_revax, 0),
        ved     = c(0,ved_p , ved, 0, ved_revax, 0),
        ves     = c(0,ves_s , ves, 0, ves_revax, 0),
-       w       = create_waning_map(n_vax, i_v,
-                                   i_w, 1 / c(dur_p, dur_v, dur_revax)),              #then waning! 
+       w       = create_waning_map_branching(n_vax, i_v,
+                                   i_w, 1 / c(dur_p, dur_v, dur_revax)),
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
