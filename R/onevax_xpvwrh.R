@@ -58,15 +58,28 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##' primary vaccination (fully vaccinated, accepting first and second dose)
 ##' @param dur_p duration of time spent in the P stratum, partially vaccinated
 ##' (accepting only the first dose)
+##' @param vea_p scalar indicating efficacy of partial vaccination against
+##'  acquisition (between 0-1)
+##' @param vei_p scalar indicating efficacy of partial vaccination against
+##'  infectiousness (between 0-1)
+##' @param ved_p scalar indicating efficacy of partial vaccination against
+##'  duration (between 0-1)
+##' @param ves_p scalar indicating efficacy of partial vaccination against
+##'  symptoms (between 0-1)
 ##' @return A list parameters in the model input format
 vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              vea_revax = vea, vei_revax = vei,
                              ved_revax = ved, ves_revax = ves,
+                             vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
                              dur_v = 1e3, dur_p = dur_v / 2, dur_revax = dur_v,
                              r1 = 0, r1r2 = 0,
                              booster_uptake = r1r2, strategy = NULL,
                              vbe = 0, t_stop = 99, hes = 0) {
   
+  assert_scalar_unit_interval(vea_p)
+  assert_scalar_unit_interval(vei_p)
+  assert_scalar_unit_interval(ved_p)
+  assert_scalar_unit_interval(ves_p)
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
   assert_scalar_unit_interval(ved)
@@ -130,10 +143,10 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                           r1 = r1, r1r2 = r1r2),
        vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v,
                                           r1 = r1, r1r2 = r1r2),
-       vea     = c(0, vea, 0, vea_revax, 0),
-       vei     = c(0, vei, 0, vei_revax, 0),                                #next step work out how to tweak efficacies for P and V
-       ved     = c(0, ved, 0, ved_revax, 0),                                # need to be adujustable upstream 
-       ves     = c(0, ves, 0, ves_revax, 0),
+       vea     = c(0,vea_p , vea, 0, vea_revax, 0),
+       vei     = c(0,vei_p , vei, 0, vei_revax, 0),                                #next step work out how to tweak efficacies for P and V
+       ved     = c(0,ved_p , ved, 0, ved_revax, 0),                                # need to be adujustable upstream 
+       ves     = c(0,ves_s , ves, 0, ves_revax, 0),
        w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),              #then waning! 
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
@@ -183,3 +196,99 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1, r1r2) {
   
   vax_map
 }
+
+
+
+##' @name run_onevax_xpvwrh
+##' @title run model with a two-dose vaccine for input parameter sets, either
+##' from initialisation or from equilibrium, those with waned vaccines are
+##' eligible for revaccination (R), and return to the R stratum, those with
+##' waned partial vaccines return to the unvaccinated stratum (X) and considered
+##' immunologically naive. A user defined proportion of the population is 
+##' vaccine hesitant and is never vaccinated. Full acciantion (V) with 2 doses
+##' gives maximum protection whereas partial vaccinaiton with 1 dose (P) gives
+##' less.
+##' @param vea_revax scalar or numeric vector with same length as `gono_params`
+##'  giving efficacy of revaccination against acquisition, default to same as
+##'  primary
+##' @param vei_revax scalar or numeric vector with same length as `gono_params`
+##'  giving efficacy of revaccination against infectiousness, default to same as
+##'  primary
+##' @param ved_revax scalar or numeric vector with same length as `gono_params`
+##'  giving efficacy of revaccination against duration of infection, default to
+##'  same as primary
+##' @param ves_revax scalar or numeric vector with same length as `gono_params`
+##'  giving efficacy of revaccination against symptoms, default to same as
+##'  primary
+##' @param dur_revax scalar or numeric vector with same length as `gono_params`
+##'  giving duration of protection for revaccination, default to same as primary
+##' @param dur_v duration of time spent in V stratum after completing a round of
+##' primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_p duration of time spent in the P stratum, partially vaccinated
+##' (accepting only the first dose)
+##' @param hes Proportion of individuals in the population who are vaccine
+##'  hesitant
+##' @param vea_p scalar indicating efficacy of partial vaccination against
+##'  acquisition (between 0-1)
+##' @param vei_p scalar indicating efficacy of partial vaccination against
+##'  infectiousness (between 0-1)
+##' @param ved_p scalar indicating efficacy of partial vaccination against
+##'  duration (between 0-1)
+##' @param ves_p scalar indicating efficacy of partial vaccination against
+##'  symptoms (between 0-1)
+##' @param r1 scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population accepting the first vaccine
+##'  dose only
+##' @param r1r2 scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population accepting the both vaccine
+##'  doses
+##' @param booster_uptake scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of population undertaking booster
+##'  vaccination after primary vaccination protection has waned.
+##'   Defaults to supplied value of `r1r2` 
+##' @inheritParams run_onevax_xvwv
+##' @return A list of transformed model outputs
+##' @export
+run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
+                             dur_v = 1e3, dur_p = dur_v,
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur_revax = dur,
+                             vea_revax = vea, vei_revax = vei,
+                             ved_revax = ved, ves_revax = ves,
+                             vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
+                             vbe = 0,
+                             r1 = 0, r1r2 = 0,
+                             booster_uptake = r1r2, strategy = NULL,
+                             t_stop = 99, hes = 0) {
+  
+  stopifnot(all(lengths(list(booster_uptake, r1r2, r1, vea, vei,
+                             ved, ves, vea_revax, vei_revax, ved_revax,
+                             vea_p, vei_p, ves_p, ved_p,
+                             dur_v, dur_p,
+                             ves_revax, dur_revax)) %in%
+                  c(1, length(gono_params))))
+  
+  vax_params <- Map(vax_params_xpvwrh, r1 = r1, r1r2 = r1r2,
+                    booster_uptake = booster_uptake, dur_v = dur_v,
+                    vea = vea, vei = vei, ved = ved, ves = ves,
+                    vea_p = vea_p, vei_p = vei_p, ved_p = ved_p, ves_p = ves_p,
+                    dur_revax = dur_revax, dur_p = dur_p,
+                    vea_revax = vea_revax, vei_revax = vei_revax,
+                    ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
+                    MoreArgs = list(strategy = strategy,
+                                    t_stop = t_stop, vbe = vbe))
+  
+  if (is.null(init_params)) {
+    pars <- lapply(gono_params, model_params)
+    init_params <- lapply(pars, initial_params_xpvwrh, hes = hes)
+  }
+  
+  ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
+             init_params = init_params,
+             MoreArgs = list(tt = tt))
+  
+  # name outputs
+  ret <- lapply(ret, name_outputs, c("X", "P", "V", "W", "R", "H"))
+  ret
+}
+
