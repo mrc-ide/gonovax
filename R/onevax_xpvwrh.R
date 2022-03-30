@@ -111,7 +111,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # 1:X <-> 2:P
   
   i_eligible <- c(1, 4)                # X(1) and W(4) eligible for vaccination
-  i_w <- c(1, 4)                       # Waned vaccinees move to X(1) and W(4)
+  i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
   i_v <- c(2, 3, 5)                    # P(2), V(3), and R(5) are protected
   
   #number of compartments
@@ -169,17 +169,18 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
   
   stopifnot(z > 0)
   stopifnot(length(z) %in% c(1, length(i_v)))
-  stopifnot(length(i_w) == 2)
+  stopifnot(length(i_w) == 3)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
   
-  w[i_w, i_v] <-  z
-  
-  for (i in i_v) {
-    w[i, i] <- -w[i_w, i]
+  for (i in 1:length(z)) {
+    w[i_w[i], i_v[i]] <- z[i]
+    w[i_v[i], i_v[i]] <- -z[i]
   }
+
   w
+
 }
 
 
