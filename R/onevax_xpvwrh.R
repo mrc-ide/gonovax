@@ -214,7 +214,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
   vax_map[, 1, 1] <-  v
   vax_map[, 3, 1] <- -v 
     
-  }
+  } else {
 
   # tweak eligibility , repeat over stratum 1 column 1 for ease
   i_u <- c(1, i_u)
@@ -234,6 +234,8 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
 
   vax_map[, 2, 1] <- vax_map[, 2, 1] * prop_part
   vax_map[, 3, 1] <- vax_map[, 3, 1] * prop_full
+
+  }
 
   vax_map
 }

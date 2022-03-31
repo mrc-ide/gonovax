@@ -11,16 +11,20 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check 100% vbe vaccinates all new entrants
   y2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
   
-  # and no-one else
-  expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
-  
   expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
                                                                  max(tt)))
+  expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+
+  # and no-one else
+  expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
+  expect_equal(sum(y2[[1]]$N[, , -c(1,3,4)]), 0)
+  
   # check this is still the case when hesitancy > 0
   y2.1 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.5)
   
   expect_equal(diff(rowSums(y2.1[[1]]$cum_vaccinated[, , 1])), rep((12e3) / 2,
                                                                    max(tt)))
+  expect_true(sum(y2[[1]]$N[, , 3]) > 0)
   # check no vaccination in hesitant entrants for vbe = 100%
   
   expect_equal((rowSums(y2.1[[1]]$cum_vaccinated[, , 5])), rep(0,
@@ -284,7 +288,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   # restart_hes gives error if baseline model run provided contains vaccinated
   
-  y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
+  y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, strategy = "VbE")
   
   expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))       ########### got to here 
   
