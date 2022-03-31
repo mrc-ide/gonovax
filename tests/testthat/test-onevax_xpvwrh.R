@@ -39,6 +39,10 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
   expect_equal(sum(y2[[1]]$N[, , -c(1,3,4)]), 0)
   
+  # check population is constant in size over time
+  
+  expect_equal(rowSums(y2[[1]]$N[, , ]), rep(6e+05, max(tt)+1))
+  
   # check this is still the case when hesitancy > 0
   y2.1 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.5)
   
