@@ -11,14 +11,30 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check 100% vbe vaccinates all new entrants
   y2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e10, vbe = 1)
   
+  # cum_vaccinated = 1200 each year = number of entrants 
   expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
                                                                  max(tt)))
-  #expect_true(sum(y2[[1]]$N[, , 3]) > 0)
-  #expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), diff(rowSums(y2[[1]]$N[, , 3])))                     #come back to this! 
-
-  #expect_equal((diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])) - diff(rowSums(y2[[1]]$N[, , 3]))), diff(rowSums(y2[[1]]$N[, , 4])))
+  # this also means there should be people moving into 'V'
+  expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+  
+  # the yearly change in the number of people in 'R' should be the same 
+  # as the number of people entering R, when dur_v is high (no waning)
+  expect_equal(rep(12e3, max(tt)), diff(rowSums(y2[[1]]$N[, , 3])))
   
   
+  # ^ throws error
+  # is it people waning still?
+  diff(rowSums(y2[[1]]$N[, , 4]))
+  #no this is a negligible amount (to the e-06) ans sums to  1.403652e-05
+  # whereas difference between 1200 entering R each year and the difference
+  # actually in R is:
+  sum(rep(12e3, max(tt))- diff(rowSums(y2[[1]]$N[, , 3])))  #2902. 451?? 
+  
+  # other compartments empty 
+  y2[[1]]$N[, , -c(1, 3, 4)]
+  
+  ########### Problem area ^^^^^^^^^^
+ 
   # and no-one else
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
   expect_equal(sum(y2[[1]]$N[, , -c(1,3,4)]), 0)
