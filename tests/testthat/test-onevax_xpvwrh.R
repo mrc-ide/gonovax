@@ -9,12 +9,16 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_true(all(y1$cum_vaccinated == 0))
   
   # check 100% vbe vaccinates all new entrants
-  y2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
+  y2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e10, vbe = 1)
   
   expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
                                                                  max(tt)))
-  expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+  #expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+  #expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), diff(rowSums(y2[[1]]$N[, , 3])))                     #come back to this! 
 
+  #expect_equal((diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])) - diff(rowSums(y2[[1]]$N[, , 3]))), diff(rowSums(y2[[1]]$N[, , 4])))
+  
+  
   # and no-one else
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
   expect_equal(sum(y2[[1]]$N[, , -c(1,3,4)]), 0)
@@ -288,15 +292,15 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   # restart_hes gives error if baseline model run provided contains vaccinated
   
-  y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, strategy = "VbE")
+  y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
   
-  expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))       ########### got to here 
+  expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
   
   # check booster_uptake defaults to primary_uptake
   y_prim_only <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
-                                  primary_uptake = 0.75, strategy = "VoD(L)+VoA(H)")
+                                  r1r2 = 0.75, strategy = "VoD(L)+VoA(H)")
   y_prim_boost <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
-                                   primary_uptake = 0.75, booster_uptake = 0.75,
+                                   r1r2 = 0.75, booster_uptake = 0.75,
                                    strategy = "VoD(L)+VoA(H)")
   
   expect_equal(y_prim_only, y_prim_boost)
