@@ -138,7 +138,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        u       = u,
        u_vbe   = vbe,
        vbe     = create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v,
-                                          r1 = r1, r1r2 = r1r2),
+                                          set_vbe = TRUE),
        vod     = create_vax_map_branching(n_vax, p$vod, i_eligible, i_v,
                                           r1 = r1, r1r2 = r1r2),
        vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v,
@@ -197,7 +197,8 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
 ##' @param i_v indices of strata vaccinated and protected
 ##' @return an array of the mapping
 
-create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1, r1r2) {
+create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
+                                     r1r2 = NULL, set_vbe = FALSE) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -205,11 +206,18 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1, r1r2) {
   stopifnot(all(v %in% c(0, 1)))
   stopifnot(max(i_u, i_v) <= n_vax)
 
-  # tweak eligibility , repeat over stratum 1 column 1 for ease
-  i_u <- c(1, i_u)
-
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
+
+  if(set_vbe == TRUE){
+  
+  vax_map[, 1, 1] <-  v
+  vax_map[, 3, 1] <- -v 
+    
+  }
+
+  # tweak eligibility , repeat over stratum 1 column 1 for ease
+  i_u <- c(1, i_u)
 
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
