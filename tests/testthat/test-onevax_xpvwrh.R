@@ -350,25 +350,76 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   for (i in seq_along(y12)) {
     
-    expect_equal(sum(y12[[i]]$N[, , c(2, 5)], 0))
+    expect_equal(sum(y12[[i]]$N[, , c(2, 6)]), 0)
     expect_true(all(rowSums(y12[[i]]$N[, , 1]) > 0))
     expect_true(all(rowSums(y12[[i]]$N[-1, , 3:5]) > 0))
     
   }
   
   # if uptakes (and duration) are equal, then N should be the same for P and V
+
+  y13 <- run_onevax_xpvwrh(tt, gp, r1 = 0.5, r1r2 = 0.5, strategy = "VoD")
   
-  y12 <- run_onevax_xpvwrh(tt, gp, r1 = 0.5, r1r2 = 0.5, strategy = "VoD")
-  
-  expect_equal(y12[[1]]$N[, , 2], y12[[1]]$N[, , 3])
-  
+  for (i in seq_along(y13)) {
+  expect_equal(y13[[i]]$N[, , 2], y13[[i]]$N[, , 3])
+  }
     # incidence should also be the same as all vex_p default to vex
 
-  expect_equal(y12[[1]]$cum_incid[, , 2], y12[[1]]$cum_incid[, , 3])
-  
-  # test vex_p do default to vex
-  
-  y13 <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.5, strategy = "VoD")
-  
+  for (i in seq_along(y13)) {
+  expect_equal(y13[[i]]$cum_incid[, , 2], y13[[i]]$cum_incid[, , 3])
+  }
 
+  # test vex_p work independently of vex
+  y14 <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.5, r1 = 0.5, vea_p = 1,
+                           strategy = "VoD")
+  
+    # incidence in V but no incidence in P as vea_p = 1
+    # individuals present in both
+  
+  for (i in seq_along(y14)) {
+    expect_true(all(rowSums(y14[[i]]$N[-1, , 2]) > 0))
+    expect_true(all(rowSums(y14[[i]]$N[-1, , 3]) > 0))
+    expect_true(sum(y14[[i]]$cum_incid[-1, , 2]) == 0)
+    expect_true(all(rowSums(y14[[i]]$cum_incid[-1, , 3]) > 0 ))
+  }
+  
+  # test vea_p defaults to vea
+  
+  y_vea_only <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.5, r1 = 0.5, vea = 0.5,
+                           strategy = "VoD")
+  y_vea_veap <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.5, r1 = 0.5, vea = 0.5,
+                                  vea_p = 0.5, strategy = "VoD")
+  
+  expect_equal(y_vea_only, y_vea_veap)
+  
+  # when vea, vea_p and ve_revax = 1 there is no incidence
+  
+  y_no_incid <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.5, r1 = 0.5)
+  
+  # check initial params generated correctly when coverage is specified
+  
+  pars <- lapply(gp[1] , model_params)
+  init_1 <- initial_params_xpvwrh(pars[[1]],
+                                  coverage_p = 0.25, coverage_v = 0.25)
+  
+  # expect same number starting in P as in V
+  expect_equal(init_1$U0[, 2], init_1$U0[, 3])
+  
+  init_2 <- initial_params_xpvwrh(pars[[1]],
+                                 coverage_p = 0.5, coverage_v = 0.25)
+  
+  # expect double starting in P as in V
+  expect_equal((init_2$U0[, 2]), init_2$U0[, 3]*2)
+  
+  # expect error if sum of coverages and hes is greater than 1
+  
+  expect_error(initial_params_xpvwrh(pars[[1]], coverage_p = 0.5,
+                                     coverage_v = 0.5, hes = 0.5))
+  
+  # expect error if sum of coverages is 100%
+  # (if total coverage is 100%, no asymptomatic infection is seeded)
+  
+  expect_error(initial_params_xpvwrh(pars[[1]], coverage_p = 0.5,
+                                     coverage_v = 0.5))
+               
 })
