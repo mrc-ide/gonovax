@@ -19,6 +19,13 @@
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                   hes = 0) {
+  
+  if(coverage_p + coverage_v + hes > 1) {
+    stop("sum of coverages and/or hesitancy must not exceed 1")
+  } else if (coverage_p + coverage_v == 1){
+    stop ("You cannot have 100% coverage for initial conditions")
+  } else {
+  
   assert_scalar_unit_interval(coverage_p)
   assert_scalar_unit_interval(coverage_v)
   n_vax <- 6
@@ -42,7 +49,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   U0 <- round(N0) - A0
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
-
+  }
 }
 
 
