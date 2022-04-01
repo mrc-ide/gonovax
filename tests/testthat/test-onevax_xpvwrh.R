@@ -16,6 +16,8 @@ test_that("run_onevax_xpvwrh works correctly", {
                                                                  max(tt)))
   # this also means there should be people moving into 'V'
   expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+  
+  # but not P
   expect_equal(sum(y2[[1]]$N[, , 2]), 0)
   
   # the yearly change in the number of people in 'R' should be the same 
@@ -40,11 +42,13 @@ test_that("run_onevax_xpvwrh works correctly", {
   # and no-one else
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
   expect_equal(sum(y2[[1]]$N[, , -c(1,3,4)]), 0)
-  
+
   # check population is constant in size over time
   
-  expect_equal(rowSums(y2[[1]]$N[, , ]), rep(6e+05, max(tt)+1))
-  
+  for (i in seq_along(y2))  {
+  expect_equal(rowSums(y2[[i]]$N[, , ]), rep(6e+05, max(tt)+1))
+  }
+
   # check this is still the case when hesitancy > 0
   y2.1 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.5)
   
@@ -318,17 +322,53 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
   
-  # check booster_uptake defaults to primary_uptake
-  y_prim_only <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
+  # check booster_uptake defaults to r1r2 primary uptake
+  y_r1r2_only <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
                                   r1r2 = 0.75, strategy = "VoD(L)+VoA(H)")
-  y_prim_boost <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
+
+  y_r1r2_boost <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
                                    r1r2 = 0.75, booster_uptake = 0.75,
                                    strategy = "VoD(L)+VoA(H)")
   
-  expect_equal(y_prim_only, y_prim_boost)
-  
+  expect_equal(y_r1r2_only, y_r1r2_boost)
+
   # When everyone receives one dose (r1r2 = 0), V, W R, H all empty
   
-  y11 <- run_onevax_xpvwrh(tt, gp, )
+  y11 <- run_onevax_xpvwrh(tt, gp, r1 = 1, r1r2 = 0, strategy = "VoD")
+
+  for (i in seq_along(y11)) {
+
+  expect_equal(sum(y11[[i]]$N[, , -c(1, 2)]), 0)
+  expect_true(all(rowSums(y11[[i]]$N[, , 1]) > 0))
+  expect_true(all(rowSums(y11[[i]]$N[-1, , 2]) > 0))
+
+  }
   
+  # When everyone receives two doses (r1 = 0), P and H all empty
+  
+  y12 <- run_onevax_xpvwrh(tt, gp, r1 = 0, r1r2 = 1, strategy = "VoD")
+  
+  for (i in seq_along(y12)) {
+    
+    expect_equal(sum(y12[[i]]$N[, , c(2, 5)], 0))
+    expect_true(all(rowSums(y12[[i]]$N[, , 1]) > 0))
+    expect_true(all(rowSums(y12[[i]]$N[-1, , 3:5]) > 0))
+    
+  }
+  
+  # if uptakes (and duration) are equal, then N should be the same for P and V
+  
+  y12 <- run_onevax_xpvwrh(tt, gp, r1 = 0.5, r1r2 = 0.5, strategy = "VoD")
+  
+  expect_equal(y12[[1]]$N[, , 2], y12[[1]]$N[, , 3])
+  
+    # incidence should also be the same as all vex_p default to vex
+
+  expect_equal(y12[[1]]$cum_incid[, , 2], y12[[1]]$cum_incid[, , 3])
+  
+  # test vex_p do default to vex
+  
+  y13 <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.5, strategy = "VoD")
+  
+
 })
