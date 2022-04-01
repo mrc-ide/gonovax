@@ -16,6 +16,7 @@ test_that("run_onevax_xpvwrh works correctly", {
                                                                  max(tt)))
   # this also means there should be people moving into 'V'
   expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+  expect_equal(sum(y2[[1]]$N[, , 2]), 0)
   
   # the yearly change in the number of people in 'R' should be the same 
   # as the number of people entering R, when dur_v is high (no waning)
@@ -34,6 +35,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   y2[[1]]$N[, , -c(1, 3, 4)]
   
   ########### Problem area ^^^^^^^^^^
+  # happy to write tests for this once we work it out! 
  
   # and no-one else
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
@@ -324,4 +326,9 @@ test_that("run_onevax_xpvwrh works correctly", {
                                    strategy = "VoD(L)+VoA(H)")
   
   expect_equal(y_prim_only, y_prim_boost)
+  
+  # When everyone receives one dose (r1r2 = 0), V, W R, H all empty
+  
+  y11 <- run_onevax_xpvwrh(tt, gp, )
+  
 })
