@@ -532,8 +532,8 @@ test_that("run_onevax_xpvwrh works correctly", {
       expect_true(sum(y17[[1]]$N[i, , 4]) > 0)
       }
       
-                                                        # difference in W
-                                                        # isnt quite 1200 though?
+                                                       ######## difference in W
+                                                        ######### isnt quite 1200 though?
       
     # R, W are empty for all time
       expect_equal(rowSums(y17[[1]]$N[, , 5:6]), rep(0, 6))
