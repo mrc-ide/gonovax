@@ -15,6 +15,8 @@
 ##' @title Initial conditions for the model
 ##' @inheritParams initial_params
 ##' @param hes proportion of population vaccine hesitant
+##' @param t number of years, only use when using function outside of
+##' run_onevax_xpvwrh() to generate initial conditions for tests
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
