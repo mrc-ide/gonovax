@@ -193,7 +193,7 @@ restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
     stop("Provided model run has vaccination, baseline run should have all V
           = 0")
   }
-  
+
   # branched xpvwrh models have 2 primary vaccination compartments to check
   if (branching == TRUE) {
     if (round(rowSums(y$N[, , 3])[dim_y[1]], 5) > 0) {
