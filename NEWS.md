@@ -1,3 +1,10 @@
+# gonovax 0.4.2
+
+* new model structure where primary vaccination can either be partial or full depending on 1 or 2 doses, with primary vaccination waning to 
+unvaccinated and immunologically naive state and full vaccination waning with some immunological memory. Partial vaccination with one dose can
+now provide an assigned level of protection.
+
+
 # gonovax 0.4.1
 
 * calculate and return incremental vaccination costs for £9 per dose
