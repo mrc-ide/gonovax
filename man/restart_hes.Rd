@@ -7,7 +7,7 @@ Saves down the number of individuals in each compartment, and moves
 a given proportion (hes) of them from the X to the H strata to generate
 new initial conditions in the presence of hesitancy.}
 \usage{
-restart_hes(y, n_vax = 5, hes = 0)
+restart_hes(y, n_vax = 5, hes = 0, branching = FALSE)
 }
 \arguments{
 \item{y}{a transformed model run output}
@@ -16,6 +16,8 @@ restart_hes(y, n_vax = 5, hes = 0)
 consistent with the input}
 
 \item{hes}{proportion of population vaccine hesitant}
+
+\item{branching}{boolean to denote if xpvwrh branching model in use}
 }
 \value{
 A list of initial conditions to restart a model with n_vax
