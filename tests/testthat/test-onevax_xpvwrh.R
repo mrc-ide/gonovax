@@ -424,5 +424,77 @@ test_that("run_onevax_xpvwrh works correctly", {
   
   expect_error(initial_params_xpvwrh(pars[[1]], coverage_p = 0.5,
                                      coverage_v = 0.5))
-               
+  
+  # tests correct number of individuals are moving to V and to P 
+  # duration is large for v and p so assuming no waning
+  
+  y15 <- run_onevax_xpvwrh(tt, gp, r1r2 = 0.25, r1 = 0.5, dur_v = 1e90,
+                           strategy = "VoD")
+  
+    # number getting vaccinated from X (timepoint 2 as all is 0 in timepoint 1)
+    cum_vac <- sum(y15[[1]]$cum_vaccinated[2 , , 1])
+    cum_off <- sum(y15[[1]]$cum_offered[2 , , 1])
+    
+    # 75% of individuals offered will accept and be vaccinated (0.5 + 0.25)
+    
+    prop_accept <- cum_vac/cum_off
+    
+    expect_equal(prop_accept, 0.75)
+    
+    # number total who received vaccination
+    # i.e number in P and V at timepoint 2 given no waning
+    p <- sum(y15[[1]]$N[2 , , 2]) 
+    v <- sum(y15[[1]]$N[2 , , 3])  
+
+    tot_vac <- p + v
+    
+    # number vaccinated should equal the total number of individuals in
+    # P and V as this is where they enter once vaccinated
+    
+    expect_equal(tot_vac, cum_vac)
+    
+                                     ############ missing 20 people?!
+    
+    # should be double people in p as in v because p = 0.5 and v = 0.25
+    expect_equal(p / v, 2)
+    
+    #  a third of individuals vaccinated should be in V, two thirds in P
+    #  because vaccine mapping would be 1 = 0.75 for [1,], -0.6666 for [2,]
+    # and -0.3333 for [3,] for stratum 1 
+    
+    prop_vac_p <- p/cum_vac
+    prop_vac_v <- v/cum_vac
+    
+    expect_equal(round(prop_vac_p, 2), round(2/3, 2))
+    expect_equal(round(prop_vac_v, 2), round(1/3, 2))
+                                  
+                                ########### out by -0.0034 does this matter?
+                                ### when the second passes, first still doesn't
+                                ### this is because 0.666 rounds up to 0.667
+                                ### whereas prop_vac_p is 0.6599... and rounds
+                                ### to 0.66
+
+    
+    # prop_vac_v and prop_vac_p should sum to 1
+    
+    expect_equal(sum(prop_vac_v + prop_vac_p), 1)
+    
+             ## 100th out??? #this might be where we're losing people!!
+    
+
+    # 75% of those treated, are vaccinated
+    
+    sum(y15[[1]]$cum_vaccinated[ 2, , 1])  / sum(y15[[1]]$cum_treated[ 2, , 1]) # passes
+    
+   #surely some of these treated are asymptomatics so it doesnt make sense that this works
+    
+  ############# ^^^ another problem area please take a look! :) 
+    #### I think overall the way i've coded the uptakes of indiviudals
+    ## into P and V mapping works the way i thought it would
+    ## which is good !
+    ## the only issue is rounding errors 
+    ## meaning fewer people pass to vaccinated compartments than they should
+    ## - the number actually in P and V after vaccination is less than
+    ## the cum_vaccinated 
+                 
 })
