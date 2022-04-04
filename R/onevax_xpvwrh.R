@@ -21,13 +21,13 @@
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                   hes = 0, t = FALSE) {
-  
-  if(coverage_p + coverage_v + hes > 1) {
+
+  if (coverage_p + coverage_v + hes > 1) {
     stop("sum of coverages and/or hesitancy must not exceed 1")
-  } else if (coverage_p + coverage_v == 1){
-    stop ("You cannot have 100% coverage for initial conditions")
+  } else if (coverage_p + coverage_v == 1) {
+    stop("You cannot have 100% coverage for initial conditions")
   } else {
-  
+
   assert_scalar_unit_interval(coverage_p)
   assert_scalar_unit_interval(coverage_v)
   n_vax <- 6
@@ -50,12 +50,12 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   # set initial uninfecteds
   U0 <- round(N0) - A0
 
-  if (t > 0 ){
+  if (t > 0) {
     list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = t)
   } else {
     list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
   }
-  
+
   }
 }
 
@@ -223,11 +223,11 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
-  if(set_vbe == TRUE){
-  
+  if (set_vbe == TRUE) {
+
   vax_map[, 1, 1] <-  v
-  vax_map[, 3, 1] <- -v 
-    
+  vax_map[, 3, 1] <- -v
+
   } else {
 
   # tweak eligibility , repeat over stratum 1 column 1 for ease
@@ -240,11 +240,11 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
   }
 
   #obtain proportions
- 
+
   tot <- r1r2 + r1
-  
-  ifelse(r1r2 > 0, prop_full <- r1r2/tot, prop_full <- 0)
-  ifelse(r1 > 0, prop_part <- r1/tot, prop_part <- 0)
+
+  ifelse(r1r2 > 0, prop_full <- r1r2 / tot, prop_full <- 0)
+  ifelse(r1 > 0, prop_part <- r1 / tot, prop_part <- 0)
 
   vax_map[, 2, 1] <- vax_map[, 2, 1] * prop_part
   vax_map[, 3, 1] <- vax_map[, 3, 1] * prop_full
