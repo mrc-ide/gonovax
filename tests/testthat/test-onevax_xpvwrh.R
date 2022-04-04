@@ -52,14 +52,15 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check this is still the case when hesitancy > 0
   y2.1 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.5)
 
-  expect_equal(diff(rowSums(y2.1[[1]]$cum_vaccinated[, , 1])), rep((12e3) / 2,
+  for(i in seq_along(y2.1)) {
+  expect_equal(diff(rowSums(y2.1[[i]]$cum_vaccinated[, , 1])), rep((12e3) / 2,
                                                                    max(tt)))
-  expect_true(sum(y2[[1]]$N[, , 3]) > 0)
+  expect_true(sum(y2[[i]]$N[, , 3]) > 0)
   # check no vaccination in hesitant entrants for vbe = 100%
 
-  expect_equal((rowSums(y2.1[[1]]$cum_vaccinated[, , 5])), rep(0,
+  expect_equal((rowSums(y2.1[[i]]$cum_vaccinated[, , 5])), rep(0,
                                                                max(tt) + 1))
-
+}
   # expect error if inputs are not of length 1 or equal to length of params
 
   uptake <- c(0, 2.5, 0.5, 0.75, 1)
@@ -96,18 +97,22 @@ test_that("run_onevax_xpvwrh works correctly", {
   }
 
   y_h2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 0, hes = 0.3)
+  
+  for (i in seq_along(y_h2)) {
   # yearly population entrants enter X and H strata
   # in accordance with assigned proportion of hesitancy 'hes'
   # H and X stratum sizes remain constant in time
-  expect_equal(y_h2[[1]]$N[1, , ], y_h2[[1]]$N[6, , ])
-
+  expect_equal(y_h2[[i]]$N[1, , ], y_h2[[i]]$N[6, , ])
+}
   # H and X stratum equal when no vaccination and hes = 0.5
   y_h3 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5)
-  expect_equal(y_h3[[1]]$N[, , 1], y_h3[[1]]$N[, , 6])
+
+  for (i in seq_along(y_h3)) {
+  expect_equal(y_h3[[i]]$N[, , 1], y_h3[[i]]$N[, , 6])
 
   # Number of infections in X and H equal for no vaccination and hes = 0.5
-  expect_equal(y_h3[[1]]$cum_incid[, , 1], y_h3[[1]]$cum_incid[, , 6])
-
+  expect_equal(y_h3[[i]]$cum_incid[, , 1], y_h3[[i]]$cum_incid[, , 6])
+}
   # if proportion hesitant is 0%, = outputs same as xvwr model
   # choose a difficult case where there are very few zero outputs.
   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
@@ -117,9 +122,12 @@ test_that("run_onevax_xpvwrh works correctly", {
                             primary_uptake = 0.5, booster_uptake = 0.3,
                             strategy = "VoD(L)+VoA(H)")
 
-  expect_equal(y_h4[[1]]$N[, , c(1, 3:5)], y_xvwr[[1]]$N)
-  expect_equal(y_h4[[1]]$U[, , c(1, 3:5)], y_xvwr[[1]]$U)
-  expect_equal(y_h4[[1]]$cum_incid[, , c(1, 3:5)], y_xvwr[[1]]$cum_incid)
+  for (i in seq_along(y_h4)) {
+  expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
+  expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U)
+  expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
+
+}
 
   r1r2 <- c(0.25, 0.5)
   booster_uptake <- c(0.3, 0.6)
@@ -509,14 +517,14 @@ test_that("run_onevax_xpvwrh works correctly", {
   y16 <- run_onevax_xpvwrh(tt, gp, init_params = ip, dur_p = 1e-90)
 
     # entire population starts in P then wanes to X and stays there
-
-      expect_equal(sum(y16[[1]]$N[1, , 2]), 6e+05)
-      expect_equal(rowSums(y16[[1]]$N[2:(max(tt) + 1), , 1]),
+  for (i in seq_along(y16)) {
+      expect_equal(sum(y16[[i]]$N[1, , 2]), 6e+05)
+      expect_equal(rowSums(y16[[i]]$N[2:(max(tt) + 1), , 1]),
                    rep(6e+05, max(tt)))
 
     # V W R are empty for all time
-      expect_equal(rowSums(y16[[1]]$N[, , 3:6]), rep(0, 6))
-
+      expect_equal(rowSums(y16[[i]]$N[, , 3:6]), rep(0, 3))
+}
 
   # test individuals still wane to W
     ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.99999999999999
@@ -526,18 +534,19 @@ test_that("run_onevax_xpvwrh works correctly", {
     # entire population starts in V then wanes to W and stays there
     # note, W won't be equal to 6e+05 as 1. individuals in W die but 2. entrants
     # enter into X 3. no vaccination so replenishment of V and subsequently W
+  
+    for (i in seq_along(y17)) {
+      expect_equal(sum(y17[[i]]$N[1, , 3]), 6e+05)
+      expect_equal(rowSums(y17[[i]]$N[2:(max(tt) + 1), , 3]), rep(0, max(tt)))
 
-      expect_equal(sum(y17[[1]]$N[1, , 3]), 6e+05)
-      expect_equal(rowSums(y17[[1]]$N[2:(max(tt) + 1), , 3]), rep(0, max(tt)))
-
-      for (i in 2:max(tt) + 1) {
-      expect_true(sum(y17[[1]]$N[i, , 4]) > 0)
+      for (j in 2:max(tt) + 1) {
+      expect_true(sum(y17[[i]]$N[j, , 4]) > 0)
       }
 
                                                  ######## difference in W
                                               ######### isnt quite 1200 though?
     # R, W are empty for all time
-      expect_equal(rowSums(y17[[1]]$N[, , 5:6]), rep(0, 6))
-
+      expect_equal(rowSums(y17[[i]]$N[, , 5:6]), rep(0, 6))
+}
 
 })
