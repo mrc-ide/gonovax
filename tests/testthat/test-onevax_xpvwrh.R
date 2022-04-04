@@ -215,7 +215,7 @@ test_that("run_onevax_xpvwrh works correctly", {
                                 strategy = "VbE", r1r2 = 1))
   # check length of dur_p must be 1
   expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3,
-                                 dur_vp = c(0, 1e2, 1e3),
+                                 dur_p = c(0, 1e2, 1e3),
                                  strategy = "VbE", r1r2 = 1))
   ## test revax is working
   y6e <- run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e-10, dur_revax = 1e10,
