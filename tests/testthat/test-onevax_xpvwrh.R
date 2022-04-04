@@ -526,6 +526,7 @@ test_that("run_onevax_xpvwrh works correctly", {
     # enter into X 3. no vaccination so replenishment of V and subsequently W
     
       expect_equal(sum(y17[[1]]$N[1, , 3]), 6e+05)
+      expect_equal(rowSums(y17[[1]]$N[2:(max(tt) + 1), , 3]), rep(0, max(tt)))
       
       for (i in 2:max(tt)+1){
       expect_true(sum(y17[[1]]$N[i, , 4]) > 0)
