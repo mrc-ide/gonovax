@@ -496,5 +496,46 @@ test_that("run_onevax_xpvwrh works correctly", {
     ## meaning fewer people pass to vaccinated compartments than they should
     ## - the number actually in P and V after vaccination is less than
     ## the cum_vaccinated 
+    
+    
+  # test individuals in P are actually waning back into X
+    # move most individuals into P for starting conditions
+    # no vaccination, duration of vaccine short so waning is fast
+    # should see individuals accumulating in X, decreasing in P 
+  
+  pars <- lapply(gp[1] , model_params)
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_p = 0.99999999999999, t = 5)
+  
+  y16 <- run_onevax_xpvwrh(tt, gp, init_params = ip, dur_p = 1e-90)
+    
+    # entire population starts in P then wanes to X and stays there
+ 
+      expect_equal(sum(y16[[1]]$N[1, , 2]), 6e+05)
+      expect_equal(rowSums(y16[[1]]$N[2:(max(tt)+1), , 1]), rep(6e+05, max(tt)))
+
+    # V W R are empty for all time
+      expect_equal(rowSums(y16[[1]]$N[, , 3:6]), rep(0, 6))
+  
+  
+  # test individuals still wane to W
+    ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.99999999999999, t = 5)
+    y17 <- run_onevax_xpvwrh(tt, gp, init_params = ip, dur_v = 1e-90)
+    
+    # entire population starts in V then wanes to W and stays there
+    # note, W won't be equal to 6e+05 as 1. individuals in W die but 2. entrants
+    # enter into X 3. no vaccination so replenishment of V and subsequently W
+    
+      expect_equal(sum(y17[[1]]$N[1, , 3]), 6e+05)
+      
+      for (i in 2:max(tt)+1){
+      expect_true(sum(y17[[1]]$N[i, , 4]) > 0)
+      }
+      
+                                                        # difference in W
+                                                        # isnt quite 1200 though?
+      
+    # R, W are empty for all time
+      expect_equal(rowSums(y17[[1]]$N[, , 5:6]), rep(0, 6))
+  
                  
 })
