@@ -52,7 +52,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check this is still the case when hesitancy > 0
   y2.1 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.5)
 
-  for(i in seq_along(y2.1)) {
+  for (i in seq_along(y2.1)) {
   expect_equal(diff(rowSums(y2.1[[i]]$cum_vaccinated[, , 1])), rep((12e3) / 2,
                                                                    max(tt)))
   expect_true(sum(y2[[i]]$N[, , 3]) > 0)
@@ -97,7 +97,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   }
 
   y_h2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 0, hes = 0.3)
-  
+
   for (i in seq_along(y_h2)) {
   # yearly population entrants enter X and H strata
   # in accordance with assigned proportion of hesitancy 'hes'
@@ -534,7 +534,7 @@ test_that("run_onevax_xpvwrh works correctly", {
     # entire population starts in V then wanes to W and stays there
     # note, W won't be equal to 6e+05 as 1. individuals in W die but 2. entrants
     # enter into X 3. no vaccination so replenishment of V and subsequently W
-  
+
     for (i in seq_along(y17)) {
       expect_equal(sum(y17[[i]]$N[1, , 3]), 6e+05)
       expect_equal(rowSums(y17[[i]]$N[2:(max(tt) + 1), , 3]), rep(0, max(tt)))
