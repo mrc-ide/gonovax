@@ -21,8 +21,8 @@ vax_params_xpvwrh(
   dur_p = dur_v,
   dur_revax = dur_v,
   r1 = 0,
-  r1r2 = 0,
-  booster_uptake = r1r2,
+  r2 = 0,
+  booster_uptake = r1 * r2,
   strategy = NULL,
   vbe = 0,
   t_stop = 99,
@@ -76,10 +76,10 @@ primary vaccination (fully vaccinated, accepting first and second dose)}
 default to same as primary}
 
 \item{r1}{proportion of population offered vaccine only accepting the first
-dose}
+dose, becoming partially vaccinated}
 
-\item{r1r2}{proportion of population offered vaccine who accept both the
-first and second dose}
+\item{r2}{proportion of the population who accepted the first dose of the
+vaccine who go on to accept the second dose, becoming fully vaccinated}
 
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster

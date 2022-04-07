@@ -12,7 +12,7 @@ create_waning_map_branching(n_vax, i_v, i_w, z)
 \arguments{
 \item{n_vax}{Integer in (0, 6) denoting total number of strata}
 
-\item{i_v}{indices of strata receving protection through vaccination}
+\item{i_v}{indices of strata receiving protection through vaccination}
 
 \item{i_w}{Scalar in (0, 6) denoting which stratum receives waned vaccinees}
 

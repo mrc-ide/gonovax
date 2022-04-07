@@ -32,8 +32,8 @@ run_onevax_xpvwrh(
   ves_p = ves,
   vbe = 0,
   r1 = 0,
-  r1r2 = 0,
-  booster_uptake = r1r2,
+  r2 = 0,
+  booster_uptake = (r1 * r2),
   strategy = NULL,
   t_stop = 99,
   hes = 0
@@ -99,12 +99,12 @@ symptoms (between 0-1)}
 (between 0-1)}
 
 \item{r1}{scalar or numeric vector with same length as
-'gono_params' giving proportion of population accepting the first vaccine
-dose only}
+ 'gono_params' giving proportion of population offered vaccine only accepting the first
+dose, becoming partially vaccinated}
 
-\item{r1r2}{scalar or numeric vector with same length as
-'gono_params' giving proportion of population accepting the both vaccine
-doses}
+\item{r2}{scalar or numeric vector with same length as
+ 'gono_params' giving proportion of the population who accepted the first dose of the
+vaccine who go on to accept the second dose, becoming fully vaccinated}
 
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster

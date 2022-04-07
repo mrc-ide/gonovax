@@ -10,6 +10,12 @@ initial_params_xpvwrh(pars, coverage_p = 0, coverage_v = 0, hes = 0, t = FALSE)
 \item{pars}{A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
 elements.}
 
+\item{coverage_p}{partial (one-dose) vaccine coverage of the population
+already present (as a proportion)}
+
+\item{coverage_v}{two-dose vaccine coverage of the population already
+present (as a proportion)}
+
 \item{hes}{proportion of population vaccine hesitant}
 
 \item{t}{number of years, only use when using function outside of
