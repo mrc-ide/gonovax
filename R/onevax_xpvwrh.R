@@ -209,10 +209,12 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
 ##'  should be offered vaccination.
 ##' @param i_u indices of strata eligible for vaccination
 ##' @param i_v indices of strata vaccinated and protected
+##' @param set_vbe Boolean which indicates that vaccination is occurring at some
+##' level of uptake upon entering the model
 ##' @return an array of the mapping
 
-create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
-                                     r1r2 = NULL, set_vbe = FALSE) {
+create_vax_map_branching <- function(n_vax, v, i_u, i_v,
+                                    set_vbe = FALSE) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -238,18 +240,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, r1 = NULL,
     vax_map[, i_v[i], i_u[i]] <- -v
 
   }
-
-  #obtain proportions
-
-  tot <- r1r2 + r1
-
-  ifelse(r1r2 > 0, prop_full <- r1r2 / tot, prop_full <- 0)
-  ifelse(r1 > 0, prop_part <- r1 / tot, prop_part <- 0)
-
-  vax_map[, 2, 1] <- vax_map[, 2, 1] * prop_part
-  vax_map[, 3, 1] <- vax_map[, 3, 1] * prop_full
-
-  }
+}
 
   vax_map
 }
