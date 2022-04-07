@@ -124,7 +124,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # and
   # 1:X <-> 2:P
 
-  i_eligible <- c(1, 4)                # X(1) and W(4) eligible for vaccination
+  i_eligible <- c(1, 1, 4)            # X(1) and W(4) eligible for vaccination
   i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
   i_v <- c(2, 3, 5)                    # P(2), V(3), and R(5) are protected
 
@@ -138,10 +138,29 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
+  
+  # generate vaccine maps to determine where individuals are being vaccinated
+  # from and which strata they are then entering
+  
+  vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v,
+                                     set_vbe = TRUE)
+  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_v)
+  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_v)
 
-  # set up uptake matrix rows = groups, columns = vaccine strata
-  # tells us where vaccinated individuals are going to be pulled from
 
+  # generate uptake maps to multiply through vax_maps 
+
+  #u_map <- array(0, dim = c(n_group, n_vax, n_vax))
+  u_map <- vod
+  
+  u_map[, 1, 1] <- u_map[, 1, 1] * r1
+  u_map[, 2, 1] <- u_map[, 2, 1] * (r1 * (1-r2))
+  u_map[, 3, 1] <- u_map[, 3, 1] * (r1 * r2)
+  u_map[, , 4]  <- u_map[, , 4] * 0.3
+  
+  u_map*vos
+  
+  
   u <- matrix(0, n_group, n_vax)
   u[, i_eligible[1]] <- r1r2 + r1
   u[, i_eligible[2]] <- booster_uptake
@@ -151,12 +170,9 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        willing = c((1 - hes), 0, 0,  0, 0, hes),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v,
-                                          set_vbe = TRUE),
-       vod     = create_vax_map_branching(n_vax, p$vod, i_eligible, i_v,
-                                          r1 = r1, r1r2 = r1r2),
-       vos     = create_vax_map_branching(n_vax, p$vos, i_eligible, i_v,
-                                          r1 = r1, r1r2 = r1r2),
+       vbe     = vbe_map,
+       vod     = vod,
+       vos     = vos,
        vea     = c(0, vea_p, vea, 0, vea_revax, 0),
        vei     = c(0, vei_p, vei, 0, vei_revax, 0),
        ved     = c(0, ved_p, ved, 0, ved_revax, 0),
@@ -168,13 +184,36 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   )
 }
 
+##' @name create_uptake_map
+##' @title Creats uptake mapping for the branching XPVWRH model
+##' @param array a vaccine map array of dimensions n_group by n_vax by n_vax
+##' generated through create_vax_map_branching()
+##' @param r1 proportion of population offered vaccine only accepting the first
+##' dose, becoming partially vaccinated
+##' @param r2 proportion of the population who accepted the first dose of the
+##' vaccine who go on to accept the second dose, becoming fully vaccinated
+##' @booster_uptake proportion of the formerly fully vaccinated, waned
+##' population who accept a booster vaccination dose
+##' @return an array of the uptakes of same dimensions
+
+create_uptake_map <- function(array, r1, r2, booster_uptake){
+  
+  array[, 1, 1] <- array[, 1, 1] * r1
+  array[, 2, 1] <- array[, 2, 1] * (r1 * (1-r2))
+  array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
+  array[, , 4]  <- array[, , 4] * 0.3
+  
+  array
+}
+
+
 ##' @name create_waning_map_branching
 ##' @title Create mapping for movement between strata due to vaccine waning
 ##' where waning from the partially vaccinated stratum (P) moves individuals
 ##' back to a naive unvaccinated state (X), and waning from fully vaccinated
 ##' stratum (V) moves individuals into a separate waned stratum (W)
 ##' @param n_vax Integer in (0, 6) denoting total number of strata
-##' @param i_v indices of strata receving protection through vaccination
+##' @param i_v indices of strata receiving protection through vaccination
 ##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
 ##' @return an array of the mapping
@@ -213,8 +252,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
 ##' level of uptake upon entering the model
 ##' @return an array of the mapping
 
-create_vax_map_branching <- function(n_vax, v, i_u, i_v,
-                                    set_vbe = FALSE) {
+create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -232,8 +270,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v,
 
   } else {
 
-  # tweak eligibility , repeat over stratum 1 column 1 for ease
-  i_u <- c(1, i_u)
+  #repeat over stratum 1 column 1 for ease
 
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
