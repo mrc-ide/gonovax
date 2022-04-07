@@ -149,22 +149,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
   # generate uptake maps to multiply through vax_maps 
-
-  #u_map <- array(0, dim = c(n_group, n_vax, n_vax))
-  u_map <- vod
-  
-  u_map[, 1, 1] <- u_map[, 1, 1] * r1
-  u_map[, 2, 1] <- u_map[, 2, 1] * (r1 * (1-r2))
-  u_map[, 3, 1] <- u_map[, 3, 1] * (r1 * r2)
-  u_map[, , 4]  <- u_map[, , 4] * 0.3
-  
-  u_map*vos
-  
-  
-  u <- matrix(0, n_group, n_vax)
-  u[, i_eligible[1]] <- r1r2 + r1
-  u[, i_eligible[2]] <- booster_uptake
-
+  u <- create_uptake_map(vod, r1, r2, 0.3)
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), 0, 0,  0, 0, hes),
@@ -203,7 +188,9 @@ create_uptake_map <- function(array, r1, r2, booster_uptake){
   array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
   array[, , 4]  <- array[, , 4] * 0.3
   
-  array
+  # values must be positive - otherwise negative values in this array will 
+  # cancel those in the vos and vod arrays = incorrect vaccination 
+  abs(array)
 }
 
 
