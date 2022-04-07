@@ -17,6 +17,10 @@
 ##' @param hes proportion of population vaccine hesitant
 ##' @param t number of years, only use when using function outside of
 ##' run_onevax_xpvwrh() to generate initial conditions for tests
+##' @param coverage_p partial (one-dose) vaccine coverage of the population
+##' already present (as a proportion)
+##' @param coverage_v two-dose vaccine coverage of the population already
+##' present (as a proportion)
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
@@ -65,9 +69,9 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##' @inheritParams vax_params_xvwr
 ##' @param hes proportion of population vaccine hesitant
 ##' @param r1 proportion of population offered vaccine only accepting the first
-##' dose
-##' @param r1r2 proportion of population offered vaccine who accept both the
-##' first and second dose
+##' dose, becoming partially vaccinated
+##' @param r2 proportion of the population who accepted the first dose of the
+##' vaccine who go on to accept the second dose, becoming fully vaccinated
 ##' @param dur_v duration of time spent in V stratum after completing a round of
 ##' primary vaccination (fully vaccinated, accepting first and second dose)
 ##' @param dur_p duration of time spent in the P stratum, partially vaccinated
@@ -86,8 +90,8 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              ved_revax = ved, ves_revax = ves,
                              vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
                              dur_v = 1e3, dur_p = dur_v, dur_revax = dur_v,
-                             r1 = 0, r1r2 = 0,
-                             booster_uptake = r1r2, strategy = NULL,
+                             r1 = 0, r2 = 0,
+                             booster_uptake = r1 * r2, strategy = NULL,
                              vbe = 0, t_stop = 99, hes = 0) {
 
   assert_scalar_unit_interval(vea_p)
@@ -106,7 +110,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_positive(dur_p)
   assert_scalar_positive(dur_revax)
   assert_scalar_unit_interval(r1)
-  assert_scalar_unit_interval(r1r2)
+  assert_scalar_unit_interval(r2)
   assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
@@ -149,7 +153,8 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
   # generate uptake maps to multiply through vax_maps 
-  u <- create_uptake_map(vod, r1, r2, 0.3)
+  # note this function is xpvwrh-specific 
+  u <- create_uptake_map(vod, r1, r2, booster_uptake)
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), 0, 0,  0, 0, hes),
@@ -170,14 +175,17 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 }
 
 ##' @name create_uptake_map
-##' @title Creats uptake mapping for the branching XPVWRH model
+##' @title Creats uptake mapping for the branching XPVWRH model where
+##' individuals can move from unvaccinated (X) to vaccinated (V) or partially
+##' vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
+##' reflects the specific indices which are chosen for assigning uptakes.
 ##' @param array a vaccine map array of dimensions n_group by n_vax by n_vax
 ##' generated through create_vax_map_branching()
 ##' @param r1 proportion of population offered vaccine only accepting the first
 ##' dose, becoming partially vaccinated
 ##' @param r2 proportion of the population who accepted the first dose of the
 ##' vaccine who go on to accept the second dose, becoming fully vaccinated
-##' @booster_uptake proportion of the formerly fully vaccinated, waned
+##' @param booster_uptake proportion of the formerly fully vaccinated, waned
 ##' population who accept a booster vaccination dose
 ##' @return an array of the uptakes of same dimensions
 
@@ -270,7 +278,6 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 }
 
 
-
 ##' @name run_onevax_xpvwrh
 ##' @title run model with a two-dose vaccine for input parameter sets, either
 ##' from initialisation or from equilibrium, those with waned vaccines are
@@ -309,11 +316,11 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 ##' @param ves_p scalar indicating efficacy of partial vaccination against
 ##'  symptoms (between 0-1)
 ##' @param r1 scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population accepting the first vaccine
-##'  dose only
-##' @param r1r2 scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population accepting the both vaccine
-##'  doses
+##'  'gono_params' giving proportion of population offered vaccine only accepting the first
+##' dose, becoming partially vaccinated
+##' @param r2 scalar or numeric vector with same length as
+##'  'gono_params' giving proportion of the population who accepted the first dose of the
+##' vaccine who go on to accept the second dose, becoming fully vaccinated
 ##' @param booster_uptake scalar or numeric vector with same length as
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
@@ -329,8 +336,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                              ved_revax = ved, ves_revax = ves,
                              vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
                              vbe = 0,
-                             r1 = 0, r1r2 = 0,
-                             booster_uptake = r1r2, strategy = NULL,
+                             r1 = 0, r2 = 0,
+                             booster_uptake = (r1 * r2), strategy = NULL,
                              t_stop = 99, hes = 0) {
 
   stopifnot(all(lengths(list(booster_uptake, r1r2, r1, vea, vei,
