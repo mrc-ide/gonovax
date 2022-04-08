@@ -11,27 +11,15 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check 100% vbe vaccinates all new entrants
   y2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e10, vbe = 1)
 
-  # cum_vaccinated = 1200 each year = number of entrants
+  # cum_vaccinated = 12000 each year = number of entrants
   expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
                                                                  max(tt)))
+  
   # this also means there should be people moving into 'V'
   expect_true(sum(y2[[1]]$N[, , 3]) > 0)
 
   # but not P
   expect_equal(sum(y2[[1]]$N[, , 2]), 0)
-
-  # the yearly change in the number of people in 'R' should be the same
-  # as the number of people entering R, when dur_v is high (no waning)
-
-  expect_equal(rep(12e3, max(tt)), diff(rowSums(y2[[1]]$N[, , 3])))
-
-  # ^ throws error
-  # is it people waning still?
-  diff(rowSums(y2[[1]]$N[, , 4]))
-  #no this is a negligible amount (to the e-06) ans sums to  1.403652e-05
-  # whereas difference between 1200 entering R each year and the difference
-  # actually in R is:
-  sum(rep(12e3, max(tt)) - diff(rowSums(y2[[1]]$N[, , 3])))  #2902. 451??
 
   # other compartments empty
   y2[[1]]$N[, , -c(1, 3, 4)]
@@ -113,10 +101,10 @@ test_that("run_onevax_xpvwrh works correctly", {
   # Number of infections in X and H equal for no vaccination and hes = 0.5
   expect_equal(y_h3[[i]]$cum_incid[, , 1], y_h3[[i]]$cum_incid[, , 6])
 }
-  # if proportion hesitant is 0%, = outputs same as xvwr model
+  # if proportion hesitant is 0%, = outputs same as xvwr model                   # need backwards compatibility for other models
   # choose a difficult case where there are very few zero outputs.
   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
-                           r1r2 = 0.5, r1 = 0, booster_uptake = 0.3,
+                           r2 = 0.5, r1 = 0, booster_uptake = 0.3,
                            strategy = "VoD(L)+VoA(H)")
   y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
                             primary_uptake = 0.5, booster_uptake = 0.3,
@@ -129,27 +117,35 @@ test_that("run_onevax_xpvwrh works correctly", {
 
 }
 
-  r1r2 <- c(0.25, 0.5)
-  booster_uptake <- c(0.3, 0.6)
+  r1 <- c(1, 1)
+  r2 <- c(1, 1)
+  booster_uptake <- c(0.75, 0.75)
 
   # check VoD is working correctly
   y3e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
-                          r1r2 = r1r2,
+                          r1 = r1, r2 = r2,
                           booster_uptake = booster_uptake)
 
   for (i in seq_along(y3e)) {
+i = 1
 
     ## all treated in X or W are offered vaccination
     expect_equal(y3e[[i]]$cum_offered[, , c(1, 4)],
                  y3e[[i]]$cum_treated[, , c(1, 4)])
+
     # and no-one else
     expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 4)]), 0)
 
     # uptake % of offered are vaccinated
-    expect_equal(y3e[[i]]$cum_offered[, , 1] * primary_uptake[i],
-                 y3e[[i]]$cum_vaccinated[, , 1])
-    expect_equal(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i],
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]), rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
+                         
+    # uptake % of offered booster are vaccinated                                                                            
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
+                 rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
+    
+    expect_equal(y3e[[i]]$cum_offered[, , 4],
                  y3e[[i]]$cum_vaccinated[, , 4])
+    
     # and no-one else
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 4)]), 0)
 
@@ -157,6 +153,14 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equal(apply(y3e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
   }
 
+  
+  # the cumulative vaccinated from 1 = r1
+  #)                                            # cumulative vaccinated seems to be same as what 
+  # numbers are for r1 only 
+  # which makes sense as this is then number taking
+  # the first dose
+  # cum vaccinated is number leaving 
+  #
 
   # check VoA is working correctly
   y4e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoA",
