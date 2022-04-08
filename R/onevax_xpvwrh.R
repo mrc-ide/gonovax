@@ -324,7 +324,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 ##' @param booster_uptake scalar or numeric vector with same length as
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
-##'   Defaults to supplied value of `r1r2`
+##'   Defaults to supplied value of r1 * r2
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
@@ -340,14 +340,14 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                              booster_uptake = (r1 * r2), strategy = NULL,
                              t_stop = 99, hes = 0) {
 
-  stopifnot(all(lengths(list(booster_uptake, r1r2, r1, vea, vei,
+  stopifnot(all(lengths(list(booster_uptake, r2, r1, vea, vei,
                              ved, ves, vea_revax, vei_revax, ved_revax,
                              vea_p, vei_p, ves_p, ved_p,
                              dur_v, dur_p,
                              ves_revax, dur_revax)) %in%
                   c(1, length(gono_params))))
 
-  vax_params <- Map(vax_params_xpvwrh, r1 = r1, r1r2 = r1r2,
+  vax_params <- Map(vax_params_xpvwrh, r1 = r1, r2 = r2,
                     booster_uptake = booster_uptake, dur_v = dur_v,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     vea_p = vea_p, vei_p = vei_p, ved_p = ved_p, ves_p = ves_p,
