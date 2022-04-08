@@ -9,6 +9,7 @@
 ## 3: Waned (W)
 ## 4: Revaccinated (R)
 ## 5: Hesitant (H)
+## When a branching model is used such as XPVWRH (2:P, 3:v, 4:W, 5:R, 6:H)
 
 n_group <- 2
 n_vax   <- user(1)
@@ -67,10 +68,10 @@ vax_switch <- interpolate(vax_t, vax_y, "constant")
 ## Number offered / accepting vaccine
 ## at screening
 n_oos[, , ] <- vos[i, j, k] * screened[i, k] * vax_switch
-n_vos[, , ] <- n_oos[i, j, k] * u[i, k]
+n_vos[, , ] <- n_oos[i, j, k] * u[i, j, k]
 ## on diagnosis
 n_ood[, , ] <- vod[i, j, k] * n_TU[i, k] * vax_switch
-n_vod[, , ] <- n_ood[i, j, k] * u[i, k]
+n_vod[, , ] <- n_ood[i, j, k] * u[i, j, k]
 ## on entry - no switch as background rate, adolescent uptake included in vbe
 n_obe[, , ] <- vbe[i, j, k] * entrants[i, k]
 n_vbe[, , ] <- n_obe[i, j, k] * u_vbe
@@ -194,7 +195,7 @@ ves[] <- user() # efficacy against symptoms
 vei[] <- user() # efficacy against infectiousness
 
 u_vbe    <- user() # uptake of VbE
-u[, ]    <- user() # Uptake matrix for VoD/VoD
+u[, , ]  <- user() # Uptake matrix for VoD/VoD
 w[, ]    <- user() # Waning map
 vax_t[]  <- user()
 vax_y[]  <- user()
@@ -215,8 +216,8 @@ dim(willing) <- n_vax
 dim(vbe)   <- c(n_group, n_vax, n_vax)
 dim(vod)   <- c(n_group, n_vax, n_vax)
 dim(vos)   <- c(n_group, n_vax, n_vax)
-dim(w)    <- c(n_vax, n_vax)
-dim(u)     <- c(n_group, n_vax)
+dim(w)     <- c(n_vax, n_vax)
+dim(u)     <- c(n_group, n_vax, n_vax)
 dim(vax_t) <- user()
 dim(vax_y) <- user()
 
