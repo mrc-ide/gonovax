@@ -81,9 +81,9 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- array(0, dim = c(n_group, n_vax, n_vax))
-  
+
   u_vals <- c(primary_uptake, booster_uptake)
-  
+
   for (i in seq_along(i_eligible)) {
   u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
   u[, i_v[i], i_eligible[i]]      <- u_vals[i]
@@ -94,7 +94,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        willing = c((1 - hes), 0, 0, 0, hes),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, c(1,1), c(2, 2)),
+       vbe     = create_vax_map(n_vax, p$vbe, c(1, 1), c(2, 2)),
        vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
        vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
        vea     = c(0, vea, 0, vea_revax, 0),

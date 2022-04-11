@@ -142,18 +142,18 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
-  
+
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
-  
+
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v,
                                      set_vbe = TRUE)
   vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_v)
   vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_v)
 
 
-  # generate uptake maps to multiply through vax_maps 
-  # note this function is xpvwrh-specific 
+  # generate uptake maps to multiply through vax_maps
+  # note this function is xpvwrh-specific
   u <- create_uptake_map(vod, r1, r2, booster_uptake)
 
   list(n_vax   = n_vax,
@@ -189,15 +189,15 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' population who accept a booster vaccination dose
 ##' @return an array of the uptakes of same dimensions
 
-create_uptake_map <- function(array, r1, r2, booster_uptake){
-  
+create_uptake_map <- function(array, r1, r2, booster_uptake) {
+
   array[, 1, 1] <- array[, 1, 1] * r1
-  array[, 2, 1] <- array[, 2, 1] * (r1 * (1-r2))
+  array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
   array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
   array[, , 4]  <- array[, , 4] * booster_uptake
-  
-  # values must be positive - otherwise negative values in this array will 
-  # cancel those in the vos and vod arrays = incorrect vaccination 
+
+  # values must be positive - otherwise negative values in this array will
+  # cancel those in the vos and vod arrays = incorrect vaccination
   abs(array)
 }
 
@@ -316,11 +316,12 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 ##' @param ves_p scalar indicating efficacy of partial vaccination against
 ##'  symptoms (between 0-1)
 ##' @param r1 scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population offered vaccine only accepting the first
-##' dose, becoming partially vaccinated
+##'  'gono_params' giving proportion of population offered vaccine only
+##'   accepting the first dose, becoming partially vaccinated
 ##' @param r2 scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of the population who accepted the first dose of the
-##' vaccine who go on to accept the second dose, becoming fully vaccinated
+##'  'gono_params' giving proportion of the population who accepted the first
+##'   dose of the vaccine who go on to accept the second dose, becoming fully
+##'   vaccinated
 ##' @param booster_uptake scalar or numeric vector with same length as
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
