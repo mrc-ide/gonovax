@@ -9,7 +9,7 @@ vax_params0 <- function() {
   list(n_vax = 1,
        willing = 1,
        u_vbe = 0,
-       u = matrix(0, n_group, n_vax),
+       u = v,
        vbe = v,
        vos = v,
        vod = v,
