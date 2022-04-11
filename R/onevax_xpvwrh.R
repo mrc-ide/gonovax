@@ -134,7 +134,8 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_eligible <- c(1, 1, 2, 4)         # X(1), P(2), and W(4) eligible for
                                       #vaccination
   i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
-  i_v <- c(2, 3, 3, 5)                # P(2), V(3), and R(5) are protected
+  i_p <- c(2, 3, 3, 5)                # P(2), V(3), and R(5) are protected
+  i_v <- c(2, 3, 5)                   # X(2), V(3), R(5) will experience waning
 
   #number of compartments
   n_vax <- 6
@@ -150,10 +151,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
 
-  vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_v,
+  vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
                                      set_vbe = TRUE)
-  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_v)
-  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_v)
+  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p)
+  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p)
 
 
   # generate uptake maps to multiply through vax_maps
