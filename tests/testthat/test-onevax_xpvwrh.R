@@ -101,7 +101,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   # if proportion hesitant is 0%, = outputs same as xvwr model                   # need backwards compatibility for other models
   # choose a difficult case where there are very few zero outputs.
   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
-                           r2 = 0.5, r1 = 0, booster_uptake = 0.3,
+                           r2 = 1, r1 = 0.5, booster_uptake = 0.3,
                            strategy = "VoD(L)+VoA(H)")
   y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
                             primary_uptake = 0.5, booster_uptake = 0.3,
