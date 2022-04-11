@@ -128,9 +128,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # and
   # 1:X <-> 2:P
 
-  i_eligible <- c(1, 1, 4)            # X(1) and W(4) eligible for vaccination
+  i_eligible <- c(1, 1, 2, 4)         # X(1), P(2), and W(4) eligible for
+                                      #vaccination
   i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
-  i_v <- c(2, 3, 5)                    # P(2), V(3), and R(5) are protected
+  i_v <- c(2, 3, 3, 5)                # P(2), V(3), and R(5) are protected
 
   #number of compartments
   n_vax <- 6
