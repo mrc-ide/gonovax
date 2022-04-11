@@ -22,10 +22,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_equal(sum(y2[[1]]$N[, , 2]), 0)
 
   # other compartments empty
-  y2[[1]]$N[, , -c(1, 3, 4)]
-
-  ########### Problem area ^^^^^^^^^^
-  # happy to write tests for this once we work it out!
+  expect_equal(sum(y2[[1]]$N[, , -c(1, 3, 4)]),0)
 
   # and no-one else
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
@@ -117,6 +114,11 @@ test_that("run_onevax_xpvwrh works correctly", {
 
 }
 
+  # Test the vaccination maps are being generated as expected
+  
+  
+  
+  
   r1 <- c(1, 1)
   r2 <- c(1, 1)
   booster_uptake <- c(0.75, 0.75)
