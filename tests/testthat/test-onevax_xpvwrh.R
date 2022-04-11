@@ -116,9 +116,52 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   # Test the vaccination maps are being generated as expected
   
+  pars <- lapply(gp[1] , model_params)
+  vbe = 1
+  p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
+  i_eligible <- c(1, 1, 4)
+  i_v <- c(2, 3, 5)
+  
+  vod_map <- create_vax_map_branching(n_vax = 6, p$vod, i_eligible, i_v)
+  vos_map <- create_vax_map_branching(n_vax = 6, p$vos, i_eligible, i_v)
+  vbe_map <- create_vax_map_branching(n_vax = 6, p$vbe, i_eligible, i_v,
+                                      set_vbe = TRUE)
+  
+  # for vod, expect:
+  expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
+  expect_true(unique(vod_map[, 2, 1] == c(-1, -1)))
+  expect_true(unique(vod_map[, 3, 1] == c(-1, -1)))
+  expect_true(unique(vod_map[, 4, 4] == c(1, 1)))
+  expect_true(unique(vod_map[, 5, 4] == c(-1, -1)))
+
+  expect_equal(sum(vod_map[, -c(1, 2, 3), 1]), 0)
+  expect_equal(sum(vod_map[, -c(4, 5), 4]), 0)
+  
+  expect_equal(sum(vod_map[, , c(3, 6, 5)]), 0)
+  
+  # for vos, expect: 
+  expect_true(unique(vos_map[, 1, 1] == c(0, 1)))
+  expect_true(unique(vos_map[, 2, 1] == c(0, -1)))
+  expect_true(unique(vos_map[, 3, 1] == c(0, -1)))
+  expect_true(unique(vos_map[, 4, 4] == c(0, 1)))
+  expect_true(unique(vos_map[, 5, 4] == c(0, -1)))
+  
+  expect_equal(sum(vos_map[, -c(1, 2, 3), 1]), 0)
+  expect_equal(sum(vos_map[, -c(4, 5), 4]), 0)
+  
+  expect_equal(sum(vos_map[, , c(3, 6, 5)]), 0)
+  
+  # for vbe, expect:
+  expect_true(unique(vbe_map[, 1, 1] == c(1, 1)))
+  expect_true(unique(vbe_map[, 3, 1] == c(-1, -1)))
+  expect_equal(sum(vbe_map[, -c(1, 3), 1]), 0)
+  expect_equal(sum(vbe_map[, , 2:6]), 0)
+  
+  # test uptake maps are generated as expected
+  u <- create_uptake_map(vod_map, r1, r2, booster_uptake)
   
   
-  
+  #
   r1 <- c(1, 1)
   r2 <- c(1, 1)
   booster_uptake <- c(0.75, 0.75)
