@@ -90,7 +90,6 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   u[, i_v[i], i_eligible[i]]      <- u_vals[i]
 
   }
-  
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), 0, 0, 0, hes),
