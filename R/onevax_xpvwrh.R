@@ -195,7 +195,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @return an array of the uptakes of same dimensions
 
-create_uptake_map <- function(array, r1, r2, r2_p, booster_uptake) {              #add documentation 
+create_uptake_map <- function(array, r1, r2, r2_p, booster_uptake) {
 
   array[, 1, 1] <- array[, 1, 1] * r1
   array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
