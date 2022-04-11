@@ -56,10 +56,16 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
-  # Set up uptake matrix rows = groups, columns = vaccine strata
-  u <- matrix(0, n_group, n_vax)
-  u[, i_eligible[1]] <- primary_uptake
-  u[, i_eligible[2]] <- booster_uptake
+  # set up uptake matrix rows = groups, columns = vaccine strata
+  u <- array(0, dim = c(n_group, n_vax, n_vax))
+  
+  u_vals <- c(primary_uptake, booster_uptake)
+  
+  for (i in seq_along(i_eligible)) {
+    u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
+    u[, i_v[i], i_eligible[i]]      <- u_vals[i]
+    
+  }
 
   list(n_vax   = n_vax,
        willing = c(1, 0, 0, 0),

@@ -80,7 +80,6 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
- # u <- matrix(0, n_group, n_vax)
   u <- array(0, dim = c(n_group, n_vax, n_vax))
   
   u_vals <- c(primary_uptake, booster_uptake)
