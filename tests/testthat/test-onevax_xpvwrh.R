@@ -158,21 +158,35 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_equal(sum(vbe_map[, , 2:6]), 0)
   
   # test uptake maps are generated as expected
-  u <- create_uptake_map(vod_map, r1, r2, booster_uptake)
+  r1 <- c(0.25, 0.5)
+  r2 <- c(0.5, 0.75)
+  booster_uptake <- c(0.3, 0.75)
   
+  for (i in seq_along(r1)){
+  u <- create_uptake_map(vod_map, r1[i], r2[i], booster_uptake[i])
+  acc_vax <- u*vod_map
   
-  #
-  r1 <- c(1, 1)
-  r2 <- c(1, 1)
-  booster_uptake <- c(0.75, 0.75)
+  expect_true(unique(acc_vax[, 1, 1] == c(r1[i], r1[i])))
+  expect_true(unique(acc_vax[, 2, 1] == c(-(r1[i] * (1 - r2[i])),
+                                          -(r1[i] * (1 - r2[i])))))
+  expect_true(unique(acc_vax[, 3, 1] == c(-r1[i] * r2[i], -r1[i] * r2[i])))
+  
+  expect_true(unique(acc_vax[, 4, 4] == c(booster_uptake[i],
+                                          booster_uptake[i])))
+  expect_true(unique(acc_vax[, 5, 4] == -c(booster_uptake[i],
+                                          booster_uptake[i])))
+  }
+  
 
-  # check VoD is working correctly
+  # check VoD is working correctly --> producing the correct outputs
+  # + the vaxmaps*uptakemaps generated are doing what they think they are
+  # supposed to be doing
+
   y3e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
                           r1 = r1, r2 = r2,
                           booster_uptake = booster_uptake)
 
   for (i in seq_along(y3e)) {
-i = 1
 
     ## all treated in X or W are offered vaccination
     expect_equal(y3e[[i]]$cum_offered[, , c(1, 4)],
@@ -182,14 +196,12 @@ i = 1
     expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 4)]), 0)
 
     # uptake % of offered are vaccinated
-    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]), rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]),
+                 rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
                          
     # uptake % of offered booster are vaccinated                                                                            
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
-    
-    expect_equal(y3e[[i]]$cum_offered[, , 4],
-                 y3e[[i]]$cum_vaccinated[, , 4])
     
     # and no-one else
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 4)]), 0)
@@ -198,16 +210,7 @@ i = 1
     expect_equal(apply(y3e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
   }
 
-  
-  # the cumulative vaccinated from 1 = r1
-  #)                                            # cumulative vaccinated seems to be same as what 
-  # numbers are for r1 only 
-  # which makes sense as this is then number taking
-  # the first dose
-  # cum vaccinated is number leaving 
-  #
-
-  # check VoA is working correctly
+  # check VoA is working correctly                                               ########### got to here
   y4e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoA",
                           r1r2 = r1r2,
                           booster_uptake = booster_uptake)
