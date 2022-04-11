@@ -14,7 +14,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   # cum_vaccinated = 12000 each year = number of entrants
   expect_equal(diff(rowSums(y2[[1]]$cum_vaccinated[, , 1])), rep(12e3,
                                                                  max(tt)))
-  
+
   # this also means there should be people moving into 'V'
   expect_true(sum(y2[[1]]$N[, , 3]) > 0)
 
@@ -22,7 +22,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_equal(sum(y2[[1]]$N[, , 2]), 0)
 
   # other compartments empty
-  expect_equal(sum(y2[[1]]$N[, , -c(1, 3, 4)]),0)
+  expect_equal(sum(y2[[1]]$N[, , -c(1, 3, 4)]), 0)
 
   # and no-one else
   expect_equal(sum(y2[[1]]$cum_vaccinated[, , 2:5]), 0)
@@ -98,7 +98,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   # Number of infections in X and H equal for no vaccination and hes = 0.5
   expect_equal(y_h3[[i]]$cum_incid[, , 1], y_h3[[i]]$cum_incid[, , 6])
 }
-  # if proportion hesitant is 0%, = outputs same as xvwr model                   # need backwards compatibility for other models
+  # if proportion hesitant is 0%, = outputs same as xvwr model
   # choose a difficult case where there are very few zero outputs.
   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
                            r2 = 1, r1 = 0.5, booster_uptake = 0.3,
@@ -115,18 +115,18 @@ test_that("run_onevax_xpvwrh works correctly", {
 }
 
   # Test the vaccination maps are being generated as expected
-  
-  pars <- lapply(gp[1] , model_params)
-  vbe = 1
+
+  pars <- lapply(gp[1], model_params)
+  vbe <- 1
   p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
   i_eligible <- c(1, 1, 4)
   i_v <- c(2, 3, 5)
-  
+
   vod_map <- create_vax_map_branching(n_vax = 6, p$vod, i_eligible, i_v)
   vos_map <- create_vax_map_branching(n_vax = 6, p$vos, i_eligible, i_v)
   vbe_map <- create_vax_map_branching(n_vax = 6, p$vbe, i_eligible, i_v,
                                       set_vbe = TRUE)
-  
+
   # for vod, expect:
   expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
   expect_true(unique(vod_map[, 2, 1] == c(-1, -1)))
@@ -136,47 +136,47 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   expect_equal(sum(vod_map[, -c(1, 2, 3), 1]), 0)
   expect_equal(sum(vod_map[, -c(4, 5), 4]), 0)
-  
+
   expect_equal(sum(vod_map[, , c(3, 6, 5)]), 0)
-  
-  # for vos, expect: 
+
+  # for vos, expect:
   expect_true(unique(vos_map[, 1, 1] == c(0, 1)))
   expect_true(unique(vos_map[, 2, 1] == c(0, -1)))
   expect_true(unique(vos_map[, 3, 1] == c(0, -1)))
   expect_true(unique(vos_map[, 4, 4] == c(0, 1)))
   expect_true(unique(vos_map[, 5, 4] == c(0, -1)))
-  
+
   expect_equal(sum(vos_map[, -c(1, 2, 3), 1]), 0)
   expect_equal(sum(vos_map[, -c(4, 5), 4]), 0)
-  
+
   expect_equal(sum(vos_map[, , c(3, 6, 5)]), 0)
-  
+
   # for vbe, expect:
   expect_true(unique(vbe_map[, 1, 1] == c(1, 1)))
   expect_true(unique(vbe_map[, 3, 1] == c(-1, -1)))
   expect_equal(sum(vbe_map[, -c(1, 3), 1]), 0)
   expect_equal(sum(vbe_map[, , 2:6]), 0)
-  
+
   # test uptake maps are generated as expected
   r1 <- c(0.25, 0.5)
   r2 <- c(0.5, 0.75)
   booster_uptake <- c(0.3, 0.75)
-  
-  for (i in seq_along(r1)){
+
+  for (i in seq_along(r1)) {
   u <- create_uptake_map(vod_map, r1[i], r2[i], booster_uptake[i])
-  acc_vax <- u*vod_map
-  
+  acc_vax <- u * vod_map
+
   expect_true(unique(acc_vax[, 1, 1] == c(r1[i], r1[i])))
-  expect_true(unique(acc_vax[, 2, 1] == c(-(r1[i] * (1 - r2[i])),
-                                          -(r1[i] * (1 - r2[i])))))
+  expect_true(unique(acc_vax[, 2, 1] == c(- (r1[i] * (1 - r2[i])),
+                                          - (r1[i] * (1 - r2[i])))))
   expect_true(unique(acc_vax[, 3, 1] == c(-r1[i] * r2[i], -r1[i] * r2[i])))
-  
+
   expect_true(unique(acc_vax[, 4, 4] == c(booster_uptake[i],
                                           booster_uptake[i])))
   expect_true(unique(acc_vax[, 5, 4] == -c(booster_uptake[i],
                                           booster_uptake[i])))
   }
-  
+
 
   # check VoD is working correctly --> producing the correct outputs
   # + the vaxmaps*uptakemaps generated are doing what they think they are
@@ -198,11 +198,11 @@ test_that("run_onevax_xpvwrh works correctly", {
     # uptake % of offered are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
-                         
-    # uptake % of offered booster are vaccinated                                                                            
+
+    # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
-    
+
     # and no-one else
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 4)]), 0)
 
@@ -210,7 +210,7 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equal(apply(y3e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
   }
 
-  # check VoA is working correctly                                               ########### got to here
+  # check VoA is working correctly
   y4e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoA",
                           r1 = r1, r2 = r2,
                           booster_uptake = booster_uptake)
@@ -227,8 +227,8 @@ test_that("run_onevax_xpvwrh works correctly", {
     # uptake % of offered are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
-    
-    # uptake % of offered booster are vaccinated                                                                            
+
+    # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
     # and no-one else
@@ -465,8 +465,8 @@ test_that("run_onevax_xpvwrh works correctly", {
   # when vea, vea_p and vea_revax = 1 there is no incidence
 
   y_no_incid <- run_onevax_xpvwrh(tt, gp, r1 = 1, r2 = 0.5, vea = 1)
-  
-  for (i in seq_along(y_no_incid)){
+
+  for (i in seq_along(y_no_incid)) {
   expect_equal(sum(y_no_incid[[i]]$cum_incid[, , -1]), 0)
   }
 
@@ -498,7 +498,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   # tests correct number of individuals are moving to V and to P
   # duration is large for v and p so assuming no waning
 
-  y15 <- run_onevax_xpvwrh(tt, gp, r1 = 0.5, r2 = 0.5 , dur_v = 1e90,
+  y15 <- run_onevax_xpvwrh(tt, gp, r1 = 0.5, r2 = 0.5, dur_v = 1e90,
                            strategy = "VoD")
 
     # number getting vaccinated from X (timepoint 2 as all is 0 in timepoint 1)
@@ -508,10 +508,10 @@ test_that("run_onevax_xpvwrh works correctly", {
     # 50% of individuals offered will accept and be vaccinated (0.25 + 0.25)
     prop_accept <- cum_vac / cum_off
     expect_equal(prop_accept, 0.5)
-    
+
     # 50% of those treated, are vaccinated
     sum(y15[[1]]$cum_vaccinated[2, , 1])  / sum(y15[[1]]$cum_treated[2, , 1])
-    
+
     # number total who received vaccination
     # i.e number in P and V at timepoint 2 given no waning
     p <- sum(y15[[1]]$N[2, , 2])
