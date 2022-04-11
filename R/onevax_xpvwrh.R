@@ -194,7 +194,7 @@ create_uptake_map <- function(array, r1, r2, booster_uptake){
   array[, 1, 1] <- array[, 1, 1] * r1
   array[, 2, 1] <- array[, 2, 1] * (r1 * (1-r2))
   array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
-  array[, , 4]  <- array[, , 4] * 0.3
+  array[, , 4]  <- array[, , 4] * booster_uptake
   
   # values must be positive - otherwise negative values in this array will 
   # cancel those in the vos and vod arrays = incorrect vaccination 
