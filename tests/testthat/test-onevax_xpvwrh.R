@@ -171,14 +171,14 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   for (i in seq_along(r1)) {
   u <- create_uptake_map(vod_map, r1[i], r2[i], r2_p[i], booster_uptake[i])
-  
+
   acc_vax <- u * vod_map
 
   expect_true(unique(acc_vax[, 1, 1] == c(r1[i], r1[i])))
   expect_true(unique(acc_vax[, 2, 1] == c(- (r1[i] * (1 - r2[i])),
                                           - (r1[i] * (1 - r2[i])))))
   expect_true(unique(acc_vax[, 3, 1] == c(-r1[i] * r2[i], -r1[i] * r2[i])))
-  
+
   expect_true(unique(acc_vax[, 2, 2] == c(r2_p[i], r2_p[i])))
   expect_true(unique(acc_vax[, 3, 2] == -c(r2_p[i], r2_p[i])))
 
@@ -213,7 +213,7 @@ test_that("run_onevax_xpvwrh works correctly", {
     # uptake % of 1st dose offered 2nd dose are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 2] * r2_p[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 2]))
-    
+
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
@@ -242,11 +242,11 @@ test_that("run_onevax_xpvwrh works correctly", {
     # uptake % of offered are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 1] * r1[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 1]))
-    
+
     # uptake % of 1st dose offered 2nd dose are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 2] * r2_p[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 2]))
-    
+
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 4]))
@@ -277,15 +277,15 @@ test_that("run_onevax_xpvwrh works correctly", {
     # uptake % of offered are vaccinated
     expect_equal(y5e[[i]]$cum_offered[, , 1] * r1[i],
                  y5e[[i]]$cum_vaccinated[, , 1])
-    
+
     # uptake % of 1st dose offered 2nd dose are vaccinated
     expect_equal(rowSums(y5e[[i]]$cum_offered[, , 2] * r2_p[i]),
                  rowSums(y5e[[i]]$cum_vaccinated[, , 2]))
-    
+
     # uptake % of offered booster are vaccinated
     expect_equal(y5e[[i]]$cum_offered[, , 4] * booster_uptake[i],
                  y5e[[i]]$cum_vaccinated[, , 4])
-    
+
     # and no-one else
     expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
 
@@ -299,10 +299,10 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
                                 r1 = 1, r2 = c(0, 0.5, 1)))
   expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
-                                 r1 = 1, r2 =1, r2_p = c(0, 0.5, 1)))
+                                 r1 = 1, r2 = 1, r2_p = c(0, 0.5, 1)))
   expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
-                                 r1 = 1, r2 =1, booster_uptake = c(0, 0.5, 1)))
-  
+                                 r1 = 1, r2 = 1, booster_uptake = c(0, 0.5, 1)))
+
   # check length of vea must be 1
   expect_error(run_onevax_xpvwrh(tt, gp, vea = c(0, 1, 1), dur_v = 1e3,
                                 strategy = "VbE", r1 = 1))
