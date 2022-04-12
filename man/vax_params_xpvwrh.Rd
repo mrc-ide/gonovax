@@ -22,6 +22,7 @@ vax_params_xpvwrh(
   dur_revax = dur_v,
   r1 = 0,
   r2 = 0,
+  r2_p = 0,
   booster_uptake = r1 * r2,
   strategy = NULL,
   vbe = 0,
@@ -80,6 +81,9 @@ dose, becoming partially vaccinated}
 
 \item{r2}{proportion of the population who accepted the first dose of the
 vaccine who go on to accept the second dose, becoming fully vaccinated}
+
+\item{r2_p}{proportion of partially vaccinated individuals who receive
+a second dose when returning to the clinic due to screening or illness}
 
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster

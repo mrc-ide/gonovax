@@ -2,12 +2,12 @@
 % Please edit documentation in R/onevax_xpvwrh.R
 \name{create_uptake_map}
 \alias{create_uptake_map}
-\title{Creats uptake mapping for the branching XPVWRH model where
+\title{Creates uptake mapping for the branching XPVWRH model where
 individuals can move from unvaccinated (X) to vaccinated (V) or partially
 vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
 reflects the specific indices which are chosen for assigning uptakes.}
 \usage{
-create_uptake_map(array, r1, r2, booster_uptake)
+create_uptake_map(array, r1, r2, r2_p, booster_uptake)
 }
 \arguments{
 \item{array}{a vaccine map array of dimensions n_group by n_vax by n_vax
@@ -19,6 +19,9 @@ dose, becoming partially vaccinated}
 \item{r2}{proportion of the population who accepted the first dose of the
 vaccine who go on to accept the second dose, becoming fully vaccinated}
 
+\item{r2_p}{proportion of partially vaccinated individuals who receive
+a second dose when returning to the clinic due to screening or illness}
+
 \item{booster_uptake}{proportion of the formerly fully vaccinated, waned
 population who accept a booster vaccination dose}
 }
@@ -26,7 +29,7 @@ population who accept a booster vaccination dose}
 an array of the uptakes of same dimensions
 }
 \description{
-Creats uptake mapping for the branching XPVWRH model where
+Creates uptake mapping for the branching XPVWRH model where
 individuals can move from unvaccinated (X) to vaccinated (V) or partially
 vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
 reflects the specific indices which are chosen for assigning uptakes.
