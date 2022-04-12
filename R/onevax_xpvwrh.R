@@ -1,14 +1,15 @@
 ### gonovax population model whereby individuals in X become vaccinated
-# under the given vacc strategy with proportion r1 accepting 1 dose --> P
-# or proportion r1r2 accepting both doses --> V
-# individuals in P wane back to X, and can then go to P or V again after
-# individuals in V wane to W where they can get a booster vacc to R
-# rate of waning for P is 18 months
-# this is a modificaiton of the onevax_xvwrh model where indiviuals pass
+# under the given vaccination strategy, with proportion r1 * (1 - r2) accepting 
+# 1 dose --> P or proportion r1 * r2 accepting both doses --> V
+# Individuals with 1 dose who failed to register for dose 2 straight away but 
+# then go to the clinic for screening or treatment can then get their dose 2,
+# at an uptake of r2_p
+# Individuals in P who do not accept dose 2 a the clinic or who do not 
+# need to attend the clinic wane back to X, and can then go to P or V again 
+# after (assumed to be immunologically naive)
+# Individuals in V wane to W where they can get a booster vaccination to R
+# This is a modificaiton of the onevax_xvwrh model where indiviuals pass
 # linearly through the strata, now there is a branching after X
-
-# also note to self may need to edit 'restart_hes' function in the onevax_xvwrh
-# code so it works for this as well! rather than creating whole new function
 
 ##' Create initial conditions for the model
 ##' @name initial_params_xpvwrh
@@ -122,17 +123,17 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # stratum (X) and are considered immunologically naive. They are eligible
   # for another round of partial vaccination or full vaccination
   # waned fully-vaccinated individuals (V) move to their own waned stratum (W)
-  # and are eligible for re-vaccination with a booster, moving into a separate
-  # stratum (R)
+  # and are eligible for re-vaccination with a booster dose, moving into a
+  # separate stratum, (R)
   # a proportion of all 'n' exist only in the hesitant compartment (H)
-  # there is no movement between the willing (X, P, V, W, R) and hesitant (H)
+  # There is no movement between the willing (X, P, V, W, R) and hesitant (H)
 
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P
 
   i_eligible <- c(1, 1, 2, 4)         # X(1), P(2), and W(4) eligible for
-                                      #vaccination
+                                      # vaccination
   i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
   i_p <- c(2, 3, 3, 5)                # P(2), V(3), and R(5) are protected
   i_v <- c(2, 3, 5)                   # X(2), V(3), R(5) will experience waning
@@ -179,10 +180,13 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   )
 }
 
+
+
 ##' @name create_uptake_map
 ##' @title Creates uptake mapping for the branching XPVWRH model where
 ##' individuals can move from unvaccinated (X) to vaccinated (V) or partially
-##' vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
+##' vaccinated (P) as well as revaccinated from waned (W) to (R) and, and 
+##' partially vaccinated (P) to fully vaccianted (V). The former
 ##' reflects the specific indices which are chosen for assigning uptakes.
 ##' @param array a vaccine map array of dimensions n_group by n_vax by n_vax
 ##' generated through create_vax_map_branching()
@@ -198,6 +202,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 create_uptake_map <- function(array, r1, r2, r2_p, booster_uptake) {
 
+  # note, these indices are specific to the branching pattern of xpvwrh
   array[, 1, 1] <- array[, 1, 1] * r1
   array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
   array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
@@ -215,6 +220,7 @@ create_uptake_map <- function(array, r1, r2, r2_p, booster_uptake) {
 ##' where waning from the partially vaccinated stratum (P) moves individuals
 ##' back to a naive unvaccinated state (X), and waning from fully vaccinated
 ##' stratum (V) moves individuals into a separate waned stratum (W)
+##' Note, this structure is specific to xpvwrh
 ##' @param n_vax Integer in (0, 6) denoting total number of strata
 ##' @param i_v indices of strata receiving protection through vaccination
 ##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
@@ -244,7 +250,8 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
 ##' @name create_vax_map_branching
 ##' @title Create mapping for movement between strata due to vaccination where
 ##' vaccination uptake splits off into two types (partial and full) from the
-##' naive population (X)
+##' naive population (X). Different to create_vax_map as this function 
+##' specifically maps vbe to V (3) than P(2)
 ##' @param n_vax Integer denoting total number of strata
 ##' @param v 0-1 vector of length two indicating whether activity group
 ##'  should be offered vaccination.
@@ -283,7 +290,6 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 
   vax_map
 }
-
 
 ##' @name run_onevax_xpvwrh
 ##' @title run model with a two-dose vaccine for input parameter sets, either
