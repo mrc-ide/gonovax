@@ -126,7 +126,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   vos_map <- create_vax_map_branching(n_vax = 6, p$vos, i_eligible, i_p)
   vbe_map <- create_vax_map_branching(n_vax = 6, p$vbe, i_eligible, i_p,
                                       set_vbe = TRUE)
-  
+
   # for vod, expect:
   expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
   expect_true(unique(vod_map[, 2, 1] == c(-1, -1)))
@@ -166,16 +166,21 @@ test_that("run_onevax_xpvwrh works correctly", {
   # test uptake maps are generated as expected
   r1 <- c(0.25, 0.5)
   r2 <- c(0.5, 0.75)
+  r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
   for (i in seq_along(r1)) {
-  u <- create_uptake_map(vod_map, r1[i], r2[i], booster_uptake[i])
+  u <- create_uptake_map(vod_map, r1[i], r2[i], r2_p[i], booster_uptake[i])
+  
   acc_vax <- u * vod_map
 
   expect_true(unique(acc_vax[, 1, 1] == c(r1[i], r1[i])))
   expect_true(unique(acc_vax[, 2, 1] == c(- (r1[i] * (1 - r2[i])),
                                           - (r1[i] * (1 - r2[i])))))
   expect_true(unique(acc_vax[, 3, 1] == c(-r1[i] * r2[i], -r1[i] * r2[i])))
+  
+  expect_true(unique(acc_vax[, 2, 2] == c(r2_p[i], r2_p[i])))
+  expect_true(unique(acc_vax[, 3, 2] == -c(r2_p[i], r2_p[i])))
 
   expect_true(unique(acc_vax[, 4, 4] == c(booster_uptake[i],
                                           booster_uptake[i])))
@@ -189,28 +194,32 @@ test_that("run_onevax_xpvwrh works correctly", {
   # supposed to be doing
 
   y3e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
-                          r1 = r1, r2 = r2,
+                          r1 = r1, r2 = r2, r2_p = r2_p,
                           booster_uptake = booster_uptake)
 
   for (i in seq_along(y3e)) {
 
-    ## all treated in X or W are offered vaccination
-    expect_equal(y3e[[i]]$cum_offered[, , c(1, 4)],
-                 y3e[[i]]$cum_treated[, , c(1, 4)])
+    ## all treated in X, p or W are offered vaccination
+    expect_equal(y3e[[i]]$cum_offered[, , c(1, 2, 4)],
+                 y3e[[i]]$cum_treated[, , c(1, 2, 4)])
 
     # and no-one else
-    expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 4)]), 0)
+    expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
 
+    # uptake % of 1st dose offered 2nd dose are vaccinated
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 2] * r2_p[i]),
+                 rowSums(y3e[[i]]$cum_vaccinated[, , 2]))
+    
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
 
     # and no-one else
-    expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 4)]), 0)
+    expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
 
     # no-one is lost
     expect_equal(apply(y3e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
@@ -218,27 +227,31 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   # check VoA is working correctly
   y4e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoA",
-                          r1 = r1, r2 = r2,
+                          r1 = r1, r2 = r2, r2_p = r2_p,
                           booster_uptake = booster_uptake)
 
   for (i in seq_along(y4e)) {
 
-    ## all treated or screened in X or W are offered vaccination
-    expect_equal(y4e[[i]]$cum_offered[, , c(1, 4)],
-                 y4e[[i]]$cum_treated[, , c(1, 4)] +
-                   y4e[[i]]$cum_screened[, , c(1, 4)])
+    ## all treated or screened in X, P, or W are offered vaccination
+    expect_equal(y4e[[i]]$cum_offered[, , c(1, 2, 4)],
+                 y4e[[i]]$cum_treated[, , c(1, 2, 4)] +
+                   y4e[[i]]$cum_screened[, , c(1, 2, 4)])
     # and no-one else
-    expect_equal(sum(y4e[[i]]$cum_offered[, , -c(1, 4)]), 0)
+    expect_equal(sum(y4e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
 
     # uptake % of offered are vaccinated
-    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]),
-                 rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
-
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 1] * r1[i]),
+                 rowSums(y4e[[i]]$cum_vaccinated[, , 1]))
+    
+    # uptake % of 1st dose offered 2nd dose are vaccinated
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 2] * r2_p[i]),
+                 rowSums(y4e[[i]]$cum_vaccinated[, , 2]))
+    
     # uptake % of offered booster are vaccinated
-    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
-                 rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
+                 rowSums(y4e[[i]]$cum_vaccinated[, , 4]))
     # and no-one else
-    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , -c(1, 4)]), 0)
+    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
 
     # no-one is lost
     expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
@@ -247,27 +260,34 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check vaccination targeting
   y5e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1,
                           strategy = "VoD(L)+VoA(H)",
-                          r1 = r1, r2 = r2,
+                          r1 = r1, r2 = r2, r2_p = r2_p,
                           booster_uptake = booster_uptake)
 
   for (i in seq_along(y5e)) {
-    ## L who are treated in X or W are offered vaccination
-    expect_equal(y5e[[i]]$cum_offered[, 1, c(1, 4)],
-                 y5e[[i]]$cum_treated[, 1, c(1, 4)])
-    ## H who are treated or screened in X or W are offered vaccination
-    expect_equal(y5e[[i]]$cum_offered[, 2, c(1, 4)],
-                 y5e[[i]]$cum_treated[, 2,  c(1, 4)] +
-                   y5e[[i]]$cum_screened[, 2,  c(1, 4)])
+    ## L who are treated in X, P, or W are offered vaccination
+    expect_equal(y5e[[i]]$cum_offered[, 1, c(1, 2, 4)],
+                 y5e[[i]]$cum_treated[, 1, c(1, 2, 4)])
+    ## H who are treated or screened in X, P, or W are offered vaccination
+    expect_equal(y5e[[i]]$cum_offered[, 2, c(1, 2, 4)],
+                 y5e[[i]]$cum_treated[, 2,  c(1, 2, 4)] +
+                   y5e[[i]]$cum_screened[, 2,  c(1, 2, 4)])
     # and no-one else
-    expect_equal(sum(y5e[[i]]$cum_offered[, , -c(1, 4)]), 0)
+    expect_equal(sum(y5e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(y5e[[i]]$cum_offered[, , 1] * r1[i],
                  y5e[[i]]$cum_vaccinated[, , 1])
+    
+    # uptake % of 1st dose offered 2nd dose are vaccinated
+    expect_equal(rowSums(y5e[[i]]$cum_offered[, , 2] * r2_p[i]),
+                 rowSums(y5e[[i]]$cum_vaccinated[, , 2]))
+    
+    # uptake % of offered booster are vaccinated
     expect_equal(y5e[[i]]$cum_offered[, , 4] * booster_uptake[i],
                  y5e[[i]]$cum_vaccinated[, , 4])
+    
     # and no-one else
-    expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1, 4)]), 0)
+    expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
 
     # no-one is lost
     expect_equal(apply(y5e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
@@ -278,6 +298,11 @@ test_that("run_onevax_xpvwrh works correctly", {
                                 r1 = c(0, 0.5, 1)))
   expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
                                 r1 = 1, r2 = c(0, 0.5, 1)))
+  expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
+                                 r1 = 1, r2 =1, r2_p = c(0, 0.5, 1)))
+  expect_error(run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
+                                 r1 = 1, r2 =1, booster_uptake = c(0, 0.5, 1)))
+  
   # check length of vea must be 1
   expect_error(run_onevax_xpvwrh(tt, gp, vea = c(0, 1, 1), dur_v = 1e3,
                                 strategy = "VbE", r1 = 1))
@@ -291,55 +316,57 @@ test_that("run_onevax_xpvwrh works correctly", {
   ## test revax is working
   y6e <- run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1e-10, dur_revax = 1e10,
                           strategy = "VoD(L)+VoA(H)",
-                          r1 = r1, r2 = r2,
+                          r1 = r1, r2 = r2, r2_p = r2_p,
                           booster_uptake = booster_uptake)
   for (i in seq_along(y6e)) {
-    ## L who are treated in X or W are offered vaccination
-    expect_equal(y6e[[i]]$cum_offered[, 1, c(1, 4)],
-                 y6e[[i]]$cum_treated[, 1, c(1, 4)])
-    ## H who are treated or screened in X or W are offered vaccination
-    expect_equal(y6e[[i]]$cum_offered[, 2, c(1, 4)],
-                 y6e[[i]]$cum_treated[, 2,  c(1, 4)] +
-                   y6e[[i]]$cum_screened[, 2,  c(1, 4)])
+    ## L who are treated in X, P, or W are offered vaccination
+    expect_equal(y6e[[i]]$cum_offered[, 1, c(1, 2, 4)],
+                 y6e[[i]]$cum_treated[, 1, c(1, 2, 4)])
+    ## H who are treated or screened in X, P, or W are offered vaccination
+    expect_equal(y6e[[i]]$cum_offered[, 2, c(1, 2, 4)],
+                 y6e[[i]]$cum_treated[, 2,  c(1, 2, 4)] +
+                   y6e[[i]]$cum_screened[, 2,  c(1, 2, 4)])
     # and no-one else
-    expect_equal(sum(y6e[[i]]$cum_offered[, , -c(1, 4)]), 0)
+    expect_equal(sum(y6e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(y6e[[i]]$cum_offered[, , 1] * r1[i],
                  y6e[[i]]$cum_vaccinated[, , 1])
+    expect_equal(y6e[[i]]$cum_offered[, , 2] * r2_p[i],
+                 y6e[[i]]$cum_vaccinated[, , 2])
     expect_equal(y6e[[i]]$cum_offered[, , 4] * booster_uptake[i],
                  y6e[[i]]$cum_vaccinated[, , 4])
 
     # stratum V empties immediately
     expect_equal(sum(y6e[[i]]$N[, , 3]), 0, tolerance = 1e-5)
-    expect_true(all(y6e[[i]]$cum_vaccinated[, , 4] <=
-                      y6e[[i]]$cum_vaccinated[, , 1]))
 
     # efficacy is perfect
-    expect_equal(sum(y6e[[i]]$cum_incid[, , c(3, 5)]), 0)
+    expect_equal(sum(y6e[[i]]$cum_incid[, , c(2, 3, 5)]), 0)
     expect_true(all(y6e[[i]]$cum_incid[-1, , c(1, 4)] > 0))
   }
 
   y7e <- run_onevax_xpvwrh(tt, gp, vea = 0, vea_revax = 1, dur_v = 1,
                           strategy = "VoD(L)+VoA(H)",
-                          r1 = r1, r2 = r2,
+                          r1 = r1, r2 = r2, r2_p = r2_p,
                           booster_uptake = booster_uptake,
                           hes = 0.3)
 
   for (i in seq_along(y7e)) {
-    ## L who are treated in X or W are offered vaccination
-    expect_equal(y7e[[i]]$cum_offered[, 1, c(1, 4)],
-                 y7e[[i]]$cum_treated[, 1, c(1, 4)])
-    ## H who are treated or screened in X or W are offered vaccination
-    expect_equal(y7e[[i]]$cum_offered[, 2, c(1, 4)],
-                 y7e[[i]]$cum_treated[, 2,  c(1, 4)] +
-                   y7e[[i]]$cum_screened[, 2,  c(1, 4)])
+    ## L who are treated in X, P, or W are offered vaccination
+    expect_equal(y7e[[i]]$cum_offered[, 1, c(1, 2, 4)],
+                 y7e[[i]]$cum_treated[, 1, c(1, 2, 4)])
+    ## H who are treated or screened in X, P or W are offered vaccination
+    expect_equal(y7e[[i]]$cum_offered[, 2, c(1, 2, 4)],
+                 y7e[[i]]$cum_treated[, 2,  c(1, 2, 4)] +
+                   y7e[[i]]$cum_screened[, 2,  c(1, 2, 4)])
     # and no-one else
-    expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 4)]), 0)
+    expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(y7e[[i]]$cum_offered[, , 1] * r1[i],
                  y7e[[i]]$cum_vaccinated[, , 1])
+    expect_equal(y7e[[i]]$cum_offered[, , 2] * r2_p[i],
+                 y7e[[i]]$cum_vaccinated[, , 2])
     expect_equal(y7e[[i]]$cum_offered[, , 4] * booster_uptake[i],
                  y7e[[i]]$cum_vaccinated[, , 4])
 
@@ -418,7 +445,8 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   }
 
-  # When everyone receives two doses (r1*r2 = 1), P and H all empty
+  # When everyone receives two doses straight away (r1*r2 = 1),
+  # P and H all empty
 
   y12 <- run_onevax_xpvwrh(tt, gp, r1 = 1, r2 = 1, strategy = "VoD")
 
