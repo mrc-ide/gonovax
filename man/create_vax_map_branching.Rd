@@ -4,7 +4,7 @@
 \alias{create_vax_map_branching}
 \title{Create mapping for movement between strata due to vaccination where
 vaccination uptake splits off into two types (partial and full) from the
-naive population (X). Different to create_vax_map as this function 
+naive population (X). Different to create_vax_map as this function
 specifically maps vbe to V (3) than P(2)}
 \usage{
 create_vax_map_branching(n_vax, v, i_u, i_v, set_vbe = FALSE)
@@ -28,6 +28,6 @@ an array of the mapping
 \description{
 Create mapping for movement between strata due to vaccination where
 vaccination uptake splits off into two types (partial and full) from the
-naive population (X). Different to create_vax_map as this function 
+naive population (X). Different to create_vax_map as this function
 specifically maps vbe to V (3) than P(2)
 }
