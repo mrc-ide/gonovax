@@ -180,7 +180,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 }
 
 ##' @name create_uptake_map
-##' @title Creats uptake mapping for the branching XPVWRH model where
+##' @title Creates uptake mapping for the branching XPVWRH model where
 ##' individuals can move from unvaccinated (X) to vaccinated (V) or partially
 ##' vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
 ##' reflects the specific indices which are chosen for assigning uptakes.
