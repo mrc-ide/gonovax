@@ -5,7 +5,8 @@
 \title{Create mapping for movement between strata due to vaccine waning
 where waning from the partially vaccinated stratum (P) moves individuals
 back to a naive unvaccinated state (X), and waning from fully vaccinated
-stratum (V) moves individuals into a separate waned stratum (W)}
+stratum (V) moves individuals into a separate waned stratum (W)
+Note, this structure is specific to xpvwrh}
 \usage{
 create_waning_map_branching(n_vax, i_v, i_w, z)
 }
@@ -26,4 +27,5 @@ Create mapping for movement between strata due to vaccine waning
 where waning from the partially vaccinated stratum (P) moves individuals
 back to a naive unvaccinated state (X), and waning from fully vaccinated
 stratum (V) moves individuals into a separate waned stratum (W)
+Note, this structure is specific to xpvwrh
 }

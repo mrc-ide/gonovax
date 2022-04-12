@@ -298,8 +298,9 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 ##' waned partial vaccines return to the unvaccinated stratum (X) and considered
 ##' immunologically naive. A user defined proportion of the population is
 ##' vaccine hesitant and is never vaccinated. Full acciantion (V) with 2 doses
-##' gives maximum protection whereas partial vaccinaiton with 1 dose (P) gives
-##' less.
+##' gives maximum protection whereas partial vaccination with 1 dose (P) gives
+##' less. Individuals can get 2 doses either by committing in X or upon visiting
+##' a clinic in P.
 ##' @param vea_revax scalar or numeric vector with same length as `gono_params`
 ##'  giving efficacy of revaccination against acquisition, default to same as
 ##'  primary

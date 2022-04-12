@@ -4,7 +4,8 @@
 \alias{create_uptake_map}
 \title{Creates uptake mapping for the branching XPVWRH model where
 individuals can move from unvaccinated (X) to vaccinated (V) or partially
-vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
+vaccinated (P) as well as revaccinated from waned (W) to (R) and, and 
+partially vaccinated (P) to fully vaccianted (V). The former
 reflects the specific indices which are chosen for assigning uptakes.}
 \usage{
 create_uptake_map(array, r1, r2, r2_p, booster_uptake)
@@ -31,6 +32,7 @@ an array of the uptakes of same dimensions
 \description{
 Creates uptake mapping for the branching XPVWRH model where
 individuals can move from unvaccinated (X) to vaccinated (V) or partially
-vaccinated (P) as well  as revaccinated from waned (W) to (R). The former
+vaccinated (P) as well as revaccinated from waned (W) to (R) and, and 
+partially vaccinated (P) to fully vaccianted (V). The former
 reflects the specific indices which are chosen for assigning uptakes.
 }
