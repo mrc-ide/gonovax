@@ -574,6 +574,25 @@ test_that("run_onevax_xpvwrh works correctly", {
     # V W R are empty for all time
       expect_equal(rowSums(y16[[i]]$N[, , 3:6]), rep(0, 6))
 }
+  # test individuals in P move to V
+    # dur_v and dur_p are huge so no waning
+    # (note cannot start entire population in P as model set up to have asymp
+    # infections to seed transmission in X or H only)
+
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_p = 0.9,
+               t = 5)
+  y_p <- run_onevax_xpvwrh(tt, gp, init_params = ip, r2_p = 1, dur_v = 1e100,
+                           strategy = "VoD(L)+VoA(H)")
+
+      # 0.9 * population starts in P
+      # no vaccination from X, and others
+      # only vaccination from P
+      # vaccination into V so stratum > 0 for time > 1
+
+  expect_equal(sum(y_p[[i]]$N[1, , 2]), 6e+05 * 0.9)
+  expect_equal(sum(y_p[[i]]$cum_vaccinated[, , -2]), 0)
+  expect_true(unique(rowSums(y_p[[i]]$cum_vaccinated[-1, , 2]) > 0))
+  expect_true(unique(rowSums(y_p[[i]]$N[-1, , 3]) > 0))
 
   # test individuals still wane to W
     ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.99999999999999
@@ -596,6 +615,6 @@ test_that("run_onevax_xpvwrh works correctly", {
                                               ######### isnt quite 1200 though?
     # R, W are empty for all time
       expect_equal(rowSums(y17[[i]]$N[, , 5:6]), rep(0, 6))
-}
+    }
 
 })
