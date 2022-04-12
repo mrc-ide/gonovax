@@ -119,22 +119,25 @@ test_that("run_onevax_xpvwrh works correctly", {
   pars <- lapply(gp[1], model_params)
   vbe <- 1
   p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
-  i_eligible <- c(1, 1, 4)
-  i_v <- c(2, 3, 5)
+  i_eligible <- c(1, 1, 2, 4)
+  i_p <- c(2, 3, 3, 5)
 
-  vod_map <- create_vax_map_branching(n_vax = 6, p$vod, i_eligible, i_v)
-  vos_map <- create_vax_map_branching(n_vax = 6, p$vos, i_eligible, i_v)
-  vbe_map <- create_vax_map_branching(n_vax = 6, p$vbe, i_eligible, i_v,
+  vod_map <- create_vax_map_branching(n_vax = 6, p$vod, i_eligible, i_p)
+  vos_map <- create_vax_map_branching(n_vax = 6, p$vos, i_eligible, i_p)
+  vbe_map <- create_vax_map_branching(n_vax = 6, p$vbe, i_eligible, i_p,
                                       set_vbe = TRUE)
-
+  
   # for vod, expect:
   expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
   expect_true(unique(vod_map[, 2, 1] == c(-1, -1)))
   expect_true(unique(vod_map[, 3, 1] == c(-1, -1)))
+  expect_true(unique(vod_map[, 2, 2] == c(1, 1)))
+  expect_true(unique(vod_map[, 3, 2] == c(-1, -1)))
   expect_true(unique(vod_map[, 4, 4] == c(1, 1)))
   expect_true(unique(vod_map[, 5, 4] == c(-1, -1)))
 
   expect_equal(sum(vod_map[, -c(1, 2, 3), 1]), 0)
+  expect_equal(sum(vod_map[, -c(2, 3), 2]), 0)
   expect_equal(sum(vod_map[, -c(4, 5), 4]), 0)
 
   expect_equal(sum(vod_map[, , c(3, 6, 5)]), 0)
@@ -143,10 +146,13 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_true(unique(vos_map[, 1, 1] == c(0, 1)))
   expect_true(unique(vos_map[, 2, 1] == c(0, -1)))
   expect_true(unique(vos_map[, 3, 1] == c(0, -1)))
+  expect_true(unique(vos_map[, 2, 2] == c(0, 1)))
+  expect_true(unique(vos_map[, 3, 2] == c(0, -1)))
   expect_true(unique(vos_map[, 4, 4] == c(0, 1)))
   expect_true(unique(vos_map[, 5, 4] == c(0, -1)))
 
   expect_equal(sum(vos_map[, -c(1, 2, 3), 1]), 0)
+  expect_equal(sum(vos_map[, -c(2, 3), 2]), 0)
   expect_equal(sum(vos_map[, -c(4, 5), 4]), 0)
 
   expect_equal(sum(vos_map[, , c(3, 6, 5)]), 0)
