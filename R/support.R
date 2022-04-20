@@ -27,22 +27,27 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 ##' @export
 extract_flows <- function(y) {
 
-  # extract cumulative flows
+# extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
                   "cum_vaccinated", "cum_vbe")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
-  # extract vaccinations and revaccinations separately
-  cum_newly_vaccinated <- t(aggregate(y, "cum_vaccinated", stratum = 1))
+## extract vaccinations and revaccinations separately
+  
+  # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
+  cumulative_flows$cum_primary_vaccinated <-
+    t(aggregate(y, "cum_vaccinated", stratum = 1))
+  
+  # partial to full = everyone vaccinated from P(2)
+  cumulative_flows$cum_partial_to_full_vaccinated <-
+    t(aggregate(y, "cum_vaccinated", stratum = 2))
+  
+  # revaccinated = everyone vaccinated from W(3), note does not include 
+  # vaccination of individuals in X who have waned from P
   cumulative_flows$cum_revaccinated <-
-    cumulative_flows$cum_vaccinated - cum_newly_vaccinated
-
-  # extract those offered vaccination for first time (not including VbE)
-  cumulative_flows$cum_offered_primary <-
-    t(aggregate(y, "cum_offered", stratum = 1)) -
-    t(aggregate(y, "cum_offered_vbe", stratum = 1)) # i.e. non-hesitant
-
+    cumulative_flows$cum_vaccinated - cumulative_flows$cum_primary_vaccinated
+                            - cumulative_flows$cum_partial_to_full_vaccinated
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
   names(flows) <- gsub("^cum_", "", names(cumulative_flows))
