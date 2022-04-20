@@ -29,13 +29,10 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
-  u <- array(0, dim = c(n_group, n_vax, n_vax))
-
-  for (i in seq_along(i_eligible)) {
-    u[, i_eligible[i], i_eligible[i]] <- uptake
-    u[, i_v[i], i_eligible[i]]      <- uptake
-
-  }
+  u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
+                         primary_uptake = uptake,
+                         booster_uptake = uptake,
+                         i_eligible = i_eligible, i_v = i_v)
 
   list(n_vax   = n_vax,
        willing = c(1, 0, 0),
