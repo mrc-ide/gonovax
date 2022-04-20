@@ -235,9 +235,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
 
-  loop <- length(i_v)
-
-  for (i in 1:loop) {
+  for (i in seq_along(i_v)) {
     w[i_w[i], i_v[i]] <- z[i]
     w[i_v[i], i_v[i]] <- -z[i]
   }
