@@ -221,8 +221,8 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
     ## individuals with only the 1st dose can later accept vaccination with the
     ## 2nd dose at an uptake of r2_p
   array[, , 2] <- array[, , 2] * r2_p
-  
-    ## individuals who were fully vaccinated and whose immunity has waned (W) 
+
+    ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
     ## booster_uptake
   array[, , 4]  <- array[, , 4] * booster_uptake
