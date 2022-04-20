@@ -170,7 +170,8 @@ test_that("run_onevax_xpvwrh works correctly", {
   booster_uptake <- c(0.3, 0.75)
 
   for (i in seq_along(r1)) {
-  u <- create_uptake_map(vod_map, r1[i], r2[i], r2_p[i], booster_uptake[i])
+  u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
+                                booster_uptake[i])
 
   acc_vax <- u * vod_map
 
