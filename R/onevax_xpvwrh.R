@@ -160,7 +160,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
-  u <- create_uptake_map(vod, r1, r2, r2_p, booster_uptake)
+  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), 0, 0,  0, 0, hes),
@@ -182,7 +182,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
 
-##' @name create_uptake_map
+##' @name create_uptake_map_xpvwrh
 ##' @title Creates uptake mapping for the branching XPVWRH model where
 ##' individuals can move from unvaccinated (X) to vaccinated (V) or partially
 ##' vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
@@ -200,13 +200,31 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @return an array of the uptakes of same dimensions
 
-create_uptake_map <- function(array, r1, r2, r2_p, booster_uptake) {
+create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
 
   # note, these indices are specific to the branching pattern of xpvwrh
+
+    ## individuals in X accept vaccination of the 1st dose at an uptake of r1
   array[, 1, 1] <- array[, 1, 1] * r1
-  array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
+
+    ## individuals entering V (fully vaccinated) also then accept
+    ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
+    ## vaccinated is given by r1 * r2
   array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
+
+    ## individuals entering P (partially vaccinated) do not then accept
+    ## vaccination with the 2nd dose so proportion partially vaccinated is
+    ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
+    ## 2nd dose given they have recieved the 1st dose
+  array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
+
+    ## individuals with only the 1st dose can later accept vaccination with the
+    ## 2nd dose at an uptake of r2_p
   array[, , 2] <- array[, , 2] * r2_p
+  
+    ## individuals who were fully vaccinated and whose immunity has waned (W) 
+    ## can accept vaccination with a single booster dose at an uptake of
+    ## booster_uptake
   array[, , 4]  <- array[, , 4] * booster_uptake
 
   # values must be positive - otherwise negative values in this array will
