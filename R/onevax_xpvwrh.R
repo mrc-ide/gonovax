@@ -248,6 +248,7 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
 create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
 
   stopifnot(z > 0)
+  stopifnot(length(z) %in% c(1, length(i_v)))
   stopifnot(length(i_w) == 3)
 
   # set up waning map
