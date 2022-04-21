@@ -177,30 +177,48 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret <- c(flows, ret)
 
   ## calculate number receiving primary vaccination
-  ret$inc_primary <- ret$inc_vaccinated - ret$inc_revaccinated - ret$inc_vbe
+  ret$inc_primary <- ret$inc_primary_vaccinated - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
-
+  
+  ## calculate number receiving partial to full vaccination
+  ret$inc_cum_part_to_full <- apply(ret$inc_partial_to_full_vaccinated,
+                                    2, cumsum)
+  
   ## cumulative individuals receiving booster vaccination (revaccination)
   ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
 
   ## calculate cases averted per dose, both with and without discounting
   ## return incremental annual and cumulative doses
+  
   # all vbe get two doses
   ret$inc_vbe_doses <- ret$inc_vbe * 2
+  
   # calculate doses given per person offered primary vaccination
-  ret$inc_primary_doses <- uptake_first_dose * (1 + uptake_second_dose) *
-    ret$inc_offered_primary
-  # booster vaccination takes a single dose so is simply the number of people
-  # revaccinated
+  ret$inc_primary_full_doses <- ret$inc_primary * uptake_first_dose *
+                                                        uptake_second_dose
+  ret$inc_primary_part_doses <- ret$inc_primary * uptake_first_dose *
+                                                        (1 - uptake_second_dose)
+  ret$inc_primary_total_doses <- ret$inc_primary_full_doses +
+                                            ret$inc_primary_part_doses
+  
+  # partial-to-full and booster vaccination take a single dose so is simply the
+  # number of people vaccinated from P and W respectively 
+  ret$inc_part_to_full_doses <- ret$inc_partial_to_full_vaccinated
   ret$inc_booster_doses <- ret$inc_revaccinated
 
   # calculate cumulative doses
   ret$inc_cum_vbe_doses <- apply(ret$inc_vbe_doses, 2, cumsum)
-  ret$inc_cum_primary_doses <- apply(ret$inc_primary_doses, 2, cumsum)
+  ret$inc_cum_primary_full_doses <- apply(ret$inc_primary_full_doses, 2, cumsum)
+  ret$inc_cum_primary_part_doses <- apply(ret$inc_primary_part_doses, 2, cumsum)
+  ret$inc_cum_primary_total_doses <- apply(ret$inc_primary_total_doses, 2,
+                                           cumsum)
+  ret$inc_cum_part_to_full_doses <- apply(ret$inc_part_to_full_doses, 2, cumsum)
   ret$inc_cum_booster_doses <- apply(ret$inc_booster_doses, 2, cumsum)
-
-  ret$inc_doses <- ret$inc_primary_doses + ret$inc_booster_doses +
-    ret$inc_vbe_doses
+  
+  ret$inc_doses <- ret$inc_primary_total_doses +
+                    ret$inc_part_to_full_doses +
+                    ret$inc_booster_doses + 
+                    ret$inc_vbe_doses
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
