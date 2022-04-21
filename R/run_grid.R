@@ -113,28 +113,28 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' partial) compared to baseline (does not include vbe)
 ##' `inc_cum_primary` = cumulative number of individuals receiving primary
 ##' vaccination (full or partial) compared to baseline (does not include vbe)
-##' `inc_part_to_full`= annual number of individuals who have already 
+##' `inc_part_to_full`= annual number of individuals who have already
 ##' received their 1st dose, who receive their 2nd dose compared to baseline
 ##' `inc_cum_part_to_full` = cumulative number of individuals who have already
-##' received their 1st dose, who receive their 2nd dose compared to baseline 
+##' received their 1st dose, who receive their 2nd dose compared to baseline
 ##' `inc_doses` = number of doses compared to baseline (per year). Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' `inc_primary_part_doses` = annual number of 1st doses administered as part
 ##' of primary vaccination which were not followed by a 2nd dose compared to
-##' baseline. 
+##' baseline.
 ##' `inc_cum_primary_part_doses` = cumulative number of 1st doses
 ##' administered as part of primary vaccination which were not followed by a 2nd
 ##' dose compared to baseline.
 ##' `inc_primary_full_doses` = annual number 1st and 2nd doses administered
-##' together as part of primary vaccination compared to baseline. 
-##' `inc_cum_primary_full_doses` = cumulative number of 1st and 2nd doses 
+##' together as part of primary vaccination compared to baseline.
+##' `inc_cum_primary_full_doses` = cumulative number of 1st and 2nd doses
 ##' administered together as part of primary vaccination compared to baseline.
 ##' `inc_primary_total_doses` = annual number of primary doses administered
 ##' compared to baseline. Includes doses contributing to partial and full
 ##' vaccination
-##' `inc_cum_primary_total_doses` = cumulative number of primary doses 
+##' `inc_cum_primary_total_doses` = cumulative number of primary doses
 ##' administered compared to baseline. Includes doses contributing to partial
 ##' and full vaccination.
 ##' `inc_booster_doses` = annual number of booster doses
@@ -187,20 +187,20 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
-  
+
   ## calculate number receiving partial to full vaccination
   ret$inc_cum_part_to_full <- apply(ret$inc_part_to_full,
                                     2, cumsum)
-  
+
   ## cumulative individuals receiving booster vaccination (revaccination)
   ret$inc_cum_revaccinated <- apply(ret$inc_revaccinated, 2, cumsum)
 
   ## calculate cases averted per dose, both with and without discounting
   ## return incremental annual and cumulative doses
-  
+
   # all vbe get two doses
   ret$inc_vbe_doses <- ret$inc_vbe * 2
-  
+
   # calculate doses given per person offered primary vaccination
   ret$inc_primary_full_doses <- ret$inc_primary * uptake_first_dose *
                                                         uptake_second_dose
@@ -208,9 +208,9 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
                                                         (1 - uptake_second_dose)
   ret$inc_primary_total_doses <- ret$inc_primary_full_doses +
                                             ret$inc_primary_part_doses
-  
+
   # partial-to-full and booster vaccination take a single dose so is simply the
-  # number of people vaccinated from P and W respectively 
+  # number of people vaccinated from P and W respectively
   ret$inc_part_to_full_doses <- ret$inc_part_to_full
   ret$inc_booster_doses <- ret$inc_revaccinated
 
@@ -222,10 +222,10 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
                                            cumsum)
   ret$inc_cum_part_to_full_doses <- apply(ret$inc_part_to_full_doses, 2, cumsum)
   ret$inc_cum_booster_doses <- apply(ret$inc_booster_doses, 2, cumsum)
-  
+
   ret$inc_doses <- ret$inc_primary_total_doses +
                     ret$inc_part_to_full_doses +
-                    ret$inc_booster_doses + 
+                    ret$inc_booster_doses +
                     ret$inc_vbe_doses
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
 
