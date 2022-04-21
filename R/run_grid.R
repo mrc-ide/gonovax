@@ -96,8 +96,6 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' (includes those getting vbe and boosters)
 ##' `vbe` = annual number vaccinated before entry in model run
 ##' `revaccinated` = annual number receiving booster in model run
-##' `offered_primary` = annual number offered primary vaccination
-##' (does not include hesitant or vbe)
 ##' `inc_cum_treated` = cumulative number treated compared to baseline
 ##' `inc_cum_vaccinated` = cumulative number vaccinated compared to baseline
 ##' `inc_diag_a` = annual number of asymptomatic diagnoses compared to baseline
@@ -111,12 +109,11 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' baseline
 ##' `inc_cum_revaccinated` = cumulative number revaccinated by recieving booster
 ##' compared to baseline
-##' `inc_offered_primary` = annual number offered primary vaccination compared
-##' to baseline (does not include hesitant or vbe)
-##' `inc_primary` = annual number receiving primary vaccination
-##' compared to baseline (does not include vbe)
+##' `inc_primary` = annual number receiving primary vaccination (full or
+##' partial) compared to baseline (does not include vbe)
 ##' `inc_cum_primary` = cumulative number of individuals receiving primary
-##' vaccination compared to baseline (does not include vbe)
+##' vaccination (full or partial) compared to baseline (does not include vbe)
+##' `inc_partial_to_full`
 ##' `inc_doses` = number of doses compared to baseline (per year). Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
@@ -177,11 +174,11 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret <- c(flows, ret)
 
   ## calculate number receiving primary vaccination
-  ret$inc_primary <- ret$inc_primary_vaccinated - ret$inc_vbe
+  ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
   
   ## calculate number receiving partial to full vaccination
-  ret$inc_cum_part_to_full <- apply(ret$inc_partial_to_full_vaccinated,
+  ret$inc_cum_part_to_full <- apply(ret$inc_part_to_full,
                                     2, cumsum)
   
   ## cumulative individuals receiving booster vaccination (revaccination)
@@ -203,7 +200,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   
   # partial-to-full and booster vaccination take a single dose so is simply the
   # number of people vaccinated from P and W respectively 
-  ret$inc_part_to_full_doses <- ret$inc_partial_to_full_vaccinated
+  ret$inc_part_to_full_doses <- ret$inc_part_to_full
   ret$inc_booster_doses <- ret$inc_revaccinated
 
   # calculate cumulative doses
