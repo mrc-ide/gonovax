@@ -134,51 +134,6 @@ test_that("compare baseline works as expected", {
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(50, cost),
                cost$pv_inc_doses * (85 - 50))
 
-  ## test doses wasted calculated correctly
-
-  # no doses wasted when second dose uptake = 100%
-  z <- compare_baseline(y, bl, r1 * r2, uptake_second_dose = 1, cp, 0)
-
-  expect_true(all(z$inc_cum_doses_wasted == 0))
-  expect_true(all(z$inc_doses_wasted == 0))
-
-  # all doses wasted when second dose uptake = 0%
-  y1 <- run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1, vbe = 0.5,
-                       uptake = 0, strategy = "VoD")
-  z <- compare_baseline(y1, bl, r1, uptake_second_dose = 0, cp, 0)
-  expect_equal(z$inc_cum_doses_wasted, z$inc_cum_doses)
-
-  # regardless of hesitancy (primary uptake = booster uptake = 1)
-
-  bl_h <- extract_flows(run_onevax_xvwrh(tt, gp, hes = 0.3))
-  y_h <- run_onevax_xvwrh(tt, gp, vea = 0.5, dur = 1, vbe = 0.5,
-                        primary_uptake = r1, strategy = "VoD", hes = 0.3)
-
-  z_h <- compare_baseline(y_h, bl_h,
-                          uptake_first_dose = r1, uptake_second_dose = 1,
-                          cp, 0)
-
-  expect_true(all(z_h$inc_cum_doses_wasted == 0))
-  expect_true(all(z_h$inc_doses_wasted == 0))
-
-  # all primary doses wasted when second dose uptake = 0
-
-  y_2 <- run_onevax_xvwrh(tt, gp, vea = 0.5, dur = 1,
-                        primary_uptake = 0, strategy = "VoD", hes = 0.3)
-  z_f2 <- compare_baseline(y_2, bl_h,
-                           uptake_first_dose = r1, uptake_second_dose = 0,
-                           cp, 0)
-  expect_equal(z_f2$inc_cum_doses_wasted, z_f2$inc_cum_doses)
-
-  # doses used + doses wasted = 2 * #primary doses + 1 * booster doses
-                                                    # + 2 * vbe doses
-
-  y_3 <- run_onevax_xvwrh(tt, gp, vea = 0.5, dur = 1, vbe = 0.5,
-                          primary_uptake = 0, strategy = "VoD", hes = 0.3)
-  expect_equal(z_h$inc_doses + z_h$inc_doses_wasted,
-      2 * z_h$inc_primary + 1 * z_h$inc_revaccinated +
-       2 * z_h$inc_vbe)
-
   ## test that cumulative primary and booster vaccination calc correctly
 
   bl <- extract_flows(run_onevax_xvwrh(tt, gp))
