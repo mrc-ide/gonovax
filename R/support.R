@@ -36,7 +36,7 @@ extract_flows <- function(y) {
 ## extract vaccinations and revaccinations separately
   
   # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
-  cumulative_flows$cum_primary <-
+  cumulative_flows$cum_primary_total <-
     t(aggregate(y, "cum_vaccinated", stratum = 1))
   
   # partial to full = everyone vaccinated from P(2)
@@ -49,7 +49,7 @@ extract_flows <- function(y) {
   # in earlier models this will be strata (3) but by subtracting primary
   # and partial we don't need to specify the index
   cumulative_flows$cum_revaccinated <-
-    cumulative_flows$cum_vaccinated - cumulative_flows$cum_primary
+    cumulative_flows$cum_vaccinated - cumulative_flows$cum_primary_total
                             - cumulative_flows$cum_part_to_full
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
