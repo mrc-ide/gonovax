@@ -224,11 +224,6 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
 
-  ## calculate vaccine doses wasted
-  ret$inc_doses_wasted <-
-    ret$inc_offered_primary * uptake_first_dose * (1 - uptake_second_dose)
-  ret$inc_cum_doses_wasted <- apply(ret$inc_doses_wasted, 2, cumsum)
-
   ## calculate costs
   costs <- calc_costs(ret, cost_params, disc_rate)
   ret <- c(ret, costs)
