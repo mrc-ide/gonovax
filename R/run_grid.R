@@ -113,15 +113,30 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' partial) compared to baseline (does not include vbe)
 ##' `inc_cum_primary` = cumulative number of individuals receiving primary
 ##' vaccination (full or partial) compared to baseline (does not include vbe)
-##' `inc_partial_to_full`
+##' `inc_part_to_full`= annual number of individuals who have already 
+##' received their 1st dose, who receive their 2nd dose compared to baseline
+##' `inc_cum_part_to_full` = cumulative number of individuals who have already
+##' received their 1st dose, who receive their 2nd dose compared to baseline 
 ##' `inc_doses` = number of doses compared to baseline (per year). Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
 ##' `inc_cum_doses` = cumulative number of doses compared to baseline. Assumes
 ##' primary vaccination uses 2 doses, booster uses 1 dose.
-##' `inc_primary_doses` = annual number of primary doses administered
-##' compared to baseline, where 2 doses are needed for full protection.
-##' `inc_cum_primary_doses` = cumulative number of primary doses administered
-##' compared to baseline, where 2 doses are needed for full protection.
+##' `inc_primary_part_doses` = annual number of 1st doses administered as part
+##' of primary vaccination which were not followed by a 2nd dose compared to
+##' baseline. 
+##' `inc_cum_primary_part_doses` = cumulative number of 1st doses
+##' administered as part of primary vaccination which were not followed by a 2nd
+##' dose compared to baseline.
+##' `inc_primary_full_doses` = annual number 1st and 2nd doses administered
+##' together as part of primary vaccination compared to baseline. 
+##' `inc_cum_primary_full_doses` = cumulative number of 1st and 2nd doses 
+##' administered together as part of primary vaccination compared to baseline.
+##' `inc_primary_total_doses` = annual number of primary doses administered
+##' compared to baseline. Includes doses contributing to partial and full
+##' vaccination
+##' `inc_cum_primary_total_doses` = cumulative number of primary doses 
+##' administered compared to baseline. Includes doses contributing to partial
+##' and full vaccination.
 ##' `inc_booster_doses` = annual number of booster doses
 ##' administered to waned individuals for revaccination compared to baseline,
 ##' where 1 dose is needed for full protection.
@@ -136,10 +151,6 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' averted per dose of vaccine
 ##' `cases_averted_per_dose_pv` = present value of cases_averted_per_dose
 ##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0)
-##' `inc_doses_wasted` annual number of first doses given that are not followed
-##' by a second dose, compared to baseline
-##' `inc_cum_doses_wasted` cumulative number of first doses given that are not
-##'  followed by a second dose, compared to baseline
 ##' `pv_inc_doses` = present value of number of doses compared to baseline
 ##' (i.e. sum of annual numbers discounted at rate `disc_rate` to time 0)
 ##' `pv_red_net_cost` = present value of the reduction in net costs compared to
