@@ -40,11 +40,14 @@ extract_flows <- function(y) {
     t(aggregate(y, "cum_vaccinated", stratum = 1))
   
   # partial to full = everyone vaccinated from P(2)
+  # in earlier models this will be V, we expect this to be 0
   cumulative_flows$cum_partial_to_full_vaccinated <-
     t(aggregate(y, "cum_vaccinated", stratum = 2))
   
-  # revaccinated = everyone vaccinated from W(3), note does not include 
+  # revaccinated = everyone vaccinated from W(4), note does not include 
   # vaccination of individuals in X who have waned from P
+  # in earlier models this will be strata (3) but by subtracting primary
+  # and partial we don't need to specify the index
   cumulative_flows$cum_revaccinated <-
     cumulative_flows$cum_vaccinated - cumulative_flows$cum_primary_vaccinated
                             - cumulative_flows$cum_partial_to_full_vaccinated
