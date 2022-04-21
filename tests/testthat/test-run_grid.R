@@ -49,8 +49,10 @@ test_that("compare baseline works as expected", {
                     Map(`-`, yy[flownames], bl[flownames]))
 
   f <- function(x) {
-    pv <- x$vaccinated - x$revaccinated - x$vbe
-    pv * (1 + 1 / r2) + 1 * x$revaccinated + 2 * x$vbe
+    pv <- x$vaccinated - x$revaccinated - x$vbe - x$part_to_full
+    (pv * r1 * r2) + (pv * r1 * (1 - r2)) + 1 * x$revaccinated +
+                                            1 * x$part_to_full +
+                                            2 * x$vbe
   }
 
   # check doses are calculated correctly
@@ -65,10 +67,6 @@ test_that("compare baseline works as expected", {
                -z$inc_treated[1, ] / z$inc_doses[1, ])
   expect_equal(z$cases_averted_per_dose[n, ],
                -colSums(z$inc_treated) / colSums(z$inc_doses))
-
-  ## note that inc_offered_primary * r1 * (1- r2) = inc_doses_wasted
-  ## and inc_primary = inc_offered_primary * r1 * r2
-  expect_equal(z$inc_primary / r2, z$inc_doses_wasted / (1 - r2))
 
   ## check against a baseline of no vaccination
   bl0 <- extract_flows(run_onevax_xvwv(tt, gp, ip))
@@ -177,7 +175,8 @@ test_that("compare baseline works as expected", {
   # cumulative primary vaccination + cumulative booster vaccination =
   # cumulative vaccinated overall when vbe = 0
 
-expect_equal(z$inc_cum_primary + z$inc_cum_revaccinated, z$inc_cum_vaccinated)
+expect_equal(z$inc_cum_primary + z$inc_cum_part_to_full +
+               z$inc_cum_revaccinated, z$inc_cum_vaccinated)
 
   # cumulative doses of different types calculated correctly
   # sum of vbe, primary and revaccination doses = all doses
@@ -188,7 +187,8 @@ expect_equal(z$inc_cum_primary + z$inc_cum_revaccinated, z$inc_cum_vaccinated)
   z <- compare_baseline(y, bl, uptake_first_dose = 1, uptake_second_dose = 1,
                         cp, 0)
 
-  s <- sum(z$inc_cum_primary_doses[length(tt) - 1, ] +
+  s <- sum(z$inc_cum_primary_total_doses[length(tt) - 1, ] +
+             z$inc_cum_part_to_full_doses[length(tt) - 1, ] +
              z$inc_cum_booster_doses[length(tt) - 1, ] +
              z$inc_cum_vbe_doses[length(tt) - 1, ])
 
