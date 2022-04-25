@@ -307,3 +307,39 @@ check_gono_params <- function(pars) {
     assert_scalar_positive(rho)
   })
 }
+
+
+##' @name create_uptake_map
+##' @title Creates uptake mapping array with dimensions n_group x n_vax x n_vax
+##' and assigns the relevant primary uptake and booster uptake values defined
+##' by the user.
+##' @param n_group scalar indicating number of activity groups
+##' @param n_vax scalar indicating number the number of stratum in the model
+##' @param primary_uptake proportion of the unvaccinated population who accept
+##' primary vaccination
+##' @param booster_uptake proportion of the formerly fully vaccinated, waned
+##' population who accept a booster vaccination dose
+##' @param i_eligible vector of indices of stratum which are eligible for
+##' vaccination, of same length as the number of paths from unvaccinated to
+##' vaccinated
+##' @param i_v vector of indices of stratum which are vaccinated and experience
+##' protection
+##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
+
+create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
+                              i_eligible, i_v) {
+
+# set up uptake matrix rows = groups, columns = vaccine strata
+u <- array(0, dim = c(n_group, n_vax, n_vax))
+
+u_vals <- c(primary_uptake, booster_uptake)
+
+for (i in seq_along(i_eligible)) {
+
+  u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
+  u[, i_v[i], i_eligible[i]]      <- u_vals[i]
+
+}
+
+u
+}

@@ -80,15 +80,16 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
-  u <- matrix(0, n_group, n_vax)
-  u[, i_eligible[1]] <- primary_uptake
-  u[, i_eligible[2]] <- booster_uptake
+  u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
+                         primary_uptake = primary_uptake,
+                         booster_uptake = booster_uptake,
+                         i_eligible = i_eligible, i_v = i_v)
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), 0, 0, 0, hes),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+       vbe     = create_vax_map(n_vax, p$vbe, c(1, 1), c(2, 2)),
        vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
        vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
        vea     = c(0, vea, 0, vea_revax, 0),
@@ -175,12 +176,13 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' new initial conditions in the presence of hesitancy.
 ##' @inheritParams restart_params
 ##' @param hes proportion of population vaccine hesitant
+##' @param branching boolean to denote if xpvwrh branching model in use
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'
 ##' @export
 
-restart_hes <- function(y, n_vax = 5, hes = 0) {
+restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
 
   dim_y <- dim(y[["U"]])
 
@@ -191,6 +193,14 @@ restart_hes <- function(y, n_vax = 5, hes = 0) {
   if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
     stop("Provided model run has vaccination, baseline run should have all V
           = 0")
+  }
+
+  # branched xpvwrh models have 2 primary vaccination compartments to check
+  if (branching == TRUE) {
+    if (round(rowSums(y$N[, , 3])[dim_y[1]], 5) > 0) {
+      stop("Provided model run has vaccination, baseline run should have all V
+          = 0")
+    }
   }
 
   i_t <- dim_y[1]                     # number of timepoints

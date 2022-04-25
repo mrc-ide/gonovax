@@ -107,6 +107,8 @@ vaccination becomes cost-effective) calculated using £20,000 / QALY.
 `cet_30k` = cost effectiveness threshold (i.e. £ value per dose at which
 vaccination becomes cost-effective) calculated using £30,000 / QALY
 (pv_red_net_cost + pv_qaly_gain * £30,000) / pv_inc_doses
+`inc_costs_9` = present value of incremental costs assuming £9 / dose.
+Incremental costs are calculated as: pv_inc_doses * £9 - pv_red_net_cost
 `inc_costs_18` = present value of incremental costs assuming £18 / dose.
 Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
 `inc_costs_50` = present value of incremental costs assuming £50 / dose.
