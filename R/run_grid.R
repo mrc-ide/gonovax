@@ -177,13 +177,12 @@ run_grid  <- function(gono_params, init_params, cost_params,
 compare_baseline <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
                              disc_rate) {
-
   ## compare run to baseline
   flows <- extract_flows(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
-
+browser()
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
