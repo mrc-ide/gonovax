@@ -70,7 +70,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 }
 
 ##' @name compare_baseline_xpvwrh
-##' @title compare model runs with vaccination to a baseline run for the 
+##' @title compare model runs with vaccination to a baseline run for the
 ##' branching XPVWRH model where both partial and full vaccination have a
 ##' given level of efficacy
 ##' @param y list of model runs, e.g. created by `run_onevax_xvwv`, each list
@@ -179,7 +179,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
                              disc_rate) {
-  
+
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
@@ -388,7 +388,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$inc_doses <- ret$inc_primary_doses + ret$inc_booster_doses +
     ret$inc_vbe_doses
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
-  
+
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
   ret$cases_averted_per_dose_pv <- calc_cases_averted_per_dose(ret, disc_rate)
 
@@ -414,7 +414,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-  
+
   ret
 }
 

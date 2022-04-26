@@ -14,7 +14,7 @@ test_that("calc_pv works as expected", {
   expect_equal(y1[3, ], c(disc_fac %*% x))
 })
 
-test_that("compare baseline xpvwrh works as expected", {                          ### edit the model here 
+test_that("compare baseline xpvwrh works as expected", {
 
   gp <- gono_params(1:2)
   ip <- lapply(run_onevax_xpvwrh(0:1, gp), restart_params)
@@ -91,11 +91,11 @@ test_that("compare baseline xpvwrh works as expected", {                        
 
   expect_equivalent(cet_20k,
                     matrix(c(1.43861305463166, 4.61406013315947,
-                             9.33642406771868,  1.30286462303956, 
+                             9.33642406771868,  1.30286462303956,
                              4.31769150028337, 8.88634825065671),
                              nrow = 3))
   expect_equal(cet_30k,
-               matrix(c(1.6433776284417, 5.2644431234182, 10.6458446973014, 
+               matrix(c(1.6433776284417, 5.2644431234182, 10.6458446973014,
                         1.41212024988027, 4.6774624761802, 9.62458261821014),
                         nrow = 3))
 
@@ -162,8 +162,9 @@ test_that("compare baseline xpvwrh works as expected", {                        
   y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
                         primary_uptake = 1, booster_uptake = 0.5,
                         strategy = "VoD")
-  z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1, uptake_second_dose = 1,
-                        cp, 0)
+  z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
+                                      uptake_second_dose = 1,
+                                      cp, 0)
 
   expect_equal(z$inc_vaccinated - z$inc_primary - z$inc_vbe, z$inc_revaccinated)
 
@@ -185,8 +186,9 @@ expect_equal(z$inc_cum_primary + z$inc_cum_part_to_full +
   y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
                         primary_uptake = 1, booster_uptake = 0.5,
                         strategy = "VoD")
-  z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1, uptake_second_dose = 1,
-                        cp, 0)
+  z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
+                                      uptake_second_dose = 1,
+                                      cp, 0)
 
   s <- sum(z$inc_cum_primary_total_doses[length(tt) - 1, ] +
              z$inc_cum_part_to_full_doses[length(tt) - 1, ] +
@@ -213,7 +215,7 @@ test_that("compare baseline works as expected", {
              unit_cost_manage_symptomatic = c(98, 99),
              unit_cost_manage_asymptomatic = c(93, 94),
              unit_cost_screen_uninfected = c(70, 71))
-  
+
   r2 <- 0.7
   r1 <- 0.9
 
@@ -258,7 +260,7 @@ test_that("compare baseline works as expected", {
   ## check against a baseline of no vaccination
   bl0 <- extract_flows(run_onevax_xvwv(tt, gp, ip))
   blv0 <- rep(list(bl0), 4)
-  
+
   z1 <- compare_baseline(y, bl0, r1, r2, cp, 0)
   expect_equivalent(z1$inc_vbe, matrix(12000 * 0.5, 3, 2))
   expect_equal(f(yy) - f(bl0), z1$inc_doses)
