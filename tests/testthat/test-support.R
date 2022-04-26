@@ -76,3 +76,4 @@ test_that("dbetabinom", {
   ## compare to extraDistr::dbbinom(15, 63, 2, 5, log = TRUE) ~ -16.99016
   expect_equal(f(672, 50454, 3, 2, log = TRUE), -16.99016, tolerance = 1e-5)
 })
+

@@ -21,7 +21,7 @@ test_that("compare baseline xpvwrh works as expected", {                        
   tt <- 1:4
 
   # baseline of 50% uptake vbe with a 50% eff vaccine lasting 1 year
-  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1,
+  bl <- extract_flows_xpvwrh_xpvwrh(run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1,
                                       vbe = 0.5))
   blv <- rep(list(bl), 4)
   cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
@@ -35,7 +35,7 @@ test_that("compare baseline xpvwrh works as expected", {                        
   # compare to adding VoD with same vaccine, uptake = 63%
   y <- run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1, vbe = 0.5,
                        uptake = r1 * r2, strategy = "VoD")
-  yy <- extract_flows(y)
+  yy <- extract_flows_xpvwrh(y)
 
   z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0)
 
@@ -69,7 +69,7 @@ test_that("compare baseline xpvwrh works as expected", {                        
                -colSums(z$inc_treated) / colSums(z$inc_doses))
 
   ## check against a baseline of no vaccination
-  bl0 <- extract_flows(run_onevax_xvwv(tt, gp, ip))
+  bl0 <- extract_flows_xpvwrh(run_onevax_xvwv(tt, gp, ip))
   blv0 <- rep(list(bl0), 4)
 
   z1 <- compare_baseline_xpvwrh(y, bl0, r1, r2, cp, 0)
@@ -134,7 +134,7 @@ test_that("compare baseline xpvwrh works as expected", {                        
 
   ## test that cumulative primary and booster vaccination calc correctly
 
-  bl <- extract_flows(run_onevax_xvwrh(tt, gp))
+  bl <- extract_flows_xpvwrh(run_onevax_xvwrh(tt, gp))
 
   y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
                           primary_uptake = 1, booster_uptake = 0,
@@ -206,7 +206,7 @@ test_that("run_grid works as expected", {
   ip <- lapply(run_onevax_xvwv(0:1, gp, vea = 0, dur = 1), restart_params)
   tt <- 1:3
 
-  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1))
+  bl <- extract_flows_xpvwrh_xpvwrh(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1))
   blv <- rep(list(bl), 4)
   cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
              unit_cost_manage_symptomatic = c(98, 99),
