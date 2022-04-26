@@ -69,8 +69,10 @@ run_grid  <- function(gono_params, init_params, cost_params,
   out
 }
 
-##' @name compare_baseline
-##' @title compare model runs with vaccination to a baseline runs
+##' @name compare_baseline_xpvwrh
+##' @title compare model runs with vaccination to a baseline run for the 
+##' branching XPVWRH model where both partial and full vaccination have a
+##' given level of efficacy
 ##' @param y list of model runs, e.g. created by `run_onevax_xvwv`, each list
 ##' entry refers to a different parameter set
 ##' @param baseline list of baseline runs e.g. created by `run_onevax_xvwv`.
@@ -174,7 +176,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `inc_costs_85` = present value of incremental costs assuming £85 / dose
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
 ##' @export
-compare_baseline <- function(y, baseline, uptake_first_dose,
+compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
                              disc_rate) {
   ## compare run to baseline
