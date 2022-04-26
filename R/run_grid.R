@@ -179,6 +179,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
                              disc_rate) {
+  
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
@@ -413,7 +414,7 @@ compare_baseline <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-
+  
   ret
 }
 

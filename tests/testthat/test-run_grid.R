@@ -17,11 +17,11 @@ test_that("calc_pv works as expected", {
 test_that("compare baseline xpvwrh works as expected", {                          ### edit the model here 
 
   gp <- gono_params(1:2)
-  ip <- lapply(run_onevax_xvwv(0:1, gp), restart_params)
+  ip <- lapply(run_onevax_xpvwrh(0:1, gp), restart_params)
   tt <- 1:4
 
   # baseline of 50% uptake vbe with a 50% eff vaccine lasting 1 year
-  bl <- extract_flows_xpvwrh(run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1,
+  bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip, vea = 0.5, dur_v = 1,
                                       vbe = 0.5))
   blv <- rep(list(bl), 4)
   cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
@@ -33,8 +33,8 @@ test_that("compare baseline xpvwrh works as expected", {                        
   r1 <- 0.9
 
   # compare to adding VoD with same vaccine, uptake = 63%
-  y <- run_onevax_xvwv(tt, gp, ip, vea = 0.5, dur = 1, vbe = 0.5,
-                       uptake = r1 * r2, strategy = "VoD")
+  y <- run_onevax_xpvwrh(tt, gp, ip, vea = 0.5, dur_v = 1, vbe = 0.5,
+                       r1 = r1, r2 = r2, strategy = "VoD")
   yy <- extract_flows_xpvwrh(y)
 
   z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0)
@@ -69,7 +69,7 @@ test_that("compare baseline xpvwrh works as expected", {                        
                -colSums(z$inc_treated) / colSums(z$inc_doses))
 
   ## check against a baseline of no vaccination
-  bl0 <- extract_flows_xpvwrh(run_onevax_xvwv(tt, gp, ip))
+  bl0 <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
   blv0 <- rep(list(bl0), 4)
 
   z1 <- compare_baseline_xpvwrh(y, bl0, r1, r2, cp, 0)
@@ -90,13 +90,14 @@ test_that("compare baseline xpvwrh works as expected", {                        
   cet_30k <- calc_cet(3e4, cost)
 
   expect_equivalent(cet_20k,
-                    matrix(c(0.534243384207646, 1.72471712423966,
-                             3.52594421792319, 0.483751150425284,
-                             1.61256157784351, 3.34884963770966), nrow = 3))
+                    matrix(c(1.43861305463166, 4.61406013315947,
+                             9.33642406771868,  1.30286462303956, 
+                             4.31769150028337, 8.88634825065671),
+                             nrow = 3))
   expect_equal(cet_30k,
-               matrix(c(0.610287112367831, 1.96785021889529,
-                        4.02052903497914, 0.524318410369186,
-                        1.74693578901651, 3.62708130277735), nrow = 3))
+               matrix(c(1.6433776284417, 5.2644431234182, 10.6458446973014, 
+                        1.41212024988027, 4.6774624761802, 9.62458261821014),
+                        nrow = 3))
 
   expect_equal(z$cet_20k, cet_20k)
   expect_equal(z$cet_30k, cet_30k)
@@ -432,7 +433,7 @@ test_that("run_grid works as expected", {
   ip <- lapply(run_onevax_xvwv(0:1, gp, vea = 0, dur = 1), restart_params)
   tt <- 1:3
 
-  bl <- extract_flows_xpvwrh(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1))
+  bl <- extract_flows(run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1))
   blv <- rep(list(bl), 4)
   cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
              unit_cost_manage_symptomatic = c(98, 99),
@@ -440,7 +441,7 @@ test_that("run_grid works as expected", {
              unit_cost_screen_uninfected = c(70, 71))
 
   y <- run_onevax_xvwv(tt, gp, ip, vea = 0, dur = 1, vbe = 0.5)
-  z <- compare_baseline_xpvwrh(y, bl, 0.8, 0.7, cp, 0)
+  z <- compare_baseline(y, bl, 0.8, 0.7, cp, 0)
 
   zz <- run_grid(gp, ip, cp, blv,
                 model = run_onevax_xvwv,
