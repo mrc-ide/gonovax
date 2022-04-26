@@ -20,12 +20,13 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
   apply(y, 1, f, ...)
 }
 
-##' @name extract_flows
-##' @title extract flows used for run_grid
+##' @name extract_flows_xpvwrh
+##' @title extract flows used for run_grid when the branching  xpvwrh model
+##' has been run
 ##' @param y a transformed model run output
 ##' @return cumulative and incident flows
 ##' @export
-extract_flows <- function(y) {
+extract_flows_xpvwrh <- function(y) {
 
 # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
