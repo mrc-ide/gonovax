@@ -63,6 +63,42 @@ extract_flows_xpvwrh <- function(y) {
   c(cumulative_flows, flows)
 }
 
+
+##' @name extract_flows
+##' @title extract flows used for run_grid
+##' @param y a transformed model run output
+##' @return cumulative and incident flows
+##' @export
+extract_flows <- function(y) {
+
+  # extract cumulative flows
+  flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
+                  "cum_vaccinated", "cum_vbe")
+  cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
+  names(cumulative_flows) <- flow_names
+
+  # extract vaccinations and revaccinations separately
+  cum_newly_vaccinated <- t(aggregate(y, "cum_vaccinated", stratum = 1))
+  cumulative_flows$cum_revaccinated <-
+    cumulative_flows$cum_vaccinated - cum_newly_vaccinated
+
+  # extract those offered vaccination for first time (not including VbE)
+  cumulative_flows$cum_offered_primary <-
+    t(aggregate(y, "cum_offered", stratum = 1)) -
+    t(aggregate(y, "cum_offered_vbe", stratum = 1)) # i.e. non-hesitant
+
+  # extract annual flows
+  flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
+  names(flows) <- gsub("^cum_", "", names(cumulative_flows))
+
+  # remove time 0 from cumulative flows and remove those not needed
+  cumulative_flows <-
+    lapply(cumulative_flows[c("cum_treated", "cum_vaccinated")], "[", -1, )
+
+  c(cumulative_flows, flows)
+}
+
+
 ##' Convert a year into the number of years after 2009
 ##'
 ##' @title Convert a year into the number of years after 2009

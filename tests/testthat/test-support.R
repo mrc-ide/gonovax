@@ -40,6 +40,21 @@ test_that("extract_flows_xpvwrh works", {
 
 })
 
+test_that("extract_flows works", {
+  tt <- seq(0, 2)
+  y <- run_onevax_xvwv(tt, gono_params(1:2), vea = 1, dur = 4, uptake = 1,
+                       strategy = "VoD", vbe = 1)
+  z <- extract_flows(y)
+
+  expect_equal(z$cum_treated[1, ], z$treated[1, ])
+  expect_equal(z$cum_treated[2, ] - z$cum_treated[1, ], z$treated[2, ])
+  expect_equal(z$vaccinated, t(aggregate(y, "cum_vaccinated", as_incid = TRUE)))
+  expect_equal(z$revaccinated[2, ],
+               sapply(y, function(x) diff(rowSums(x$cum_vaccinated[-1, , 3]))))
+  expect_equal(z$offered_primary, z$vaccinated - z$revaccinated - z$vbe)
+})
+
+
 test_that("gonovax_year works as expected", {
   expect_equal(gonovax_year(2009), 0)
   expect_error(gonovax_year(2006),
