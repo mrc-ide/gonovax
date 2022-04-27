@@ -179,7 +179,6 @@ run_grid  <- function(gono_params, init_params, cost_params,
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
                              disc_rate) {
-browser()
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
