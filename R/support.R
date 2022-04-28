@@ -47,11 +47,9 @@ extract_flows_xpvwrh <- function(y) {
 
   # revaccinated = everyone vaccinated from W(4), note does not include
   # vaccination of individuals in X who have waned from P
-  # in earlier models this will be strata (3) but by subtracting primary
-  # and partial we don't need to specify the index
   cumulative_flows$cum_revaccinated <-
-    cumulative_flows$cum_vaccinated - cumulative_flows$cum_primary_total
-                            - cumulative_flows$cum_part_to_full
+    t(aggregate(y, "cum_vaccinated", stratum = 4))
+
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
   names(flows) <- gsub("^cum_", "", names(cumulative_flows))
