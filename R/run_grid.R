@@ -205,7 +205,8 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   # calculate doses given per person offered primary vaccination
   ret$inc_primary_full_doses <- ret$inc_primary *  uptake_second_dose * 2
   ret$inc_primary_part_doses <- ret$inc_primary * (1 - uptake_second_dose)
-  ret$inc_primary_total_doses <- ret$inc_primary_full_doses + ret$inc_primary_part_doses
+  ret$inc_primary_total_doses <- ret$inc_primary_full_doses +
+    ret$inc_primary_part_doses
 
   # partial-to-full and booster vaccination take a single dose so is simply the
   # number of people vaccinated from P and W respectively
