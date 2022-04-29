@@ -20,6 +20,48 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
   apply(y, 1, f, ...)
 }
 
+##' @name extract_flows_xpvwrh
+##' @title extract flows used for run_grid when the branching  xpvwrh model
+##' has been run
+##' @param y a transformed model run output
+##' @return cumulative and incident flows
+##' @export
+extract_flows_xpvwrh <- function(y) {
+
+# extract cumulative flows
+  flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
+                  "cum_vaccinated", "cum_vbe")
+  cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
+  names(cumulative_flows) <- flow_names
+
+## extract vaccinations and revaccinations separately
+
+  # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
+  cumulative_flows$cum_primary_total <-
+    t(aggregate(y, "cum_vaccinated", stratum = 1))
+
+  # partial to full = everyone vaccinated from P(2)
+  # in earlier models this will be V, we expect this to be 0
+  cumulative_flows$cum_part_to_full <-
+    t(aggregate(y, "cum_vaccinated", stratum = 2))
+
+  # revaccinated = everyone vaccinated from W(4), note does not include
+  # vaccination of individuals in X who have waned from P
+  cumulative_flows$cum_revaccinated <-
+    t(aggregate(y, "cum_vaccinated", stratum = 4))
+
+  # extract annual flows
+  flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
+  names(flows) <- gsub("^cum_", "", names(cumulative_flows))
+
+  # remove time 0 from cumulative flows and remove those not needed
+  cumulative_flows <-
+    lapply(cumulative_flows[c("cum_treated", "cum_vaccinated")], "[", -1, )
+
+  c(cumulative_flows, flows)
+}
+
+
 ##' @name extract_flows
 ##' @title extract flows used for run_grid
 ##' @param y a transformed model run output
@@ -53,6 +95,7 @@ extract_flows <- function(y) {
 
   c(cumulative_flows, flows)
 }
+
 
 ##' Convert a year into the number of years after 2009
 ##'

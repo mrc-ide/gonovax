@@ -1,8 +1,11 @@
+# gonovax 0.4.3
+* new downstream functions generate meaningful output metrics for branching
+model
+
 # gonovax 0.4.2
 
 * new model structure where primary vaccination can either be partial or full depending on 1 or 2 doses, with primary vaccination waning to unvaccinated and an immunologically naive state, and full vaccination waning with some immunological memory. Partial vaccination with one dose can now provide an assigned level of protection. Individuals with one dose who visit the clinic
 can receive their second dose.
-
 
 # gonovax 0.4.1
 

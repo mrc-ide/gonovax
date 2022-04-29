@@ -26,7 +26,7 @@ primary vaccination}
 \item{booster_uptake}{proportion of the formerly fully vaccinated, waned
 population who accept a booster vaccination dose}
 
-\item{i_eligible}{vector of indices of stratum which are eligible for 
+\item{i_eligible}{vector of indices of stratum which are eligible for
 vaccination, of same length as the number of paths from unvaccinated to
 vaccinated}
 
