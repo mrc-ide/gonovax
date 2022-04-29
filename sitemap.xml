@@ -31,19 +31,37 @@
     <loc>/reference/compare_baseline.html</loc>
   </url>
   <url>
+    <loc>/reference/compare_baseline_xpvwrh.html</loc>
+  </url>
+  <url>
     <loc>/reference/compare_basic.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_uptake_map.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_uptake_map_xpvwrh.html</loc>
   </url>
   <url>
     <loc>/reference/create_vax_map.html</loc>
   </url>
   <url>
+    <loc>/reference/create_vax_map_branching.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_waning_map.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_waning_map_branching.html</loc>
   </url>
   <url>
     <loc>/reference/dbetabinom.html</loc>
   </url>
   <url>
     <loc>/reference/extract_flows.html</loc>
+  </url>
+  <url>
+    <loc>/reference/extract_flows_xpvwrh.html</loc>
   </url>
   <url>
     <loc>/reference/gono_params.html</loc>
@@ -68,6 +86,9 @@
   </url>
   <url>
     <loc>/reference/initial_params_trial.html</loc>
+  </url>
+  <url>
+    <loc>/reference/initial_params_xpvwrh.html</loc>
   </url>
   <url>
     <loc>/reference/initial_params_xvw_trial.html</loc>
@@ -106,6 +127,9 @@
     <loc>/reference/run_grid.html</loc>
   </url>
   <url>
+    <loc>/reference/run_onevax_xpvwrh.html</loc>
+  </url>
+  <url>
     <loc>/reference/run_onevax_xvw.html</loc>
   </url>
   <url>
@@ -134,6 +158,9 @@
   </url>
   <url>
     <loc>/reference/vax_params0.html</loc>
+  </url>
+  <url>
+    <loc>/reference/vax_params_xpvwrh.html</loc>
   </url>
   <url>
     <loc>/reference/vax_params_xvw.html</loc>
