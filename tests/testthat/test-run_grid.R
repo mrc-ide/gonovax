@@ -82,6 +82,22 @@ test_that("compare baseline xpvwrh works as expected", {
   tmp <- calc_cases_averted_per_dose(z, 0.03)
   expect_equal(z$cases_averted_per_dose[1, ], tmp[1, ])
   expect_true(all(tmp[2, ] != z$cases_averted_per_dose[1, ]))
+  
+  ## when r2 = 1, r2_p = 0, booster_uptake = 0, total doses = 2 * # vaccinations
+  y <- run_onevax_xpvwrh(tt, gp, ip,
+                         r1 = 1, r2 = 1, booster_uptake = 0,
+                         r2_p = 0, strategy = "VoD")
+  z2 <- compare_baseline_xpvwrh(y, bl0, uptake_first_dose = 1,
+                                 uptake_second_dose = 1, cp, 0)
+  expect_equal(z2$inc_cum_doses, (2 * z2$inc_cum_vaccinated))
+  
+  ## when r2 = 0, vbe = 0, total doses = total vaccinations
+  y <- run_onevax_xpvwrh(tt, gp, ip,
+                         r1 = 1, r2 = 0, booster_uptake = 0,
+                         r2_p = 0, vbe = 0, strategy = "VoD")
+  z2 <- compare_baseline_xpvwrh(y, bl0, uptake_first_dose = 1,
+                                uptake_second_dose = 0, cp, 0)
+  expect_equal(z2$inc_cum_doses, z2$inc_cum_vaccinated)
 
   ## test cost eff threshold
   d <- 0
@@ -202,7 +218,7 @@ expect_equal(z$inc_cum_primary + z$inc_cum_part_to_full +
   expect_equal(s, t)
 
 })
-
+###############################################################################
 test_that("compare baseline works as expected", {
 
   gp <- gono_params(1:2)
@@ -273,7 +289,7 @@ test_that("compare baseline works as expected", {
   tmp <- calc_cases_averted_per_dose(z, 0.03)
   expect_equal(z$cases_averted_per_dose[1, ], tmp[1, ])
   expect_true(all(tmp[2, ] != z$cases_averted_per_dose[1, ]))
-
+  
   ## test cost eff threshold
   d <- 0
   cost <- calc_costs(z, cp, d)
