@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_grid.R
 \name{compare_baseline_xpvwrh}
 \alias{compare_baseline_xpvwrh}
-\title{compare model runs with vaccination to a baseline run for the 
+\title{compare model runs with vaccination to a baseline run for the
 branching XPVWRH model where both partial and full vaccination have a
 given level of efficacy}
 \usage{
@@ -121,13 +121,17 @@ vaccination becomes cost-effective) calculated using £30,000 / QALY
 Incremental costs are calculated as: pv_inc_doses * £9 - pv_red_net_cost
 `inc_costs_18` = present value of incremental costs assuming £18 / dose.
 Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
+`inc_costs_35` = present value of incremental costs assuming £35 / dose.
+Incremental costs are calculated as: pv_inc_doses * £35 - pv_red_net_cost
 `inc_costs_50` = present value of incremental costs assuming £50 / dose.
 Incremental costs are calculated as: pv_inc_doses * £50 - pv_red_net_cost
+`inc_costs_70` = present value of incremental costs assuming £70 / dose.
+Incremental costs are calculated as: pv_inc_doses * £70 - pv_red_net_cost
 `inc_costs_85` = present value of incremental costs assuming £85 / dose
 Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
 }
 \description{
-compare model runs with vaccination to a baseline run for the 
+compare model runs with vaccination to a baseline run for the
 branching XPVWRH model where both partial and full vaccination have a
 given level of efficacy
 }
