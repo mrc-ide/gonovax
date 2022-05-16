@@ -250,9 +250,9 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$inc_costs_9 <- calc_inc_costs(9, costs)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
-  ret$inc_costs_35 <- calc_inc_costs(35, costs)  
+  ret$inc_costs_35 <- calc_inc_costs(35, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
-  ret$inc_costs_70 <- calc_inc_costs(70, costs)  
+  ret$inc_costs_70 <- calc_inc_costs(70, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
 
   ret
