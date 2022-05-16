@@ -1,3 +1,6 @@
+# gonovax 0.4.4
+* added incremental costs calculation for £35 and £70 per dose
+
 # gonovax 0.4.3
 * new downstream functions generate meaningful output metrics for branching
 model

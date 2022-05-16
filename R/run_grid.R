@@ -171,8 +171,12 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' Incremental costs are calculated as: pv_inc_doses * £9 - pv_red_net_cost
 ##' `inc_costs_18` = present value of incremental costs assuming £18 / dose.
 ##' Incremental costs are calculated as: pv_inc_doses * £18 - pv_red_net_cost
+##' `inc_costs_35` = present value of incremental costs assuming £35 / dose.
+##' Incremental costs are calculated as: pv_inc_doses * £35 - pv_red_net_cost
 ##' `inc_costs_50` = present value of incremental costs assuming £50 / dose.
 ##' Incremental costs are calculated as: pv_inc_doses * £50 - pv_red_net_cost
+##' `inc_costs_70` = present value of incremental costs assuming £70 / dose.
+##' Incremental costs are calculated as: pv_inc_doses * £70 - pv_red_net_cost
 ##' `inc_costs_85` = present value of incremental costs assuming £85 / dose
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
 ##' @export
@@ -246,7 +250,9 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ## both calcs allow for discounting (i.e. are present values as at 2022)
   ret$inc_costs_9 <- calc_inc_costs(9, costs)
   ret$inc_costs_18 <- calc_inc_costs(18, costs)
+  ret$inc_costs_35 <- calc_inc_costs(35, costs)
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
+  ret$inc_costs_70 <- calc_inc_costs(70, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
 
   ret

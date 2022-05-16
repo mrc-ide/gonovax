@@ -146,8 +146,12 @@ test_that("compare baseline xpvwrh works as expected", {
                cost$pv_inc_doses * (85 - 9))
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(18, cost),
                cost$pv_inc_doses * (85 - 18))
+  expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(35, cost),
+               cost$pv_inc_doses * (85 - 35))
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(50, cost),
                cost$pv_inc_doses * (85 - 50))
+  expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(70, cost),
+               cost$pv_inc_doses * (85 - 70))
 
   ## test that cumulative primary and booster vaccination calc correctly
 
@@ -334,8 +338,12 @@ test_that("compare baseline works as expected", {
                cost$pv_inc_doses * (85 - 9))
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(18, cost),
                cost$pv_inc_doses * (85 - 18))
+  expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(35, cost),
+               cost$pv_inc_doses * (85 - 35))
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(50, cost),
                cost$pv_inc_doses * (85 - 50))
+  expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(70, cost),
+               cost$pv_inc_doses * (85 - 70))
 
   ## test doses wasted calculated correctly
 
