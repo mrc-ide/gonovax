@@ -27,7 +27,6 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 ##' @return cumulative and incident flows
 ##' @export
 extract_flows_xpvwrh <- function(y) {
-
 # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
                   "cum_vaccinated", "cum_vbe")
@@ -49,7 +48,22 @@ extract_flows_xpvwrh <- function(y) {
   # vaccination of individuals in X who have waned from P
   cumulative_flows$cum_revaccinated <-
     t(aggregate(y, "cum_vaccinated", stratum = 4))
-
+  
+  # fully vaccine protected = everyone in the V(3) and R(5) strata in a given
+  # timepoint 
+  cumulative_flows$cum_vacprotec_full <-
+    t(aggregate(y, "N", stratum = c(3, 5), as_incid = TRUE))
+  
+  # partially vaccine protected = everyone in the P(2) strata in a given
+  # timepoint 
+  cumulative_flows$cum_vacprotec_part <-
+    t(aggregate(y, "N", stratum = 2, as_incid = TRUE))
+  
+  # vaccine protected total = everyone in the P(2), V(3), W(4) strata in a 
+  # given timepoint and therefore experiencing vaccine protection
+  cumulative_flows$cum_vacprotec_total <-
+    t(aggregate(y, "N", stratum = c(2, 3, 5), as_incid = TRUE))
+  
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
   names(flows) <- gsub("^cum_", "", names(cumulative_flows))
