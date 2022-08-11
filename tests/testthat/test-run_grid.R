@@ -161,6 +161,8 @@ test_that("compare baseline xpvwrh works as expected", {
                          r1 = 0,
                          r2 = 0, booster_uptake = 0,
                          strategy = "VoD")
+   bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
+   
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0,
                                uptake_second_dose = 0, cp, 0)
 
@@ -173,6 +175,8 @@ test_that("compare baseline xpvwrh works as expected", {
                            r1 = 0.5,
                            r2 = 1, booster_uptake = 0,
                            strategy = "VoD")
+   
+  
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0.5,
                                  uptake_second_dose = 0.2, cp, 0)
 
