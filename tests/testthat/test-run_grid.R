@@ -153,9 +153,9 @@ test_that("compare baseline xpvwrh works as expected", {
   expect_equal(calc_inc_costs(85, cost) - calc_inc_costs(70, cost),
                cost$pv_inc_doses * (85 - 70))
 
-  ## test that proportion of the population vaccine protected is calculated 
+  ## test that proportion of the population vaccine protected is calculated
   # correctly
-  
+
    # when uptake = 0, vaccine protected raw and proportion = 0
    y <- run_onevax_xpvwrh(tt, gp,
                          r1 = 0,
@@ -163,28 +163,28 @@ test_that("compare baseline xpvwrh works as expected", {
                          strategy = "VoD")
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0,
                                uptake_second_dose = 0, cp, 0)
-  
+
     expect_true(all(z$inc_vacprotec_total == 0))
     expect_true(all(z$inc_vacprotec_total_prop == 0))
-    
+
    # when r2 = 1, vac_protect_part = 0
-    
+
    y <- run_onevax_xpvwrh(tt, gp,
                            r1 = 0.5,
                            r2 = 1, booster_uptake = 0,
                            strategy = "VoD")
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0.5,
                                  uptake_second_dose = 0.2, cp, 0)
-  
+
   expect_true(all(z$inc_vacprotec_part == 0))
   expect_true(all(z$inc_vacprotec_part_prop == 0))
   expect_true(all(z$inc_vacprotec_total != 0))
   expect_true(all(z$inc_vacprotec_total_prop != 0))
   expect_equal(z$inc_vacprotec_total, z$inc_vacprotec_full)
-  
-  # proportion * 6e05 = raw number 
+
+  # proportion * 6e05 = raw number
   expect_equal(z$inc_vacprotec_total_prop * 6e05, z$inc_vacprotec_total)
-  
+
   ## test that cumulative primary and booster vaccination calc correctly
 
   bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp))
