@@ -179,6 +179,19 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' Incremental costs are calculated as: pv_inc_doses * £70 - pv_red_net_cost
 ##' `inc_costs_85` = present value of incremental costs assuming £85 / dose
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
+##' `inc_vacprotec_full` = annual number of fully vaccine protected individuals
+##' in the population
+##' `inc_vacprotec_part` = annual number of partially vaccine protected
+##' individuals in the population
+##' `inc_vacprotec_total` = total annual number of partially vaccine protected
+##' individuals in the population (including both partially and fully
+##' vaccinated)
+##' `inc_vacprotec_full_prop` = proportion of the population fully vaccine
+##' protected in a given year 
+##' `inc_vacprotec_part_prop` = proportion of the population partially vaccine
+##' protected in a given year 
+##' `inc_vacprotec_total_prop` = total proportion of the population under some 
+##' form of vaccine protection in a given year
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
