@@ -254,6 +254,15 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_70 <- calc_inc_costs(70, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
+  
+  
+  ### calculate the proportion of the population under vaccine protection
+  ## at any given time point
+  
+  N <- 6e+5
+  ret$inc_vacprotec_full_prop <- ret$inc_vacprotec_full/N
+  ret$inc_vacprotec_part_prop <- ret$inc_vacprotec_part/N
+  ret$inc_vacprotec_total_prop <- ret$inc_vacprotec_total/N
 
   ret
 }
