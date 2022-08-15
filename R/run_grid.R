@@ -203,20 +203,33 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret <- c(flows, ret)
 
   ## extract number under vaccine protection 
+      vacsnap <- list()
      # fully vaccine protected, snapshot of N in: V(3) and R(5) 
-        ret$vacprotec_full <-
+        vacsnap$vacprotec_full <-
         t(aggregate(y, "N", stratum = c(3, 5)))
     
     # partially vaccine protected, snapshot of N in: P(2) 
-        ret$vacprotec_part <-
+        vacsnap$vacprotec_part <-
          t(aggregate(y, "N", stratum = 2))
   
     # vaccine protected total, snapshot of N in: P(2), V(3), W(4)
-        ret$vacprotec_total <-
+        vacsnap$vacprotec_total <-
         t(aggregate(y, "N", stratum = c(2, 3, 5)))
   
-  
+    # remove the 0
+        vacsnap <- lapply(vacsnap, "[", -1, )
         
+  ret <- c(vacsnap, ret)
+  
+  ## calculate proportion of the population under vaccine protection
+    # get total pop size  (including H!) This should be the same across
+    # all model runs for all timepoints
+    N <- t(aggregate(y, "N"))[1, 1]
+    
+    ret$vacprotec_full_prop <- ret$vacprotec_full / N
+    ret$vacprotec_part_prop <- ret$vacprotec_part / N
+    ret$vacprotec_total_prop <- ret$vacprotec_total / N
+  
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
@@ -282,15 +295,6 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_70 <- calc_inc_costs(70, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
-
-
-  ### calculate the proportion of the population under vaccine protection
-  ## at any given time point
-
-  N <- 6e+5
-  ret$inc_vacprotec_full_prop <- ret$inc_vacprotec_full / N
-  ret$inc_vacprotec_part_prop <- ret$inc_vacprotec_part / N
-  ret$inc_vacprotec_total_prop <- ret$inc_vacprotec_total / N
 
   ret
 }
