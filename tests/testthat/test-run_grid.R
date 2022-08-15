@@ -199,26 +199,28 @@ test_that("compare baseline xpvwrh works as expected", {
   tt <- seq(0, 5)
   gp <- gono_params(1:2)
   pars <- lapply(gp[1], model_params)
-  ip <- lapply(pars, initial_params_xpvwrh, coverage_p = 0.5,
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.1, coverage_p = 0.5,
                t = 5)
   
-  # get number of people in N
+  # get number of people in P & V
   n_p <- sum(ip[[1]]$U0[,2])
   
+  n_v <- sum(ip[[1]]$U0[,3])
+  
   y_init <- run_onevax_xpvwrh(tt, gp, init_params = ip, dur_v = 1e+90)
+  
   bl_2 <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
   
-  z <- compare_baseline_xpvwrh(y_init, bl_2, uptake_first_dose = 0,
-                               uptake_second_dose = 0, cp, 0)
-
-  
-  # as people die at a constant rate from all compartments across all strata
+  # N.B as people die at a constant rate from all compartments across all strata
   # for the output of compare_baselines_xpvwrh, z, 
-  # z$vacprotec_part for the first timepoint will not give the value of 3e+5
-  # we expect for strata P as although coverage of partial vaccination was 50%
-  # some people will have died between t = 0 an t = 1
-  # will copy the code from compare_baselines_xpvwrh that generates 
-  # vac_protec_part but not ommit t = 0 as we usually do, instead
+  # z$vacprotec_part/full/total for the first timepoint will not give the value
+  # corresponding to the number of people initially vaccinated. E.g: We expect
+  # for strata P that initial coverage of partial vaccination was 50% but some
+  # will have died between t = 0 an t = 1 so compare_baselines won't output 3e05
+  # , as part of its code removes the timepoint 0 from the output.
+  # - instead we will copy the code from compare_baselines_xpvwrh that generates 
+  # vac_protec_part/full/total but not ommit t = 0 as we usually do and see
+  # if this gives us the values we expect:
   
              ## extract number under vaccine protection
              vacsnap <- list()
@@ -243,15 +245,18 @@ test_that("compare baseline xpvwrh works as expected", {
               vacsnap$vacprotec_part_prop <- vacsnap$vacprotec_part / N
               vacsnap$vacprotec_total_prop <- vacsnap$vacprotec_total / N
               
-             # calculate proportion population partially vaccinated initially
-              
+             # calculate proportion population vaccinated initially
+             # from the initial conditions object used for the model run
              init_vac_p <- n_p / N
-             
-        expect_equal(vacsnap$vacprotec_part_prop[1], init_vac_p)
-        expect_equal(vacsnap$vacprotec_total_prop[1], init_vac_p)
-        expect_equal(vacsnap$vacprotec_full_prop[1], 0)
-              
-  
+             init_vac_v <- n_v / N
+      
+        for (i in seq_along(y_init)) {   
+        expect_equal(vacsnap$vacprotec_part_prop[1, i], init_vac_p)
+        expect_equal(vacsnap$vacprotec_full_prop[1, i], init_vac_v)
+        expect_equal(vacsnap$vacprotec_total_prop[1, i],
+                     init_vac_p + init_vac_v) 
+        }      
+    
   ## test that cumulative primary and booster vaccination calc correctly
 
   bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp))
