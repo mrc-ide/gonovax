@@ -179,15 +179,79 @@ test_that("compare baseline xpvwrh works as expected", {
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0.5,
                                  uptake_second_dose = 0.2, cp, 0)
 
-  expect_true(all(z$inc_vacprotec_part == 0))
-  expect_true(all(z$inc_vacprotec_part_prop == 0))
-  expect_true(all(z$inc_vacprotec_total != 0))
-  expect_true(all(z$inc_vacprotec_total_prop != 0))
-  expect_equal(z$inc_vacprotec_total, z$inc_vacprotec_full)
+  expect_true(all(z$vacprotec_part == 0))
+  expect_true(all(z$vacprotec_part_prop == 0))
+  expect_true(all(z$vacprotec_total != 0))
+  expect_true(all(z$vacprotec_total_prop != 0))
+  expect_equal(z$vacprotec_total, z$vacprotec_full)
 
   # proportion * 6e05 = raw number
-  expect_equal(z$inc_vacprotec_total_prop * 6e05, z$inc_vacprotec_total)
+  expect_equal(z$vacprotec_total_prop * 6e05, z$vacprotec_total)
+  
+  N <- t(aggregate(y, "N"))[1, 1]
+  expect_equal(z$vacprotec_total_prop * N, z$vacprotec_total)
+  
+  # when model is initiated with a certain % vaccine coverage, this
+  # is the model proportion calculated
+  
+  # move % pop into P for starting condition, no uptake, no waning
+  # expect the correct proportion under partial vac
+  tt <- seq(0, 5)
+  gp <- gono_params(1:2)
+  pars <- lapply(gp[1], model_params)
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_p = 0.5,
+               t = 5)
+  
+  # get number of people in N
+  n_p <- sum(ip[[1]]$U0[,2])
+  
+  y_init <- run_onevax_xpvwrh(tt, gp, init_params = ip, dur_v = 1e+90)
+  bl_2 <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
+  
+  z <- compare_baseline_xpvwrh(y_init, bl_2, uptake_first_dose = 0,
+                               uptake_second_dose = 0, cp, 0)
 
+  
+  # as people die at a constant rate from all compartments across all strata
+  # for the output of compare_baselines_xpvwrh, z, 
+  # z$vacprotec_part for the first timepoint will not give the value of 3e+5
+  # we expect for strata P as although coverage of partial vaccination was 50%
+  # some people will have died between t = 0 an t = 1
+  # will copy the code from compare_baselines_xpvwrh that generates 
+  # vac_protec_part but not ommit t = 0 as we usually do, instead
+  
+             ## extract number under vaccine protection
+             vacsnap <- list()
+             # fully vaccine protected, snapshot of N in: V(3) and R(5)
+             vacsnap$vacprotec_full <-
+               t(aggregate(y_init, "N", stratum = c(3, 5)))
+             
+             # partially vaccine protected, snapshot of N in: P(2)
+             vacsnap$vacprotec_part <-
+               t(aggregate(y_init, "N", stratum = 2))
+             
+             # vaccine protected total, snapshot of N in: P(2), V(3), W(4)
+             vacsnap$vacprotec_total <-
+               t(aggregate(y_init, "N", stratum = c(2, 3, 5)))
+             
+             ## calculate proportion of the population under vaccine protection
+             # get total pop size  (including H!) This should be the same across
+             # all model runs for all timepoints
+             N <- t(aggregate(y, "N"))[1, 1]
+  
+              vacsnap$vacprotec_full_prop <- vacsnap$vacprotec_full / N
+              vacsnap$vacprotec_part_prop <- vacsnap$vacprotec_part / N
+              vacsnap$vacprotec_total_prop <- vacsnap$vacprotec_total / N
+              
+             # calculate proportion population partially vaccinated initially
+              
+             init_vac_p <- n_p / N
+             
+        expect_equal(vacsnap$vacprotec_part_prop[1], init_vac_p)
+        expect_equal(vacsnap$vacprotec_total_prop[1], init_vac_p)
+        expect_equal(vacsnap$vacprotec_full_prop[1], 0)
+              
+  
   ## test that cumulative primary and booster vaccination calc correctly
 
   bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp))
