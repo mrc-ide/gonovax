@@ -35,7 +35,7 @@ test_that("extract_flows_xpvwrh works", {
   expect_equal(t(aggregate(y, "cum_vaccinated", as_incid = TRUE)),
                (z$primary_total + z$part_to_full +
                   z$revaccinated))
-  expect_equal(z$vacprotec_total, (z$vacprotec_part + z$vacprotec_full))
+  
   # number revaccinated at t = 2, is the difference in the # cumulatively
   # vaccinated in strata W (4) between t = 2 and t = 3
   expect_equal(z$revaccinated[2, ],
