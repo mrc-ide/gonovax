@@ -198,10 +198,25 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              disc_rate) {
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
-  ret <- Map(`-`, flows, baseline[names(flows)])
+  ret <- Map(`-`, flows, baseline[names(flows)])                        
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
 
+  ## extract number under vaccine protection 
+     # fully vaccine protected, snapshot of N in: V(3) and R(5) 
+        ret$vacprotec_full <-
+        t(aggregate(y, "N", stratum = c(3, 5)))
+    
+    # partially vaccine protected, snapshot of N in: P(2) 
+        ret$vacprotec_part <-
+         t(aggregate(y, "N", stratum = 2))
+  
+    # vaccine protected total, snapshot of N in: P(2), V(3), W(4)
+        ret$vacprotec_total <-
+        t(aggregate(y, "N", stratum = c(2, 3, 5)))
+  
+  
+        
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
   ret$inc_cum_primary <- apply(ret$inc_primary, 2, cumsum)
