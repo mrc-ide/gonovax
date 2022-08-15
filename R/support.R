@@ -34,7 +34,6 @@ extract_flows_xpvwrh <- function(y) {
   names(cumulative_flows) <- flow_names
 
 ## extract vaccinations and revaccinations separately
-
   # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
   cumulative_flows$cum_primary_total <-
     t(aggregate(y, "cum_vaccinated", stratum = 1))
