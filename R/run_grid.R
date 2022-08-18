@@ -211,7 +211,7 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
         vacsnap$vacprotec_part <-
          t(aggregate(y, "N", stratum = 2))
 
-    # vaccine protected total, snapshot of N in: P(2), V(3), W(4)
+    # vaccine protected total, snapshot of N in: P(2), V(3), R(5)
         vacsnap$vacprotec_total <-
         t(aggregate(y, "N", stratum = c(2, 3, 5)))
 
