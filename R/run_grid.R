@@ -179,6 +179,18 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' Incremental costs are calculated as: pv_inc_doses * £70 - pv_red_net_cost
 ##' `inc_costs_85` = present value of incremental costs assuming £85 / dose
 ##' Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost
+##' `vacprotec_full` = number of fully vaccine protected individuals in the
+##'  population at a given timepoint
+##' `vacprotec_part` = number of partially vaccine protected individuals in the
+##'  population at a given timepoint
+##' `vacprotec_total` = total number of vaccine protected individuals in the
+##'  population (both partially and fully vaccinated) at a given timepoint
+##' `vacprotec_full_prop` = proportion of the population experiencing full
+##' vaccine protection at a given timepoint
+##' `vacprotec_part_prop` = proportion of the population experiencing partial
+##' vaccine protection at a given timepoint
+##' `vacprotec_total_prop` = total proportion of the population experiencing
+##' some form of vaccine protection at a given timepoint
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
@@ -188,6 +200,36 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret <- Map(`-`, flows, baseline[names(flows)])
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
+
+  ## extract number under vaccine protection
+      vacsnap <- list()
+     # fully vaccine protected, snapshot of N in: V(3) and R(5)
+        vacsnap$vacprotec_full <-
+        t(aggregate(y, "N", stratum = c(3, 5)))
+
+    # partially vaccine protected, snapshot of N in: P(2)
+        vacsnap$vacprotec_part <-
+         t(aggregate(y, "N", stratum = 2))
+
+    # vaccine protected total, snapshot of N in: P(2), V(3), R(5)
+        vacsnap$vacprotec_total <-
+        t(aggregate(y, "N", stratum = c(2, 3, 5)))
+
+    # remove t = 0, so object dimensions for prevalence measures match those for
+    # annual and cumulative flows
+        vacsnap <- lapply(vacsnap, "[", -1, )
+
+  ret <- c(vacsnap, ret)
+
+  ## calculate proportion of the population under vaccine protection
+    # get total pop size  (including H!) This should be the same across
+    # all model runs for all timepoints
+    # t() added as ret$vacprotec_* are dim(t, n_par), so arrays are conformable
+    N <- t(aggregate(y, "N")[, -1])
+
+    ret$vacprotec_full_prop <- ret$vacprotec_full / N
+    ret$vacprotec_part_prop <- ret$vacprotec_part / N
+    ret$vacprotec_total_prop <- ret$vacprotec_total / N
 
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe

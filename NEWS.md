@@ -1,3 +1,7 @@
+# gonovax 0.4.5
+* model outputs annual number of individuals and proportion of the population 
+experiencing vaccine protection (not just the number vaccinated)
+
 # gonovax 0.4.4
 * added incremental costs calculation for £35 and £70 per dose
 
