@@ -223,7 +223,7 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ## calculate proportion of the population under vaccine protection
     # get total pop size  (including H!) This should be the same across
     # all model runs for all timepoints
-    N <- t(aggregate(y, "N"))[1, 1]
+    N <- aggregate(y, "N")[, -1]
 
     ret$vacprotec_full_prop <- ret$vacprotec_full / N
     ret$vacprotec_part_prop <- ret$vacprotec_part / N
