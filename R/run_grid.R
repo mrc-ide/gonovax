@@ -215,7 +215,7 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
         vacsnap$vacprotec_total <-
         t(aggregate(y, "N", stratum = c(2, 3, 5)))
 
-    # remove the 0
+    # remove t = 0, so object dimensions for prevalence measures match those for annual and cumulative flows
         vacsnap <- lapply(vacsnap, "[", -1, )
 
   ret <- c(vacsnap, ret)
