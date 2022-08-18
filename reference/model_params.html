@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -57,28 +57,37 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">model_params</span><span class="op">(</span>
-  gono_params <span class="op">=</span> <span class="cn">NULL</span>,
-  demographic_params <span class="op">=</span> <span class="cn">NULL</span>,
-  init_params <span class="op">=</span> <span class="cn">NULL</span>,
-  vax_params <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">model_params</span><span class="op">(</span></span>
+<span>  gono_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  demographic_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  init_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  vax_params <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>gono_params</dt>
 <dd><p>A dataframe of natural history parameters</p></dd>
+
+
 <dt>demographic_params</dt>
 <dd><p>A dataframe of demographic parameters</p></dd>
+
+
 <dt>init_params</dt>
 <dd><p>A list of starting conditions</p></dd>
+
+
 <dt>vax_params</dt>
 <dd><p>A vector of vaccination params</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of inputs to the model many of which are fixed and
+    
+
+<p>A list of inputs to the model many of which are fixed and
   represent data. These correspond largely to `user()` calls
   within the odin code, though some are also used in processing
   just before the model is run.</p>
@@ -96,7 +105,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

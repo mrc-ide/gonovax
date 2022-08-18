@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -57,24 +57,24 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">vax_params_xvwrh</span><span class="op">(</span>
-  vea <span class="op">=</span> <span class="fl">0</span>,
-  vei <span class="op">=</span> <span class="fl">0</span>,
-  ved <span class="op">=</span> <span class="fl">0</span>,
-  ves <span class="op">=</span> <span class="fl">0</span>,
-  vea_revax <span class="op">=</span> <span class="va">vea</span>,
-  vei_revax <span class="op">=</span> <span class="va">vei</span>,
-  ved_revax <span class="op">=</span> <span class="va">ved</span>,
-  ves_revax <span class="op">=</span> <span class="va">ves</span>,
-  dur <span class="op">=</span> <span class="fl">1000</span>,
-  dur_revax <span class="op">=</span> <span class="va">dur</span>,
-  primary_uptake <span class="op">=</span> <span class="fl">0</span>,
-  booster_uptake <span class="op">=</span> <span class="va">primary_uptake</span>,
-  strategy <span class="op">=</span> <span class="cn">NULL</span>,
-  vbe <span class="op">=</span> <span class="fl">0</span>,
-  t_stop <span class="op">=</span> <span class="fl">99</span>,
-  hes <span class="op">=</span> <span class="fl">0</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vax_params_xvwrh</span><span class="op">(</span></span>
+<span>  vea <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  vei <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ved <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ves <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  vea_revax <span class="op">=</span> <span class="va">vea</span>,</span>
+<span>  vei_revax <span class="op">=</span> <span class="va">vei</span>,</span>
+<span>  ved_revax <span class="op">=</span> <span class="va">ved</span>,</span>
+<span>  ves_revax <span class="op">=</span> <span class="va">ves</span>,</span>
+<span>  dur <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  dur_revax <span class="op">=</span> <span class="va">dur</span>,</span>
+<span>  primary_uptake <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  booster_uptake <span class="op">=</span> <span class="va">primary_uptake</span>,</span>
+<span>  strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  vbe <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  t_stop <span class="op">=</span> <span class="fl">99</span>,</span>
+<span>  hes <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -82,54 +82,87 @@
     <dl><dt>vea</dt>
 <dd><p>scalar indicating efficacy of the vaccine against acquisition
 (between 0-1)</p></dd>
+
+
 <dt>vei</dt>
 <dd><p>scalar indicating efficacy of the vaccine against infectiousness
 (between 0-1)</p></dd>
+
+
 <dt>ved</dt>
 <dd><p>scalar indicating efficacy of the vaccine against duration
 (between 0-1)</p></dd>
+
+
 <dt>ves</dt>
 <dd><p>scalar indicating efficacy of the vaccine against symptoms
 (between 0-1)</p></dd>
+
+
 <dt>vea_revax</dt>
 <dd><p>scalar indicating efficacy of revaccination against
 acquisition (between 0-1)</p></dd>
+
+
 <dt>vei_revax</dt>
 <dd><p>scalar indicating efficacy of revaccination against
 infectiousness (between 0-1)</p></dd>
+
+
 <dt>ved_revax</dt>
 <dd><p>scalar indicating efficacy of revaccination against
 duration of infection (between 0-1)</p></dd>
+
+
 <dt>ves_revax</dt>
 <dd><p>scalar indicating efficacy of revaccination against
 symptoms (between 0-1)</p></dd>
+
+
 <dt>dur</dt>
 <dd><p>scalar indicating duration of the vaccine (in years)</p></dd>
+
+
 <dt>dur_revax</dt>
 <dd><p>duration of protection for revaccination,
 default to same as primary</p></dd>
+
+
 <dt>primary_uptake</dt>
 <dd><p>scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking primary
 vaccination as part of strategy</p></dd>
+
+
 <dt>booster_uptake</dt>
 <dd><p>scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
 vaccination after primary vaccination protection has waned</p></dd>
+
+
 <dt>strategy</dt>
 <dd><p>single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination</p></dd>
+
+
 <dt>vbe</dt>
 <dd><p>scalar indicating pc of population vaccinated before entry
 (between 0-1)</p></dd>
+
+
 <dt>t_stop</dt>
 <dd><p>time at which vaccination should stop (years)</p></dd>
+
+
 <dt>hes</dt>
 <dd><p>proportion of population vaccine hesitant</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list parameters in the model input format</p>
+    
+
+<p>A list parameters in the model input format</p>
     </div>
 
   </div>
@@ -144,7 +177,7 @@ vaccination after primary vaccination protection has waned</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

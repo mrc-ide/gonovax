@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -59,15 +59,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mcmc_thin</span><span class="op">(</span><span class="va">object</span>, burnin <span class="op">=</span> <span class="cn">NULL</span>, thin <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
-
-<span class="fu">mcmc_sample</span><span class="op">(</span><span class="va">object</span>, <span class="va">n_sample</span>, burnin <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mcmc_thin</span><span class="op">(</span><span class="va">object</span>, burnin <span class="op">=</span> <span class="cn">NULL</span>, thin <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mcmc_sample</span><span class="op">(</span><span class="va">object</span>, <span class="va">n_sample</span>, burnin <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>object</dt>
 <dd><p>Results of running [mcmc()]</p></dd>
+
+
 <dt>burnin</dt>
 <dd><p>Optional integer number of iterations to discard as
 "burn-in". If given then samples `1:burnin` will be
@@ -76,14 +78,19 @@ represents the starting point of the chain. It is an error if
 this is not a positive integer or is greater than or equal to
 the number of samples (i.e., there must be at least one sample
 remaining after discarding burnin).</p></dd>
+
+
 <dt>thin</dt>
 <dd><p>Optional integer thinning factor. If given, then every
 `thin`'th sample is retained (e.g., if `thin` is 10
 then we keep samples 1, 11, 21, ...).</p></dd>
+
+
 <dt>n_sample</dt>
 <dd><p>The number of samples to draw from `object` *with
 replacement*. This means that `n_sample` can be larger than the
 total number of samples taken (though it probably should not)</p></dd>
+
 </dl></div>
 
   </div>
@@ -98,7 +105,7 @@ total number of samples taken (though it probably should not)</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

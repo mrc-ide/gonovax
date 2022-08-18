@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -57,28 +57,41 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">aggregate</span><span class="op">(</span><span class="va">x</span>, <span class="va">what</span>, as_incid <span class="op">=</span> <span class="cn">FALSE</span>, stratum <span class="op">=</span> <span class="cn">NULL</span>, f <span class="op">=</span> <span class="va">identity</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aggregate</span><span class="op">(</span><span class="va">x</span>, <span class="va">what</span>, as_incid <span class="op">=</span> <span class="cn">FALSE</span>, stratum <span class="op">=</span> <span class="cn">NULL</span>, f <span class="op">=</span> <span class="va">identity</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a transformed model run output</p></dd>
+
+
 <dt>what</dt>
 <dd><p>a character string of the cumulative trajectory to transform</p></dd>
+
+
 <dt>as_incid</dt>
 <dd><p>logical specifying whether to convert to incidence</p></dd>
+
+
 <dt>stratum</dt>
 <dd><p>an integer denoting the stratum to aggregate over, if NULL
 aggregation is over all strata</p></dd>
+
+
 <dt>f</dt>
 <dd><p>function to apply across parameter sets (eg. mean / median)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>named arguments to pass to f</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a transformed time series / array</p>
+    
+
+<p>a transformed time series / array</p>
     </div>
 
   </div>
@@ -93,7 +106,7 @@ aggregation is over all strata</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

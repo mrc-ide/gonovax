@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -57,14 +57,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">compare_baseline</span><span class="op">(</span>
-  <span class="va">y</span>,
-  <span class="va">baseline</span>,
-  <span class="va">uptake_first_dose</span>,
-  <span class="va">uptake_second_dose</span>,
-  <span class="va">cost_params</span>,
-  <span class="va">disc_rate</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">compare_baseline</span><span class="op">(</span></span>
+<span>  <span class="va">y</span>,</span>
+<span>  <span class="va">baseline</span>,</span>
+<span>  <span class="va">uptake_first_dose</span>,</span>
+<span>  <span class="va">uptake_second_dose</span>,</span>
+<span>  <span class="va">cost_params</span>,</span>
+<span>  <span class="va">disc_rate</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,25 +72,38 @@
     <dl><dt>y</dt>
 <dd><p>list of model runs, e.g. created by `run_onevax_xvwv`, each list
 entry refers to a different parameter set</p></dd>
+
+
 <dt>baseline</dt>
 <dd><p>list of baseline runs e.g. created by `run_onevax_xvwv`.
 Should be same length as `y`</p></dd>
+
+
 <dt>uptake_first_dose</dt>
 <dd><p>numeric (0-1) either length 1 or same as `y`</p></dd>
+
+
 <dt>uptake_second_dose</dt>
 <dd><p>numeric (0-1) either length 1 or same as `y`</p></dd>
+
+
 <dt>cost_params</dt>
 <dd><p>list of cost effectiveness parameters, containing entries
 `qaly_loss_per_diag_s`, `unit_cost_manage_symptomatic`,
 `unit_cost_manage_asymptomatic`, `unit_cost_screen_uninfected`. Each entry
 length 1 or same as `y`</p></dd>
+
+
 <dt>disc_rate</dt>
 <dd><p>discount rate for cost-effectiveness output per annum,
 default = 0</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list of matrices with rows = time point and columns
+    
+
+<p>A list of matrices with rows = time point and columns
 = parameter set
 list entries are:
 `cum_treated` = cumulative number treated in model run
@@ -186,7 +199,7 @@ Incremental costs are calculated as: pv_inc_doses * £85 - pv_red_net_cost</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -23,7 +23,7 @@ eligible for revaccination."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -67,60 +67,85 @@ eligible for revaccination.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">run_onevax_xvw</span><span class="op">(</span>
-  <span class="va">tt</span>,
-  <span class="va">gono_params</span>,
-  init_params <span class="op">=</span> <span class="cn">NULL</span>,
-  dur <span class="op">=</span> <span class="fl">1000</span>,
-  vea <span class="op">=</span> <span class="fl">0</span>,
-  vei <span class="op">=</span> <span class="fl">0</span>,
-  ved <span class="op">=</span> <span class="fl">0</span>,
-  ves <span class="op">=</span> <span class="fl">0</span>,
-  vbe <span class="op">=</span> <span class="va">coverage</span>,
-  uptake <span class="op">=</span> <span class="fl">0</span>,
-  strategy <span class="op">=</span> <span class="cn">NULL</span>,
-  coverage <span class="op">=</span> <span class="fl">0</span>,
-  t_stop <span class="op">=</span> <span class="fl">99</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_onevax_xvw</span><span class="op">(</span></span>
+<span>  <span class="va">tt</span>,</span>
+<span>  <span class="va">gono_params</span>,</span>
+<span>  init_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dur <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  vea <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  vei <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ved <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  ves <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  vbe <span class="op">=</span> <span class="va">coverage</span>,</span>
+<span>  uptake <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  coverage <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  t_stop <span class="op">=</span> <span class="fl">99</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>tt</dt>
 <dd><p>a numeric vector of times at which the model state is output</p></dd>
+
+
 <dt>gono_params</dt>
 <dd><p>list of gono params</p></dd>
+
+
 <dt>init_params</dt>
 <dd><p>= NULL</p></dd>
+
+
 <dt>dur</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)</p></dd>
+
+
 <dt>vea</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against acquisition (between 0-1)</p></dd>
+
+
 <dt>vei</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against infectiousness (between 0-1)</p></dd>
+
+
 <dt>ved</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against duration (between 0-1)</p></dd>
+
+
 <dt>ves</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against symptoms (between 0-1)</p></dd>
+
+
 <dt>vbe</dt>
 <dd><p>scalar giving uptake of vaccination before
 entry into population (i.e. adolescent vaccination) defaults to same as
 `coverage`</p></dd>
+
+
 <dt>uptake</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy</p></dd>
+
+
 <dt>strategy</dt>
 <dd><p>single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination</p></dd>
+
+
 <dt>coverage</dt>
 <dd><p>scalar giving initial coverage of vaccination, default 0.</p></dd>
+
+
 <dt>t_stop</dt>
 <dd><p>time at which vaccination should stop (years)</p></dd>
+
 </dl></div>
 
   </div>
@@ -135,7 +160,7 @@ giving pc of population vaccinated as part of strategy</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

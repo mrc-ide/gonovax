@@ -23,7 +23,7 @@ by the user."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
       </span>
     </div>
 
@@ -67,39 +67,52 @@ by the user.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">create_uptake_map</span><span class="op">(</span>
-  <span class="va">n_group</span>,
-  <span class="va">n_vax</span>,
-  <span class="va">primary_uptake</span>,
-  <span class="va">booster_uptake</span>,
-  <span class="va">i_eligible</span>,
-  <span class="va">i_v</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_uptake_map</span><span class="op">(</span></span>
+<span>  <span class="va">n_group</span>,</span>
+<span>  <span class="va">n_vax</span>,</span>
+<span>  <span class="va">primary_uptake</span>,</span>
+<span>  <span class="va">booster_uptake</span>,</span>
+<span>  <span class="va">i_eligible</span>,</span>
+<span>  <span class="va">i_v</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>n_group</dt>
 <dd><p>scalar indicating number of activity groups</p></dd>
+
+
 <dt>n_vax</dt>
 <dd><p>scalar indicating number the number of stratum in the model</p></dd>
+
+
 <dt>primary_uptake</dt>
 <dd><p>proportion of the unvaccinated population who accept
 primary vaccination</p></dd>
+
+
 <dt>booster_uptake</dt>
 <dd><p>proportion of the formerly fully vaccinated, waned
 population who accept a booster vaccination dose</p></dd>
+
+
 <dt>i_eligible</dt>
 <dd><p>vector of indices of stratum which are eligible for
 vaccination, of same length as the number of paths from unvaccinated to
 vaccinated</p></dd>
+
+
 <dt>i_v</dt>
 <dd><p>vector of indices of stratum which are vaccinated and experience
 protection</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>an array of the uptakes with dimensions n_group x n_vax x n_vax</p>
+    
+
+<p>an array of the uptakes with dimensions n_group x n_vax x n_vax</p>
     </div>
 
   </div>
@@ -114,7 +127,7 @@ protection</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
