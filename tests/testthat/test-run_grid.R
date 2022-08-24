@@ -177,7 +177,7 @@ test_that("compare baseline xpvwrh works as expected", {
                            strategy = "VoD")
 
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0.5,
-                                 uptake_second_dose = 0.2, cp, 0)
+                                 uptake_second_dose = 1, cp, 0)
 
   expect_true(all(z$vacprotec_part == 0))
   expect_true(all(z$vacprotec_part_prop == 0))
@@ -190,6 +190,35 @@ test_that("compare baseline xpvwrh works as expected", {
 
   N <- t(aggregate(y, "N"))[1, 1]
   expect_equal(z$vacprotec_total_prop * N, z$vacprotec_total)
+
+  ## total number of people vaccinated is the same if they recieve one dose or 2
+
+  y_twodose <- run_onevax_xpvwrh(tt, gp,
+                                 r1 = 0.6,
+                                 r2 = 1, booster_uptake = 0,
+                                 dur_v = 1e99,
+                                 vea = 0.5,
+                                 strategy = "VoD(L)+VoA(H)")
+
+  y_onedose <- run_onevax_xpvwrh(tt, gp,
+                                 r1 = 0.6,
+                                 r2 = 0, booster_uptake = 0,
+                                 dur_v = 1e99,
+                                 vea = 0.5,
+                                 strategy = "VoD(L)+VoA(H)")
+
+  z_twodose <- compare_baseline_xpvwrh(y_twodose, bl, uptake_first_dose = 0.6,
+                               uptake_second_dose = 1, cp, 0)
+
+  z_onedose <- compare_baseline_xpvwrh(y_onedose, bl, uptake_first_dose = 0.6,
+                                       uptake_second_dose = 0, cp, 0)
+
+  expect_equal(z_twodose$vacprotec_total_prop, z_onedose$vacprotec_total_prop)
+  expect_equal(z_twodose$vacprotec_total, z_onedose$vacprotec_total)
+  expect_true(all(z_onedose$vacprotec_full == 0))
+  expect_true(all(z_twodose$vacprotec_full != 0))
+  expect_equal(z_twodose$vacprotec_full, z_twodose$vacprotec_total)
+
 
   # when model is initiated with a certain % vaccine coverage, this
   # is the model proportion calculated
