@@ -12,7 +12,9 @@ compare_baseline_xpvwrh(
   uptake_first_dose,
   uptake_second_dose,
   cost_params,
-  disc_rate
+  disc_rate,
+  vea,
+  vea_p
 )
 }
 \arguments{
@@ -141,6 +143,10 @@ vaccine protection at a given timepoint
 vaccine protection at a given timepoint
 `vacprotec_total_prop` = total proportion of the population experiencing
 some form of vaccine protection at a given timepoint
+`level_vacprotec` = the level of vaccine protection in the population at a
+given timepoint. Given as the sum of the products of the number of partially
+and fully vaccinated individuals and the one dose and two dose vaccine 
+efficacies respectively.
 }
 \description{
 compare model runs with vaccination to a baseline run for the
