@@ -193,7 +193,7 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' some form of vaccine protection at a given timepoint
 ##' `level_vacprotec` = the level of vaccine protection in the population at a
 ##' given timepoint. Given as the sum of the products of the number of partially
-##' and fully vaccinated individuals and the one dose and two dose vaccine 
+##' and fully vaccinated individuals and the one dose and two dose vaccine
 ##' efficacies respectively.
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
