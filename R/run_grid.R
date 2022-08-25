@@ -85,6 +85,10 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @param uptake_second_dose numeric (0-1) either length 1 or same as `y`
 ##' @param disc_rate discount rate for cost-effectiveness output per annum,
 ##'  default = 0
+##' @param vea = scalar indicating efficacy of full vaccination against
+##' aquisition (between 0-1)
+##' @param vea_p scalar indicating efficacy of partial vaccination against
+##'  acquisition (between 0-1)
 ##' @return A list of matrices with rows = time point and columns
 ##' = parameter set
 ##' list entries are:

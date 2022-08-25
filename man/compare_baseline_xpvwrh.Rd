@@ -35,6 +35,12 @@ length 1 or same as `y`}
 
 \item{disc_rate}{discount rate for cost-effectiveness output per annum,
 default = 0}
+
+\item{vea}{= scalar indicating efficacy of full vaccination against
+aquisition (between 0-1)}
+
+\item{vea_p}{scalar indicating efficacy of partial vaccination against
+acquisition (between 0-1)}
 }
 \value{
 A list of matrices with rows = time point and columns
@@ -145,7 +151,7 @@ vaccine protection at a given timepoint
 some form of vaccine protection at a given timepoint
 `level_vacprotec` = the level of vaccine protection in the population at a
 given timepoint. Given as the sum of the products of the number of partially
-and fully vaccinated individuals and the one dose and two dose vaccine 
+and fully vaccinated individuals and the one dose and two dose vaccine
 efficacies respectively.
 }
 \description{
