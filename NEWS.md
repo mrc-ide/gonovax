@@ -1,3 +1,7 @@
+# gonovax 0.4.6
+* model outputs level of population vaccine protection (number vaccinated weighted by efficacy). Tests also added to check number of individuals
+vaccinated is being performed correctly
+
 # gonovax 0.4.5
 * model outputs annual number of individuals and proportion of the population 
 experiencing vaccine protection (not just the number vaccinated)

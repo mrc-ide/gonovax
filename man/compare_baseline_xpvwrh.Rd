@@ -12,7 +12,9 @@ compare_baseline_xpvwrh(
   uptake_first_dose,
   uptake_second_dose,
   cost_params,
-  disc_rate
+  disc_rate,
+  vea,
+  vea_p
 )
 }
 \arguments{
@@ -33,6 +35,12 @@ length 1 or same as `y`}
 
 \item{disc_rate}{discount rate for cost-effectiveness output per annum,
 default = 0}
+
+\item{vea}{= scalar indicating efficacy of full vaccination against
+aquisition (between 0-1)}
+
+\item{vea_p}{scalar indicating efficacy of partial vaccination against
+acquisition (between 0-1)}
 }
 \value{
 A list of matrices with rows = time point and columns
@@ -141,6 +149,10 @@ vaccine protection at a given timepoint
 vaccine protection at a given timepoint
 `vacprotec_total_prop` = total proportion of the population experiencing
 some form of vaccine protection at a given timepoint
+`level_vacprotec` = the level of vaccine protection in the population at a
+given timepoint. Given as the sum of the products of the number of partially
+and fully vaccinated individuals and the one dose and two dose vaccine
+efficacies respectively.
 }
 \description{
 compare model runs with vaccination to a baseline run for the

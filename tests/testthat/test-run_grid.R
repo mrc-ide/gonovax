@@ -37,7 +37,8 @@ test_that("compare baseline xpvwrh works as expected", {
                        r1 = r1, r2 = r2, strategy = "VoD")
   yy <- extract_flows_xpvwrh(y)
 
-  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0)
+  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0,
+                               vea = 0.5, vea_p = 0.5)
 
   flownames <- names(yy)
   incnames <- paste0("inc_", flownames)
@@ -72,7 +73,8 @@ test_that("compare baseline xpvwrh works as expected", {
   bl0 <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
   blv0 <- rep(list(bl0), 4)
 
-  z1 <- compare_baseline_xpvwrh(y, bl0, r1, r2, cp, 0)
+  z1 <- compare_baseline_xpvwrh(y, bl0, r1, r2, cp, 0,
+                                vea = 0.5, vea_p = 0.5)
   expect_equivalent(z1$inc_vbe, matrix(12000 * 0.5, 3, 2))
   expect_equal(f(yy) - f(bl0), z1$inc_doses)
 
@@ -88,7 +90,8 @@ test_that("compare baseline xpvwrh works as expected", {
                          r1 = 1, r2 = 1, booster_uptake = 0,
                          r2_p = 0, strategy = "VoD")
   z2 <- compare_baseline_xpvwrh(y, bl0, uptake_first_dose = 1,
-                                 uptake_second_dose = 1, cp, 0)
+                                 uptake_second_dose = 1, cp, 0,
+                                vea = 0.5, vea_p = 0.5)
   expect_equal(z2$inc_cum_doses, (2 * z2$inc_cum_vaccinated))
 
   ## when r2 = 0, vbe = 0, total doses = total vaccinations
@@ -96,7 +99,8 @@ test_that("compare baseline xpvwrh works as expected", {
                          r1 = 1, r2 = 0, booster_uptake = 0,
                          r2_p = 0, vbe = 0, strategy = "VoD")
   z2 <- compare_baseline_xpvwrh(y, bl0, uptake_first_dose = 1,
-                                uptake_second_dose = 0, cp, 0)
+                                uptake_second_dose = 0, cp, 0,
+                                vea = 0, vea_p = 0)
   expect_equal(z2$inc_cum_doses, z2$inc_cum_vaccinated)
 
   ## test cost eff threshold
@@ -164,7 +168,8 @@ test_that("compare baseline xpvwrh works as expected", {
    bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
 
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0,
-                               uptake_second_dose = 0, cp, 0)
+                               uptake_second_dose = 0, cp, 0,
+                               vea = 0, vea_p = 0)
 
     expect_true(all(z$inc_vacprotec_total == 0))
     expect_true(all(z$inc_vacprotec_total_prop == 0))
@@ -177,7 +182,8 @@ test_that("compare baseline xpvwrh works as expected", {
                            strategy = "VoD")
 
    z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 0.5,
-                                 uptake_second_dose = 0.2, cp, 0)
+                                 uptake_second_dose = 1, cp, 0,
+                                vea = 0, vea_p = 0)
 
   expect_true(all(z$vacprotec_part == 0))
   expect_true(all(z$vacprotec_part_prop == 0))
@@ -190,6 +196,37 @@ test_that("compare baseline xpvwrh works as expected", {
 
   N <- t(aggregate(y, "N"))[1, 1]
   expect_equal(z$vacprotec_total_prop * N, z$vacprotec_total)
+
+  ## total number of people vaccinated is the same if they receive one dose or 2
+
+  y_twodose <- run_onevax_xpvwrh(tt, gp,
+                                 r1 = 0.6,
+                                 r2 = 1, booster_uptake = 0,
+                                 dur_v = 1e99,
+                                 vea = 0.5,
+                                 strategy = "VoD(L)+VoA(H)")
+
+  y_onedose <- run_onevax_xpvwrh(tt, gp,
+                                 r1 = 0.6,
+                                 r2 = 0, booster_uptake = 0,
+                                 dur_v = 1e99,
+                                 vea = 0.5,
+                                 strategy = "VoD(L)+VoA(H)")
+
+  z_twodose <- compare_baseline_xpvwrh(y_twodose, bl, uptake_first_dose = 0.6,
+                               uptake_second_dose = 1, cp, 0,
+                               vea = 0.5, vea_p = 0.5)
+
+  z_onedose <- compare_baseline_xpvwrh(y_onedose, bl, uptake_first_dose = 0.6,
+                                       uptake_second_dose = 0, cp, 0,
+                                       vea = 0.5, vea_p = 0.5)
+
+  expect_equal(z_twodose$vacprotec_total_prop, z_onedose$vacprotec_total_prop)
+  expect_equal(z_twodose$vacprotec_total, z_onedose$vacprotec_total)
+  expect_true(all(z_onedose$vacprotec_full == 0))
+  expect_true(all(z_twodose$vacprotec_full != 0))
+  expect_equal(z_twodose$vacprotec_full, z_twodose$vacprotec_total)
+
 
   # when model is initiated with a certain % vaccine coverage, this
   # is the model proportion calculated
@@ -257,6 +294,187 @@ test_that("compare baseline xpvwrh works as expected", {
                      init_vac_p + init_vac_v)
         }
 
+  ## tests for level of vaccination in the population
+
+  # set initial full vaccination coverage to 0.5
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.5, coverage_p = 0,
+                          t = 5)
+
+  bl_0.5_cov <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
+
+    # no further uptake of vaccination and no waning
+  # expect numbers in X and V to be the same
+
+  vea <- 0.25
+  y_0.5_cov_vea_0.25 <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                 init_params = ip,
+                                    r1 = 0,
+                                    r2 = 0, booster_uptake = 0,
+                                    strategy = "VoD")
+
+  z_vea_0.25 <- compare_baseline_xpvwrh(y_0.5_cov_vea_0.25, bl_0.5_cov,
+                                        uptake_first_dose = 0,
+                               uptake_second_dose = 0,
+                               cp, 0,
+                               vea = vea, vea_p = 0)
+
+  level_calc <- (z_vea_0.25$vacprotec_total * vea) / N
+
+  #level vaccine protection should be number protected multiplied by efficacy
+  # divided by total population size
+
+  expect_equal(z_vea_0.25$level_vacprotec, level_calc)
+
+  # doubling vea means level of vaccine protection doubles
+
+  vea <- 0.5
+  y_0.5_cov_vea_0.5 <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                          init_params = ip,
+                                          r1 = 0,
+                                          r2 = 0, booster_uptake = 0,
+                                          strategy = "VoD")
+
+  z_vea_0.5 <- compare_baseline_xpvwrh(y_0.5_cov_vea_0.5, bl_0.5_cov,
+                                       uptake_first_dose = 0,
+                                        uptake_second_dose = 0,
+                                        cp, 0,
+                                        vea = vea, vea_p = 0)
+
+  expect_equal(z_vea_0.5$level_vacprotec, z_vea_0.25$level_vacprotec * 2)
+
+
+  # when vea = 0 but there are people in V then level vaccine protection should
+  # be 0
+
+  vea <- 0
+  y_0.5_cov_vea_0 <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                         init_params = ip,
+                                         r1 = 0,
+                                         r2 = 0, booster_uptake = 0,
+                                         strategy = "VoD")
+
+  z_vea_0 <- compare_baseline_xpvwrh(y_0.5_cov_vea_0, bl_0.5_cov,
+                                     uptake_first_dose = 0,
+                                       uptake_second_dose = 0,
+                                       cp, 0,
+                                       vea = vea, vea_p = 0)
+
+  expect_true(all(z_vea_0$level_vacprotec == 0))
+  expect_true(all(z_vea_0$vac_protec_total != 0))
+
+  ## the number vaccinated in all of these cases was the same despite
+  # protection being different
+
+  expect_equal(z_vea_0$vacprotec_total, z_vea_0.25$vacprotec_total)
+  expect_equal(z_vea_0$vacprotec_total, z_vea_0.5$vacprotec_total)
+
+  # repeat above for partial vaccination --> move individuals into P not V
+
+  # set initial full vaccination coverage to 0.5
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0, coverage_p = 0.5,
+               t = 5)
+
+  bl_0.5_cov <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
+
+  # no further uptake of vaccination and no waning
+
+  vea_p <- 0.25
+  vea <- 0
+  y_0.5_cov_veap_0.25 <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                           vea_p = vea_p,
+                                          init_params = ip,
+                                          r1 = 0,
+                                          r2 = 0, booster_uptake = 0,
+                                          strategy = "VoD")
+
+  z_veap_0.25 <- compare_baseline_xpvwrh(y_0.5_cov_veap_0.25, bl_0.5_cov,
+                                        uptake_first_dose = 0,
+                                        uptake_second_dose = 0,
+                                        cp, 0,
+                                        vea = vea, vea_p = vea_p)
+
+  level_calc <- (z_veap_0.25$vacprotec_part * vea_p) / N
+
+  #level vaccine protection should be number protected multiplied by efficacy
+  # divided by total population size
+
+  expect_equal(z_veap_0.25$level_vacprotec, level_calc)
+
+  # doubling vea means level of vaccine protection doubles
+
+  vea_p <- 0.5
+  y_0.5_cov_veap_0.5 <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                          vea_p = vea_p,
+                                         init_params = ip,
+                                         r1 = 0,
+                                         r2 = 0, booster_uptake = 0,
+                                         strategy = "VoD")
+
+  z_veap_0.5 <- compare_baseline_xpvwrh(y_0.5_cov_veap_0.5, bl_0.5_cov,
+                                        uptake_first_dose = 0,
+                                       uptake_second_dose = 0,
+                                       cp, 0,
+                                       vea = vea, vea_p = vea_p)
+
+  expect_equal(z_veap_0.5$level_vacprotec, z_veap_0.25$level_vacprotec * 2)
+
+
+  # when vea = 0 but there are people in V then level vaccine protection should
+  # be 0
+
+  vea_p <- 0
+  y_0.5_cov_vea_0 <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                       vea_p = vea_p,
+                                       init_params = ip,
+                                       r1 = 0,
+                                       r2 = 0, booster_uptake = 0,
+                                       strategy = "VoD")
+
+  z_veap_0 <- compare_baseline_xpvwrh(y_0.5_cov_vea_0, bl_0.5_cov,
+                                      uptake_first_dose = 0,
+                                     uptake_second_dose = 0,
+                                     cp, 0,
+                                     vea = vea, vea_p = vea_p)
+
+  expect_true(all(z_veap_0$level_vacprotec == 0))
+  expect_true(all(z_veap_0$vac_protec_part != 0))
+
+  ## the number vaccinated in all of these cases was the same despite
+  # level of protection being different
+
+  expect_equal(z_veap_0$vacprotec_part, z_veap_0.25$vacprotec_part)
+  expect_equal(z_veap_0$vacprotec_part, z_veap_0.5$vacprotec_part)
+
+  ## level of population protection is equal to the sum of the products
+  # of partial efficacy or full efficacy, and the number partially or fully
+  # vaccinated respectively
+
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.25,
+               coverage_p = 0.25, t = 5)
+
+  bl_0.25_cov <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
+
+  # no further uptake of vaccination and no waning
+
+  vea_p <- 0.3
+  vea <- 0.5
+  y_0.25_cov <- run_onevax_xpvwrh(tt, gp, vea = vea, dur_v = 1e99,
+                                           vea_p = vea_p,
+                                           init_params = ip,
+                                           r1 = 0,
+                                           r2 = 0, booster_uptake = 0,
+                                           strategy = "VoD")
+
+  z <- compare_baseline_xpvwrh(y_0.25_cov, bl_0.25_cov,
+                                         uptake_first_dose = 0,
+                                         uptake_second_dose = 0,
+                                         cp, 0,
+                                         vea = vea, vea_p = vea_p)
+
+  level_calc <- ((z$vacprotec_full * vea) + (z$vacprotec_part * vea_p)) / N
+
+  expect_equal(level_calc, z$level_vacprotec)
+
   ## test that cumulative primary and booster vaccination calc correctly
 
   bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp))
@@ -266,7 +484,8 @@ test_that("compare baseline xpvwrh works as expected", {
                          r2 = 1, booster_uptake = 0,
                           strategy = "VoD")
   z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
-                        uptake_second_dose = 1, cp, 0)
+                        uptake_second_dose = 1, cp, 0,
+                        vea = 1, vea_p = 1)
 
   # number undergoing primary vaccination is equal to total people
   # vaccinated when booster uptake = 0
@@ -290,7 +509,8 @@ test_that("compare baseline xpvwrh works as expected", {
                         strategy = "VoD")
   z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
                                       uptake_second_dose = 1,
-                                      cp, 0)
+                                      cp, 0,
+                               vea = 1, vea_p = 1)
 
   expect_equal(z$inc_vaccinated - z$inc_primary - z$inc_vbe, z$inc_revaccinated)
 
@@ -314,7 +534,8 @@ expect_equal(z$inc_cum_primary + z$inc_cum_part_to_full +
                         strategy = "VoD")
   z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
                                       uptake_second_dose = 1,
-                                      cp, 0)
+                                      cp, 0,
+                               vea = 1, vea_p = 1)
 
   s <- sum(z$inc_cum_primary_total_doses[length(tt) - 1, ] +
              z$inc_cum_part_to_full_doses[length(tt) - 1, ] +

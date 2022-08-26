@@ -85,6 +85,10 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @param uptake_second_dose numeric (0-1) either length 1 or same as `y`
 ##' @param disc_rate discount rate for cost-effectiveness output per annum,
 ##'  default = 0
+##' @param vea = scalar indicating efficacy of full vaccination against
+##' aquisition (between 0-1)
+##' @param vea_p scalar indicating efficacy of partial vaccination against
+##'  acquisition (between 0-1)
 ##' @return A list of matrices with rows = time point and columns
 ##' = parameter set
 ##' list entries are:
@@ -191,10 +195,15 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' vaccine protection at a given timepoint
 ##' `vacprotec_total_prop` = total proportion of the population experiencing
 ##' some form of vaccine protection at a given timepoint
+##' `level_vacprotec` = the level of vaccine protection in the population at a
+##' given timepoint. Given as the sum of the products of the number of partially
+##' and fully vaccinated individuals and the one dose and two dose vaccine
+##' efficacies respectively.
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
-                             disc_rate) {
+                             disc_rate, vea, vea_p) {
+
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
@@ -230,6 +239,11 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
     ret$vacprotec_full_prop <- ret$vacprotec_full / N
     ret$vacprotec_part_prop <- ret$vacprotec_part / N
     ret$vacprotec_total_prop <- ret$vacprotec_total / N
+
+  ## calculate level of vaccine protection in the population
+
+   ret$level_vacprotec <- ((ret$vacprotec_part * vea_p) +
+                             (ret$vacprotec_full * vea)) / N
 
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
