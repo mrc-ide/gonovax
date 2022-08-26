@@ -23,7 +23,7 @@ given level of efficacy"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.6</span>
       </span>
     </div>
 
@@ -73,7 +73,9 @@ given level of efficacy</p>
 <span>  <span class="va">uptake_first_dose</span>,</span>
 <span>  <span class="va">uptake_second_dose</span>,</span>
 <span>  <span class="va">cost_params</span>,</span>
-<span>  <span class="va">disc_rate</span></span>
+<span>  <span class="va">disc_rate</span>,</span>
+<span>  <span class="va">vea</span>,</span>
+<span>  <span class="va">vea_p</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -107,6 +109,16 @@ length 1 or same as `y`</p></dd>
 <dt>disc_rate</dt>
 <dd><p>discount rate for cost-effectiveness output per annum,
 default = 0</p></dd>
+
+
+<dt>vea</dt>
+<dd><p>= scalar indicating efficacy of full vaccination against
+aquisition (between 0-1)</p></dd>
+
+
+<dt>vea_p</dt>
+<dd><p>scalar indicating efficacy of partial vaccination against
+acquisition (between 0-1)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -218,7 +230,11 @@ vaccine protection at a given timepoint
 `vacprotec_part_prop` = proportion of the population experiencing partial
 vaccine protection at a given timepoint
 `vacprotec_total_prop` = total proportion of the population experiencing
-some form of vaccine protection at a given timepoint</p>
+some form of vaccine protection at a given timepoint
+`level_vacprotec` = the level of vaccine protection in the population at a
+given timepoint. Given as the sum of the products of the number of partially
+and fully vaccinated individuals and the one dose and two dose vaccine
+efficacies respectively.</p>
     </div>
 
   </div>
