@@ -103,6 +103,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' `vbe` = annual number vaccinated before entry in model run
 ##' `revaccinated` = annual number receiving booster in model run
 ##' `inc_cum_treated` = cumulative number treated compared to baseline
+##' `pv_cases_averted` = cumulative number treated when discounting applied
+##' compared to baseline
 ##' `inc_cum_vaccinated` = cumulative number vaccinated compared to baseline
 ##' `inc_diag_a` = annual number of asymptomatic diagnoses compared to baseline
 ##' `inc_diag_s` = annual number of symptomatic diagnoses compared to baseline
@@ -310,6 +312,9 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_50 <- calc_inc_costs(50, costs)
   ret$inc_costs_70 <- calc_inc_costs(70, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
+
+  ## output present value of cases averted
+  ret$pv_cases_averted <- calc_pv(-ret$inc_treated, disc_rate)
 
   ret
 }
