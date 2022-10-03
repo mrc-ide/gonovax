@@ -313,7 +313,7 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret$inc_costs_70 <- calc_inc_costs(70, costs)
   ret$inc_costs_85 <- calc_inc_costs(85, costs)
 
-  ## add in present value of 
+  ## add in present value of
   ret$pv_cases_averted <- calc_pv(-forecast$inc_treated, disc_rate)
 
   ret
