@@ -1,3 +1,7 @@
+# gonovax 0.4.7
+* model outputs present value of cumulative cases averted in a model run compared with baseline transmission in the absence of 
+vaccination
+
 # gonovax 0.4.6
 * model outputs level of population vaccine protection (number vaccinated weighted by efficacy). Tests also added to check number of individuals
 vaccinated is being performed correctly
