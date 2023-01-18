@@ -122,17 +122,18 @@ transform_fixed <- function(pars) {
 ##' initial proportion in each vaccine stratum
 ##' @return A list of initial model states
 ##' @export
-initial_params <- function(pars, n_vax = 1, coverage = 1) {
+initial_params <- function(pars, n_vax = 1, coverage = 1, n_erlang = 1) {
 
   stopifnot(length(coverage) == n_vax)
   stopifnot(sum(coverage) == 1)
 
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax, n_erlang))
 
   # separate into 1:low and 2:high activity groups and by coverage
-  N0 <- pars$N0 * outer(pars$q, coverage)
+  N0_vals <- as.vector(pars$N0 * outer(pars$q, coverage))
+  N0 <- array(c(N0_vals, rep(c(0,0),n_erlang -1)), dim = c(2,1, n_erlang))
   # set initial asymptomatic prevalence in each group (unvaccinated only)
-  A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
+  A0[, , 1] <- round(N0[, , 1] * c(pars$prev_Asl, pars$prev_Ash))
 
   # set initial uninfecteds
   U0 <- round(N0) - A0
@@ -183,14 +184,16 @@ restart_params <- function(y, n_vax = NULL) {
 model_params <- function(gono_params = NULL,
                          demographic_params = NULL,
                          init_params = NULL,
-                         vax_params = NULL) {
+                         vax_params = NULL,
+                         n_erlang = 1) {
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
   vax_params <- vax_params %||% vax_params0()
 
   cov <- c(1, rep(0, vax_params$n_vax - 1))
-  init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
+  init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov, 
+                                                 n_erlang)
   c(ret, init_params, vax_params)
 }
 
