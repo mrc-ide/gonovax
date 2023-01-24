@@ -131,7 +131,7 @@ initial_params <- function(pars, n_vax = 1, coverage = 1, n_erlang = 1) {
 
   # separate into 1:low and 2:high activity groups and by coverage
   N0_vals <- as.vector(pars$N0 * outer(pars$q, coverage))
-  N0 <- array(c(N0_vals, rep(c(0,0),n_erlang -1)), dim = c(2,1, n_erlang))
+  N0 <- array(c(N0_vals, rep(c(0,0),n_erlang -1)), dim = c(2, n_vax, n_erlang))
   # set initial asymptomatic prevalence in each group (unvaccinated only)
   A0[, , 1] <- round(N0[, , 1] * c(pars$prev_Asl, pars$prev_Ash))
 
@@ -150,7 +150,8 @@ initial_params <- function(pars, n_vax = 1, coverage = 1, n_erlang = 1) {
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels
 ##' @export
-restart_params <- function(y, n_vax = NULL) {
+restart_params <- function(y, n_vax = NULL, n_erlang = 1) {
+ 
   dim_y <- dim(y[["U"]])
 
   i_t <- dim_y[1]
@@ -159,13 +160,13 @@ restart_params <- function(y, n_vax = NULL) {
   n_vax_input <- dim_y[3]
   i_vax <- seq_len(min(n_vax,  n_vax_input))
 
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax, n_erlang))
   # set compartments in each group
-  U0[, i_vax] <- y$U[i_t, , i_vax]
-  I0[, i_vax] <- y$I[i_t, , i_vax]
-  A0[, i_vax] <- y$A[i_t, , i_vax]
-  S0[, i_vax] <- y$S[i_t, , i_vax]
-  T0[, i_vax] <- y$T[i_t, , i_vax]
+  U0[, i_vax, ] <- y$U[i_t, , i_vax, ]
+  I0[, i_vax, ] <- y$I[i_t, , i_vax, ]
+  A0[, i_vax, ] <- y$A[i_t, , i_vax, ]
+  S0[, i_vax, ] <- y$S[i_t, , i_vax, ]
+  T0[, i_vax, ] <- y$T[i_t, , i_vax, ]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
 }
@@ -206,7 +207,7 @@ model_params <- function(gono_params = NULL,
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v, i_u, i_v) {
+create_vax_map <- function(n_vax, v, i_u, i_v, n_erang = 1) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
@@ -216,11 +217,11 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
   stopifnot(max(i_u, i_v) <= n_vax)
 
   # set up vaccination matrix
-  vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
+  vax_map <- array(0, dim = c(n_group, n_vax, n_vax, n_erlang))
 
   for (i in seq_along(i_u)) {
-    vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v
+    vax_map[, i_u[i], i_u[i], ] <-  v
+    vax_map[, i_v[i], i_u[i], ] <- -v
   }
 
   vax_map
@@ -234,20 +235,21 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 ##' @param z Scalar denoting rate of waning
 ##' @return an array of the mapping
 
-create_waning_map <- function(n_vax, i_v, i_w, z) {
+create_waning_map <- function(n_vax, i_v, i_w, z, n_erlang) {
 
   stopifnot(z > 0)
   stopifnot(length(z) %in% c(1, length(i_v)))
   stopifnot(length(i_w) == 1)
   # set up waning map
-  w <- array(0, dim = c(n_vax, n_vax))
+  w <- array(0, dim = c(n_vax, n_vax, n_erlang))
 
-  w[i_w, i_v] <-  z
+  w[i_w, i_v, ] <-  z
 
   for (i in i_v) {
-    w[i, i] <- -w[i_w, i]
+    w[i, i, ] <- -w[i_w, i, ]
   }
-  w
+    w
+
 }
 
 ##' @name set_strategy
@@ -330,19 +332,20 @@ check_gono_params <- function(pars) {
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
-                              i_eligible, i_v) {
+                              i_eligible, i_v, n_erlang = 1) {
 
 # set up uptake matrix rows = groups, columns = vaccine strata
-u <- array(0, dim = c(n_group, n_vax, n_vax))
+u <- array(0, dim = c(n_group, n_vax, n_vax, n_erlang))
 
 u_vals <- c(primary_uptake, booster_uptake)
 
 for (i in seq_along(i_eligible)) {
 
-  u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
-  u[, i_v[i], i_eligible[i]]      <- u_vals[i]
+  u[, i_eligible[i], i_eligible[i], 1] <- u_vals[i]
+  u[, i_v[i], i_eligible[i], 1]      <- u_vals[i]
 
 }
 
 u
+
 }
