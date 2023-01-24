@@ -4,7 +4,7 @@
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             dur = 1e3, uptake = 0, strategy = NULL,
-                            vbe = 0, t_stop = 99) {
+                            vbe = 0, t_stop = 99, n_erlang = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -33,19 +33,19 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                          primary_uptake = uptake,
                          booster_uptake = uptake,
                          i_eligible = i_eligible, i_v = i_v)
-
+  
   list(n_vax   = n_vax,
        willing = c(1, 0, 0),
        u       = u,
        u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
-       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v, n_erlang),
+       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v, n_erlang),
+       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v, n_erlang),
        vea     = vea * ve,
        vei     = vei * ve,
        ved     = ved * ve,
        ves     = ves * ve,
-       w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
+       w       = create_waning_map(n_vax, i_v, i_w, 1 / dur, n_erlang = 1),
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
@@ -74,7 +74,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
                             uptake = 0, strategy = NULL,
-                            t_stop = 99) {
+                            t_stop = 99, n_erlang = 1) {
 
 
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%
@@ -83,7 +83,7 @@ run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
   vax_params <- Map(vax_params_xvwv, uptake = uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     MoreArgs = list(strategy = strategy, t_stop = t_stop,
-                                    vbe = vbe))
+                                    vbe = vbe, n_erlang = n_erlang))
 
   if (is.null(init_params)) {
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,

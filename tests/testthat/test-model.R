@@ -24,15 +24,15 @@ test_that("there are no symptomatic infections when psi = 0", {
   expect_true(any(y$I == 0))
   expect_true(all(y$S == 0))
   expect_true(all(y$cum_diag_s == 0))
-  expect_true(all(y$cum_diag_a[-1, , ] > 0))
+  expect_true(all(y$cum_diag_a[-1, , , ] > 0))
   expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no asymptomatic infections when psi = 1", {
   params <- model_params(gono_params = gono_params(1)[[1]])
   params$psi <- 1
-  params$S0[, ] <- params$A0[, ]
-  params$A0[, ] <- 0
+  params$S0[, , ] <- params$A0[, , ]
+  params$A0[, , ] <- 0
   mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
@@ -40,13 +40,13 @@ test_that("there are no asymptomatic infections when psi = 1", {
   expect_true(any(y$I == 0))
   expect_true(all(y$A == 0))
   expect_true(all(y$cum_diag_a == 0))
-  expect_true(all(y$cum_diag_s[-1, , ] > 0))
+  expect_true(all(y$cum_diag_s[-1, , , ] > 0))
   expect_true(all(unlist(y) >= 0))
 })
 
 test_that("there are no infections when A0 = 0", {
   params <- model_params(gono_params = gono_params(1)[[1]])
-  params$A0[, ] <- 0
+  params$A0[, , ] <- 0
   mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365
   y <- mod$run(t = tt)
@@ -85,11 +85,11 @@ test_that("the foi is calculated correctly", {
   # unpack parameters
   pL <- params$p[1]
   pH <- params$p[2]
-  NL <- rowSums(y$N[, 1, ])
-  NH <- rowSums(y$N[, 2, ])
+  NL <- rowSums(y$N[, 1, , ])
+  NH <- rowSums(y$N[, 2, , ])
   C <- y$I + y$A + y$S
-  CL <- c(C[, 1, ] %*% (1 - vax_params$vei))
-  CH <- c(C[, 2, ] %*% (1 - vax_params$vei))
+  CL <- c(C[, 1, , ] %*% (1 - vax_params$vei))
+  CH <- c(C[, 2, , ] %*% (1 - vax_params$vei))
   eps <- params$epsilon
   beta <- params$beta_t
 
@@ -121,13 +121,13 @@ test_that("Bex model runs with no vaccination", {
   y1 <- mod1$transform_variables(y1)
 
   # check that nil vaccination gives same results as before
-  expect_true(all(y1$U[, , 1, drop = FALSE] == y0$U))
-  expect_true(all(y1$I[, , 1, drop = FALSE] == y0$I))
-  expect_true(all(y1$A[, , 1, drop = FALSE] == y0$A))
-  expect_true(all(y1$S[, , 1, drop = FALSE] == y0$S))
-  expect_true(all(y1$T[, , 1, drop = FALSE] == y0$T))
+  expect_true(all(y1$U[, , 1, , drop = FALSE] == y0$U))
+  expect_true(all(y1$I[, , 1, , drop = FALSE] == y0$I))
+  expect_true(all(y1$A[, , 1, , drop = FALSE] == y0$A))
+  expect_true(all(y1$S[, , 1, , drop = FALSE] == y0$S))
+  expect_true(all(y1$T[, , 1, , drop = FALSE] == y0$T))
 
-  expect_true(all(y1$N[, , 2] == 0))
+  expect_true(all(y1$N[, , 2, ] == 0))
   expect_true(all(apply(y1$N, c(1, 2), sum) - 6e5 < 1e-6))
 
 })
@@ -147,23 +147,23 @@ test_that("Bex model runs with vbe", {
                        0, 4.93136498677018, 9.862446259333,
                        0, 3.82796084566103e-05, 0.000153112453356132,
                        0, 6.75495729408945e-06, 2.70176968895868e-05),
-               dim = c(3, 2, 3)))
+               dim = c(3, 2, 3, 1)))
   # check some people are being vaccinated
-  expect_true(all(y$U[-1, , 2] > 0))
+  expect_true(all(y$U[-1, , 2, 0] > 0))
   # check no compartments are leaking
   expect_true(all(apply(y$N, c(1, 2), sum) - 6e5 < 1e-6))
   # check all entrants are vaccinated
   expect_equal(y$cum_offered_vbe, y$cum_vbe)
   # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , 1] == 0))
-  expect_false(all(y$A[, , 1] == 0))
-  expect_false(all(y$S[, , 1] == 0))
-  expect_false(all(y$T[, , 1] == 0))
+  expect_false(all(y$I[, , 1, ] == 0))
+  expect_false(all(y$A[, , 1, ] == 0))
+  expect_false(all(y$S[, , 1, ] == 0))
+  expect_false(all(y$T[, , 1, ] == 0))
   # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , 2] == 0))
-  expect_true(all(y$A[, , 2] == 0))
-  expect_true(all(y$S[, , 2] == 0))
-  expect_true(all(y$T[, , 2] == 0))
+  expect_true(all(y$I[, , 2, ] == 0))
+  expect_true(all(y$A[, , 2, ] == 0))
+  expect_true(all(y$S[, , 2, ] == 0))
+  expect_true(all(y$T[, , 2, ] == 0))
 })
 
 test_that("Check vaccination on screening in Bex model", {
@@ -183,25 +183,25 @@ test_that("Check vaccination on screening in Bex model", {
                        0, 107.642503971552, 215.142050698242,
                        0, 0.000834155028318817, 0.0033338806826574,
                        0, 0.000147420094481985, 0.000589147144744636),
-                     dim = c(3L, 2L, 3L)))
+                     dim = c(3L, 2L, 3L, 1L)))
   # check some people are being vaccinated
-  expect_true(all(y$U[-1, , 2] > 0))
-  expect_true(all(y$cum_vaccinated[-1, , 1] > 0))
-  expect_true(all(y$cum_vaccinated[, , 2] == 0))
+  expect_true(all(y$U[-1, , 2, ] > 0))
+  expect_true(all(y$cum_vaccinated[-1, , 1, ] > 0))
+  expect_true(all(y$cum_vaccinated[, , 2, ] == 0))
   # check all those treated were vaccinated
-  expect_true(all(y$cum_vaccinated[, , 1] == y$cum_screened[, , 1]))
+  expect_true(all(y$cum_vaccinated[, , 1, ] == y$cum_screened[, , 1, ]))
   # check no compartments are leaking
   expect_true(all(apply(y$N, 1, sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , 1] == 0))
-  expect_false(all(y$A[, , 1] == 0))
-  expect_false(all(y$S[, , 1] == 0))
-  expect_false(all(y$T[, , 1] == 0))
+  expect_false(all(y$I[, , 1, ] == 0))
+  expect_false(all(y$A[, , 1, ] == 0))
+  expect_false(all(y$S[, , 1, ] == 0))
+  expect_false(all(y$T[, , 1, ] == 0))
   # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , 2] == 0))
-  expect_true(all(y$A[, , 2] == 0))
-  expect_true(all(y$S[, , 2] == 0))
-  expect_true(all(y$T[, , 2] == 0))
+  expect_true(all(y$I[, , 2, ] == 0))
+  expect_true(all(y$A[, , 2, ] == 0))
+  expect_true(all(y$S[, , 2, ] == 0))
+  expect_true(all(y$T[, , 2, ] == 0))
 })
 
 test_that("Check vaccination on diagnosis in Bex model", {
@@ -221,25 +221,25 @@ test_that("Check vaccination on diagnosis in Bex model", {
                        0, 0.06199394863926, 0.249176144196752,
                        0, 3.81264799241714e-07, 2.93702682328813e-06,
                        0, 5.68712159308333e-08, 4.53390060409456e-07),
-                     dim = c(3L, 2L, 3L)))
+                     dim = c(3L, 2L, 3L, 1L)))
   # check some people are being vaccinated
-  expect_true(all(y$U[-1, , 2] > 0))
-  expect_true(all(y$cum_vaccinated[-1, , 1] > 0))
-  expect_true(all(y$cum_vaccinated[, , 2] == 0))
+  expect_true(all(y$U[-1, , 2, ] > 0))
+  expect_true(all(y$cum_vaccinated[-1, , 1, ] > 0))
+  expect_true(all(y$cum_vaccinated[, , 2, ] == 0))
   # check all those treated were vaccinated
   expect_true(all(y$cum_vaccinated == y$cum_treated))
   # check no compartments are leaking
   expect_true(all(apply(y$N, 1, sum) - 6e5 < 1e-6))
   # check there are infections in unvaccinated group
-  expect_false(all(y$I[, , 1] == 0))
-  expect_false(all(y$A[, , 1] == 0))
-  expect_false(all(y$S[, , 1] == 0))
-  expect_false(all(y$T[, , 1] == 0))
+  expect_false(all(y$I[, , 1, ] == 0))
+  expect_false(all(y$A[, , 1, ] == 0))
+  expect_false(all(y$S[, , 1, ] == 0))
+  expect_false(all(y$T[, , 1, ] == 0))
   # check there are no infections in vaccinated group
-  expect_true(all(y$I[, , 2] == 0))
-  expect_true(all(y$A[, , 2] == 0))
-  expect_true(all(y$S[, , 2] == 0))
-  expect_true(all(y$T[, , 2] == 0))
+  expect_true(all(y$I[, , 2, ] == 0))
+  expect_true(all(y$A[, , 2, ] == 0))
+  expect_true(all(y$S[, , 2, ] == 0))
+  expect_true(all(y$T[, , 2, ] == 0))
 })
 
 test_that("can initialise after time 0", {
@@ -254,11 +254,11 @@ test_that("can initialise after time 0", {
 
   inits <- restart_params(y, n_vax = 1)
 
-  expect_true(all(y$U[length(tt), , ] == inits$U0[, 1]))
-  expect_true(all(y$I[length(tt), , ] == inits$I0[, 1]))
-  expect_true(all(y$A[length(tt), , ] == inits$A0[, 1]))
-  expect_true(all(y$S[length(tt), , ] == inits$S0[, 1]))
-  expect_true(all(y$T[length(tt), , ] == inits$T0[, 1]))
+  expect_true(all(y$U[length(tt), , , ] == inits$U0[, 1, ]))
+  expect_true(all(y$I[length(tt), , , ] == inits$I0[, 1, ]))
+  expect_true(all(y$A[length(tt), , , ] == inits$A0[, 1, ]))
+  expect_true(all(y$S[length(tt), , , ] == inits$S0[, 1, ]))
+  expect_true(all(y$T[length(tt), , , ] == inits$T0[, 1, ]))
   expect_true(5 == inits$t)
 
   ## check that restarting works properly
@@ -272,7 +272,7 @@ test_that("can initialise after time 0", {
   y2 <- mod2$run(seq.int(inits$t, 10))
   y2 <- mod2$transform_variables(y2)
 
-  expect_equivalent(y1$U[y1$t >= 5, , , drop = FALSE], y2$U, tol = 0.1)
+  expect_equivalent(y1$U[y1$t >= 5, , , , drop = FALSE], y2$U, tol = 0.1)
   expect_equivalent(y1$lambda[y1$t >= 5, , drop = FALSE], y2$lambda, tol = 1e-5)
 
 })
@@ -336,6 +336,6 @@ test_that("time-varying eta works as expected", {
   mod <- model$new(user = params, unused_user_action = "ignore")
   y1 <- mod$run(tt)
   y1 <- mod$transform_variables(y1)
-  expect_equal(sum(y1$cum_screened[, 1, ]), 0)
-  expect_true(all(y1$cum_screened[-1, 2, ] > 0))
+  expect_equal(sum(y1$cum_screened[, 1, , ]), 0)
+  expect_true(all(y1$cum_screened[-1, 2, , ] > 0))
 })
