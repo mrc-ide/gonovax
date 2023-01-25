@@ -13,6 +13,7 @@
 
 n_group <- 2
 n_vax   <- user(1)
+n_erlang <- 1         #set to 1 for now! 
 
 ## calibrate time-varying parameters
 # tt runs from t0 = 2009, to t10 = 2019
@@ -26,39 +27,39 @@ eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
-  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) -
+deriv(U[, , ]) <- entrants[i, j, k] - n_UI[i, j, k] - exr * U[i, j, k] +
+  n_AU[i, j, k] + n_TU[i, j, k]  + sum(wU[i, j, ]) -
   sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ])
 
-deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ])
+deriv(I[, , ]) <- n_UI[i, j, k] - (sigma + exr) * I[i, j, k] + sum(wI[i, j, ])
 
-deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
-  n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ])
+deriv(A[, , ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j, k]
+  - n_AT[i, j, k] - n_AU[i, j, k] - exr * A[i, j, k] + sum(wA[i, j, ])
 
-deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] - n_ST[i, j] -
-  exr * S[i, j] + sum(wS[i, j, ])
+deriv(S[, , ]) <- (1 - ves[j]) * psi * sigma * I[i, j, k] - n_ST[i, j, k] -
+  exr * S[i, j, k] + sum(wS[i, j, ])
 
-deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j] - exr * T[i, j] - n_TU[i, j] +
-  sum(wT[i, j, ])
+deriv(T[, , ]) <- n_ST[i, j, k] + n_AT[i, j, k] - exr * T[i, j, k]
+  - n_TU[i, j, k] + sum(wT[i, j, ])
 
 ## Update population size
-N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
+N[, , ] <- U[i, j, k] + I[i, j, k] + A[i, j, k] + S[i, j, k] + T[i, j, k]
 
-entrants[, ] <- enr * q[i] * willing[j]
+entrants[, , ] <- enr * q[i] * willing[j]
 
 # calculate mixing matrix, probability of infection and force of infection
-C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
-prop_C[] <- sum(C[i, ]) / sum(N[i, ])
-Np[]    <- sum(N[i, ]) * p[i]
+C[, , ] <- (1 - vei[j]) * (I[i, j, k] + A[i, j, k] + S[i, j, k])
+prop_C[] <- sum(C[i, , ]) / sum(N[i, ,])
+Np[]    <- sum(N[i, , ]) * p[i]
 
 foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])
 lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
 
-n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
-n_AT[, ]     <- eta[i] * A[i, j]
-n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
-n_ST[, ]     <- mu * S[i, j]
-n_TU[, ]     <- rho * T[i, j]
+n_UI[, , ]     <- lambda[i] * (1 - vea[j]) * U[i, j, k]
+n_AT[, , ]     <- eta[i] * A[i, j, k]
+n_AU[, , ]     <- nu / (1 - ved[j]) * A[i, j, k]
+n_ST[, , ]     <- mu * S[i, j, k]
+n_TU[, , ]     <- rho * T[i, j, k]
 screened[, ] <- eta[i] * U[i, j]
 
 # vaccination
@@ -105,17 +106,17 @@ output(eta) <- eta
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vbector
-initial(U[, ]) <- U0[i, j]
-initial(I[, ]) <- I0[i, j]
-initial(A[, ]) <- A0[i, j]
-initial(S[, ]) <- S0[i, j]
-initial(T[, ]) <- T0[i, j]
+initial(U[, , ]) <- U0[i, j, k]
+initial(I[, , ]) <- I0[i, j, k]
+initial(A[, , ]) <- A0[i, j, k]
+initial(S[, , ]) <- S0[i, j, k]
+initial(T[, , ]) <- T0[i, j, k]
 
-U0[, ] <- user()
-I0[, ] <- user()
-A0[, ] <- user()
-S0[, ] <- user()
-T0[, ] <- user()
+U0[, , ] <- user()
+I0[, , ] <- user()
+A0[, , ] <- user()
+S0[, , ] <- user()
+T0[, , ] <- user()
 
 initial(cum_incid[, ])       <- 0
 initial(cum_diag_a[, ])      <- 0
@@ -128,20 +129,20 @@ initial(cum_vbe[, ])         <- 0
 initial(cum_offered_vbe[, ]) <- 0
 
 # set up dimensions of compartments
-dim(U) <- c(n_group, n_vax)
-dim(I) <- c(n_group, n_vax)
-dim(A) <- c(n_group, n_vax)
-dim(S) <- c(n_group, n_vax)
-dim(T) <- c(n_group, n_vax)
+dim(U) <- c(n_group, n_vax, n_erlang)
+dim(I) <- c(n_group, n_vax, n_erlang)
+dim(A) <- c(n_group, n_vax, n_erlang)
+dim(S) <- c(n_group, n_vax, n_erlang)
+dim(T) <- c(n_group, n_vax, n_erlang)
 
-dim(U0) <- c(n_group, n_vax)
-dim(I0) <- c(n_group, n_vax)
-dim(A0) <- c(n_group, n_vax)
-dim(S0) <- c(n_group, n_vax)
-dim(T0) <- c(n_group, n_vax)
+dim(U0) <- c(n_group, n_vax, n_erlang)
+dim(I0) <- c(n_group, n_vax, n_erlang)
+dim(A0) <- c(n_group, n_vax, n_erlang)
+dim(S0) <- c(n_group, n_vax, n_erlang)
+dim(T0) <- c(n_group, n_vax, n_erlang)
 
-dim(C)  <- c(n_group, n_vax)
-dim(N)  <- c(n_group, n_vax)
+dim(C)  <- c(n_group, n_vax, n_erlang)
+dim(N)  <- c(n_group, n_vax, n_erlang)
 dim(entrants) <- c(n_group, n_vax)
 dim(Np)     <- n_group
 dim(prop_C) <- n_group
