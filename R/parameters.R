@@ -207,7 +207,7 @@ model_params <- function(gono_params = NULL,
 ##' @param i_v indices of strata being vaccinated
 ##' @return an array of the mapping
 
-create_vax_map <- function(n_vax, v, i_u, i_v, n_erang = 1) {
+create_vax_map <- function(n_vax, v, i_u, i_v, n_erlang = 1) {
 
   # ensure vaccine input is of correct length
   n_group <- 2

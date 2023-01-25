@@ -74,9 +74,9 @@ test_that("no-one is treated when mu and eta = 0", {
 test_that("the foi is calculated correctly", {
   vei <- 0.123
   vax_params <- vax_params_xvwv(uptake = 0.5, dur = 1,
-                                strategy = "VoA")
+                                strategy = "VoA", n_erlang = 1)
   params <- model_params(gono_params = gono_params(1)[[1]],
-                         vax_params = vax_params)
+                         vax_params = vax_params, n_erlang = 1)
   expect_true(length(params$beta_t) > 0)
   mod <- model$new(user = params, unused_user_action = "ignore")
   tt <- seq.int(0, 5) / 365

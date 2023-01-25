@@ -28,20 +28,20 @@ eta[2] <- eta_h
 ## Core equations for transitions between compartments:
 
 deriv(U[, , ]) <- entrants[i, j, k] - n_UI[i, j, k] - exr * U[i, j, k] +
-  n_AU[i, j, k] + n_TU[i, j, k]  + sum(wU[i, j, k, ]) -
-  sum(n_vbe[i, j, k, ]) - sum(n_vod[i, j, k, ]) - sum(n_vos[i, j, k, ])
+  n_AU[i, j, k] + n_TU[i, j, k]  + sum(wU[i, j, , k]) -
+  sum(n_vbe[i, j, , k]) - sum(n_vod[i, j, , k]) - sum(n_vos[i, j, , k])
 
 deriv(I[, , ]) <- n_UI[i, j, k] - (sigma + exr) * I[i, j, k] +
   sum(wI[i, j, k, ])
 
 deriv(A[, , ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j, k] -
-  n_AT[i, j, k] - n_AU[i, j, k] - exr * A[i, j, k] + sum(wA[i, j, k, ])
+  n_AT[i, j, k] - n_AU[i, j, k] - exr * A[i, j, k] + sum(wA[i, j, , k])
 
 deriv(S[, , ]) <- (1 - ves[j]) * psi * sigma * I[i, j, k] - n_ST[i, j, k] -
-  exr * S[i, j, k] + sum(wS[i, j, k, ])
+  exr * S[i, j, k] + sum(wS[i, j, , k])
 
 deriv(T[, , ]) <- n_ST[i, j, k] + n_AT[i, j, k] - exr * T[i, j, k] -
-  n_TU[i, j, k] + sum(wT[i, j, k, ])
+  n_TU[i, j, k] + sum(wT[i, j, , k])
 
 ## Update popukation size
 N[, , ] <- U[i, j, k] + I[i, j, k] + A[i, j, k] + S[i, j, k] + T[i, j, k]
@@ -221,7 +221,7 @@ dim(vbe)   <- c(n_group, n_vax, n_vax,  n_erlang)
 dim(vod)   <- c(n_group, n_vax, n_vax,  n_erlang)
 dim(vos)   <- c(n_group, n_vax, n_vax,  n_erlang)
 dim(w)     <- c(n_vax, n_vax, n_erlang)
-dim(u)     <- c(n_group, n_vax, n_vax, n_erlang)
+dim(u)     <- c(n_group, n_vax, n_vax, n_erlang) ## This may not need an erlang dimension
 dim(vax_t) <- user()
 dim(vax_y) <- user()
 

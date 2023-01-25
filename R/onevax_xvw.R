@@ -63,7 +63,7 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                          primary_uptake = uptake,
                          booster_uptake = uptake,
                          i_eligible = i_eligible, i_v = i_v, n_erlang)
-browser()
+
   list(n_vax   = n_vax,
        willing = c(1, 0, 0),
        u       = u,

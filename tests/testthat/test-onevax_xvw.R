@@ -131,9 +131,9 @@ test_that("vaccine effects work as expected", {
   y2 <- run_onevax_xvw(tt, gp, ved = 1, dur = 1,
                         uptake = 1, strategy = "VoA")[[1]]
 
-  expect_true(all(y2$A[, , 2] < 1e-6))
-  expect_true(all(y2$A[-1, , 3] > 1e-6))
-  expect_true(all(y2$S[-1, , ] > 0))
+  expect_true(all(y2$A[, , 2, ] < 1e-6))
+  expect_true(all(y2$A[-1, , 3, ] > 1e-6))
+  expect_true(all(y2$S[-1, , , ] > 0))
 
 })
 
