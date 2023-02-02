@@ -7,12 +7,15 @@
 ##' @return A list of initial conditions.
 ##' @export
 
-initial_params_xvw_trial <- function(pars, p_v = 0.5) {
-  assert_scalar_unit_interval(p_v)
-  n_vax <- 3
-  cov <- c(1 - p_v, p_v, 0)
+initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 
- initial_params_trial(pars, n_vax, cov)
+  assert_scalar_unit_interval(p_v)
+  
+  # XVW n_vax = 3, if n_erlang = 1, this is the same, if n_erlang > 1 this 
+  # needs to be accounted for with additional strata
+  n_vax <- 2 + n_erlang   
+  cov <- c(1 - p_v, p_v, vector("numeric", n_erlang - 1), 0)
+  initial_params_trial(pars, n_vax, cov)
 }
 
 ## sets up vaccination efficacies, who experiences the effects of vaccination,
