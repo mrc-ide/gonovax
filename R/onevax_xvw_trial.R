@@ -36,7 +36,7 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                           dur = 1e3) {
+                           dur = 1e3, n_erlang = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -45,12 +45,23 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_positive(dur)
 
 
+  # waned vaccinees move through erlang compartments until they reach
+  # the final waned compartment with no protection
+  
+  #generate n_vax, X + W + n_erlang = total number of strata
+   n_vax <- 1 + n_erlang + 1
+   
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
-   i_v <- 2
-   i_w <- n_vax <- 3
+  # generate i_v and i_w
 
+  # wane from (stratum 2 = first V, and remaining erlang stratum)
+   i_v <- seq(2, 1 + n_erlang, 1) 
+   
+   #wane to   (stratum 3 = W, or the next erlang stratum)
+   i_w <- seq(3, 2 + n_erlang, 1)
+   
   # compartments to which vaccine efficacy applies
-  ve <- c(0, 1, 0)
+  ve <- append(c(0), append(rep(1, length(i_v)), 0))
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   list(n_vax = n_vax,
@@ -58,7 +69,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei   = vei * ve,
        ved   = ved * ve,
        ves   = ves * ve,
-       w     = create_waning_map(n_vax, i_v, i_w, 1 / dur)
+       w     = create_waning_map_trial(n_vax, i_v, i_w, 1 / (dur * n_erlang))
   )
 }
 

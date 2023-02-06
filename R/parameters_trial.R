@@ -128,3 +128,32 @@ model_params_trial <- function(gono_params_trial = NULL,
 
   c(ret, initial_params, vax_params)
 }
+
+##' @name create_waning_map_trial
+##' @title Create mapping for movement between strata due to vaccine waning
+##' in a vaccine trial with erlang compartments
+##' @param n_vax Integer in (0, 5) denoting total number of strata
+##' @param i_v indices of strata under vaccination protection
+##' @param i_w indicies denoting which stratum receives waned vaccinees
+##' @param z Scalar denoting rate of waning
+##' @return an array of the mapping
+
+create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
+  
+   stopifnot(z > 0)
+
+  # set up waning map
+  w <- array(0, dim = c(n_vax, n_vax))
+  
+  for (i in seq_along(i_v)){
+    w[i_w[i], i_v[i]] <- z
+  }
+  
+  for (i in i_v) {
+    idx <- i_v %>% {which(. == i)}
+    w[i, i] <- -w[i_w[idx], i]
+  }
+  
+  w
+  
+}
