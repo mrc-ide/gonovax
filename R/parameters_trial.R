@@ -111,15 +111,24 @@ model_params_trial <- function(gono_params_trial = NULL,
                         vax_params = NULL, p_v = 0,
                         n_erlang = 1) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
-  demographic_params_trial <- demographic_params_trial  %||%
-   demographic_params_trial()
+  demographic_params_trial <- demographic_params_trial  %||% demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
   vax_params <- vax_params %||% vax_params0()
 
+  n_vax <- 1 + n_erlang + 1
+  
+  #check n_erlang supplied im model_params_trial() is same as 
+  #n_erlang supplied to vax_params_xvw_trial() 
+  #unless vax_params not supplied
+  if(is.null(vax_params) == FALSE) {
+    stopifnot(unique(dim(vax_params$w)) == n_vax)
+  }
+  
+  #assing initial parameters
   if (p_v == 0) {                             #no vaccination = placebo arm
-    cov <- c(1, rep(0, vax_params$n_vax - 1))
+    cov <- c(1, rep(0, n_vax - 1))
     initial_params <-
-      initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
+      initial_params_trial %||% initial_params_trial(ret, n_vax, cov)
 
   } else {                                    #p_v > 0 = vaccinated arm
     initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v,
