@@ -25,7 +25,7 @@
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
-                                  hes = 0, t = FALSE) {
+                                  hes = 0, t = FALSE, n_erlang = 1) {
 
   if (coverage_p + coverage_v + hes > 1) {
     stop("sum of coverages and/or hesitancy must not exceed 1")
@@ -35,16 +35,18 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 
   assert_scalar_unit_interval(coverage_p)
   assert_scalar_unit_interval(coverage_v)
-  n_vax <- 6
-  willing <- 1 - hes
+  n_vax <- 6 + (n_erlang - 1)*3
+  willing <- 1 - hes                                 
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
   v_init <- willing * coverage_v
-  cov <- c(x_init, p_init, v_init, 0, 0, hes)
+  
+  cov <- c(x_init, rep(0, n_erlang -1), p_init, v_init, rep(0, n_erlang-1), 0,
+           rep(0, n_erlang-1), 0, hes) 
 
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
-
+  browser()
     U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
   # separate into 1:low and 2:high activity groups and by coverage
   N0 <- pars$N0 * outer(pars$q, cov)
