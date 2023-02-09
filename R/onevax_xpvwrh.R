@@ -375,7 +375,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                              vbe = 0,
                              r1 = 0, r2 = 0, r2_p = 0,
                              booster_uptake = (r1 * r2), strategy = NULL,
-                             t_stop = 99, hes = 0) {
+                             t_stop = 99, hes = 0,
+                             n_erlang = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei,
                              ved, ves, vea_revax, vei_revax, ved_revax,
@@ -391,6 +392,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                     dur_revax = dur_revax, dur_p = dur_p,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
+                    n_erlang = n_erlang,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 
