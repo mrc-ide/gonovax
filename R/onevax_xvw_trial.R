@@ -69,7 +69,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei   = vei * ve,
        ved   = ved * ve,
        ves   = ves * ve,
-       w     = create_waning_map_trial(n_vax, i_v, i_w, 1 / (dur * n_erlang))
+       w     = create_waning_map_trial(n_vax, i_v, i_w, (n_erlang/dur))
   )
 }
 
