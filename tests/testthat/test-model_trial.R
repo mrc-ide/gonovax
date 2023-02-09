@@ -306,7 +306,7 @@ expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
 })
 
 
-test_that("n_erlang = n is working as expected"){
+test_that("n_erlang = n is working as expected", {
   
   #when n_erlang = n, nvax = n + 2
   gp <- gono_params_trial(1)[1]
@@ -362,4 +362,4 @@ test_that("n_erlang = n is working as expected"){
   expect_true(all(y[[1]]$cum_incid[-1, 2, 5] != 0)) #W not under protection, has
                                                      # infections
   
-}
+})
