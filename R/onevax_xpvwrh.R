@@ -134,7 +134,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P                                                                  
-  
+  n_erlang <- 2              #temporary remove later
   #number of strata + sexual activity groups
   n_vax <- 6 + (n_erlang - 1)*3
   n_group <- 2
@@ -150,30 +150,29 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_w <- gen_wane_vec(n_erlang, n_vax, i_p, "to")
   i_v <- gen_wane_vec(n_erlang, n_vax, i_p, "from")
   
-  create_waning_map_branching(n_vax, i_v,
-                              i_w, 1 / c(dur_p, dur_v, dur_revax)) ##### put here temporarily
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
   
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
+  
+  strategy <- "VoD(L)+VoA(H)"              #remove temporary
   p <- set_strategy(strategy, vbe > 0)
-  browser()
+
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
-  
+browser()
+  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p, n_erlang)
+  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p, n_erlang)
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
-                                       set_vbe = TRUE)
-  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p)
-  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p)
-  
+                                       set_vbe = TRUE, n_erlang)
   
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
-  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)
+  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)         
   
   list(n_vax   = n_vax,
-       willing = c((1 - hes), 0, 0,  0, 0, hes),                     #this needs to be changed also, depends on n_vax
+       willing = c((1 - hes), rep(0, n_vax - 2), hes),                     #this needs to be changed also, depends on n_vax
        u       = u,
        u_vbe   = vbe,
        vbe     = vbe_map,
@@ -183,8 +182,12 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei     = c(0, vei_p, vei, 0, vei_revax, 0),
        ved     = c(0, ved_p, ved, 0, ved_revax, 0),
        ves     = c(0, ves_p, ves, 0, ves_revax, 0),
-       w       = create_waning_map_branching(n_vax, i_v,
-                                             i_w, 1 / c(dur_p, dur_v, dur_revax)),             #this needs to change
+       w       = create_waning_map_branching(n_vax, 
+                                             i_v,
+                                             i_w, 
+                                             n_erlang / c(dur_p, 
+                                                   dur_v, dur_revax),
+                                             n_erlang),
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
@@ -261,7 +264,6 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
   stopifnot(length(z) %in% c(1, length(i_v)))
  #stopifnot(length(i_w) == 3)
 
-  n_erlang <- 2  #remove
   z_erlang <- c(rep(z[1], n_erlang), rep(z[2], n_erlang), rep(z[3], n_erlang))
   
   # set up waning map
@@ -293,27 +295,31 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 ##' level of uptake upon entering the model
 ##' @return an array of the mapping
 
-create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
-
+create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
+                                     n_erlang) {
   # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
   stopifnot(max(i_u, i_v) <= n_vax)
 
+  #add in extra
+  i_v <- c(i_v[1], i_v[2], i_v[2], i_v[3])
+  
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
   if (set_vbe == TRUE) {
 
   vax_map[, 1, 1] <-  v
-  vax_map[, 3, 1] <- -v
+  vax_map[, n_erlang + 2, 1] <- -v
 
   } else {
 
   #repeat over stratum 1 column 1 for ease
 
   for (i in seq_along(i_u)) {
+   
     vax_map[, i_u[i], i_u[i]] <-  v
     vax_map[, i_v[i], i_u[i]] <- -v
 
