@@ -91,14 +91,15 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @return A list parameters in the model input format
 vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                             vea_revax = vea, vei_revax = vei,
-                             ved_revax = ved, ves_revax = ves,
-                             vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
-                             dur_v = 1e3, dur_p = dur_v, dur_revax = dur_v,
-                             r1 = 0, r2 = 0, r2_p = 0,
-                             booster_uptake = r1 * r2, strategy = NULL,
-                             vbe = 0, t_stop = 99, hes = 0) {
-
+                              vea_revax = vea, vei_revax = vei,
+                              ved_revax = ved, ves_revax = ves,
+                              vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
+                              dur_v = 1e3, dur_p = dur_v, dur_revax = dur_v,
+                              r1 = 0, r2 = 0, r2_p = 0,
+                              booster_uptake = r1 * r2, strategy = NULL,
+                              vbe = 0, t_stop = 99, hes = 0,
+                              n_erlang = n_erlang) {
+  
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
   assert_scalar_unit_interval(ved_p)
@@ -120,7 +121,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
-
+  
   # waned partially-vaccinated individuals (P) move back to the non-vaccinated
   # stratum (X) and are considered immunologically naive. They are eligible
   # for another round of partial vaccination or full vaccination
@@ -129,54 +130,61 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # separate stratum, (R)
   # a proportion of all 'n' exist only in the hesitant compartment (H)
   # There is no movement between the willing (X, P, V, W, R) and hesitant (H)
-
+  
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
-  # 1:X <-> 2:P
-
-  i_eligible <- c(1, 1, 2, 4)         # X(1), P(2), and W(4) eligible for
-                                      # vaccination
-  i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
-  i_p <- c(2, 3, 3, 5)                # P(2), V(3), and R(5) are protected
-  i_v <- c(2, 3, 5)                   # P(2), V(3), R(5) will experience waning
-
-  #number of compartments
-  n_vax <- 6
+  # 1:X <-> 2:P                                                                  
+  
+  #number of strata + sexual activity groups
+  n_vax <- 6 + (n_erlang - 1)*3
   n_group <- 2
-
+  
+  # work out strata eligibility for vacciation, vaccine protection,
+  # waning, and where people wane to, based on n_vax calculated from
+  # n_erlang
+  
+ 
+  i_eligible <- c(1, 1, n_erlang + 1, (2 * n_erlang) + 2)
+  i_p <- c(n_erlang +1, n_erlang +2, 2 + (3 * n_erlang))
+  
+  i_w <- gen_wane_vec(n_erlang, n_vax, i_p, "to")
+  i_v <- gen_wane_vec(n_erlang, n_vax, i_p, "from")
+  
+  create_waning_map_branching(n_vax, i_v,
+                              i_w, 1 / c(dur_p, dur_v, dur_revax)) ##### put here temporarily
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-
+  
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
-
+  browser()
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
-
+  
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
-                                     set_vbe = TRUE)
+                                       set_vbe = TRUE)
   vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p)
   vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p)
-
-
+  
+  
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
   u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)
-
+  
   list(n_vax   = n_vax,
-       willing = c((1 - hes), 0, 0,  0, 0, hes),
+       willing = c((1 - hes), 0, 0,  0, 0, hes),                     #this needs to be changed also, depends on n_vax
        u       = u,
        u_vbe   = vbe,
        vbe     = vbe_map,
        vod     = vod,
        vos     = vos,
-       vea     = c(0, vea_p, vea, 0, vea_revax, 0),
+       vea     = c(0, vea_p, vea, 0, vea_revax, 0),                 # as does this , depends on n_vax
        vei     = c(0, vei_p, vei, 0, vei_revax, 0),
        ved     = c(0, ved_p, ved, 0, ved_revax, 0),
        ves     = c(0, ves_p, ves, 0, ves_revax, 0),
        w       = create_waning_map_branching(n_vax, i_v,
-                                   i_w, 1 / c(dur_p, dur_v, dur_revax)),
+                                             i_w, 1 / c(dur_p, dur_v, dur_revax)),             #this needs to change
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
@@ -247,18 +255,23 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
 ##' @param z Scalar denoting rate of waning
 ##' @return an array of the mapping
 
-create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
+create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
   stopifnot(z > 0)
   stopifnot(length(z) %in% c(1, length(i_v)))
-  stopifnot(length(i_w) == 3)
+ #stopifnot(length(i_w) == 3)
 
+  n_erlang <- 2  #remove
+  z_erlang <- c(rep(z[1], n_erlang), rep(z[2], n_erlang), rep(z[3], n_erlang))
+  
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
 
   for (i in seq_along(i_v)) {
-    w[i_w[i], i_v[i]] <- z[i]
-    w[i_v[i], i_v[i]] <- -z[i]
+    
+    w[i_v[i], i_v[i]] <- -z_erlang[i]     
+    w[i_w[i], i_v[i]] <- z_erlang[i]
+    
   }
 
   w
@@ -409,3 +422,64 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
   ret <- lapply(ret, name_outputs, c("X", "P", "V", "W", "R", "H"))
   ret
 }
+
+
+########
+gen_wane_vec <- function(n_erlang, n_vax, i_p, direction){
+  
+  if(direction == "from"){
+  
+      x <- i_p[1]
+      y <- i_p[2]
+      z <- i_p[3]
+      
+      x_vec <- rev(seq(x, x - n_erlang + 1, -1)) 
+      y_vec <- seq(y, y + n_erlang -1, 1)
+      z_vec <- rev(seq(z, z - n_erlang + 1, - 1))
+      
+      i_w <- append(append(x_vec, y_vec), z_vec)
+      
+      output <- i_w
+  
+}else if (direction == "to"){
+  
+      x <- seq(1, n_vax - 1)
+      wane_to <- c(setdiff(x, i_p))
+ 
+      #find value which we need to duplicate, the indice for 'W'
+      w_index <- 2*n_erlang + 2
+      
+      #find which position in the vector it has
+      idx <- wane_to %>% {which(. == w_index)}
+      
+      #get vals in wane_to up to and inc. W
+      head <- wane_to[1:idx]
+      
+      #get vals in wane_to after W
+      tail <- wane_to[idx+1:length(wane_to)]
+      tail <- tail[!is.na(tail)]
+      
+      #sandwich another W indicie between head and tail
+      wane_to_final <- append(append(head, w_index), tail)
+      
+      output <- wane_to_final
+  
+}else{
+  
+     stop(print("supply either 'from' or 'to'"))
+}
+
+output
+
+}
+  
+
+
+ 
+  
+
+
+  
+ 
+  
+  
