@@ -120,7 +120,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   vbe <- 1
   p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
   i_eligible <- c(1, 1, 2, 4)
-  i_p <- c(2, 3, 3, 5)
+  i_p <- c(2, 3, 5)
 
   vod_map <- create_vax_map_branching(n_vax = 6, p$vod, i_eligible, i_p)
   vos_map <- create_vax_map_branching(n_vax = 6, p$vos, i_eligible, i_p)
@@ -619,3 +619,4 @@ test_that("run_onevax_xpvwrh works correctly", {
     }
 
 })
+
