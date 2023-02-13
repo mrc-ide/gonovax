@@ -134,7 +134,6 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P                                                                  
-  n_erlang <- 2              #temporary remove later
   #number of strata + sexual activity groups
   n_vax <- 6 + (n_erlang - 1)*3
   n_group <- 2
@@ -155,13 +154,11 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   ved_revax <- min(ved_revax, 1 - 1e-10)
   
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
-  
-  strategy <- "VoD(L)+VoA(H)"              #remove temporary
   p <- set_strategy(strategy, vbe > 0)
 
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
-browser()
+
   vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p, n_erlang)
   vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p, n_erlang)
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
@@ -169,19 +166,19 @@ browser()
   
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
-  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)         
-  
+  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, n_erlang)         
+
   list(n_vax   = n_vax,
-       willing = c((1 - hes), rep(0, n_vax - 2), hes),                     #this needs to be changed also, depends on n_vax
+       willing = c((1 - hes), rep(0, n_vax - 2), hes),
        u       = u,
        u_vbe   = vbe,
        vbe     = vbe_map,
        vod     = vod,
        vos     = vos,
-       vea     = c(0, vea_p, vea, 0, vea_revax, 0),                 # as does this , depends on n_vax
-       vei     = c(0, vei_p, vei, 0, vei_revax, 0),
-       ved     = c(0, ved_p, ved, 0, ved_revax, 0),
-       ves     = c(0, ves_p, ves, 0, ves_revax, 0),
+       vea     = set_protection(i_v, n_erlang, n_vax, vea_p, vea, vea_revax),
+       vei     = set_protection(i_v, n_erlang, n_vax, vei_p, vei, vei_revax),
+       ved     = set_protection(i_v, n_erlang, n_vax, ved_p, ved, ved_revax),
+       ves     = set_protection(i_v, n_erlang, n_vax, ves_p, ves, ves_revax),
        w       = create_waning_map_branching(n_vax, 
                                              i_v,
                                              i_w, 
@@ -213,32 +210,36 @@ browser()
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @return an array of the uptakes of same dimensions
 
-create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
+create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
+                                     n_erlang) {
 
   # note, these indices are specific to the branching pattern of xpvwrh
-
     ## individuals in X accept vaccination of the 1st dose at an uptake of r1
   array[, 1, 1] <- array[, 1, 1] * r1
 
     ## individuals entering V (fully vaccinated) also then accept
     ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
     ## vaccinated is given by r1 * r2
-  array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
+    ## n_erlang+2 is the index for (V1)
+  array[, (n_erlang + 2), 1] <- array[, (n_erlang + 2), 1] * (r1 * r2)
 
     ## individuals entering P (partially vaccinated) do not then accept
     ## vaccination with the 2nd dose so proportion partially vaccinated is
     ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
     ## 2nd dose given they have recieved the 1st dose
-  array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
+    ## n_erlang+1 is the index for (P1)
+  array[, (n_erlang + 1), 1] <- array[, (n_erlang + 1), 1] * (r1 * (1 - r2))                               ########## up to here, fine, just need index of P1 and V1 for second dimension
 
     ## individuals with only the 1st dose can later accept vaccination with the
     ## 2nd dose at an uptake of r2_p
-  array[, , 2] <- array[, , 2] * r2_p
-
+    ## n_erlang+1 is the index for (P1)
+  array[, , (n_erlang + 1)] <- array[, , (n_erlang + 1)] * r2_p                                            ########## third  index should match P1
+  
     ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
     ## booster_uptake
-  array[, , 4]  <- array[, , 4] * booster_uptake
+    ## 2n_erlang + 2 is the index for (W)
+  array[, , (2 * n_erlang + 2)]  <- array[, , (2 * n_erlang + 2)] * booster_uptake                                
 
   # values must be positive - otherwise negative values in this array will
   # cancel those in the vos and vod arrays = incorrect vaccination
@@ -479,7 +480,24 @@ output
 
 }
   
-
+#####
+set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax){
+  
+  # get indexes of strata under protection by type of protection
+  p <- i_v[1:n_erlang]                        #0 * n_erlang + 1 to 1 * n_erlang
+  v <- i_v[(n_erlang + 1):(2 * n_erlang)]     #1 * n_erlang + 1 to 2 * n_erlang
+  r <- i_v[(2 * n_erlang + 1):(3 * n_erlang)] #2 * n_erlang + 1 to 3 * n_erlang
+  
+  # generate empty vector as long as n_vax
+  ve_vec <- c(rep(0, n_vax))
+  
+  # assign corresponding level of protection to the correct position
+  ve_vec[p] <- ve_p
+  ve_vec[v] <- ve
+  ve_vec[r] <- ve_revax
+  
+  vea_vec
+}
 
  
   
