@@ -421,6 +421,13 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
     pars <- lapply(gono_params, model_params)
     init_params <- lapply(pars, initial_params_xpvwrh, hes = hes,
                           n_erlang = n_erlang)
+  }else{
+    
+    #check if init_params supplied, n_vax corresponds to the n_erlang
+    # supplied to the run function
+    
+    stop(length(init_params[[1]][[1]])/2 != (6 + (n_erlang - 1)*3))
+    
   }
 
   ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
