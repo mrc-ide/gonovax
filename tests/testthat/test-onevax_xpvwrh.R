@@ -380,10 +380,17 @@ test_that("run_onevax_xpvwrh works correctly", {
   ## test restart with hesitancy is working
 
   y8 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3)
-
   i_p <- lapply(y8, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE)
   y_hesres <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
                                hes = 0.5)
+  
+  n_erlang = 2
+  y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, n_erlang = n_erlang)
+  i_p <- lapply(y_erlang, restart_hes, n_vax = (6 + (n_erlang - 1) * 3), hes = 0.5, branching = TRUE)
+  y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
+                                hes = 0.5, n_erlang = n_erlang)
+  
+
 
   # final timepoint y8 run = 2 * first timepoint of y_hesres run (as hes = 0.5)
   # (for XVWR)
@@ -394,6 +401,23 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equal(y8[[i]]$S[length(tt), , 1:5], y_hesres[[i]]$S[1, , 1:5] * 2)
     expect_equal(y8[[i]]$T[length(tt), , 1:5], y_hesres[[i]]$T[1, , 1:5] * 2)
   }
+
+  # check this works for n_erlang > 1
+  # final timepoint y_erlang run = 2 * first timepoint of y_hesres_erlang 
+  # run (as hes = 0.5)
+  for (i in seq_along(y_erlang)) {
+    expect_equal(y_erlang[[i]]$U[length(tt), , 1:(5 + 3*(n_erlang-1))],
+                 y_hesres_erlang[[i]]$U[1, , 1:(5 + 3*(n_erlang-1))] * 2)
+    expect_equal(y_erlang[[i]]$I[length(tt), , 1:(5 + 3*(n_erlang-1))],
+                 y_hesres_erlang[[i]]$I[1, , 1:(5 + 3*(n_erlang-1))] * 2)
+    expect_equal(y_erlang[[i]]$A[length(tt), , 1:(5 + 3*(n_erlang-1))],
+                 y_hesres_erlang[[i]]$A[1, , 1:(5 + 3*(n_erlang-1))] * 2)
+    expect_equal(y_erlang[[i]]$S[length(tt), , 1:(5 + 3*(n_erlang-1))],
+                 y_hesres_erlang[[i]]$S[1, , 1:(5 + 3*(n_erlang-1))] * 2)
+    expect_equal(y_erlang[[i]]$T[length(tt), , 1:(5 + 3*(n_erlang-1))],
+                 y_hesres_erlang[[i]]$T[1, , 1:(5 + 3*(n_erlang-1))] * 2)
+  }
+  
 
   # restart_hes moves X -> H only, and correctly
   for (i in seq_along(y_hesres)) {
@@ -409,6 +433,32 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equal(rowSums(y8[[i]]$S[, , 2:5]), rep(0, length(tt)))
     expect_equal(rowSums(y8[[i]]$T[, , 2:5]), rep(0, length(tt)))
 
+  }
+  
+  # the same for n_erlang > 1
+  for (i in seq_along(y_hesres)) {
+    expect_equal(y_hesres_erlang[[i]]$U[, , 1],
+                 y_hesres_erlang[[i]]$U[, , (6 + 3*(n_erlang-1))])
+    expect_equal(y_hesres_erlang[[i]]$I[, , 1],
+                 y_hesres_erlang[[i]]$I[, , (6 + 3*(n_erlang-1))])
+    expect_equal(y_hesres_erlang[[i]]$A[, , 1],
+                 y_hesres_erlang[[i]]$A[, , (6 + 3*(n_erlang-1))])
+    expect_equal(y_hesres_erlang[[i]]$S[, , 1],
+                 y_hesres_erlang[[i]]$S[, , (6 + 3*(n_erlang-1))])
+    expect_equal(y_hesres_erlang[[i]]$T[, , 1],
+                 y_hesres_erlang[[i]]$T[, , (6 + 3*(n_erlang-1))])
+    
+    expect_equal(rowSums(y_hesres_erlang[[i]]$U[, , 2:(5 + 3*(n_erlang-1))]),
+                 rep(0, length(tt)))
+    expect_equal(rowSums(y_hesres_erlang[[i]]$I[, , 2:(5 + 3*(n_erlang-1))]),
+                 rep(0, length(tt)))
+    expect_equal(rowSums(y_hesres_erlang[[i]]$A[, , 2:(5 + 3*(n_erlang-1))]),
+                 rep(0, length(tt)))
+    expect_equal(rowSums(y_hesres_erlang[[i]]$S[, , 2:(5 + 3*(n_erlang-1))]),
+                 rep(0, length(tt)))
+    expect_equal(rowSums(y_hesres_erlang[[i]]$T[, , 2:(5 + 3*(n_erlang-1))]),
+                 rep(0, length(tt)))
+    
   }
 
   # restart_hes gives error if baseline model run provided already has hesitancy
