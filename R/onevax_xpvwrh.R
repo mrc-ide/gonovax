@@ -461,7 +461,7 @@ gen_erlang_labels <- function(n_erlang = 1){
     output <- c("X", "P12", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "W", "R12", "R11", "R10", "R9", "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
   }else{
     stop(print("erlang too high! Names will default to numbers"))
-  output <- c(as.character(seq(1, (6 + n_erlang *3))))
+  output <- c(as.character(seq(1, (6 + (n_erlang -1)*3))))
     }
 
   output
