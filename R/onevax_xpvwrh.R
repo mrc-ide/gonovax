@@ -46,7 +46,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
-  browser()
+
     U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
   # separate into 1:low and 2:high activity groups and by coverage
   N0 <- pars$N0 * outer(pars$q, cov)
@@ -141,8 +141,6 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # work out strata eligibility for vacciation, vaccine protection,
   # waning, and where people wane to, based on n_vax calculated from
   # n_erlang
-  
- 
   i_eligible <- c(1, 1, n_erlang + 1, (2 * n_erlang) + 2)
   i_p <- c(n_erlang +1, n_erlang +2, 2 + (3 * n_erlang))
   
@@ -228,12 +226,12 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
     ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
     ## 2nd dose given they have recieved the 1st dose
     ## n_erlang+1 is the index for (P1)
-  array[, (n_erlang + 1), 1] <- array[, (n_erlang + 1), 1] * (r1 * (1 - r2))                               ########## up to here, fine, just need index of P1 and V1 for second dimension
+  array[, (n_erlang + 1), 1] <- array[, (n_erlang + 1), 1] * (r1 * (1 - r2))
 
     ## individuals with only the 1st dose can later accept vaccination with the
     ## 2nd dose at an uptake of r2_p
     ## n_erlang+1 is the index for (P1)
-  array[, , (n_erlang + 1)] <- array[, , (n_erlang + 1)] * r2_p                                            ########## third  index should match P1
+  array[, , (n_erlang + 1)] <- array[, , (n_erlang + 1)] * r2_p
   
     ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
@@ -297,7 +295,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 ##' @return an array of the mapping
 
 create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
-                                     n_erlang) {
+                                     n_erlang = 1) {
   # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(length(v) == n_group)
@@ -496,14 +494,6 @@ set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax){
   ve_vec[v] <- ve
   ve_vec[r] <- ve_revax
   
-  vea_vec
+  ve_vec
 }
 
- 
-  
-
-
-  
- 
-  
-  
