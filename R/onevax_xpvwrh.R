@@ -170,18 +170,18 @@ browser()
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
   u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)         
-  
+
   list(n_vax   = n_vax,
-       willing = c((1 - hes), rep(0, n_vax - 2), hes),                     #this needs to be changed also, depends on n_vax
+       willing = c((1 - hes), rep(0, n_vax - 2), hes),
        u       = u,
        u_vbe   = vbe,
        vbe     = vbe_map,
        vod     = vod,
        vos     = vos,
-       vea     = c(0, vea_p, vea, 0, vea_revax, 0),                 # as does this , depends on n_vax
-       vei     = c(0, vei_p, vei, 0, vei_revax, 0),
-       ved     = c(0, ved_p, ved, 0, ved_revax, 0),
-       ves     = c(0, ves_p, ves, 0, ves_revax, 0),
+       vea     = set_protection(i_v, n_erlang, n_vax, vea_p, vea, vea_revax),
+       vei     = set_protection(i_v, n_erlang, n_vax, vei_p, vei, vei_revax),
+       ved     = set_protection(i_v, n_erlang, n_vax, ved_p, ved, ved_revax),
+       ves     = set_protection(i_v, n_erlang, n_vax, ves_p, ves, ves_revax),
        w       = create_waning_map_branching(n_vax, 
                                              i_v,
                                              i_w, 
@@ -479,7 +479,24 @@ output
 
 }
   
-
+#####
+set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax){
+  
+  # get indexes of strata under protection by type of protection
+  p <- i_v[1:n_erlang]                        #0 * n_erlang + 1 to 1 * n_erlang
+  v <- i_v[(n_erlang + 1):(2 * n_erlang)]     #1 * n_erlang + 1 to 2 * n_erlang
+  r <- i_v[(2 * n_erlang + 1):(3 * n_erlang)] #2 * n_erlang + 1 to 3 * n_erlang
+  
+  # generate empty vector as long as n_vax
+  ve_vec <- c(rep(0, n_vax))
+  
+  # assign corresponding level of protection to the correct position
+  ve_vec[p] <- ve_p
+  ve_vec[v] <- ve
+  ve_vec[r] <- ve_revax
+  
+  vea_vec
+}
 
  
   
