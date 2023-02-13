@@ -157,11 +157,13 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
 
-  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p, n_erlang)
-  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p, n_erlang)
+  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p,
+                                   set_vbe = FALSE, n_erlang)
+  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p,
+                                   set_vbe = FALSE, n_erlang)
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
                                        set_vbe = TRUE, n_erlang)
-  
+
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
   u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, n_erlang)         
@@ -209,7 +211,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @return an array of the uptakes of same dimensions
 
 create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
-                                     n_erlang) {
+                                     n_erlang = 1) {
 
   # note, these indices are specific to the branching pattern of xpvwrh
     ## individuals in X accept vaccination of the 1st dose at an uptake of r1
@@ -296,6 +298,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
 create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
                                      n_erlang = 1) {
+  
   # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(length(v) == n_group)
