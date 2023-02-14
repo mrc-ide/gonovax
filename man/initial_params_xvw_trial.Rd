@@ -10,6 +10,9 @@ initial_params_xvw_trial(pars, p_v = 0.5, n_erlang = 1)
 \item{pars}{A parameter list containing `N0`, and `q` elements.}
 
 \item{p_v}{scalar giving proportion of the trial cohort vaccinated}
+
+\item{n_erlang}{scalar giving the number of transitions that need to be made
+through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list of initial conditions.

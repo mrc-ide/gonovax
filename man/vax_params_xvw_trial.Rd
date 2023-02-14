@@ -28,6 +28,9 @@ vax_params_xvw_trial(
 (between 0-1)}
 
 \item{dur}{scalar indicating duration of the vaccine (in years)}
+
+\item{n_erlang}{scalar giving the number of transitions that need to be made
+through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list of parameters in the model input format
