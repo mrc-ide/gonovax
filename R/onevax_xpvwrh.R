@@ -433,7 +433,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
     pars <- lapply(gono_params, model_params)
     init_params <- lapply(pars, initial_params_xpvwrh, hes = hes,
                           n_erlang = n_erlang)
-  }else{
+  } else {
 
     #check if init_params supplied, n_vax corresponds to the n_erlang
     # supplied to the run function
@@ -504,7 +504,7 @@ gen_erlang_labels <- function(n_erlang = 1) {
                 "P3", "P2", "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7",
                 "V8", "V9", "V10", "V11", "V12", "W", "R12", "R11", "R10", "R9",
                 "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
-  }else{
+  } else {
     stop(print("erlang too high! Names will default to numbers"))
   output <- c(as.character(seq(1, (6 + (n_erlang - 1) * 3))))
     }
@@ -570,7 +570,7 @@ gen_wane_vec <- function(n_erlang, n_vax, i_p, direction) {
 
       output <- wane_to_final
 
-}else{
+} else {
 
      stop(print("supply either 'from' or 'to'"))
 }
