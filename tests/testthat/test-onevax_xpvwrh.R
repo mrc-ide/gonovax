@@ -847,6 +847,22 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
            # people are flowing from P1(3) -> P2(2) 
            expect_true(sum(rowSums(y_p[[1]]$N[ , , 3])) > 
                          sum(rowSums(y_p[[1]]$N[ , , 2])))
+           
+           # people also wane from R1 and R2
+           n_erlang <- 2
+           tt <- seq(0, 100)
+           y_long <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 0.1 , n_erlang = n_erlang,
+                                       r1 = 1, r2 = 1, booster_uptake = 1, dur_revax = 1e10,
+                                       strategy = "VoD(L)+VoA(H)")
+           
+           i_p <- lapply(y_long, restart_hes, n_vax = (6 + (n_erlang - 1) * 3), branching = TRUE)
+           tt <- seq(0, 5)
+           y_r <- run_onevax_xpvwrh(tt, gp, init_params = i_p, r1 = 0, r2 = 0, dur_v = 0.1,
+                                    dur_revax = 10, n_erlang = n_erlang)
+           
+           # when lots of people start revaccinated and (almost) none start 
+           # primarily vaccinated, people flow from R1 -> R2 -> W
+           
 
   
 })
