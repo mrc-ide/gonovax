@@ -264,7 +264,7 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
 ##' @param i_v indices of strata receiving protection through vaccination
 ##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
-##' @param n_erlang integer giving the number of transitions that need to be 
+##' @param n_erlang integer giving the number of transitions that need to be
 ##' made
 ##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the mapping
