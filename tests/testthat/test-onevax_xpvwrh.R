@@ -106,6 +106,9 @@ test_that("run_onevax_xpvwrh works correctly", {
   y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
                             primary_uptake = 0.5, booster_uptake = 0.3,
                             strategy = "VoD(L)+VoA(H)")
+  # make output names match
+  y_xvwr <- lapply(y_xvwr, name_outputs, c("X", "V1", "W", "R1"))
+
 
   for (i in seq_along(y_h4)) {
   expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
