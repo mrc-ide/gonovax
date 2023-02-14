@@ -383,13 +383,16 @@ test_that("run_onevax_xpvwrh works correctly", {
   i_p <- lapply(y8, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE)
   y_hesres <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
                                hes = 0.5)
-  
-  n_erlang = 2
-  y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, n_erlang = n_erlang)
-  i_p <- lapply(y_erlang, restart_hes, n_vax = (6 + (n_erlang - 1) * 3), hes = 0.5, branching = TRUE)
-  y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
+
+  n_erlang <- 2
+  y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3,
+                                n_erlang = n_erlang)
+  i_p <- lapply(y_erlang, restart_hes, n_vax = (6 + (n_erlang - 1) * 3),
+                hes = 0.5, branching = TRUE)
+  y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0,
+                                       dur_v = 1e3,
                                 hes = 0.5, n_erlang = n_erlang)
-  
+
 
 
   # final timepoint y8 run = 2 * first timepoint of y_hesres run (as hes = 0.5)
@@ -403,21 +406,21 @@ test_that("run_onevax_xpvwrh works correctly", {
   }
 
   # check this works for n_erlang > 1
-  # final timepoint y_erlang run = 2 * first timepoint of y_hesres_erlang 
+  # final timepoint y_erlang run = 2 * first timepoint of y_hesres_erlang
   # run (as hes = 0.5)
   for (i in seq_along(y_erlang)) {
-    expect_equal(y_erlang[[i]]$U[length(tt), , 1:(5 + 3*(n_erlang-1))],
-                 y_hesres_erlang[[i]]$U[1, , 1:(5 + 3*(n_erlang-1))] * 2)
-    expect_equal(y_erlang[[i]]$I[length(tt), , 1:(5 + 3*(n_erlang-1))],
-                 y_hesres_erlang[[i]]$I[1, , 1:(5 + 3*(n_erlang-1))] * 2)
-    expect_equal(y_erlang[[i]]$A[length(tt), , 1:(5 + 3*(n_erlang-1))],
-                 y_hesres_erlang[[i]]$A[1, , 1:(5 + 3*(n_erlang-1))] * 2)
-    expect_equal(y_erlang[[i]]$S[length(tt), , 1:(5 + 3*(n_erlang-1))],
-                 y_hesres_erlang[[i]]$S[1, , 1:(5 + 3*(n_erlang-1))] * 2)
-    expect_equal(y_erlang[[i]]$T[length(tt), , 1:(5 + 3*(n_erlang-1))],
-                 y_hesres_erlang[[i]]$T[1, , 1:(5 + 3*(n_erlang-1))] * 2)
+    expect_equal(y_erlang[[i]]$U[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
+                 y_hesres_erlang[[i]]$U[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
+    expect_equal(y_erlang[[i]]$I[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
+                 y_hesres_erlang[[i]]$I[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
+    expect_equal(y_erlang[[i]]$A[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
+                 y_hesres_erlang[[i]]$A[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
+    expect_equal(y_erlang[[i]]$S[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
+                 y_hesres_erlang[[i]]$S[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
+    expect_equal(y_erlang[[i]]$T[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
+                 y_hesres_erlang[[i]]$T[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
   }
-  
+
 
   # restart_hes moves X -> H only, and correctly
   for (i in seq_along(y_hesres)) {
@@ -434,31 +437,36 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equal(rowSums(y8[[i]]$T[, , 2:5]), rep(0, length(tt)))
 
   }
-  
+
   # the same for n_erlang > 1
   for (i in seq_along(y_hesres)) {
     expect_equal(y_hesres_erlang[[i]]$U[, , 1],
-                 y_hesres_erlang[[i]]$U[, , (6 + 3*(n_erlang-1))])
+                 y_hesres_erlang[[i]]$U[, , (6 + 3 * (n_erlang - 1))])
     expect_equal(y_hesres_erlang[[i]]$I[, , 1],
-                 y_hesres_erlang[[i]]$I[, , (6 + 3*(n_erlang-1))])
+                 y_hesres_erlang[[i]]$I[, , (6 + 3 * (n_erlang - 1))])
     expect_equal(y_hesres_erlang[[i]]$A[, , 1],
-                 y_hesres_erlang[[i]]$A[, , (6 + 3*(n_erlang-1))])
+                 y_hesres_erlang[[i]]$A[, , (6 + 3 * (n_erlang - 1))])
     expect_equal(y_hesres_erlang[[i]]$S[, , 1],
-                 y_hesres_erlang[[i]]$S[, , (6 + 3*(n_erlang-1))])
+                 y_hesres_erlang[[i]]$S[, , (6 + 3 * (n_erlang - 1))])
     expect_equal(y_hesres_erlang[[i]]$T[, , 1],
-                 y_hesres_erlang[[i]]$T[, , (6 + 3*(n_erlang-1))])
-    
-    expect_equal(rowSums(y_hesres_erlang[[i]]$U[, , 2:(5 + 3*(n_erlang-1))]),
+                 y_hesres_erlang[[i]]$T[, , (6 + 3 * (n_erlang - 1))])
+
+    expect_equal(rowSums(y_hesres_erlang[[i]]$U[, , 2:(5 + 3 *
+                                                         (n_erlang - 1))]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$I[, , 2:(5 + 3*(n_erlang-1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$I[, , 2:(5 + 3 *
+                                                         (n_erlang - 1))]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$A[, , 2:(5 + 3*(n_erlang-1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$A[, , 2:(5 + 3 *
+                                                         (n_erlang - 1))]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$S[, , 2:(5 + 3*(n_erlang-1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$S[, , 2:(5 + 3 *
+                                                         (n_erlang - 1))]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$T[, , 2:(5 + 3*(n_erlang-1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$T[, , 2:(5 + 3 *
+                                                         (n_erlang - 1))]),
                  rep(0, length(tt)))
-    
+
   }
 
   # restart_hes gives error if baseline model run provided already has hesitancy
@@ -671,55 +679,55 @@ test_that("run_onevax_xpvwrh works correctly", {
 })
 
 test_that("run_onevax_xpvwrh works when n_erlang > 1", {
-  
+
   # correct number of erlang compartments are generated in initial params
-  
+
   tt <- seq(0, 5)
   pars <- lapply(gono_params()[1], model_params)
-  
+
   n_erlang_2 <- initial_params_xpvwrh(pars[[1]], n_erlang = 2)
   expect_equal(dim(n_erlang_2[[1]]), c(2, 9))
-  
+
   n_erlang_3 <- initial_params_xpvwrh(pars[[1]], n_erlang = 3)
   expect_equal(dim(n_erlang_3[[1]]), c(2, 12))
-  
+
   n_erlang_10 <- initial_params_xpvwrh(pars[[1]], n_erlang = 10)
   expect_equal(dim(n_erlang_10[[1]]), c(2, 33))
-  
+
   # correct number of erlang compartments in run function
-  
+
   y <- run_onevax_xpvwrh(tt, gono_params = gono_params()[1], vea = 0,
-                         dur_v = 1e3, n_erlang = 3, r1 = 0.5, 
+                         dur_v = 1e3, n_erlang = 3, r1 = 0.5,
                     r2 = 0.1, booster_uptake = 1, strategy = "VoD(L)+VoA(H)")
   expect_true(dim(y[[1]]$N)[3] == 12)
-  
+
   # everything defaults to the n_vax = xpvwrh format when n_erlang = 1 or
   # not supplied
   y <- run_onevax_xpvwrh(tt, gono_params = gono_params()[1], vea = 0,
-                         dur_v = 1e3, r1 = 0.5, 
-                         r2 = 0.1, booster_uptake = 1, strategy = "VoD(L)+VoA(H)")
+                      dur_v = 1e3, r1 = 0.5,
+                      r2 = 0.1, booster_uptake = 1, strategy = "VoD(L)+VoA(H)")
   expect_true(dim(y[[1]]$N)[3] == 6)
-  
+
   # expect error if n_erlang supplied to run function doesn't match initial
-  # conditions 
+  # conditions
   expect_error(run_onevax_xpvwrh(tt, gono_params = gono_params()[1], vea = 0,
                     dur_v = 0.1, booster_uptake = 1, strategy = "VoD(L)+VoA(H)",
                     init_params = list(n_erlang_2), n_erlang = 3))
-  
+
   # all erlang compartments are protected
   # vea = 1 no on gets infected
   gp <- gono_params()[1]
-  
-  y <- run_onevax_xpvwrh(tt, gono_params = gp, vea = 1, vea_p = 1, 
+
+  y <- run_onevax_xpvwrh(tt, gono_params = gp, vea = 1, vea_p = 1,
                          vea_revax = 1,
-                         dur_v = 1e3, r1 = 0.5, 
+                         dur_v = 1e3, r1 = 0.5,
                          r2 = 0.1, booster_uptake = 1,
                          strategy = "VoD(L)+VoA(H)",
                          n_erlang = 2)
-  
+
     # people are vaccinated (indiviudals exist in P1-P2, V1-V2, R1-R2)
-        for(i in 1:8){
-        expect_true(all(y[[1]]$N[ -1, , c(i)] > 0))
+        for (i in 1:8) {
+        expect_true(all(y[[1]]$N[-1, , c(i)] > 0))
         }
     # and no one vaccinated is infected
         expect_true(all(y[[1]]$cum_incid[-1, , 2] == 0))  #P2
@@ -728,29 +736,32 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
         expect_true(all(y[[1]]$cum_incid[-1, , 5] == 0))  #V2
         expect_true(all(y[[1]]$cum_incid[-1, , 7] == 0))  #R2
         expect_true(all(y[[1]]$cum_incid[-1, , 8] == 0))  #R1
-        
+
     # and non-vaccinated do get infected
         expect_true(all(y[[1]]$cum_incid[-1, , 1] > 0)) #X
         expect_true(all(y[[1]]$cum_incid[-1, , 6] > 0)) #W
-        
+
   # expect vaccination maps to be correctly generated, moving people
   # to the correct strata
-        
+
         pars <- lapply(gp[1], model_params)
         vbe <- 1
         p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
-        
+
         n_erlang <- 2
         n_vax <- 6 + (n_erlang - 1) * 3
-        
+
         i_eligible <- c(1, 1, 3, 6)
         i_p <- c(3, 4, 8)
-        
-        vod_map <- create_vax_map_branching(n_vax = n_vax, p$vod, i_eligible, i_p)
-        vos_map <- create_vax_map_branching(n_vax = n_vax, p$vos, i_eligible, i_p)
-        vbe_map <- create_vax_map_branching(n_vax = n_vax, p$vbe, i_eligible, i_p,
+
+        vod_map <- create_vax_map_branching(n_vax = n_vax, p$vod, i_eligible,
+                                            i_p)
+        vos_map <- create_vax_map_branching(n_vax = n_vax, p$vos, i_eligible,
+                                            i_p)
+        vbe_map <- create_vax_map_branching(n_vax = n_vax, p$vbe, i_eligible,
+                                            i_p,
                                             set_vbe = TRUE)
-        
+
         # for vod, expect:
         expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
         expect_true(unique(vod_map[, 3, 1] == c(-1, -1)))
@@ -759,13 +770,13 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
         expect_true(unique(vod_map[, 4, 3] == c(-1, -1)))
         expect_true(unique(vod_map[, 6, 6] == c(1, 1)))
         expect_true(unique(vod_map[, 8, 6] == c(-1, -1)))
-        
+
         expect_equal(sum(vod_map[, -c(1, 3, 4), 1]), 0)
         expect_equal(sum(abs(vod_map[, -c(3, 4), 3])), 0)
         expect_equal(sum(abs(vod_map[, -c(6, 8), 6])), 0)
-        
-        expect_equal(sum(vod_map[, , c(4, 6, 9)]), 0)    
-        
+
+        expect_equal(sum(vod_map[, , c(4, 6, 9)]), 0)
+
         # for vos, expect:
         expect_true(unique(vos_map[, 1, 1] == c(0, 1)))
         expect_true(unique(vos_map[, 3, 1] == c(0, -1)))
@@ -774,96 +785,100 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
         expect_true(unique(vos_map[, 4, 3] == c(0, -1)))
         expect_true(unique(vos_map[, 6, 6] == c(0, 1)))
         expect_true(unique(vos_map[, 8, 6] == c(0, -1)))
-        
+
         expect_equal(sum(vos_map[, -c(1, 3, 4), 1]), 0)
         expect_equal(sum(vos_map[, -c(3, 4), 3]), 0)
         expect_equal(sum(vos_map[, -c(6, 8), 6]), 0)
-        
-        expect_equal(sum(vos_map[, , c(4, 6, 9)]), 0) 
-        
+
+        expect_equal(sum(vos_map[, , c(4, 6, 9)]), 0)
+
         # for vbe, expect:
         expect_true(unique(vbe_map[, 1, 1] == c(1, 1)))
         expect_true(unique(vbe_map[, 3, 1] == c(-1, -1)))
         expect_equal(sum(vbe_map[, -c(1, 3), 1]), 0)
         expect_equal(sum(vbe_map[, , 2:9]), 0)
-        
+
         # test uptake maps are generated as expected
         r1 <- c(0.25, 0.5)
         r2 <- c(0.5, 0.75)
         r2_p <- c(0.4, 0.8)
         booster_uptake <- c(0.3, 0.75)
-        
+
         for (i in seq_along(r1)) {
           u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
                                         booster_uptake[i], n_erlang = 2)
-          
+
           acc_vax <- u * vod_map
-          
+
           expect_true(unique(acc_vax[, 1, 1] == c(r1[i], r1[i])))
           expect_true(unique(acc_vax[, 3, 1] == c(- (r1[i] * (1 - r2[i])),
                                                   - (r1[i] * (1 - r2[i])))))
-          expect_true(unique(acc_vax[, 4, 1] == c(-r1[i] * r2[i], -r1[i] * r2[i])))
-          
+          expect_true(unique(acc_vax[, 4, 1] == c(-r1[i] * r2[i],
+                                                  -r1[i] * r2[i])))
+
           expect_true(unique(acc_vax[, 3, 3] == c(r2_p[i], r2_p[i])))
           expect_true(unique(acc_vax[, 4, 3] == -c(r2_p[i], r2_p[i])))
-          
+
           expect_true(unique(acc_vax[, 6, 6] == c(booster_uptake[i],
                                                   booster_uptake[i])))
           expect_true(unique(acc_vax[, 8, 6] == -c(booster_uptake[i],
                                                    booster_uptake[i])))
         }
-    
+
         # people wane as expected
           # entire population starts in V1 and wanes through V2 to W only
           ip_v <- lapply(pars, initial_params_xpvwrh,
                        coverage_v = 0.99999999999999,
                       n_erlang = 2, t = FALSE)
            y_v <- run_onevax_xpvwrh(tt, gp, init_params = ip_v, n_erlang = 2)
-           
+
            # people in V1, V2, W
-           expect_true(all(y_v[[1]]$N[-1, , c(4, 5, 6)] > 0)) 
-           
+           expect_true(all(y_v[[1]]$N[-1, , c(4, 5, 6)] > 0))
+
            # no one in P1, P2, R1, R2 (peple born into X so not included here)
-           expect_true(all(y_v[[1]]$N[ , , c(2, 3, 7, 8)] ==  0))
-           
+           expect_true(all(y_v[[1]]$N[, , c(2, 3, 7, 8)] ==  0))
+
            # people are flowing from V1(4) -> V2(5) -> W(6)
-           expect_true(sum(rowSums(y_v[[1]]$N[ , , 4])) > 
-                         sum(rowSums(y_v[[1]]$N[ , , 5])))
-           expect_true(sum(rowSums(y_v[[1]]$N[ , , 5])) > 
-                         sum(rowSums(y_v[[1]]$N[ , , 6])))
-           
+           expect_true(sum(rowSums(y_v[[1]]$N[, , 4])) >
+                         sum(rowSums(y_v[[1]]$N[, , 5])))
+           expect_true(sum(rowSums(y_v[[1]]$N[, , 5])) >
+                         sum(rowSums(y_v[[1]]$N[, , 6])))
+
           # entire population starts in P1 and wanes through P2 to X only
            ip_p <- lapply(pars, initial_params_xpvwrh,
                         coverage_p = 0.99999999999999,
                         n_erlang = 2, t = FALSE)
            y_p <- run_onevax_xpvwrh(tt, gp, init_params = ip_p, n_erlang = 2)
-           
+
            # people in X, P1, P2
            expect_true(all(y_p[[1]]$N[-1, , c(1, 2, 3)] > 0))
-           
+
            # no one in V1, V2, W, R1 or R2
-           expect_true(all(y_p[[1]]$N[ , , c(4, 5, 6, 7, 8)] ==  0))
-           
-           # people are flowing from P1(3) -> P2(2) 
-           expect_true(sum(rowSums(y_p[[1]]$N[ , , 3])) > 
-                         sum(rowSums(y_p[[1]]$N[ , , 2])))
-           
+           expect_true(all(y_p[[1]]$N[, , c(4, 5, 6, 7, 8)] ==  0))
+
+           # people are flowing from P1(3) -> P2(2)
+           expect_true(sum(rowSums(y_p[[1]]$N[, , 3])) >
+                         sum(rowSums(y_p[[1]]$N[, , 2])))
+
            # people also wane from R1 and R2
            n_erlang <- 2
            tt <- seq(0, 100)
-           y_long <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 0.1 , n_erlang = n_erlang,
-                                       r1 = 1, r2 = 1, booster_uptake = 1, dur_revax = 1e10,
+           y_long <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 0.1,
+                                       n_erlang = n_erlang,
+                                       r1 = 1, r2 = 1, booster_uptake = 1,
+                                       dur_revax = 1e10,
                                        strategy = "VoD(L)+VoA(H)")
-           
-           i_p <- lapply(y_long, restart_hes, n_vax = (6 + (n_erlang - 1) * 3), branching = TRUE)
-           tt <- seq(0, 5)
-           y_r <- run_onevax_xpvwrh(tt, gp, init_params = i_p, r1 = 0, r2 = 0, dur_v = 0.1,
-                                    dur_revax = 10, n_erlang = n_erlang)
-           
-           # when lots of people start revaccinated and (almost) none start 
-           # primarily vaccinated, people flow from R1 -> R2 -> W
-           
 
-  
+           i_p <- lapply(y_long, restart_hes, n_vax = (6 + (n_erlang - 1) * 3),
+                         branching = TRUE)
+           tt <- seq(0, 5)
+           y_r <- run_onevax_xpvwrh(tt, gp, init_params = i_p, r1 = 0, r2 = 0,
+                                    dur_v = 0.1,
+                                    dur_revax = 10, n_erlang = n_erlang)
+
+           # when lots of people start revaccinated and (almost) none start
+           # primarily vaccinated, people flow from R1 -> R2 -> W
+
+
+
 })
-  
