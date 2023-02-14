@@ -113,25 +113,27 @@ model_params_trial <- function(gono_params_trial = NULL,
                         vax_params = NULL, p_v = 0,
                         n_erlang = 1) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
-  demographic_params_trial <- demographic_params_trial  %||% demographic_params_trial()
+  demographic_params_trial <-
+    demographic_params_trial  %||% demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
- 
-  #check n_erlang supplied im model_params_trial() is same as 
-  #n_erlang supplied to vax_params_xvw_trial() 
+
+  #check n_erlang supplied im model_params_trial() is same as
+  #n_erlang supplied to vax_params_xvw_trial()
   #unless vax_params not supplied
-  if(is.null(vax_params) == FALSE) {    #evaluates to TRUE if vax_params supplied
+  if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
     stopifnot(unique(dim(vax_params$w)) ==  2 + n_erlang)
   }
-  
+
   vax_params <- vax_params %||% vax_params0()
 
   #passing initial parameters
   if (p_v == 0) {                             #no vaccination = placebo arm
     cov <- c(1, rep(0, vax_params$n_vax - 1))
     initial_params <-
-      initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)   #if no vaccination then no need for V and W strata
+      initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
+                              #if no vaccination then no need for V and W strata
 
-  } else {                                    #p_v > 0 = vaccinated arm
+  } else {                                  #p_v greater than 0 = vaccinated arm
     initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v,
                                                n_erlang = n_erlang)
   }
@@ -149,21 +151,24 @@ model_params_trial <- function(gono_params_trial = NULL,
 ##' @return an array of the mapping
 
 create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
-  
+
    stopifnot(z > 0)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
-  
-  for (i in seq_along(i_v)){
+
+  for (i in seq_along(i_v)) {
     w[i_w[i], i_v[i]] <- z
   }
-  
+
   for (i in i_v) {
-    idx <- i_v %>% {which(. == i)}
+    idx <- i_v %>% {
+      which(. == i)
+    }
+
     w[i, i] <- -w[i_w[idx], i]
   }
-  
+
   w
-  
+
 }

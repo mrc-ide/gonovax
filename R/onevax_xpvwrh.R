@@ -37,14 +37,14 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 
   assert_scalar_unit_interval(coverage_p)
   assert_scalar_unit_interval(coverage_v)
-  n_vax <- 6 + (n_erlang - 1)*3
-  willing <- 1 - hes                                 
+  n_vax <- 6 + (n_erlang - 1) * 3
+  willing <- 1 - hes
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
   v_init <- willing * coverage_v
-  
-  cov <- c(x_init, rep(0, n_erlang -1), p_init, v_init, rep(0, n_erlang-1), 0,
-           rep(0, n_erlang-1), 0, hes) 
+
+  cov <- c(x_init, rep(0, n_erlang - 1), p_init, v_init, rep(0, n_erlang - 1),
+           0, rep(0, n_erlang - 1), 0, hes)
 
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
@@ -97,13 +97,13 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               vea_revax = vea, vei_revax = vei,
                               ved_revax = ved, ves_revax = ves,
-                              vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
-                              dur_v = 1e3, dur_p = dur_v, dur_revax = dur_v,
-                              r1 = 0, r2 = 0, r2_p = 0,
+                              vea_p = vea, vei_p = vei, ved_p = ved,
+                              ves_p = ves, dur_v = 1e3, dur_p = dur_v,
+                              dur_revax = dur_v, r1 = 0, r2 = 0, r2_p = 0,
                               booster_uptake = r1 * r2, strategy = NULL,
                               vbe = 0, t_stop = 99, hes = 0,
                               n_erlang = n_erlang) {
-  
+
   assert_scalar_unit_interval(n_erlang)
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
@@ -126,7 +126,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
-  
+
   # waned partially-vaccinated individuals (P) move back to the non-vaccinated
   # stratum (X) and are considered immunologically naive. They are eligible
   # for another round of partial vaccination or full vaccination
@@ -135,27 +135,27 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # separate stratum, (R)
   # a proportion of all 'n' exist only in the hesitant compartment (H)
   # There is no movement between the willing (X, P, V, W, R) and hesitant (H)
-  
+
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
-  # 1:X <-> 2:P                                                                  
+  # 1:X <-> 2:P
   #number of strata + sexual activity groups
-  n_vax <- 6 + (n_erlang - 1)*3
+  n_vax <- 6 + (n_erlang - 1) * 3
   n_group <- 2
-  
+
   # work out strata eligibility for vacciation, vaccine protection,
   # waning, and where people wane to, based on n_vax calculated from
   # n_erlang
   i_eligible <- c(1, 1, n_erlang + 1, (2 * n_erlang) + 2)
-  i_p <- c(n_erlang +1, n_erlang +2, 2 + (3 * n_erlang))
-  
+  i_p <- c(n_erlang + 1, n_erlang + 2, 2 + (3 * n_erlang))
+
   i_w <- gen_wane_vec(n_erlang, n_vax, i_p, "to")
   i_v <- gen_wane_vec(n_erlang, n_vax, i_p, "from")
-  
+
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
-  
+
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
@@ -171,7 +171,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
-  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, n_erlang)         
+  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, n_erlang)
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), rep(0, n_vax - 2), hes),
@@ -184,10 +184,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei     = set_protection(i_v, n_erlang, n_vax, vei_p, vei, vei_revax),
        ved     = set_protection(i_v, n_erlang, n_vax, ved_p, ved, ved_revax),
        ves     = set_protection(i_v, n_erlang, n_vax, ves_p, ves, ves_revax),
-       w       = create_waning_map_branching(n_vax, 
+       w       = create_waning_map_branching(n_vax,
                                              i_v,
-                                             i_w, 
-                                             n_erlang / c(dur_p, 
+                                             i_w,
+                                             n_erlang / c(dur_p,
                                                    dur_v, dur_revax),
                                              n_erlang),
        vax_t   = c(0, t_stop),
@@ -241,12 +241,13 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
     ## 2nd dose at an uptake of r2_p
     ## n_erlang+1 is the index for (P1)
   array[, , (n_erlang + 1)] <- array[, , (n_erlang + 1)] * r2_p
-  
+
     ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
     ## booster_uptake
     ## 2n_erlang + 2 is the index for (W)
-  array[, , (2 * n_erlang + 2)]  <- array[, , (2 * n_erlang + 2)] * booster_uptake                                
+  array[, , (2 * n_erlang + 2)] <-
+    array[, , (2 * n_erlang + 2)] * booster_uptake
 
   # values must be positive - otherwise negative values in this array will
   # cancel those in the vos and vod arrays = incorrect vaccination
@@ -271,19 +272,17 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
 create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
   stopifnot(z > 0)
- #stopifnot(length(z) %in% c(1, length(i_v)))
- #stopifnot(length(i_w) == 3)
 
   z_erlang <- c(rep(z[1], n_erlang), rep(z[2], n_erlang), rep(z[3], n_erlang))
-  
+
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
 
-  for (i in seq_along(i_v)) {
-    
-    w[i_v[i], i_v[i]] <- -z_erlang[i]     
+    for (i in seq_along(i_v)) {
+
+    w[i_v[i], i_v[i]] <- -z_erlang[i]
     w[i_w[i], i_v[i]] <- z_erlang[i]
-    
+
   }
 
   w
@@ -309,7 +308,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
 create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
                                      n_erlang = 1) {
-  
+
   # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(length(v) == n_group)
@@ -318,7 +317,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
 
   #add in extra
   i_v <- c(i_v[1], i_v[2], i_v[2], i_v[3])
-  
+
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
@@ -332,7 +331,7 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
   #repeat over stratum 1 column 1 for ease
 
   for (i in seq_along(i_u)) {
-   
+
     vax_map[, i_u[i], i_u[i]] <-  v
     vax_map[, i_v[i], i_u[i]] <- -v
 
@@ -435,18 +434,18 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
     init_params <- lapply(pars, initial_params_xpvwrh, hes = hes,
                           n_erlang = n_erlang)
   }else{
-    
+
     #check if init_params supplied, n_vax corresponds to the n_erlang
     # supplied to the run function
-    
-    stopifnot(length(init_params[[1]][[1]])/2 == (6 + (n_erlang - 1)*3))
-    
+
+    stopifnot(length(init_params[[1]][[1]]) / 2 == (6 + (n_erlang - 1) * 3))
+
   }
 
   ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
              init_params = init_params,
              MoreArgs = list(tt = tt))
-  
+
   # name outputs
   ret <- lapply(ret, name_outputs, gen_erlang_labels(n_erlang))
   ret
@@ -460,39 +459,58 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
 ##' through vaccine-protected strata until that protection has waned
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
-gen_erlang_labels <- function(n_erlang = 1){
-  
-  if(n_erlang == 1){
+gen_erlang_labels <- function(n_erlang = 1) {
+
+  if (n_erlang == 1) {
     output <- c("X", "P1", "V1", "W", "R1", "H")
-  }else if (n_erlang == 2){
+  }else if (n_erlang == 2) {
     output <- c("X", "P2", "P1", "V1", "V2", "W", "R2", "R1", "H")
-  }else if (n_erlang == 3){
-    output <- c("X", "P3", "P2", "P1", "V1", "V2","V3","W","R3","R2", "R1", "H") 
-  }else if (n_erlang == 4){
-    output <- c("X", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "W", "R4", "R3", "R2", "R1", "H") 
-  }else if (n_erlang == 5){
-    output <- c("X", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "W", "R5", "R4", "R3", "R2", "R1", "H")   
-  }else if (n_erlang == 6){
-    output <- c("X", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "W", "R6", "R5", "R4", "R3", "R2", "R1", "H")   
-  }else if (n_erlang == 7){
-    output <- c("X", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "W", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")   
-  }else if (n_erlang == 8){
-    output <- c("X", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "V8", "W", "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")       
-  }else if (n_erlang == 9){
-    output <- c("X", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "V8", "V9", "W", "R9", "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")       
-  }else if (n_erlang == 10){
-    output <- c("X", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "W", "R10", "R9", "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")   
-  }else if (n_erlang == 11){
-    output <- c("X", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "W", "R11", "R10", "R9", "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")  
-  }else if (n_erlang == 12){
-    output <- c("X", "P12", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2","V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10", "V11", "V12", "W", "R12", "R11", "R10", "R9", "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
+  }else if (n_erlang == 3) {
+    output <- c("X", "P3", "P2", "P1", "V1", "V2", "V3", "W", "R3", "R2", "R1",
+                "H")
+  }else if (n_erlang == 4) {
+    output <- c("X", "P4", "P3", "P2", "P1", "V1", "V2", "V3", "V4", "W", "R4",
+                "R3", "R2", "R1", "H")
+  }else if (n_erlang == 5) {
+    output <- c("X", "P5", "P4", "P3", "P2", "P1", "V1", "V2", "V3", "V4", "V5",
+                "W", "R5", "R4", "R3", "R2", "R1", "H")
+  }else if (n_erlang == 6) {
+    output <- c("X", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2", "V3", "V4",
+                "V5", "V6", "W", "R6", "R5", "R4", "R3", "R2", "R1", "H")
+  }else if (n_erlang == 7) {
+    output <- c("X", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2", "V3",
+                "V4", "V5", "V6", "V7", "W", "R7", "R6", "R5", "R4", "R3", "R2",
+                "R1", "H")
+  }else if (n_erlang == 8) {
+    output <- c("X", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2",
+                "V3", "V4", "V5", "V6", "V7", "V8", "W", "R8", "R7", "R6", "R5",
+                "R4", "R3", "R2", "R1", "H")
+  }else if (n_erlang == 9) {
+    output <- c("X", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1",
+                "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "W", "R9", "R8",
+                "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
+  }else if (n_erlang == 10) {
+    output <- c("X", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2",
+                "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9",
+                "V10", "W", "R10", "R9", "R8", "R7", "R6", "R5", "R4", "R3",
+                "R2", "R1", "H")
+  }else if (n_erlang == 11) {
+    output <- c("X", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3",
+                "P2", "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8",
+                "V9", "V10", "V11", "W", "R11", "R10", "R9", "R8", "R7", "R6",
+                "R5", "R4", "R3", "R2", "R1", "H")
+  }else if (n_erlang == 12) {
+    output <- c("X", "P12", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4",
+                "P3", "P2", "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7",
+                "V8", "V9", "V10", "V11", "V12", "W", "R12", "R11", "R10", "R9",
+                "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
   }else{
     stop(print("erlang too high! Names will default to numbers"))
-  output <- c(as.character(seq(1, (6 + (n_erlang - 1)*3))))
+  output <- c(as.character(seq(1, (6 + (n_erlang - 1) * 3))))
     }
 
   output
-  
+
 }
 
 
@@ -506,52 +524,54 @@ gen_erlang_labels <- function(n_erlang = 1){
 ##' @param n_vax integer denoting total number of strata
 ##' @param i_p vector containing indices of strata into which individuals are
 ##' vaccinated
-##' @param direction string, either "from" or "to" which switches the action of 
+##' @param direction string, either "from" or "to" which switches the action of
 ##' the function between generating i_w or i_v
 ##' @return a character vector of length 3 containing indices of strata where
 ##' people wane to or from depending on n_vax
 ##' @export
-gen_wane_vec <- function(n_erlang, n_vax, i_p, direction){
-  
-  if(direction == "from"){
-  
+gen_wane_vec <- function(n_erlang, n_vax, i_p, direction) {
+
+    if (direction == "from") {
+
       x <- i_p[1]
       y <- i_p[2]
       z <- i_p[3]
-      
-      x_vec <- rev(seq(x, x - n_erlang + 1, -1)) 
-      y_vec <- seq(y, y + n_erlang -1, 1)
+
+      x_vec <- rev(seq(x, x - n_erlang + 1, -1))
+      y_vec <- seq(y, y + n_erlang - 1, 1)
       z_vec <- rev(seq(z, z - n_erlang + 1, - 1))
-      
+
       i_w <- append(append(x_vec, y_vec), z_vec)
-      
+
       output <- i_w
-  
-}else if (direction == "to"){
-  
+
+}else if (direction == "to") {
+
       x <- seq(1, n_vax - 1)
       wane_to <- c(setdiff(x, i_p))
- 
+
       #find value which we need to duplicate, the indice for 'W'
-      w_index <- 2*n_erlang + 2
-      
+      w_index <- 2 * n_erlang + 2
+
       #find which position in the vector it has
-      idx <- wane_to %>% {which(. == w_index)}
-      
+      idx <- wane_to %>% {
+        which(. == w_index)
+        }
+
       #get vals in wane_to up to and inc. W
       head <- wane_to[1:idx]
-      
+
       #get vals in wane_to after W
-      tail <- wane_to[idx+1:length(wane_to)]
+      tail <- wane_to[idx + seq_along(wane_to)]
       tail <- tail[!is.na(tail)]
-      
+
       #sandwich another W indicie between head and tail
       wane_to_final <- append(append(head, w_index), tail)
-      
+
       output <- wane_to_final
-  
+
 }else{
-  
+
      stop(print("supply either 'from' or 'to'"))
 }
 
@@ -573,25 +593,24 @@ output
 ##' @param ve_revax scalar 0-1 with degree of re-vaccinated protection of the
 ##' R(N) strata, can take vea_revax, vei_revax, ves_revax, ved_revax
 ##' @return vector of length n_vax with zeros corresponding to the indices of
-##' strata with no protection, and the supplied degree of partial, full, and 
+##' strata with no protection, and the supplied degree of partial, full, and
 ##' boosted protection corresponding to the indices of strata with partial,
 ##' full and boosted vaccination status
 ##' @export
-set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax){
-  
+set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax) {
+
   # get indexes of strata under protection by type of protection
   p <- i_v[1:n_erlang]                        #0 * n_erlang + 1 to 1 * n_erlang
   v <- i_v[(n_erlang + 1):(2 * n_erlang)]     #1 * n_erlang + 1 to 2 * n_erlang
   r <- i_v[(2 * n_erlang + 1):(3 * n_erlang)] #2 * n_erlang + 1 to 3 * n_erlang
-  
+
   # generate empty vector as long as n_vax
   ve_vec <- c(rep(0, n_vax))
-  
+
   # assign corresponding level of protection to the correct position
   ve_vec[p] <- ve_p
   ve_vec[v] <- ve
   ve_vec[r] <- ve_revax
-  
+
   ve_vec
 }
-

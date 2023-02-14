@@ -12,10 +12,10 @@
 initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 
   assert_scalar_unit_interval(p_v)
-  
-  # XVW n_vax = 3, if n_erlang = 1, this is the same, if n_erlang > 1 this 
+
+  # XVW n_vax = 3, if n_erlang = 1, this is the same, if n_erlang > 1 this
   # needs to be accounted for with additional strata
-  n_vax <- 2 + n_erlang   
+  n_vax <- 2 + n_erlang
   cov <- c(1 - p_v, p_v, vector("numeric", n_erlang - 1), 0)
   initial_params_trial(pars, n_vax, cov)
 }
@@ -51,19 +51,19 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # waned vaccinees move through erlang compartments until they reach
   # the final waned compartment with no protection
-  
+
   #generate n_vax, X + W + n_erlang = total number of strata
    n_vax <- 1 + n_erlang + 1
-   
+
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
   # generate i_v and i_w
 
   # wane from (stratum 2 = first V, and remaining erlang stratum)
-   i_v <- seq(2, 1 + n_erlang, 1) 
-   
+   i_v <- seq(2, 1 + n_erlang, 1)
+
    #wane to   (stratum 3 = W, or the next erlang stratum)
    i_w <- seq(3, 2 + n_erlang, 1)
-   
+
   # compartments to which vaccine efficacy applies
   ve <- append(c(0), append(rep(1, length(i_v)), 0))
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
@@ -73,7 +73,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vei   = vei * ve,
        ved   = ved * ve,
        ves   = ves * ve,
-       w     = create_waning_map_trial(n_vax, i_v, i_w, (n_erlang/dur))
+       w     = create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur))
   )
 }
 
@@ -116,7 +116,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
   assert_scalar_unit_interval(p_v)
 
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
-                    vea = vea, vei = vei, ved = ved, ves = ves, 
+                    vea = vea, vei = vei, ved = ved, ves = ves,
                     n_erlang = n_erlang)
 
   if (is.null(initial_params_trial)) {
