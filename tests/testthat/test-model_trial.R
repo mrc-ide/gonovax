@@ -347,7 +347,7 @@ test_that("n_erlang = n is working as expected", {
   expect_equal(erlang_2, matrix_2)
 
   # when vea is perfect, there are no infections in any of the
-  # erlang strata             
+  # erlang strata
 
   n_erlang <- 3   #n_vax is 5
   gp <- gono_params_trial(1)[1]
