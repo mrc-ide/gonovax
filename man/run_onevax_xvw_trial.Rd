@@ -15,7 +15,8 @@ run_onevax_xvw_trial(
   vei = 0,
   ved = 0,
   ves = 0,
-  p_v = 0.5
+  p_v = 0.5,
+  n_erlang = 1
 )
 }
 \arguments{

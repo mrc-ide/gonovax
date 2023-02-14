@@ -9,7 +9,8 @@ model_params_trial(
   demographic_params_trial = NULL,
   initial_params_trial = NULL,
   vax_params = NULL,
-  p_v = 0
+  p_v = 0,
+  n_erlang = 1
 )
 }
 \arguments{

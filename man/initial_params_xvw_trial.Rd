@@ -4,7 +4,7 @@
 \alias{initial_params_xvw_trial}
 \title{Initial conditions for the model in a vaccine trial}
 \usage{
-initial_params_xvw_trial(pars, p_v = 0.5)
+initial_params_xvw_trial(pars, p_v = 0.5, n_erlang = 1)
 }
 \arguments{
 \item{pars}{A parameter list containing `N0`, and `q` elements.}
