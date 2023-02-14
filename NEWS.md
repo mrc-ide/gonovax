@@ -1,3 +1,6 @@
+# gonovax 0.4.8
+* model XPVWRH and XVW_trial can now have 'n' transitions between entering a vaccine-protected stratum and waning to no protection (erlang compartments)
+
 # gonovax 0.4.7
 * model outputs present value of cumulative cases averted in a model run compared with baseline transmission in the absence of 
 vaccination
