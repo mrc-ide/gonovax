@@ -28,7 +28,9 @@
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                   hes = 0, t = FALSE, n_erlang = 1) {
-
+  
+  idx <- stratum_index_xpvwrh(n_erlang)
+  
   if (coverage_p + coverage_v + hes > 1) {
     stop("sum of coverages and/or hesitancy must not exceed 1")
   } else if (coverage_p + coverage_v == 1) {
@@ -37,7 +39,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 
   assert_scalar_unit_interval(coverage_p)
   assert_scalar_unit_interval(coverage_v)
-  n_vax <- 6 + (n_erlang - 1) * 3
+  n_vax <- idx$n_vax
   willing <- 1 - hes
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
