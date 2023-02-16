@@ -28,9 +28,9 @@
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                   hes = 0, t = FALSE, n_erlang = 1) {
-  
+
   idx <- stratum_index_xpvwrh(n_erlang)
-  
+
   if (coverage_p + coverage_v + hes > 1) {
     stop("sum of coverages and/or hesitancy must not exceed 1")
   } else if (coverage_p + coverage_v == 1) {
@@ -44,6 +44,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
   v_init <- willing * coverage_v
+
 ## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
   cov <- c(x_init, p_init, rep(0, n_erlang - 1), v_init, rep(0, n_erlang - 1),
            0, rep(0, n_erlang), hes)
@@ -68,6 +69,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   }
 
   }
+
 }
 
 
@@ -625,13 +627,13 @@ set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax) {
 
 ##' @name stratum_index_xpvwrh
 ##' @title Generate the indices of all xpvwrh strata
-##' @param n_erlang integer giving the number of transitions that need to be 
+##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @return A list of strata with their indicies
 ##' @export
 
 stratum_index_xpvwrh <- function(n_erlang) {
-  
+
   ret <- list(X = 1)
 
     ret$P <- max(ret$X) + seq_len(n_erlang)
@@ -639,8 +641,8 @@ stratum_index_xpvwrh <- function(n_erlang) {
     ret$W <- max(ret$V) + 1
     ret$R <- max(ret$W) + seq_len(n_erlang)
     ret$H <- max(ret$R) + 1
-    ret$n_vax <- ret$H 
-  
+    ret$n_vax <- ret$H
+
   ret
-  
+
 }
