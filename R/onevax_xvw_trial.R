@@ -48,12 +48,14 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(ves)
   assert_scalar_positive(dur)
 
-
+  # generate indicies for all strata and
+  idx <- stratum_index_xvw_trial(n_erlang)
+  
   # waned vaccinees move through erlang compartments until they reach
   # the final waned compartment with no protection
 
-  #generate n_vax, X + W + n_erlang = total number of strata
-   n_vax <- 1 + n_erlang + 1
+  #X + W + n_erlang = total number of strata
+   n_vax <- idx$n_vax
 
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
   # generate i_v and i_w
