@@ -44,8 +44,9 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
   v_init <- willing * coverage_v
-  cov <- c(x_init, rep(0, n_erlang - 1), p_init, v_init, rep(0, n_erlang - 1),
-           0, rep(0, n_erlang - 1), 0, hes)
+## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
+  cov <- c(x_init, p_init, rep(0, n_erlang - 1), v_init, rep(0, n_erlang - 1),
+           0, rep(0, n_erlang), hes)
 
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
