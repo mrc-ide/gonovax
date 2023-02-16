@@ -619,3 +619,25 @@ set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax) {
 
   ve_vec
 }
+
+##' @name stratum_index_xpvwrh
+##' @title Generate the indices of all xpvwrh strata
+##' @param n_erlang integer giving the number of transitions that need to be 
+##' made through vaccine-protected strata until that protection has waned
+##' @return A list of strata with their indicies
+##' @export
+
+stratum_index_xpvwrh <- function(n_erlang) {
+  
+  ret <- list(X = 1)
+
+    ret$P <- max(ret$X) + seq_len(n_erlang)
+    ret$V <- max(ret$P) +  seq_len(n_erlang)
+    ret$W <- max(ret$V) + 1
+    ret$R <- max(ret$W) + seq_len(n_erlang)
+    ret$H <- max(ret$R) + 1
+    ret$n_vax <- ret$H 
+  
+  ret
+  
+}

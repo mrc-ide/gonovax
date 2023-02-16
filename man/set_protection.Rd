@@ -10,7 +10,8 @@ set_protection(i_v, n_erlang, n_vax, ve_p, ve, ve_revax)
 \arguments{
 \item{i_v}{indices of strata receiving protection through vaccination}
 
-\item{n_erlang}{scalar giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
 through vaccine-protected strata until that protection has waned}
 
 \item{n_vax}{integer denoting total number of strata}
@@ -26,7 +27,7 @@ R(N) strata, can take vea_revax, vei_revax, ves_revax, ved_revax}
 }
 \value{
 vector of length n_vax with zeros corresponding to the indices of
-strata with no protection, and the supplied degree of partial, full, and 
+strata with no protection, and the supplied degree of partial, full, and
 boosted protection corresponding to the indices of strata with partial,
 full and boosted vaccination status
 }

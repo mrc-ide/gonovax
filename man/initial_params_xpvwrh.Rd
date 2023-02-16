@@ -28,8 +28,8 @@ present (as a proportion)}
 \item{t}{number of years, only use when using function outside of
 run_onevax_xpvwrh() to generate initial conditions for tests}
 
-\item{n_erlang}{scalar giving the number of transitions that need to be made
-through vaccine-protected strata until that protection has waned}
+\item{n_erlang}{integer giving the number of transitions that need to be
+made through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list of initial conditions

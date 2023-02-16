@@ -8,7 +8,8 @@ in the model, which depends on the value given to n_erlang}
 gen_erlang_labels(n_erlang = 1)
 }
 \arguments{
-\item{n_erlang}{scalar giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
 through vaccine-protected strata until that protection has waned}
 }
 \value{

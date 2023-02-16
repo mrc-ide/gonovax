@@ -26,7 +26,8 @@ a second dose when returning to the clinic due to screening or illness}
 \item{booster_uptake}{proportion of the formerly fully vaccinated, waned
 population who accept a booster vaccination dose}
 
-\item{n_erlang}{scalar giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+made
 through vaccine-protected strata until that protection has waned}
 }
 \value{

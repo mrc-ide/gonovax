@@ -19,7 +19,8 @@ create_waning_map_branching(n_vax, i_v, i_w, z, n_erlang)
 
 \item{z}{Scalar denoting rate of waning}
 
-\item{n_erlang}{scalar giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+made
 through vaccine-protected strata until that protection has waned}
 }
 \value{

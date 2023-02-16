@@ -10,7 +10,8 @@ waning maps}
 gen_wane_vec(n_erlang, n_vax, i_p, direction)
 }
 \arguments{
-\item{n_erlang}{scalar giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
 through vaccine-protected strata until that protection has waned}
 
 \item{n_vax}{integer denoting total number of strata}
@@ -18,7 +19,7 @@ through vaccine-protected strata until that protection has waned}
 \item{i_p}{vector containing indices of strata into which individuals are
 vaccinated}
 
-\item{direction}{string, either "from" or "to" which switches the action of 
+\item{direction}{string, either "from" or "to" which switches the action of
 the function between generating i_w or i_v}
 }
 \value{

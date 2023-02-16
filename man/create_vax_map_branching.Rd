@@ -22,7 +22,8 @@ should be offered vaccination.}
 \item{set_vbe}{Boolean which indicates that vaccination is occurring at some
 level of uptake upon entering the model}
 
-\item{n_erlang}{scalar giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
 through vaccine-protected strata until that protection has waned}
 }
 \value{
