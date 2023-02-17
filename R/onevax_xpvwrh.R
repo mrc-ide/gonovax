@@ -197,7 +197,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
-  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, n_erlang)
+  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, idx)
 
   list(n_vax   = n_vax,
        willing = c((1 - hes), rep(0, n_vax - 2), hes),
@@ -239,13 +239,12 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' population who accept a booster vaccination dose
 ##' @param r2_p proportion of partially vaccinated individuals who receive
 ##' a second dose when returning to the clinic due to screening or illness
-##' @param n_erlang integer giving the number of transitions that need to be
-##' made
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
 ##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the uptakes of same dimensions
 
 create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
-                                     n_erlang = 1) {
+                                     idx) {
 
   # note, these indices are specific to the branching pattern of xpvwrh
     ## individuals in X accept vaccination of the 1st dose at an uptake of r1
@@ -254,27 +253,26 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
     ## individuals entering V (fully vaccinated) also then accept
     ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
     ## vaccinated is given by r1 * r2
-    ## n_erlang+2 is the index for (V1)
-  array[, (n_erlang + 2), 1] <- array[, (n_erlang + 2), 1] * (r1 * r2)
+    ## idx$V[1] gives index of the top of the V erlang stack
+  array[, idx$V[1], 1] <- array[, idx$V[1], 1] * (r1 * r2)  
 
     ## individuals entering P (partially vaccinated) do not then accept
     ## vaccination with the 2nd dose so proportion partially vaccinated is
     ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
     ## 2nd dose given they have recieved the 1st dose
-    ## n_erlang+1 is the index for (P1)
-  array[, (n_erlang + 1), 1] <- array[, (n_erlang + 1), 1] * (r1 * (1 - r2))
+    ## idx$P[1] gives index of the top of the P erlang stack
+  array[, idx$P[1], 1] <- array[, idx$P[1], 1] * (r1 * (1 - r2))
 
     ## individuals with only the 1st dose can later accept vaccination with the
     ## 2nd dose at an uptake of r2_p
-    ## n_erlang+1 is the index for (P1)
-  array[, , (n_erlang + 1)] <- array[, , (n_erlang + 1)] * r2_p
+    ## idx$P gives indices for all P erlang strata, r2_p applies to all equally
+  array[, , idx$P] <- array[, , idx$P] * r2_p
 
     ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
     ## booster_uptake
-    ## 2n_erlang + 2 is the index for (W)
-  array[, , (2 * n_erlang + 2)] <-
-    array[, , (2 * n_erlang + 2)] * booster_uptake
+    ## idx$W gives the the index for (W)
+  array[, , idx$W] <- array[, , idx$W] * booster_uptake
 
   # values must be positive - otherwise negative values in this array will
   # cancel those in the vos and vod arrays = incorrect vaccination
@@ -330,8 +328,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 ##' @param i_p indices of strata vaccinated and protected
 ##' @param set_vbe Boolean which indicates that vaccination is occurring at some
 ##' level of uptake upon entering the model
-##' @param n_erlang integer giving the number of transitions that need to be
-##'  made
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
 ##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the mapping
 

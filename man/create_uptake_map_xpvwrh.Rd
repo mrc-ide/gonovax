@@ -8,7 +8,7 @@ vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
 partially vaccinated (P) to fully vaccianted (V). The former
 reflects the specific indices which are chosen for assigning uptakes.}
 \usage{
-create_uptake_map_xpvwrh(array, r1, r2, r2_p, booster_uptake, n_erlang = 1)
+create_uptake_map_xpvwrh(array, r1, r2, r2_p, booster_uptake, idx)
 }
 \arguments{
 \item{array}{a vaccine map array of dimensions n_group by n_vax by n_vax
@@ -26,8 +26,7 @@ a second dose when returning to the clinic due to screening or illness}
 \item{booster_uptake}{proportion of the formerly fully vaccinated, waned
 population who accept a booster vaccination dose}
 
-\item{n_erlang}{integer giving the number of transitions that need to be
-made
+\item{idx}{list containing indices of all X, P, V, W, R & H strata and n_vax
 through vaccine-protected strata until that protection has waned}
 }
 \value{
