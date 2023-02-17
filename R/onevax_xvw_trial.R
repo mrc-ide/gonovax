@@ -4,7 +4,8 @@
 ##' @title Initial conditions for the model in a vaccine trial
 ##' @param pars A parameter list containing `N0`, and `q` elements.
 ##' @param p_v scalar giving proportion of the trial cohort vaccinated
-##' @param n_erlang integer giving the number of transitions that need to be made
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made
 ##' through vaccine-protected strata until that protection has waned
 ##' @return A list of initial conditions.
 ##' @export
@@ -35,7 +36,8 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 ##' @param ves scalar indicating efficacy of the vaccine against symptoms
 ##' (between 0-1)
 ##' @param dur scalar indicating duration of the vaccine (in years)
-##' @param n_erlang integer giving the number of transitions that need to be made
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made
 ##' through vaccine-protected strata until that protection has waned
 ##' @return A list of parameters in the model input format
 
@@ -50,7 +52,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # generate indicies for all strata and
   idx <- stratum_index_xvw_trial(n_erlang)
-  
+
   # waned vaccinees move through erlang compartments until they reach
   # the final waned compartment with no protection
 
@@ -65,7 +67,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # strata that individuals wane to
    i_w <- idx$V + 1
-   
+
   # compartments to which vaccine efficacy applies
   ve <- c(0, rep(1, n_erlang), 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
@@ -101,7 +103,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  giving duration of the vaccine (in years)
 ##' @param p_v scalar giving proportion of the trial cohort vaccinated, default
 ##'  is 0.5.
-##' @param n_erlang integer giving the number of transitions that need to be made
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made
 ##' through vaccine-protected strata until that protection has waned
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
@@ -138,20 +141,18 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 
 ##' @name stratum_index_xvw_trial
 ##' @title Generate the indices of all xvw trial strata
-##' @param n_erlang integer giving the number of transitions that need to be 
+##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @return A list of strata with their indicies
 ##' @export
 
 stratum_index_xvw_trial <- function(n_erlang) {
-  
+
   ret <- list(X = 1)
-    
+
     ret$V <- max(ret$X) + seq_len(n_erlang)
     ret$W <- max(ret$V) + 1
     ret$n_vax <- ret$W
-  
-  ret
-  
-}
 
+  ret
+}
