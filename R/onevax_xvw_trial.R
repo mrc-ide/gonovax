@@ -50,7 +50,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(ves)
   assert_scalar_positive(dur)
 
-  # generate indicies for all strata and
+  # generate indices for all strata and
   idx <- stratum_index_xvw_trial(n_erlang)
 
   # waned vaccinees move through erlang compartments until they reach
@@ -143,7 +143,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 ##' @title Generate the indices of all xvw trial strata
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
-##' @return A list of strata with their indicies
+##' @return A list of strata with their indices
 ##' @export
 
 stratum_index_xvw_trial <- function(n_erlang) {

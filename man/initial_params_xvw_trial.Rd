@@ -11,7 +11,8 @@ initial_params_xvw_trial(pars, p_v = 0.5, n_erlang = 1)
 
 \item{p_v}{scalar giving proportion of the trial cohort vaccinated}
 
-\item{n_erlang}{integer giving the number of transitions that need to be made
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
 through vaccine-protected strata until that protection has waned}
 }
 \value{

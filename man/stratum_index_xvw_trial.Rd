@@ -7,11 +7,11 @@
 stratum_index_xvw_trial(n_erlang)
 }
 \arguments{
-\item{n_erlang}{integer giving the number of transitions that need to be 
+\item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
 }
 \value{
-A list of strata with their indicies
+A list of strata with their indices
 }
 \description{
 Generate the indices of all xvw trial strata
