@@ -189,11 +189,11 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # from and which strata they are then entering
 
   vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p,
-                                   set_vbe = FALSE, n_erlang)
+                                   set_vbe = FALSE, idx)
   vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p,
-                                   set_vbe = FALSE, n_erlang)
+                                   set_vbe = FALSE, idx)
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
-                                       set_vbe = TRUE, n_erlang)
+                                       set_vbe = TRUE, idx)
 
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
@@ -326,8 +326,8 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 ##' @param n_vax Integer denoting total number of strata
 ##' @param v 0-1 vector of length two indicating whether activity group
 ##'  should be offered vaccination.
-##' @param i_u indices of strata eligible for vaccination
-##' @param i_v indices of strata vaccinated and protected
+##' @param i_e indices of strata eligible for vaccination
+##' @param i_p indices of strata vaccinated and protected
 ##' @param set_vbe Boolean which indicates that vaccination is occurring at some
 ##' level of uptake upon entering the model
 ##' @param n_erlang integer giving the number of transitions that need to be
@@ -335,17 +335,14 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 ##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the mapping
 
-create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
-                                     n_erlang = 1) {
+create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
+                                     idx) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
-  stopifnot(max(i_u, i_v) <= n_vax)
-
-  #add in extra
-  i_v <- c(i_v[1], i_v[2], i_v[2], i_v[3])
+  stopifnot(max(i_e, i_p) <= n_vax)
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
@@ -353,16 +350,16 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE,
   if (set_vbe == TRUE) {
 
   vax_map[, 1, 1] <-  v
-  vax_map[, n_erlang + 2, 1] <- -v
+  vax_map[, idx$V[1], 1] <- -v
 
   } else {
 
   #repeat over stratum 1 column 1 for ease
 
-  for (i in seq_along(i_u)) {
+  for (i in seq_along(i_e)) {
 
-    vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v
+    vax_map[, i_e[i], i_e[i]] <-  v
+    vax_map[, i_p[i], i_e[i]] <- -v
 
   }
 }
