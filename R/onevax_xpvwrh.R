@@ -299,8 +299,9 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
   stopifnot(z > 0)
 
+  
   #creates vector containing rates
-  z_erlang <- c(rep(z[1], n_erlang), rep(z[2], n_erlang), rep(z[3], n_erlang))
+  z_erlang <- rep(z, each = n_erlang)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
