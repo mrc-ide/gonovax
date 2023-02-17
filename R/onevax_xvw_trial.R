@@ -60,12 +60,12 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
   # generate i_v and i_w
 
-  # wane from (stratum 2 = first V, and remaining erlang stratum)
-   i_v <- seq(2, 1 + n_erlang, 1)
+  # strata that individuals wane from, i.e all 'V' strata
+   i_v <- idx$V
 
-   #wane to   (stratum 3 = W, or the next erlang stratum)
-   i_w <- seq(3, 2 + n_erlang, 1)
-
+  # strata that individuals wane to
+   i_w <- idx$V + 1
+   
   # compartments to which vaccine efficacy applies
   ve <- append(c(0), append(rep(1, length(i_v)), 0))
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
