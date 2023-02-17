@@ -67,7 +67,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
    i_w <- idx$V + 1
    
   # compartments to which vaccine efficacy applies
-  ve <- append(c(0), append(rep(1, length(i_v)), 0))
+  ve <- c(0, rep(1, n_erlang), 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   list(n_vax = n_vax,
