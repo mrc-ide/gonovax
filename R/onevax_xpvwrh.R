@@ -469,53 +469,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @export
 gen_erlang_labels <- function(n_erlang = 1) {
 
-  if (n_erlang == 1) {
-    output <- c("X", "P1", "V1", "W", "R1", "H")
-  }else if (n_erlang == 2) {
-    output <- c("X", "P2", "P1", "V1", "V2", "W", "R2", "R1", "H")
-  }else if (n_erlang == 3) {
-    output <- c("X", "P3", "P2", "P1", "V1", "V2", "V3", "W", "R3", "R2", "R1",
-                "H")
-  }else if (n_erlang == 4) {
-    output <- c("X", "P4", "P3", "P2", "P1", "V1", "V2", "V3", "V4", "W", "R4",
-                "R3", "R2", "R1", "H")
-  }else if (n_erlang == 5) {
-    output <- c("X", "P5", "P4", "P3", "P2", "P1", "V1", "V2", "V3", "V4", "V5",
-                "W", "R5", "R4", "R3", "R2", "R1", "H")
-  }else if (n_erlang == 6) {
-    output <- c("X", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2", "V3", "V4",
-                "V5", "V6", "W", "R6", "R5", "R4", "R3", "R2", "R1", "H")
-  }else if (n_erlang == 7) {
-    output <- c("X", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2", "V3",
-                "V4", "V5", "V6", "V7", "W", "R7", "R6", "R5", "R4", "R3", "R2",
-                "R1", "H")
-  }else if (n_erlang == 8) {
-    output <- c("X", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1", "V2",
-                "V3", "V4", "V5", "V6", "V7", "V8", "W", "R8", "R7", "R6", "R5",
-                "R4", "R3", "R2", "R1", "H")
-  }else if (n_erlang == 9) {
-    output <- c("X", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2", "P1", "V1",
-                "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "W", "R9", "R8",
-                "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
-  }else if (n_erlang == 10) {
-    output <- c("X", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3", "P2",
-                "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9",
-                "V10", "W", "R10", "R9", "R8", "R7", "R6", "R5", "R4", "R3",
-                "R2", "R1", "H")
-  }else if (n_erlang == 11) {
-    output <- c("X", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4", "P3",
-                "P2", "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8",
-                "V9", "V10", "V11", "W", "R11", "R10", "R9", "R8", "R7", "R6",
-                "R5", "R4", "R3", "R2", "R1", "H")
-  }else if (n_erlang == 12) {
-    output <- c("X", "P12", "P11", "P10", "P9", "P8", "P7", "P6", "P5", "P4",
-                "P3", "P2", "P1", "V1", "V2", "V3", "V4", "V5", "V6", "V7",
-                "V8", "V9", "V10", "V11", "V12", "W", "R12", "R11", "R10", "R9",
-                "R8", "R7", "R6", "R5", "R4", "R3", "R2", "R1", "H")
-  } else {
-    stop(print("erlang too high! Names will default to numbers"))
-  output <- c(as.character(seq(1, (6 + (n_erlang - 1) * 3))))
-    }
+idx <- seq_len(n_erlang)
+output <- c("X", paste0("P", idx), paste0("V", idx), "W", paste0("R", idx), "H")
 
   output
 
