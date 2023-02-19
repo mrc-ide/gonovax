@@ -335,7 +335,7 @@ test_that("n_erlang = n is working as expected", {
 
   #vax_params_xvw_trial generates the correct waning maps (in for n_erlang > 1)
   dur <- 1e03
-  n_erlang <- 1 #n_vax = 3
+  n_erlang <- 1 #n_vax is 3
   idx <- stratum_index_xvw_trial(n_erlang)
   erlang_1 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang)$w
   matrix_1 <- matrix(data = (c(rep(0, 4), -n_erlang / dur, rep(0, 2),
@@ -343,7 +343,7 @@ test_that("n_erlang = n is working as expected", {
                      byrow = TRUE)
   expect_equal(erlang_1, matrix_1)
 
-  n_erlang <- 2 #n_vax = 4
+  n_erlang <- 2 #n_vax is 4
   idx <- stratum_index_xvw_trial(n_erlang)
   erlang_2 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang)$w
   matrix_2 <- matrix(data = (c(rep(0, 5), -n_erlang / dur, rep(0, 3),
@@ -369,7 +369,7 @@ test_that("n_erlang = n is working as expected", {
   expect_true(all(y[[1]]$cum_incid[, , c(idx$V)] == 0)) #all V
 
   expect_true(all(y[[1]]$cum_incid[-1, 2, 1] != 0)) #X still has infections
-  expect_true(all(y[[1]]$cum_incid[-1, 2, idx$X] != 0)) 
+  expect_true(all(y[[1]]$cum_incid[-1, 2, idx$X] != 0))
   expect_true(all(y[[1]]$cum_incid[-1, 2, 5] != 0)) #W not under protection, has
   expect_true(all(y[[1]]$cum_incid[-1, 2, idx$W] != 0)) # infections
 

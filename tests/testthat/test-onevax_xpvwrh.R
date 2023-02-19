@@ -730,7 +730,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   # vea = 1 no on gets infected
   gp <- gono_params()[1]
 
-  n_erlang = 2
+  n_erlang <- 2
   idx <- stratum_index_xpvwrh(n_erlang)
   y <- run_onevax_xpvwrh(tt, gono_params = gp, vea = 1, vea_p = 1,
                          vea_revax = 1,
@@ -792,7 +792,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
         expect_true(unique(vod_map[, idx$P[1], idx$P[1]]  == c(1, 1)))
         expect_true(unique(vod_map[, idx$V[1], idx$P[1]]  == c(-1, -1)))
         expect_true(unique(vod_map[, idx$P[2], idx$P[2]]  == c(1, 1)))
-        expect_true(unique(vod_map[, idx$V[1], idx$P[2]]  == c(-1, -1)))   
+        expect_true(unique(vod_map[, idx$V[1], idx$P[2]]  == c(-1, -1)))
         expect_true(unique(vod_map[, idx$W, idx$W]  == c(1, 1)))
         expect_true(unique(vod_map[, idx$R[1], idx$W]  == c(-1, -1)))
 
