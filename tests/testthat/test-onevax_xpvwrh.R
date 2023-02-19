@@ -420,17 +420,18 @@ test_that("run_onevax_xpvwrh works correctly", {
   # check this works for n_erlang > 1
   # final timepoint y_erlang run = 2 * first timepoint of y_hesres_erlang
   # run (as hes = 0.5)
+  idx <- stratum_index_xpvwrh(n_erlang)
   for (i in seq_along(y_erlang)) {
-    expect_equal(y_erlang[[i]]$U[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
-                 y_hesres_erlang[[i]]$U[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
-    expect_equal(y_erlang[[i]]$I[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
-                 y_hesres_erlang[[i]]$I[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
-    expect_equal(y_erlang[[i]]$A[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
-                 y_hesres_erlang[[i]]$A[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
-    expect_equal(y_erlang[[i]]$S[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
-                 y_hesres_erlang[[i]]$S[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
-    expect_equal(y_erlang[[i]]$T[length(tt), , 1:(5 + 3 * (n_erlang - 1))],
-                 y_hesres_erlang[[i]]$T[1, , 1:(5 + 3 * (n_erlang - 1))] * 2)
+    expect_equal(y_erlang[[i]]$U[length(tt), , 1:(idx$n_vax - 1)],
+                 y_hesres_erlang[[i]]$U[1, , 1:(idx$n_vax - 1)] * 2)
+    expect_equal(y_erlang[[i]]$I[length(tt), , 1:(idx$n_vax - 1)],
+                 y_hesres_erlang[[i]]$I[1, , 1:(idx$n_vax - 1)] * 2)
+    expect_equal(y_erlang[[i]]$A[length(tt), , 1:(idx$n_vax - 1)],
+                 y_hesres_erlang[[i]]$A[1, , 1:(idx$n_vax - 1)] * 2)
+    expect_equal(y_erlang[[i]]$S[length(tt), , 1:(idx$n_vax - 1)],
+                 y_hesres_erlang[[i]]$S[1, , 1:(idx$n_vax - 1)] * 2)
+    expect_equal(y_erlang[[i]]$T[length(tt), , 1:(idx$n_vax - 1)],
+                 y_hesres_erlang[[i]]$T[1, , 1:(idx$n_vax - 1)] * 2)
   }
 
 
@@ -453,30 +454,25 @@ test_that("run_onevax_xpvwrh works correctly", {
   # the same for n_erlang > 1
   for (i in seq_along(y_hesres)) {
     expect_equal(y_hesres_erlang[[i]]$U[, , 1],
-                 y_hesres_erlang[[i]]$U[, , (6 + 3 * (n_erlang - 1))])
+                 y_hesres_erlang[[i]]$U[, , (idx$n_vax)])
     expect_equal(y_hesres_erlang[[i]]$I[, , 1],
-                 y_hesres_erlang[[i]]$I[, , (6 + 3 * (n_erlang - 1))])
+                 y_hesres_erlang[[i]]$I[, , (idx$n_vax)])
     expect_equal(y_hesres_erlang[[i]]$A[, , 1],
-                 y_hesres_erlang[[i]]$A[, , (6 + 3 * (n_erlang - 1))])
+                 y_hesres_erlang[[i]]$A[, , (idx$n_vax)])
     expect_equal(y_hesres_erlang[[i]]$S[, , 1],
-                 y_hesres_erlang[[i]]$S[, , (6 + 3 * (n_erlang - 1))])
+                 y_hesres_erlang[[i]]$S[, , (idx$n_vax)])
     expect_equal(y_hesres_erlang[[i]]$T[, , 1],
-                 y_hesres_erlang[[i]]$T[, , (6 + 3 * (n_erlang - 1))])
+                 y_hesres_erlang[[i]]$T[, , (idx$n_vax)])
 
-    expect_equal(rowSums(y_hesres_erlang[[i]]$U[, , 2:(5 + 3 *
-                                                         (n_erlang - 1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$U[, , 2:(idx$n_vax - 1)]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$I[, , 2:(5 + 3 *
-                                                         (n_erlang - 1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$I[, , 2:(idx$n_vax - 1)]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$A[, , 2:(5 + 3 *
-                                                         (n_erlang - 1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$A[, , 2:(idx$n_vax - 1)]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$S[, , 2:(5 + 3 *
-                                                         (n_erlang - 1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$S[, , 2:(idx$n_vax - 1)]),
                  rep(0, length(tt)))
-    expect_equal(rowSums(y_hesres_erlang[[i]]$T[, , 2:(5 + 3 *
-                                                         (n_erlang - 1))]),
+    expect_equal(rowSums(y_hesres_erlang[[i]]$T[, , 2:(idx$n_vax - 1)]),
                  rep(0, length(tt)))
 
   }
