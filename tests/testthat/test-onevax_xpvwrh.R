@@ -730,12 +730,14 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   # vea = 1 no on gets infected
   gp <- gono_params()[1]
 
+  n_erlang = 2
+  idx <- stratum_index_xpvwrh(n_erlang)
   y <- run_onevax_xpvwrh(tt, gono_params = gp, vea = 1, vea_p = 1,
                          vea_revax = 1,
                          dur_v = 1e3, r1 = 0.5,
                          r2 = 0.1, booster_uptake = 1,
                          strategy = "VoD(L)+VoA(H)",
-                         n_erlang = 2)
+                         n_erlang = n_erlang)
 
     # people are vaccinated (indiviudals exist in P1-P2, V1-V2, R1-R2)
         for (i in 1:8) {
@@ -748,10 +750,12 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
         expect_true(all(y[[1]]$cum_incid[-1, , 5] == 0))  #V2
         expect_true(all(y[[1]]$cum_incid[-1, , 7] == 0))  #R2
         expect_true(all(y[[1]]$cum_incid[-1, , 8] == 0))  #R1
+        expect_true(all(y[[1]]$cum_incid[-1, , c(idx$P, idx$V, idx$R)] == 0))
 
     # and non-vaccinated do get infected
         expect_true(all(y[[1]]$cum_incid[-1, , 1] > 0)) #X
         expect_true(all(y[[1]]$cum_incid[-1, , 6] > 0)) #W
+        expect_true(all(y[[1]]$cum_incid[-1, , c(idx$X, idx$W)] > 0))
 
   # expect vaccination maps to be correctly generated, moving people
   # to the correct strata
@@ -781,21 +785,22 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
           # all 1's indicating vaccination, are in the right place
           # and all -1's indicating where people are being vaccinated to are
           # in the right place
-        expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
-        expect_true(unique(vod_map[, 2, 1] == c(-1, -1)))
-        expect_true(unique(vod_map[, 4, 1] == c(-1, -1)))
-        expect_true(unique(vod_map[, 2, 2] == c(1, 1)))
-        expect_true(unique(vod_map[, 4, 2] == c(-1, -1)))
-        expect_true(unique(vod_map[, 3, 3] == c(1, 1)))
-        expect_true(unique(vod_map[, 4, 3] == c(-1, -1)))
-        expect_true(unique(vod_map[, 6, 6] == c(1, 1)))
-        expect_true(unique(vod_map[, 7, 6] == c(-1, -1)))
+
+        expect_true(unique(vod_map[, idx$X, idx$X]  == c(1, 1)))
+        expect_true(unique(vod_map[, idx$P[1], idx$X]  == c(-1, -1)))
+        expect_true(unique(vod_map[, idx$V[1], idx$X]  == c(-1, -1)))
+        expect_true(unique(vod_map[, idx$P[1], idx$P[1]]  == c(1, 1)))
+        expect_true(unique(vod_map[, idx$V[1], idx$P[1]]  == c(-1, -1)))
+        expect_true(unique(vod_map[, idx$P[2], idx$P[2]]  == c(1, 1)))
+        expect_true(unique(vod_map[, idx$V[1], idx$P[2]]  == c(-1, -1)))   
+        expect_true(unique(vod_map[, idx$W, idx$W]  == c(1, 1)))
+        expect_true(unique(vod_map[, idx$R[1], idx$W]  == c(-1, -1)))
 
           # everything else is 0 in those i_eligible strata
-        expect_equal(sum(vod_map[, -c(1, 2, 4), 1]), 0)
-        expect_equal(sum(abs(vod_map[, -c(2, 4), 2])), 0)
-        expect_equal(sum(abs(vod_map[, -c(3, 4), 3])), 0)
-        expect_equal(sum(abs(vod_map[, -c(6, 7), 6])), 0)
+        expect_equal(sum(vod_map[, -c(idx$X, idx$P[1], idx$V[1]), 1]), 0)
+        expect_equal(sum(abs(vod_map[, -c(idx$P[1], idx$V[1]), idx$P[1]])), 0)
+        expect_equal(sum(abs(vod_map[, -c(idx$P[2], idx$V[1]), idx$P[2]])), 0)
+        expect_equal(sum(abs(vod_map[, -c(idx$W, idx$R[1]), idx$W])), 0)
 
          # everything is entirely 0 when not in i_eligible strata
         expect_equal(sum(vod_map[, , c(4, 5, 7, 8, 9)]), 0)
@@ -804,29 +809,29 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
         # all 1's indicating vaccination, are in the right place
         # and all -1's indicating where people are being vaccinated to are
         # in the right place
-        expect_true(unique(vos_map[, 1, 1] == c(0, 1)))
-        expect_true(unique(vos_map[, 2, 1] == c(0, -1)))
-        expect_true(unique(vos_map[, 4, 1] == c(0, -1)))
-        expect_true(unique(vos_map[, 2, 2] == c(0, 1)))
-        expect_true(unique(vos_map[, 4, 2] == c(0, -1)))
-        expect_true(unique(vos_map[, 3, 3] == c(0, 1)))
-        expect_true(unique(vos_map[, 4, 3] == c(0, -1)))
-        expect_true(unique(vos_map[, 6, 6] == c(0, 1)))
-        expect_true(unique(vos_map[, 7, 6] == c(0, -1)))
+        expect_true(unique(vos_map[, idx$X, idx$X] == c(0, 1)))
+        expect_true(unique(vos_map[, idx$P[1], idx$X] == c(0, -1)))
+        expect_true(unique(vos_map[, idx$V[1], idx$X] == c(0, -1)))
+        expect_true(unique(vos_map[, idx$P[1], idx$P[1]] == c(0, 1)))
+        expect_true(unique(vos_map[, idx$V[1], idx$P[1]] == c(0, -1)))
+        expect_true(unique(vos_map[, idx$P[2], idx$P[2]] == c(0, 1)))
+        expect_true(unique(vos_map[, idx$V[1], idx$P[2]] == c(0, -1)))
+        expect_true(unique(vos_map[, idx$W, idx$W] == c(0, 1)))
+        expect_true(unique(vos_map[, idx$R[1], idx$W] == c(0, -1)))
 
         # everything else is 0 in those i_eligible strata
-        expect_equal(sum(vos_map[, -c(1, 2, 4), 1]), 0)
-        expect_equal(sum(abs(vos_map[, -c(2, 4), 2])), 0)
-        expect_equal(sum(abs(vos_map[, -c(3, 4), 3])), 0)
-        expect_equal(sum(abs(vos_map[, -c(6, 7), 6])), 0)
+        expect_equal(sum(vos_map[, -c(idx$X, idx$P[1], idx$V[1]), 1]), 0)
+        expect_equal(sum(abs(vos_map[, -c(idx$P[1], idx$V[1]), idx$P[1]])), 0)
+        expect_equal(sum(abs(vos_map[, -c(idx$P[2], idx$V[1]), idx$P[2]])), 0)
+        expect_equal(sum(abs(vos_map[, -c(idx$W, idx$R[1]), idx$W])), 0)
 
         # everything is entirely 0 when not in i_eligible strata
         expect_equal(sum(vos_map[, , c(4, 5, 7, 8, 9)]), 0)
 
       # for vbe, expect:
-        expect_true(unique(vbe_map[, 1, 1] == c(1, 1)))
-        expect_true(unique(vbe_map[, 4, 1] == c(-1, -1)))
-        expect_equal(sum(vbe_map[, -c(1, 4), 1]), 0)
+        expect_true(unique(vbe_map[, idx$X, idx$X] == c(1, 1)))
+        expect_true(unique(vbe_map[, idx$V[1], idx$X] == c(-1, -1)))
+        expect_equal(sum(vbe_map[, -c(idx$X, idx$V[1]), idx$X]), 0)
         expect_equal(sum(vbe_map[, , 2:9]), 0)
 
         # test uptake maps are generated as expected
@@ -844,23 +849,28 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
           acc_vax <- u * vod_map
 
           # uptakes from X are at the expected values
-          expect_true(unique(acc_vax[, 1, 1] == c(r1[i], r1[i])))
-          expect_true(unique(acc_vax[, 2, 1] == c(- (r1[i] * (1 - r2[i])),
+          expect_true(unique(acc_vax[, idx$X, idx$X] == c(r1[i], r1[i])))
+          expect_true(unique(acc_vax[, idx$P[1], idx$X] == c(- (r1[i] *
+                                                                  (1 - r2[i])),
                                                   - (r1[i] * (1 - r2[i])))))
-          expect_true(unique(acc_vax[, 4, 1] == c(-r1[i] * r2[i],
+          expect_true(unique(acc_vax[, idx$V[1], idx$X] == c(-r1[i] * r2[i],
                                                   -r1[i] * r2[i])))
 
           # uptakes from P1 and P2 to V are at the expected values
-          expect_true(unique(acc_vax[, 2, 2] == c(r2_p[i], r2_p[i])))
-          expect_true(unique(acc_vax[, 4, 2] == -c(r2_p[i], r2_p[i])))
+          expect_true(unique(acc_vax[, idx$P[1], idx$P[1]] == c(r2_p[i],
+                                                                r2_p[i])))
+          expect_true(unique(acc_vax[, idx$V[1], idx$P[1]] == -c(r2_p[i],
+                                                                 r2_p[i])))
 
-          expect_true(unique(acc_vax[, 3, 3] == c(r2_p[i], r2_p[i])))
-          expect_true(unique(acc_vax[, 4, 3] == -c(r2_p[i], r2_p[i])))
+          expect_true(unique(acc_vax[, idx$P[2], idx$P[2]] == c(r2_p[i],
+                                                                r2_p[i])))
+          expect_true(unique(acc_vax[, idx$V[1], idx$P[2]] == -c(r2_p[i],
+                                                                 r2_p[i])))
 
           # uptakes from W to R1 are at the expected values
-          expect_true(unique(acc_vax[, 6, 6] == c(booster_uptake[i],
+          expect_true(unique(acc_vax[, idx$W, idx$W] == c(booster_uptake[i],
                                                   booster_uptake[i])))
-          expect_true(unique(acc_vax[, 7, 6] == -c(booster_uptake[i],
+          expect_true(unique(acc_vax[, idx$R[1], idx$W] == -c(booster_uptake[i],
                                                    booster_uptake[i])))
         }
 
@@ -872,19 +882,19 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
            y_v <- run_onevax_xpvwrh(tt, gp, init_params = ip_v, n_erlang = 2)
 
            # people in V1, V2, W
-           expect_true(all(y_v[[1]]$N[-1, , c(4, 5, 6)] > 0))
+           expect_true(all(y_v[[1]]$N[-1, , c(idx$V, idx$W)] > 0))
 
            # no one in P1, P2, R1, R2 (people born into X so not included here)
-           expect_true(all(y_v[[1]]$N[, , c(2, 3, 7, 8)] ==  0))
+           expect_true(all(y_v[[1]]$N[, , c(idx$P, idx$R)] ==  0))
 
            # people are flowing from V1(4) -> V2(5) -> W(6)
            # would expect the number in V1 to be greater than V2 and W if rate
            # of waning is constant and people are moving from one to the next
            # to the next in time
-           expect_true(sum(rowSums(y_v[[1]]$N[, , 4])) >
-                         sum(rowSums(y_v[[1]]$N[, , 5])))
-           expect_true(sum(rowSums(y_v[[1]]$N[, , 5])) >
-                         sum(rowSums(y_v[[1]]$N[, , 6])))
+           expect_true(sum(rowSums(y_v[[1]]$N[, , idx$V[1]])) >
+                         sum(rowSums(y_v[[1]]$N[, , idx$V[2]])))
+           expect_true(sum(rowSums(y_v[[1]]$N[, , idx$V[2]])) >
+                         sum(rowSums(y_v[[1]]$N[, , idx$W])))
 
           # entire population starts in P1 and wanes through P2 to X only
           # ( + no further vaccination)
@@ -894,14 +904,14 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
            y_p <- run_onevax_xpvwrh(tt, gp, init_params = ip_p, n_erlang = 2)
 
            # people in X, P1, P2
-           expect_true(all(y_p[[1]]$N[-1, , c(1, 2, 3)] > 0))
+           expect_true(all(y_p[[1]]$N[-1, , c(idx$X, idx$P)] > 0))
 
            # no one in V1, V2, W, R1 or R2
-           expect_true(all(y_p[[1]]$N[, , c(4, 5, 6, 7, 8)] ==  0))
+           expect_true(all(y_p[[1]]$N[, , c(idx$V, idx$W, idx$R)] ==  0))
 
            # people are flowing from P1(2) -> P2(3)
-           expect_true(sum(rowSums(y_p[[1]]$N[, , 2])) >
-                         sum(rowSums(y_p[[1]]$N[, , 3])))
+           expect_true(sum(rowSums(y_p[[1]]$N[, , idx$P[1]])) >
+                         sum(rowSums(y_p[[1]]$N[, , idx$P[2]])))
 
            # people also wane from R1 and R2
            n_erlang <- 2
@@ -930,8 +940,8 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
            # when lots of people start revaccinated and (almost) none start
            # primarily vaccinated, people flow from R1 -> R2
 
-           expect_true(sum(rowSums(y_r[[1]]$N[, , 7])) >
-                         sum(rowSums(y_r[[1]]$N[, , 8])))
+           expect_true(sum(rowSums(y_r[[1]]$N[, , idx$R[1]])) >
+                         sum(rowSums(y_r[[1]]$N[, , idx$R[2]])))
 
         # check protection being assigned correctly
 
