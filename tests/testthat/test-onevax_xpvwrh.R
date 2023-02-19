@@ -933,7 +933,24 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
            expect_true(sum(rowSums(y_r[[1]]$N[, , 7])) >
                          sum(rowSums(y_r[[1]]$N[, , 8])))
 
+        # check protection being assigned correctly
 
+        n_erlang_vec <- seq(1, 10)
 
+        for (i in n_erlang_vec) {
+
+        n_erlang <- i
+        idx <- stratum_index_xpvwrh(n_erlang = n_erlang)
+        i_v <- c(idx$P, idx$V, idx$R)
+
+        p_vec <- set_protection(i_v = i_v, idx = idx, n_vax = idx$n_vax,
+                                ve_p = 0.5, ve = 0.75, ve_revax = 1)
+
+        expect_equal(p_vec[idx$P], rep(0.5, n_erlang))
+        expect_equal(p_vec[idx$V], rep(0.75, n_erlang))
+        expect_equal(p_vec[idx$R], rep(1, n_erlang))
+        expect_equal(p_vec[c(idx$X, idx$W, idx$H)], rep(0, 3))
+
+     }
 
 })
