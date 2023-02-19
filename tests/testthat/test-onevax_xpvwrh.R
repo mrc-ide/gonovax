@@ -963,4 +963,51 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
 
      }
 
+
+      ### waning maps are generated correctly with the correct rates
+      n_erlang <- 3
+      idx <- stratum_index_xpvwrh(n_erlang = n_erlang)
+
+        # i_v and i_w generated in the same way as in vax_params function
+      i_v <- c(idx$P, idx$V, idx$R)
+      i_w <- c(idx$P[-1], idx$X, idx$V[-1], idx$W, idx$R[-1], idx$W)
+
+       # set durations
+      dur_p <- 1e03
+      dur_v <- 2e03
+      dur_revax <- 3e03
+
+      w <- create_waning_map_branching(idx$n_vax, i_v, i_w,
+                                  n_erlang / c(dur_p, dur_v, dur_revax),
+                                  n_erlang)
+
+      # width and height of waning map are both equal to n_vax
+      expect_true(dim(w)[1] == c(idx$n_vax))
+      expect_true(dim(w)[2] == c(idx$n_vax))
+
+      #people wane from P1 -> P2 -> P3 -> X at the same, expected rate
+      expect_true(all(w[idx$P[1], idx$P[1]] == -n_erlang / dur_p))
+      expect_true(all(w[idx$P[2], idx$P[1]] ==  n_erlang / dur_p))
+      expect_true(all(w[idx$P[2], idx$P[2]] == -n_erlang / dur_p))
+      expect_true(all(w[idx$P[3], idx$P[2]] ==  n_erlang / dur_p))
+      expect_true(all(w[idx$P[3], idx$P[3]] == -n_erlang / dur_p))
+      expect_true(all(w[idx$X,    idx$P[3]] ==  n_erlang / dur_p))
+
+      #people wane from V1 -> V2 -> V3 -> W at the same, expected rate
+      expect_true(all(w[idx$V[1], idx$v[1]] == -n_erlang / dur_v))
+      expect_true(all(w[idx$V[2], idx$V[1]] ==  n_erlang / dur_v))
+      expect_true(all(w[idx$V[2], idx$V[2]] == -n_erlang / dur_v))
+      expect_true(all(w[idx$V[3], idx$V[2]] ==  n_erlang / dur_v))
+      expect_true(all(w[idx$V[3], idx$V[3]] == -n_erlang / dur_v))
+      expect_true(all(w[idx$W,    idx$V[3]] ==  n_erlang / dur_v))
+
+      #people wane from R1 -> R2 -> R3 -> W at the same, expected rate
+      expect_true(all(w[idx$R[1], idx$R[1]] == -n_erlang / dur_revax))
+      expect_true(all(w[idx$R[2], idx$R[1]] ==  n_erlang / dur_revax))
+      expect_true(all(w[idx$R[2], idx$R[2]] == -n_erlang / dur_revax))
+      expect_true(all(w[idx$R[3], idx$R[2]] ==  n_erlang / dur_revax))
+      expect_true(all(w[idx$R[3], idx$R[3]] == -n_erlang / dur_revax))
+      expect_true(all(w[idx$W,    idx$R[3]] ==  n_erlang / dur_revax))
+
+
 })
