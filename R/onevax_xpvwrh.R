@@ -206,10 +206,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        vbe     = vbe_map,
        vod     = vod,
        vos     = vos,
-       vea     = set_protection(i_v, n_erlang, n_vax, vea_p, vea, vea_revax),
-       vei     = set_protection(i_v, n_erlang, n_vax, vei_p, vei, vei_revax),
-       ved     = set_protection(i_v, n_erlang, n_vax, ved_p, ved, ved_revax),
-       ves     = set_protection(i_v, n_erlang, n_vax, ves_p, ves, ves_revax),
+       vea     = set_protection(i_v, idx, n_vax, vea_p, vea, vea_revax),
+       vei     = set_protection(i_v, idx, n_vax, vei_p, vei, vei_revax),
+       ved     = set_protection(i_v, idx, n_vax, ved_p, ved, ved_revax),
+       ves     = set_protection(i_v, idx, n_vax, ves_p, ves, ves_revax),
        w       = create_waning_map_branching(n_vax,
                                              i_v,
                                              i_w,
@@ -500,8 +500,8 @@ output <- c("X", paste0("P", idx), paste0("V", idx), "W", paste0("R", idx), "H")
 ##' @title generates vector which tells the model which strata are under
 ##' vaccine protection and what the value of protection for that strata is
 ##' @param i_v indices of strata receiving protection through vaccination
-##' @param n_erlang integer giving the number of transitions that need to be
-##'  made
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
+##' through vaccine-protected strata until that protection has waned
 ##' through vaccine-protected strata until that protection has waned
 ##' @param n_vax integer denoting total number of strata
 ##' @param ve_p scalar 0-1 with degree of partial primary protection of the P(N)
@@ -515,15 +515,15 @@ output <- c("X", paste0("P", idx), paste0("V", idx), "W", paste0("R", idx), "H")
 ##' boosted protection corresponding to the indices of strata with partial,
 ##' full and boosted vaccination status
 ##' @export
-set_protection <- function(i_v, n_erlang, n_vax, ve_p, ve, ve_revax) {
+set_protection <- function(i_v, idx, n_vax, ve_p, ve, ve_revax) {
 
   # get indexes of strata under protection by type of protection
-  p <- i_v[1:n_erlang]                        #0 * n_erlang + 1 to 1 * n_erlang
-  v <- i_v[(n_erlang + 1):(2 * n_erlang)]     #1 * n_erlang + 1 to 2 * n_erlang
-  r <- i_v[(2 * n_erlang + 1):(3 * n_erlang)] #2 * n_erlang + 1 to 3 * n_erlang
+  p <- idx$P
+  v <- idx$V
+  r <- idx$R
 
   # generate empty vector as long as n_vax
-  ve_vec <- c(rep(0, n_vax))
+  ve_vec <- c(rep(0, idx$n_vax))
 
   # assign corresponding level of protection to the correct position
   ve_vec[p] <- ve_p

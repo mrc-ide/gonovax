@@ -5,13 +5,13 @@
 \title{generates vector which tells the model which strata are under
 vaccine protection and what the value of protection for that strata is}
 \usage{
-set_protection(i_v, n_erlang, n_vax, ve_p, ve, ve_revax)
+set_protection(i_v, idx, n_vax, ve_p, ve, ve_revax)
 }
 \arguments{
 \item{i_v}{indices of strata receiving protection through vaccination}
 
-\item{n_erlang}{integer giving the number of transitions that need to be
- made
+\item{idx}{list containing indices of all X, P, V, W, R & H strata and n_vax
+through vaccine-protected strata until that protection has waned
 through vaccine-protected strata until that protection has waned}
 
 \item{n_vax}{integer denoting total number of strata}
