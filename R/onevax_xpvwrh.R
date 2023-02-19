@@ -139,14 +139,14 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # a proportion of all 'n' exist only in the hesitant compartment (H)
   # There is no movement between the willing (X, P, V, W, R) and hesitant (H)
 
-  
+
   # generate indices of strata and calculate total # strata
   idx <- stratum_index_xpvwrh(n_erlang)
-  
+
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P
-  
+
   #number of strata + sexual activity groups
   n_vax <- idx$n_vax
   n_group <- 2
@@ -154,30 +154,30 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # work out strata eligibility for vaccination, vaccine protection,
   # waning, and where people wane to, based on n_vax calculated from
   # n_erlang
-  
+
   # 1. strata eligible for vaccination
     # note: X is repeated twice as vaccination can
-    # occur in 2 directions from X, to P or X to V. 
-  
+    # occur in 2 directions from X, to P or X to V.
+
   i_eligible <- c(idx$X, idx$X, idx$P, idx$W)
 
   # 2. strata individuals get vaccinated into
     # Will always be the first of the erlang stack [1]
     # note: V[1] is repeated n_erlang + 1 times because as well as un-vaccinated
-    # individuals (X) becoming fully vaccinated (V), partially vaccinated people 
+    # individuals (X) becoming fully vaccinated (V), partially vaccinated people
     # in P can become fully vaccinated from any of the P erlang compartments
 
   i_p <- c(idx$P[1], rep(idx$V[1], n_erlang + 1), idx$R[1])
 
-  # 3. strata individuals wane from 
+  # 3. strata individuals wane from
     # i.e All strata under protection P, V and R
-  
+
   i_v <- c(idx$P, idx$V, idx$R)
-  
+
   # 4. strata individuals wane to
-  
+
   i_w <- c(idx$P[-1], idx$X, idx$V[-1], idx$W, idx$R[-1], idx$W)
-  
+
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
   ved_revax <- min(ved_revax, 1 - 1e-10)
@@ -254,7 +254,7 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
     ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
     ## vaccinated is given by r1 * r2
     ## idx$V[1] gives index of the top of the V erlang stack
-  array[, idx$V[1], 1] <- array[, idx$V[1], 1] * (r1 * r2)  
+  array[, idx$V[1], 1] <- array[, idx$V[1], 1] * (r1 * r2)
 
     ## individuals entering P (partially vaccinated) do not then accept
     ## vaccination with the 2nd dose so proportion partially vaccinated is
@@ -299,7 +299,6 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
   stopifnot(z > 0)
 
-  
   #creates vector containing rates
   z_erlang <- rep(z, each = n_erlang)
 
