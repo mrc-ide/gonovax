@@ -338,6 +338,8 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
 
   # ensure vaccine input is of correct length
   n_group <- 2
+  n_vax <- idx$n_vax
+
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
   stopifnot(max(i_e, i_p) <= n_vax)
