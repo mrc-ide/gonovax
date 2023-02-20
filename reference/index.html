@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.8</span>
       </span>
     </div>
 
@@ -116,6 +116,11 @@ back to a naive unvaccinated state (X), and waning from fully vaccinated
 stratum (V) moves individuals into a separate waned stratum (W)
 Note, this structure is specific to xpvwrh</p></td>
       </tr><tr><td>
+          <p><code><a href="create_waning_map_trial.html">create_waning_map_trial()</a></code> </p>
+        </td>
+        <td><p>Create mapping for movement between strata due to vaccine waning
+in a vaccine trial with erlang compartments</p></td>
+      </tr><tr><td>
           <p><code><a href="dbetabinom.html">dbetabinom()</a></code> </p>
         </td>
         <td><p>pdf of a betabinomial parametrised in terms of probability and
@@ -129,6 +134,11 @@ over-dispersion</p></td>
         </td>
         <td><p>extract flows used for run_grid when the branching  xpvwrh model
 has been run</p></td>
+      </tr><tr><td>
+          <p><code><a href="gen_erlang_labels.html">gen_erlang_labels()</a></code> </p>
+        </td>
+        <td><p>generates the appropriate strata labels for the number of strata
+in the model, which depends on the value given to n_erlang</p></td>
       </tr><tr><td>
           <p><code><a href="gono_params.html">gono_params()</a></code> </p>
         </td>
@@ -263,10 +273,23 @@ for revaccination, and return to the V compartment</p></td>
         <td><p>Run odin model of gonorrhoea vaccine trial with or without
 vaccination</p></td>
       </tr><tr><td>
+          <p><code><a href="set_protection.html">set_protection()</a></code> </p>
+        </td>
+        <td><p>generates vector which tells the model which strata are under
+vaccine protection and what the value of protection for that strata is</p></td>
+      </tr><tr><td>
           <p><code><a href="set_strategy.html">set_strategy()</a></code> </p>
         </td>
         <td><p>Translate each named vaccine strategy into a format interpretable by
 `create_vax_map`</p></td>
+      </tr><tr><td>
+          <p><code><a href="stratum_index_xpvwrh.html">stratum_index_xpvwrh()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xpvwrh strata</p></td>
+      </tr><tr><td>
+          <p><code><a href="stratum_index_xvw_trial.html">stratum_index_xvw_trial()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xvw trial strata</p></td>
       </tr><tr><td>
           <p><code><a href="transform.html">transform()</a></code> </p>
         </td>
@@ -317,7 +340,7 @@ assign who experiences vaccine effects, and how waning occurs.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

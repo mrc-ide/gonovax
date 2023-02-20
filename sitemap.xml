@@ -55,6 +55,9 @@
     <loc>/reference/create_waning_map_branching.html</loc>
   </url>
   <url>
+    <loc>/reference/create_waning_map_trial.html</loc>
+  </url>
+  <url>
     <loc>/reference/dbetabinom.html</loc>
   </url>
   <url>
@@ -62,6 +65,9 @@
   </url>
   <url>
     <loc>/reference/extract_flows_xpvwrh.html</loc>
+  </url>
+  <url>
+    <loc>/reference/gen_erlang_labels.html</loc>
   </url>
   <url>
     <loc>/reference/gono_params.html</loc>
@@ -148,7 +154,16 @@
     <loc>/reference/run_trial.html</loc>
   </url>
   <url>
+    <loc>/reference/set_protection.html</loc>
+  </url>
+  <url>
     <loc>/reference/set_strategy.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stratum_index_xpvwrh.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stratum_index_xvw_trial.html</loc>
   </url>
   <url>
     <loc>/reference/transform.html</loc>

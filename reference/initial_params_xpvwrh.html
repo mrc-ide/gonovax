@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.8</span>
       </span>
     </div>
 
@@ -57,7 +57,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">initial_params_xpvwrh</span><span class="op">(</span><span class="va">pars</span>, coverage_p <span class="op">=</span> <span class="fl">0</span>, coverage_v <span class="op">=</span> <span class="fl">0</span>, hes <span class="op">=</span> <span class="fl">0</span>, t <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">initial_params_xpvwrh</span><span class="op">(</span></span>
+<span>  <span class="va">pars</span>,</span>
+<span>  coverage_p <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  coverage_v <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  hes <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  t <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  n_erlang <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -85,6 +92,11 @@ present (as a proportion)</p></dd>
 <dd><p>number of years, only use when using function outside of
 run_onevax_xpvwrh() to generate initial conditions for tests</p></dd>
 
+
+<dt>n_erlang</dt>
+<dd><p>integer giving the number of transitions that need to be
+made through vaccine-protected strata until that protection has waned</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -105,7 +117,7 @@ run_onevax_xpvwrh() to generate initial conditions for tests</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
