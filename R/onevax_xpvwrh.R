@@ -524,7 +524,7 @@ set_protection <- function(i_v, idx, n_vax, ve_p, ve, ve_revax) {
   r <- idx$R
 
   # generate empty vector as long as n_vax
-  ve_vec <- c(rep(0, idx$n_vax))
+  ve_vec <- rep(0, idx$n_vax)
 
   # assign corresponding level of protection to the correct position
   ve_vec[p] <- ve_p
