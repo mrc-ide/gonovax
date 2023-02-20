@@ -15,7 +15,8 @@ run_onevax_xvw_trial(
   vei = 0,
   ved = 0,
   ves = 0,
-  p_v = 0.5
+  p_v = 0.5,
+  n_erlang = 1
 )
 }
 \arguments{
@@ -43,6 +44,10 @@ efficacy of the vaccine against symptoms (between 0-1)}
 
 \item{p_v}{scalar giving proportion of the trial cohort vaccinated, default
 is 0.5.}
+
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
+through vaccine-protected strata until that protection has waned}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

@@ -38,7 +38,8 @@ run_onevax_xpvwrh(
   booster_uptake = (r1 * r2),
   strategy = NULL,
   t_stop = 99,
-  hes = 0
+  hes = 0,
+  n_erlang = 1
 )
 }
 \arguments{
@@ -125,6 +126,10 @@ vaccination after primary vaccination protection has waned.
 
 \item{hes}{Proportion of individuals in the population who are vaccine
 hesitant}
+
+\item{n_erlang}{integer giving the number of transitions that need to be
+ made
+through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list of transformed model outputs

@@ -4,7 +4,14 @@
 \alias{initial_params_xpvwrh}
 \title{Initial conditions for the model}
 \usage{
-initial_params_xpvwrh(pars, coverage_p = 0, coverage_v = 0, hes = 0, t = FALSE)
+initial_params_xpvwrh(
+  pars,
+  coverage_p = 0,
+  coverage_v = 0,
+  hes = 0,
+  t = FALSE,
+  n_erlang = 1
+)
 }
 \arguments{
 \item{pars}{A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
@@ -20,6 +27,9 @@ present (as a proportion)}
 
 \item{t}{number of years, only use when using function outside of
 run_onevax_xpvwrh() to generate initial conditions for tests}
+
+\item{n_erlang}{integer giving the number of transitions that need to be
+made through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list of initial conditions
