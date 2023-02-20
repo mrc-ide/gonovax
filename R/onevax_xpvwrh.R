@@ -546,7 +546,7 @@ stratum_index_xpvwrh <- function(n_erlang) {
   ret <- list(X = 1)
 
     ret$P <- max(ret$X) + seq_len(n_erlang)
-    ret$V <- max(ret$P) +  seq_len(n_erlang)
+    ret$V <- max(ret$P) + seq_len(n_erlang)
     ret$W <- max(ret$V) + 1
     ret$R <- max(ret$W) + seq_len(n_erlang)
     ret$H <- max(ret$R) + 1
