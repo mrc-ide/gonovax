@@ -20,8 +20,8 @@ update(U[, ]) <- U[i, j] - n_UI[i, j] +
 
 update(I[, ]) <- I[i,j] + n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
 
-update(A[, ]) <- A[i,j] +(1 - (1 - ves[j]) * psi) * sigma * I[i, j] 
-  - n_AT[i, j] - n_AU[i, j] + sum(wA[i, j, ])
+update(A[, ]) <- A[i,j] +(1 - (1 - ves[j]) * psi) * sigma * I[i, j] -
+  n_AT[i, j] - n_AU[i, j] + sum(wA[i, j, ])
 
 update(S[, ]) <- S[i,j] + (1 - ves[j]) * psi * sigma * I[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
