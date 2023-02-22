@@ -13,6 +13,36 @@ n_vax   <- user(1)
 eta[1] <- eta_l
 eta[2] <- eta_h
 
+# individual probabilities of transitioning between infection states
+p_UI[, ] <- 1 - exp(-(lambda * (1 - vea[j])))
+p_I[, ] <- 1 - exp(-sigma)
+p_AT[, ] <- 1 - exp(-(eta[i]))
+p_AU[, ] <- 1 - exp(-(nu / (1 - ved[j])))
+p_ST[, ] <- 1 - exp(-mu)
+p_TU[, ] <- 1 - exp(-rho)
+
+# draws from binomial distributions for numbers changing between compartments
+# note there will be two draws for IAS
+n_UI[, ] <- rbinom(U, p_UI)
+n_AT[, ] <- rbinom(A, p_AT)
+n_ST[, ] <- rbinom(S, p_ST)
+n_TU[, ] <- rbinom(T, p_TU)
+
+ #split
+ p[1] <- (1 - (1 - ves[j]) * psi) 
+ p[2] <- (1 - ves[j]) * psi
+ dim(p) <- c(2, n_group, n_vax)
+ 
+ n_I[, ] <- rbinom(I, p_I)        #number leaving I
+ n_IAS[, ] <- rmultinom(n_I, p)   #number moving to A and S 
+ dim(n_IAS) <- c(2, n_group, n_vax)              #check this because we have 2D and vinette has 1D
+
+ 
+n_IA[, ] <- n_IAS[1]     #where do these go ??? we dont have n_IA in the main equations, they go to screened and diagnosed? 
+n_IS[, ] <- n_IAS[2]
+
+########## work out dimmesions and why missing dim() error isn't satisfied when  we add dims? 
+
 ## Core equations for transitions between compartments:
 
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
@@ -32,13 +62,7 @@ update(T[, ]) <- T[i,j] + n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
-n_UI[, ]     <- lambda * (1 - vea[j]) * U[i, j]  # force of infection constant
-n_AT[, ]     <- eta[i] * A[i, j]                 # in trial model
-n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
-n_ST[, ]     <- mu * S[i, j]
-n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta[i] * U[i, j]
-
 # vaccination -> no vaccination 'strategies' needed
 
 # waning
