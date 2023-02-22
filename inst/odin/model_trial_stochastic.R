@@ -15,18 +15,18 @@ eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
 
-deriv(U[, ]) <-  - n_UI[i, j] +
+update(U[, ]) <- U[i, j] - n_UI[i, j] +
   n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
 
-deriv(I[, ]) <- n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
+update(I[, ]) <- I[i,j] + n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
 
-deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
-  n_AU[i, j] + sum(wA[i, j, ])
+update(A[, ]) <- A[i,j] +(1 - (1 - ves[j]) * psi) * sigma * I[i, j] 
+  - n_AT[i, j] - n_AU[i, j] + sum(wA[i, j, ])
 
-deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] -
+update(S[, ]) <- S[i,j] + (1 - ves[j]) * psi * sigma * I[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
 
-deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
+update(T[, ]) <- T[i,j] + n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
   sum(wT[i, j, ])
 
 ## Update population size
@@ -50,11 +50,11 @@ wT[, , ] <- w[j, k] * T[i, k]
 
 ## outputs
 
-deriv(cum_incid[, ])      <- n_UI[i, j]
-deriv(cum_diag_a[, ])     <- n_AT[i, j]
-deriv(cum_diag_s[, ])     <- n_ST[i, j]
-deriv(cum_treated[, ])    <- n_TU[i, j]
-deriv(cum_screened[, ])   <- screened[i, j]
+update(cum_incid[, ])      <- n_UI[i, j]
+update(cum_diag_a[, ])     <- n_AT[i, j]
+update(cum_diag_s[, ])     <- n_ST[i, j]
+update(cum_treated[, ])    <- n_TU[i, j]
+update(cum_screened[, ])   <- screened[i, j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)
