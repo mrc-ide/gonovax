@@ -15,45 +15,63 @@ eta[2] <- eta_h
 
 # individual probabilities of transitioning between infection states
 p_UI[, ] <- 1 - exp(-(lambda * (1 - vea[j])))
-p_I[, ] <- 1 - exp(-sigma)
-p_AT[, ] <- 1 - exp(-(eta[i]))
-p_AU[, ] <- 1 - exp(-(nu / (1 - ved[j])))
+p_IAS[, ] <- 1 - exp(-sigma)
+p_ATU[, ] <- 1 - exp(-(eta[i] +  nu / (1 - ved[j])))
 p_ST[, ] <- 1 - exp(-mu)
 p_TU[, ] <- 1 - exp(-rho)
 
 # draws from binomial distributions for numbers changing between compartments
-# note there will be two draws for IAS
-n_UI[, ] <- rbinom(U, p_UI)
-n_AT[, ] <- rbinom(A, p_AT)
-n_ST[, ] <- rbinom(S, p_ST)
-n_TU[, ] <- rbinom(T, p_TU)
+# note there will be two draws for I (moving to A or S) 
+# and A (moving to U or T)
+n_UI[, ] <- rbinom(U[i, j], p_UI[i, j])
+n_ST[, ] <- rbinom(S[i, j], p_ST[i, j])
+n_TU[, ] <- rbinom(T[i, j], p_TU[i, j])
 
- #split
- p[1] <- (1 - (1 - ves[j]) * psi) 
- p[2] <- (1 - ves[j]) * psi
- dim(p) <- c(2, n_group, n_vax)
+ #split from I to A/S
+  #assign individual probabilities of transition to A or S from I
+  p_A_or_S[, , 1] <- (1 - (1 - ves[j]) * psi)    # to A                #lilith has this as one dimension only 
+  p_A_or_S[, , 2] <- (1 - ves[j]) * psi          # to S
+  dim(p_A_or_S) <- c(n_group, n_vax, 2)                                 # i htink this should just be a vector of length 2 /
  
- n_I[, ] <- rbinom(I, p_I)        #number leaving I
- n_IAS[, ] <- rmultinom(n_I, p)   #number moving to A and S 
- dim(n_IAS) <- c(2, n_group, n_vax)              #check this because we have 2D and vinette has 1D
+  #draw from binomial distribution the number leaving I
+  n_IAS[, ] <- rbinom(I[i,j], p_IAS[i, j])        
+  #draw from multinomial distribution the number entering A and S
+  n_A_or_S[, ] <- rmultinom(n_IAS[i, j], p_A_or_S[i, j, ])       #number moving to A and S 
+  dim(n_A_or_S) <- c(n_group, n_vax, 2)                          #check this because we have 2D and vinette has 1D
+ 
+  #pull out number entering A and number entering S
+  n_IA[, ] <- n_A_or_S[, , 1]     
+  n_IS[, ] <- n_A_or_S[, , 2]
+ 
+ #split from A to U/T
+ #assign individual probabilities of transition to T or U from A
+  r_AT[, ] <- eta[i]           #to T
+  r_AU[, ] <- nu / (1 - ved[j]) #to U
+  p_T_or_U[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j]))
+  
+  dim(p_T_or_U) <- c(n_group, n_vax)          # still unsure of this 
+  
+  #draw for binomial distribution the number leaving A (combined probability)
+  n_AUT[, ] <- rbinom(A[i, j], p_T_or_U[i, j])
+  
+  #make separate draws for A->T and A->U                  #why is the first draw with a probability and the second with a proportion (weighted rate or something?)
+  n_AT[, ] <- rbinom(n_AUT, r_AT[i,j]/(r_AT[i,j] + r_AU[i, j]))
+  n_AU[, ] <- rbinom(n_AUT, r_AU[i,j]/(r_AT[i,j] + r_AU[i, j]))
 
- 
-n_IA[, ] <- n_IAS[1]     #where do these go ??? we dont have n_IA in the main equations, they go to screened and diagnosed? 
-n_IS[, ] <- n_IAS[2]
+
 
 ########## work out dimmesions and why missing dim() error isn't satisfied when  we add dims? 
-
 ## Core equations for transitions between compartments:
 
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
   n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
 
-update(I[, ]) <- I[i,j] + n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
+update(I[, ]) <- I[i,j] + n_UI[i, j] - n_IAS[i, j] + sum(wI[i, j, ])
 
-update(A[, ]) <- A[i,j] +(1 - (1 - ves[j]) * psi) * sigma * I[i, j] -
-  n_AT[i, j] - n_AU[i, j] + sum(wA[i, j, ])
+update(A[, ]) <- A[i,j] + n_IA[i, j] -
+               n_AT[i, j] - n_AU[i, j] + sum(wA[i, j, ])
 
-update(S[, ]) <- S[i,j] + (1 - ves[j]) * psi * sigma * I[i, j] -
+update(S[, ]) <- S[i,j] + n_IS[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
 
 update(T[, ]) <- T[i,j] + n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
