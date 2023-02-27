@@ -7,7 +7,7 @@ vaccination uptake splits off into two types (partial and full) from the
 naive population (X). Different to create_vax_map as this function
 specifically maps vbe to V (3) than P(2)}
 \usage{
-create_vax_map_branching(n_vax, v, i_u, i_v, set_vbe = FALSE)
+create_vax_map_branching(n_vax, v, i_e, i_p, set_vbe = FALSE, idx)
 }
 \arguments{
 \item{n_vax}{Integer denoting total number of strata}
@@ -15,12 +15,15 @@ create_vax_map_branching(n_vax, v, i_u, i_v, set_vbe = FALSE)
 \item{v}{0-1 vector of length two indicating whether activity group
 should be offered vaccination.}
 
-\item{i_u}{indices of strata eligible for vaccination}
+\item{i_e}{indices of strata eligible for vaccination}
 
-\item{i_v}{indices of strata vaccinated and protected}
+\item{i_p}{indices of strata vaccinated and protected}
 
 \item{set_vbe}{Boolean which indicates that vaccination is occurring at some
 level of uptake upon entering the model}
+
+\item{idx}{list containing indices of all X, P, V, W, R & H strata and n_vax
+through vaccine-protected strata until that protection has waned}
 }
 \value{
 an array of the mapping

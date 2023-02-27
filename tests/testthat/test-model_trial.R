@@ -304,3 +304,73 @@ expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
                           3.24757521226149, 4.04721268804341),
                         dim = c(6, 2, 3)))
 })
+
+
+test_that("n_erlang = n is working as expected", {
+
+  #when n_erlang = n, nvax = n + 2, as generated in stratum_index_xvw_trial
+  gp <- gono_params_trial(1)[1]
+  tt <- seq.int(0, 5) / 365
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5)
+
+  expect_equal(dim(y[[1]]$N)[3], 3)
+
+  n_erlang <- 2
+  y2 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                            n_erlang = n_erlang)
+
+  expect_equal(dim(y2[[1]]$N)[3], n_erlang + 2)
+  idx <- stratum_index_xvw_trial(n_erlang)
+  expect_equal(dim(y2[[1]]$N)[3], idx$n_vax)
+
+  n_erlang <- 5
+  y3 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                            n_erlang = n_erlang)
+  expect_equal(dim(y3[[1]]$N)[3], n_erlang + 2)
+  idx <- stratum_index_xvw_trial(n_erlang)
+  expect_equal(dim(y3[[1]]$N)[3], idx$n_vax)
+
+  #vax_params_xvw_trial generates the correct waning maps (in for n_erlang > 1)
+  dur <- 1e03
+  n_erlang <- 1 #n_vax is 3
+  idx <- stratum_index_xvw_trial(n_erlang)
+  erlang_1 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang)$w
+  matrix_1 <- matrix(data = (c(rep(0, 4), -n_erlang / dur, rep(0, 2),
+                               n_erlang / dur, 0)), ncol = idx$n_vax,
+                     byrow = TRUE)
+  expect_equal(erlang_1, matrix_1)
+
+  n_erlang <- 2 #n_vax is 4
+  idx <- stratum_index_xvw_trial(n_erlang)
+  erlang_2 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang)$w
+  matrix_2 <- matrix(data = (c(rep(0, 5), -n_erlang / dur, rep(0, 3),
+                               n_erlang / dur, -n_erlang / dur, rep(0, 3),
+                               n_erlang / dur, 0)), ncol = idx$n_vax,
+                     byrow = TRUE)
+  expect_equal(erlang_2, matrix_2)
+
+  # when vea is perfect, there are no infections in any of the
+  # erlang strata
+
+  n_erlang <- 3   #n_vax is 5
+  idx <- stratum_index_xvw_trial(n_erlang)
+  gp <- gono_params_trial(1)[1]
+  tt <- seq.int(0, 5) / 365
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 1, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang)
+
+  expect_true(all(y[[1]]$cum_incid[, , 2] == 0)) #V1
+  expect_true(all(y[[1]]$cum_incid[, , 3] == 0)) #V2
+  expect_true(all(y[[1]]$cum_incid[, , 4] == 0)) #V3
+  expect_true(all(y[[1]]$cum_incid[, , c(idx$V)] == 0)) #all V
+
+  expect_true(all(y[[1]]$cum_incid[-1, 2, 1] != 0)) #X still has infections
+  expect_true(all(y[[1]]$cum_incid[-1, 2, idx$X] != 0))
+  expect_true(all(y[[1]]$cum_incid[-1, 2, 5] != 0)) #W not under protection, has
+  expect_true(all(y[[1]]$cum_incid[-1, 2, idx$W] != 0)) # infections
+
+})

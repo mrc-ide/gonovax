@@ -99,6 +99,8 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
 ##' @param p_v A scalar indicating the percentage of the trial cohort that
 ##'  is vaccinated
 ##' @param initial_params_trial A list of starting conditions
+##' @param n_erlang scalar giving the number of transitions that need to be made
+##' through vaccine-protected strata until that protection has waned
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -108,21 +110,65 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
 model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
                         initial_params_trial = NULL,
-                        vax_params = NULL, p_v = 0) {
+                        vax_params = NULL, p_v = 0,
+                        n_erlang = 1) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
-  demographic_params_trial <- demographic_params_trial  %||%
-   demographic_params_trial()
+  demographic_params_trial <-
+    demographic_params_trial  %||% demographic_params_trial()
   ret <- c(demographic_params_trial, gono_params_trial)
+
+  #check n_erlang supplied im model_params_trial() is same as
+  #n_erlang supplied to vax_params_xvw_trial()
+  #unless vax_params not supplied
+  if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
+    stopifnot(unique(dim(vax_params$w)) ==  2 + n_erlang)
+  }
+
   vax_params <- vax_params %||% vax_params0()
 
-  if (p_v == 0) {
+  #passing initial parameters
+  if (p_v == 0) {                             #no vaccination = placebo arm
     cov <- c(1, rep(0, vax_params$n_vax - 1))
     initial_params <-
       initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
+                              #if no vaccination then no need for V and W strata
 
-  } else {
-    initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v)
+  } else {                                  #p_v greater than 0 = vaccinated arm
+    initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v,
+                                               n_erlang = n_erlang)
   }
 
   c(ret, initial_params, vax_params)
+}
+
+##' @name create_waning_map_trial
+##' @title Create mapping for movement between strata due to vaccine waning
+##' in a vaccine trial with erlang compartments
+##' @param n_vax Integer in (0, 5) denoting total number of strata
+##' @param i_v indices of strata under vaccination protection
+##' @param i_w indicies denoting which stratum receives waned vaccinees
+##' @param z Scalar denoting rate of waning
+##' @return an array of the mapping
+
+create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
+
+   stopifnot(z > 0)
+
+  # set up waning map
+  w <- array(0, dim = c(n_vax, n_vax))
+
+  for (i in seq_along(i_v)) {
+    w[i_w[i], i_v[i]] <- z
+  }
+
+  for (i in i_v) {
+    idx <- i_v %>% {
+      which(. == i)
+    }
+
+    w[i, i] <- -w[i_w[idx], i]
+  }
+
+  w
+
 }

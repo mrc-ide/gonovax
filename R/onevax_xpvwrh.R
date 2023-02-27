@@ -22,10 +22,14 @@
 ##' already present (as a proportion)
 ##' @param coverage_v two-dose vaccine coverage of the population already
 ##' present (as a proportion)
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made through vaccine-protected strata until that protection has waned
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
-                                  hes = 0, t = FALSE) {
+                                  hes = 0, t = FALSE, n_erlang = 1) {
+
+  idx <- stratum_index_xpvwrh(n_erlang)
 
   if (coverage_p + coverage_v + hes > 1) {
     stop("sum of coverages and/or hesitancy must not exceed 1")
@@ -35,12 +39,15 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 
   assert_scalar_unit_interval(coverage_p)
   assert_scalar_unit_interval(coverage_v)
-  n_vax <- 6
+  n_vax <- idx$n_vax
   willing <- 1 - hes
   x_init <- willing * (1 - coverage_p - coverage_v)
   p_init <- willing * coverage_p
   v_init <- willing * coverage_v
-  cov <- c(x_init, p_init, v_init, 0, 0, hes)
+
+## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
+  cov <- c(x_init, p_init, rep(0, n_erlang - 1), v_init, rep(0, n_erlang - 1),
+           0, rep(0, n_erlang), hes)
 
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
@@ -62,6 +69,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   }
 
   }
+
 }
 
 
@@ -87,15 +95,18 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
 ##'  symptoms (between 0-1)
 ##' @param r2_p proportion of partially vaccinated individuals who receive
 ##' a second dose when returning to the clinic due to screening or illness
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
 ##' @return A list parameters in the model input format
 vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                             vea_revax = vea, vei_revax = vei,
-                             ved_revax = ved, ves_revax = ves,
-                             vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
-                             dur_v = 1e3, dur_p = dur_v, dur_revax = dur_v,
-                             r1 = 0, r2 = 0, r2_p = 0,
-                             booster_uptake = r1 * r2, strategy = NULL,
-                             vbe = 0, t_stop = 99, hes = 0) {
+                              vea_revax = vea, vei_revax = vei,
+                              ved_revax = ved, ves_revax = ves,
+                              vea_p = vea, vei_p = vei, ved_p = ved,
+                              ves_p = ves, dur_v = 1e3, dur_p = dur_v,
+                              dur_revax = dur_v, r1 = 0, r2 = 0, r2_p = 0,
+                              booster_uptake = r1 * r2, strategy = NULL,
+                              vbe = 0, t_stop = 99, hes = 0,
+                              n_erlang = n_erlang) {
 
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
@@ -128,19 +139,44 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # a proportion of all 'n' exist only in the hesitant compartment (H)
   # There is no movement between the willing (X, P, V, W, R) and hesitant (H)
 
+
+  # generate indices of strata and calculate total # strata
+  idx <- stratum_index_xpvwrh(n_erlang)
+
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P
 
-  i_eligible <- c(1, 1, 2, 4)         # X(1), P(2), and W(4) eligible for
-                                      # vaccination
-  i_w <- c(1, 4, 4)                   # Waned vaccinees move to X(1) and W(4)
-  i_p <- c(2, 3, 3, 5)                # P(2), V(3), and R(5) are protected
-  i_v <- c(2, 3, 5)                   # P(2), V(3), R(5) will experience waning
-
-  #number of compartments
-  n_vax <- 6
+  #number of strata + sexual activity groups
+  n_vax <- idx$n_vax
   n_group <- 2
+
+  # work out strata eligibility for vaccination, vaccine protection,
+  # waning, and where people wane to, based on n_vax calculated from
+  # n_erlang
+
+  # 1. strata eligible for vaccination
+    # note: X is repeated twice as vaccination can
+    # occur in 2 directions from X, to P or X to V.
+
+  i_eligible <- c(idx$X, idx$X, idx$P, idx$W)
+
+  # 2. strata individuals get vaccinated into
+    # Will always be the first of the erlang stack [1]
+    # note: V[1] is repeated n_erlang + 1 times because as well as un-vaccinated
+    # individuals (X) becoming fully vaccinated (V), partially vaccinated people
+    # in P can become fully vaccinated from any of the P erlang compartments
+
+  i_p <- c(idx$P[1], rep(idx$V[1], n_erlang + 1), idx$R[1])
+
+  # 3. strata individuals wane from
+    # i.e All strata under protection P, V and R
+
+  i_v <- c(idx$P, idx$V, idx$R)
+
+  # 4. strata individuals wane to
+
+  i_w <- c(idx$P[-1], idx$X, idx$V[-1], idx$W, idx$R[-1], idx$W)
 
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
@@ -152,29 +188,34 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # generate vaccine maps to determine where individuals are being vaccinated
   # from and which strata they are then entering
 
+  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p,
+                                   set_vbe = FALSE, idx)
+  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p,
+                                   set_vbe = FALSE, idx)
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
-                                     set_vbe = TRUE)
-  vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible, i_p)
-  vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible, i_p)
-
+                                       set_vbe = TRUE, idx)
 
   # generate uptake maps to multiply through vax_maps
   # note this function is xpvwrh-specific
-  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake)
+  u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, idx)
 
   list(n_vax   = n_vax,
-       willing = c((1 - hes), 0, 0,  0, 0, hes),
+       willing = c((1 - hes), rep(0, n_vax - 2), hes),
        u       = u,
        u_vbe   = vbe,
        vbe     = vbe_map,
        vod     = vod,
        vos     = vos,
-       vea     = c(0, vea_p, vea, 0, vea_revax, 0),
-       vei     = c(0, vei_p, vei, 0, vei_revax, 0),
-       ved     = c(0, ved_p, ved, 0, ved_revax, 0),
-       ves     = c(0, ves_p, ves, 0, ves_revax, 0),
-       w       = create_waning_map_branching(n_vax, i_v,
-                                   i_w, 1 / c(dur_p, dur_v, dur_revax)),
+       vea     = set_protection(i_v, idx, n_vax, vea_p, vea, vea_revax),
+       vei     = set_protection(i_v, idx, n_vax, vei_p, vei, vei_revax),
+       ved     = set_protection(i_v, idx, n_vax, ved_p, ved, ved_revax),
+       ves     = set_protection(i_v, idx, n_vax, ves_p, ves, ves_revax),
+       w       = create_waning_map_branching(n_vax,
+                                             i_v,
+                                             i_w,
+                                             n_erlang / c(dur_p,
+                                                   dur_v, dur_revax),
+                                             n_erlang),
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0)
   )
@@ -198,34 +239,40 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' population who accept a booster vaccination dose
 ##' @param r2_p proportion of partially vaccinated individuals who receive
 ##' a second dose when returning to the clinic due to screening or illness
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
+##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the uptakes of same dimensions
 
-create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
+create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
+                                     idx) {
 
   # note, these indices are specific to the branching pattern of xpvwrh
-
     ## individuals in X accept vaccination of the 1st dose at an uptake of r1
   array[, 1, 1] <- array[, 1, 1] * r1
 
     ## individuals entering V (fully vaccinated) also then accept
     ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
     ## vaccinated is given by r1 * r2
-  array[, 3, 1] <- array[, 3, 1] * (r1 * r2)
+    ## idx$V[1] gives index of the top of the V erlang stack
+  array[, idx$V[1], 1] <- array[, idx$V[1], 1] * (r1 * r2)
 
     ## individuals entering P (partially vaccinated) do not then accept
     ## vaccination with the 2nd dose so proportion partially vaccinated is
     ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
     ## 2nd dose given they have recieved the 1st dose
-  array[, 2, 1] <- array[, 2, 1] * (r1 * (1 - r2))
+    ## idx$P[1] gives index of the top of the P erlang stack
+  array[, idx$P[1], 1] <- array[, idx$P[1], 1] * (r1 * (1 - r2))
 
     ## individuals with only the 1st dose can later accept vaccination with the
     ## 2nd dose at an uptake of r2_p
-  array[, , 2] <- array[, , 2] * r2_p
+    ## idx$P gives indices for all P erlang strata, r2_p applies to all equally
+  array[, , idx$P] <- array[, , idx$P] * r2_p
 
     ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
     ## booster_uptake
-  array[, , 4]  <- array[, , 4] * booster_uptake
+    ## idx$W gives the the index for (W)
+  array[, , idx$W] <- array[, , idx$W] * booster_uptake
 
   # values must be positive - otherwise negative values in this array will
   # cancel those in the vos and vod arrays = incorrect vaccination
@@ -239,24 +286,30 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake) {
 ##' back to a naive unvaccinated state (X), and waning from fully vaccinated
 ##' stratum (V) moves individuals into a separate waned stratum (W)
 ##' Note, this structure is specific to xpvwrh
-##' @param n_vax Integer in (0, 6) denoting total number of strata
+##' @param n_vax Integer denoting total number of strata
 ##' @param i_v indices of strata receiving protection through vaccination
 ##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made
+##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the mapping
 
-create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
+create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
 
   stopifnot(z > 0)
-  stopifnot(length(z) %in% c(1, length(i_v)))
-  stopifnot(length(i_w) == 3)
+
+  #creates vector containing rates
+  z_erlang <- rep(z, each = n_erlang)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
 
-  for (i in seq_along(i_v)) {
-    w[i_w[i], i_v[i]] <- z[i]
-    w[i_v[i], i_v[i]] <- -z[i]
+    for (i in seq_along(i_v)) {
+
+    w[i_v[i], i_v[i]] <- -z_erlang[i]
+    w[i_w[i], i_v[i]] <- z_erlang[i]
+
   }
 
   w
@@ -272,35 +325,41 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z) {
 ##' @param n_vax Integer denoting total number of strata
 ##' @param v 0-1 vector of length two indicating whether activity group
 ##'  should be offered vaccination.
-##' @param i_u indices of strata eligible for vaccination
-##' @param i_v indices of strata vaccinated and protected
+##' @param i_e indices of strata eligible for vaccination
+##' @param i_p indices of strata vaccinated and protected
 ##' @param set_vbe Boolean which indicates that vaccination is occurring at some
 ##' level of uptake upon entering the model
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
+##' through vaccine-protected strata until that protection has waned
 ##' @return an array of the mapping
 
-create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
+create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
+                                     idx) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
+  n_vax <- idx$n_vax
+
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
-  stopifnot(max(i_u, i_v) <= n_vax)
+  stopifnot(max(i_e, i_p) <= n_vax)
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
 
   if (set_vbe == TRUE) {
 
-  vax_map[, 1, 1] <-  v
-  vax_map[, 3, 1] <- -v
+  vax_map[, idx$X, idx$X] <-  v
+  vax_map[, idx$V[1], idx$X] <- -v
 
   } else {
 
   #repeat over stratum 1 column 1 for ease
 
-  for (i in seq_along(i_u)) {
-    vax_map[, i_u[i], i_u[i]] <-  v
-    vax_map[, i_v[i], i_u[i]] <- -v
+  for (i in seq_along(i_e)) {
+
+    vax_map[, i_e[i], i_e[i]] <-  v
+    vax_map[, i_p[i], i_e[i]] <- -v
 
   }
 }
@@ -360,6 +419,9 @@ create_vax_map_branching <- function(n_vax, v, i_u, i_v, set_vbe = FALSE) {
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
 ##'   Defaults to supplied value of r1 * r2
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made
+##' through vaccine-protected strata until that protection has waned
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
@@ -373,7 +435,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                              vbe = 0,
                              r1 = 0, r2 = 0, r2_p = 0,
                              booster_uptake = (r1 * r2), strategy = NULL,
-                             t_stop = 99, hes = 0) {
+                             t_stop = 99, hes = 0,
+                             n_erlang = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei,
                              ved, ves, vea_revax, vei_revax, ved_revax,
@@ -389,12 +452,21 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                     dur_revax = dur_revax, dur_p = dur_p,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
+                    n_erlang = n_erlang,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 
   if (is.null(init_params)) {
     pars <- lapply(gono_params, model_params)
-    init_params <- lapply(pars, initial_params_xpvwrh, hes = hes)
+    init_params <- lapply(pars, initial_params_xpvwrh, hes = hes,
+                          n_erlang = n_erlang)
+  } else {
+
+    #check if init_params supplied, n_vax corresponds to the n_erlang
+    # supplied to the run function
+
+    stopifnot(length(init_params[[1]][[1]]) / 2 == (6 + (n_erlang - 1) * 3))
+
   }
 
   ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
@@ -402,6 +474,84 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
              MoreArgs = list(tt = tt))
 
   # name outputs
-  ret <- lapply(ret, name_outputs, c("X", "P", "V", "W", "R", "H"))
+  ret <- lapply(ret, name_outputs, gen_erlang_labels(n_erlang))
   ret
+}
+
+
+##' @name gen_erlang_labels
+##' @title generates the appropriate strata labels for the number of strata
+##' in the model, which depends on the value given to n_erlang
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made
+##' through vaccine-protected strata until that protection has waned
+##' @return a character vector of length n_vax containing strata labels
+##' @export
+gen_erlang_labels <- function(n_erlang = 1) {
+
+idx <- seq_len(n_erlang)
+output <- c("X", paste0("P", idx), paste0("V", idx), "W", paste0("R", idx), "H")
+
+  output
+
+}
+
+  
+##' @name set_protection
+##' @title generates vector which tells the model which strata are under
+##' vaccine protection and what the value of protection for that strata is
+##' @param i_v indices of strata receiving protection through vaccination
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
+##' through vaccine-protected strata until that protection has waned
+##' through vaccine-protected strata until that protection has waned
+##' @param n_vax integer denoting total number of strata
+##' @param ve_p scalar 0-1 with degree of partial primary protection of the P(N)
+##' strata, can take vea_p, vei_p, ves_p, ved_p
+##' @param ve scalar 0-1 with degree of full primary protection of the V(N)
+##' strata, can take vea, vei, ves, ved
+##' @param ve_revax scalar 0-1 with degree of re-vaccinated protection of the
+##' R(N) strata, can take vea_revax, vei_revax, ves_revax, ved_revax
+##' @return vector of length n_vax with zeros corresponding to the indices of
+##' strata with no protection, and the supplied degree of partial, full, and
+##' boosted protection corresponding to the indices of strata with partial,
+##' full and boosted vaccination status
+##' @export
+set_protection <- function(i_v, idx, n_vax, ve_p, ve, ve_revax) {
+
+  # get indexes of strata under protection by type of protection
+  p <- idx$P
+  v <- idx$V
+  r <- idx$R
+
+  # generate empty vector as long as n_vax
+  ve_vec <- rep(0, idx$n_vax)
+
+  # assign corresponding level of protection to the correct position
+  ve_vec[p] <- ve_p
+  ve_vec[v] <- ve
+  ve_vec[r] <- ve_revax
+
+  ve_vec
+}
+
+##' @name stratum_index_xpvwrh
+##' @title Generate the indices of all xpvwrh strata
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
+##' @return A list of strata with their indicies
+##' @export
+
+stratum_index_xpvwrh <- function(n_erlang) {
+
+  ret <- list(X = 1)
+
+    ret$P <- max(ret$X) + seq_len(n_erlang)
+    ret$V <- max(ret$P) + seq_len(n_erlang)
+    ret$W <- max(ret$V) + 1
+    ret$R <- max(ret$W) + seq_len(n_erlang)
+    ret$H <- max(ret$R) + 1
+    ret$n_vax <- ret$H
+
+  ret
+
 }

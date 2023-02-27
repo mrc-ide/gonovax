@@ -8,16 +8,20 @@ back to a naive unvaccinated state (X), and waning from fully vaccinated
 stratum (V) moves individuals into a separate waned stratum (W)
 Note, this structure is specific to xpvwrh}
 \usage{
-create_waning_map_branching(n_vax, i_v, i_w, z)
+create_waning_map_branching(n_vax, i_v, i_w, z, n_erlang)
 }
 \arguments{
-\item{n_vax}{Integer in (0, 6) denoting total number of strata}
+\item{n_vax}{Integer denoting total number of strata}
 
 \item{i_v}{indices of strata receiving protection through vaccination}
 
 \item{i_w}{Scalar in (0, 6) denoting which stratum receives waned vaccinees}
 
 \item{z}{Scalar denoting rate of waning}
+
+\item{n_erlang}{integer giving the number of transitions that need to be
+made
+through vaccine-protected strata until that protection has waned}
 }
 \value{
 an array of the mapping

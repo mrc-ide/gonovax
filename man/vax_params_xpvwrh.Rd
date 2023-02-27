@@ -27,7 +27,8 @@ vax_params_xpvwrh(
   strategy = NULL,
   vbe = 0,
   t_stop = 99,
-  hes = 0
+  hes = 0,
+  n_erlang = n_erlang
 )
 }
 \arguments{
@@ -98,6 +99,9 @@ vaccination after primary vaccination protection has waned}
 \item{t_stop}{time at which vaccination should stop (years)}
 
 \item{hes}{proportion of population vaccine hesitant}
+
+\item{n_erlang}{integer giving the number of transitions that need to be
+made through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list parameters in the model input format
