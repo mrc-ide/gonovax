@@ -59,6 +59,13 @@ screened[, ] <- eta[i] * U[i, j]
 # vaccination -> no vaccination 'strategies' needed
 
 # waning
+
+n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j] , 1 - exp(D[j] * dt))
+n_Iw[, ] <- rbinom(I[i, j] - n_IAS[i, j], 1 - exp(D[j] * dt))
+n_Aw[, ] <- rbinom(A[i, j] - n_AUT[i, j], 1 - exp(D[j] * dt))
+n_Sw[, ] <- rbinom(S[i, j] - n_ST[i, j], 1 - exp(D[j] * dt))
+n_Tw[, ] <- rbinom(T[i, j] - n_TU[i, j], 1 - exp(D[j] * dt))
+
 wU[, , ] <- w[j, k] * U[i, k]
 wI[, , ] <- w[j, k] * I[i, k]
 wA[, , ] <- w[j, k] * A[i, k]
