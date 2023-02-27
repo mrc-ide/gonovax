@@ -9,20 +9,26 @@
 n_group <- 2
 n_vax   <- user(1)
 
+## adding timesteps
+steps_per_year <- 365
+dt <- 1 / steps_per_year
+initial(time) <- 0
+update(time) <- (step + 1) * dt
+
 ## assign low and high activity etas to the correct level
 eta[1] <- eta_l
 eta[2] <- eta_h
 
 # individual probabilities of transitioning between infection states
-p_UI[, ] <- 1 - exp(-(lambda * (1 - vea[j])))
-p_ST[, ] <- 1 - exp(-mu)
-p_TU[, ] <- 1 - exp(-rho)
+p_UI[, ] <- 1 - exp(-(lambda * (1 - vea[j]) * dt))
+p_ST[, ] <- 1 - exp(-mu * dt)
+p_TU[, ] <- 1 - exp(-rho * dt)
 
-p_A_or_S[, ] <- 1 - exp(-sigma)
+p_A_or_S[, ] <- 1 - exp(-sigma * dt)
 
 r_AT[, ] <- eta[i]         
 r_AU[, ] <- nu / (1 - ved[j]) 
-p_T_or_U[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j]))
+p_T_or_U[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] * dt))
 
 # draws from binomial distributions for numbers changing between compartments
 n_UI[, ] <- rbinom(U[i, j], p_UI[i, j])
@@ -59,18 +65,17 @@ screened[, ] <- eta[i] * U[i, j]
 # vaccination -> no vaccination 'strategies' needed
 
 # waning
-
 n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j] , 1 - exp(D[j] * dt))
 n_Iw[, ] <- rbinom(I[i, j] - n_IAS[i, j], 1 - exp(D[j] * dt))
 n_Aw[, ] <- rbinom(A[i, j] - n_AUT[i, j], 1 - exp(D[j] * dt))
 n_Sw[, ] <- rbinom(S[i, j] - n_ST[i, j], 1 - exp(D[j] * dt))
 n_Tw[, ] <- rbinom(T[i, j] - n_TU[i, j], 1 - exp(D[j] * dt))
 
-wU[, , ] <- w[j, k] * U[i, k]
-wI[, , ] <- w[j, k] * I[i, k]
-wA[, , ] <- w[j, k] * A[i, k]
-wS[, , ] <- w[j, k] * S[i, k]
-wT[, , ] <- w[j, k] * T[i, k]
+wU[, , ] <- w[j, k] * n_Uw[i, k]
+wI[, , ] <- w[j, k] * n_Iw[i, k]
+wA[, , ] <- w[j, k] * n_Aw[i, k]
+wS[, , ] <- w[j, k] * n_Sw[i, k]
+wT[, , ] <- w[j, k] * n_Tw[i, k]
 
 ## outputs
 
