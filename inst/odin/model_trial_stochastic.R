@@ -122,6 +122,12 @@ dim(A0) <- c(n_group, n_vax)
 dim(S0) <- c(n_group, n_vax)
 dim(T0) <- c(n_group, n_vax)
 
+dim(n_Uw) <- c(n_group, n_vax)
+dim(n_Iw) <- c(n_group, n_vax)
+dim(n_Aw) <- c(n_group, n_vax)
+dim(n_Sw) <- c(n_group, n_vax)
+dim(n_Tw) <- c(n_group, n_vax)
+
 dim(N)  <- c(n_group, n_vax)
 
 dim(n_UI)     <- c(n_group, n_vax)
@@ -168,6 +174,7 @@ ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
 
 w[, ]    <- user()
+D[] <- user()
 
 ## par dimensions
 
@@ -177,6 +184,7 @@ dim(ved)  <- n_vax
 dim(ves)  <- n_vax
 
 dim(w)    <- c(n_vax, n_vax)
+dim(D)    <- c(n_vax)
 
 dim(wU)   <- c(n_group, n_vax, n_vax)
 dim(wI)   <- c(n_group, n_vax, n_vax)

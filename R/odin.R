@@ -267,7 +267,7 @@ model_trial_stochastic_ <- R6::R6Class(
     cfuns = list(
       rhs_dde = "model_trial_stochastic_rhs_dde"),
     dll = "gonovax",
-    user = c("A0", "eta_h", "eta_l", "I0", "lambda", "mu", "nu", "psi",
+    user = c("A0", "D", "eta_h", "eta_l", "I0", "lambda", "mu", "nu", "psi",
              "rho", "S0", "sigma", "T0", "U0", "vea", "ved", "ves", "w",
              "n_vax"),
 
