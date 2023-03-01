@@ -20,42 +20,42 @@ eta[1] <- eta_l
 eta[2] <- eta_h
 
 # individual probabilities of transitioning between infection states
-p_UI[, ] <- 1 - exp(-(lambda * (1 - vea[j]) * dt))
+p_UI[, ] <- 1 - exp(- (lambda * (1 - vea[j]) * dt))
 p_ST[, ] <- 1 - exp(-mu * dt)
 p_TU[, ] <- 1 - exp(-rho * dt)
 
 p_A_or_S[, ] <- 1 - exp(-sigma * dt)
 
-r_AT[, ] <- eta[i]         
-r_AU[, ] <- nu / (1 - ved[j]) 
-p_T_or_U[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] * dt))
+r_AT[, ] <- eta[i]
+r_AU[, ] <- nu / (1 - ved[j])
+p_T_or_U[, ] <- 1 - exp(- (r_AT[i, j] + r_AU[i, j] * dt))
 
 # draws from binomial distributions for numbers changing between compartments
 n_UI[, ] <- rbinom(U[i, j], p_UI[i, j])
 n_ST[, ] <- rbinom(S[i, j], p_ST[i, j])
 n_TU[, ] <- rbinom(T[i, j], p_TU[i, j])
 
-n_IAS[, ] <- rbinom(I[i,j], p_A_or_S[i, j])    
-n_IA[, ] <- rbinom(n_IAS[i, j], (1 - ves[j]) * psi) 
+n_IAS[, ] <- rbinom(I[i, j], p_A_or_S[i, j])
+n_IA[, ] <- rbinom(n_IAS[i, j], (1 - ves[j]) * psi)
 n_IS[, ] <- n_IAS[i, j] - n_IA[i, j]
 
 n_AUT[, ] <- rbinom(A[i, j], p_T_or_U[i, j])
-n_AT[, ] <- rbinom(n_AUT[i, j], r_AT[i,j]/(r_AT[i,j] + r_AU[i, j]))
+n_AT[, ] <- rbinom(n_AUT[i, j], r_AT[i, j] / (r_AT[i, j] + r_AU[i, j]))
 n_AU[, ] <- n_AUT[i, j] - n_AT[i, j]
   
 ## Core equations for transitions between compartments:
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
   n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
 
-update(I[, ]) <- I[i,j] + n_UI[i, j] - n_IAS[i, j] + sum(wI[i, j, ])
+update(I[, ]) <- I[i, j] + n_UI[i, j] - n_IAS[i, j] + sum(wI[i, j, ])
 
-update(A[, ]) <- A[i,j] + n_IA[i, j] -
+update(A[, ]) <- A[i, j] + n_IA[i, j] -
                n_AUT[i, j] + sum(wA[i, j, ])
 
-update(S[, ]) <- S[i,j] + n_IS[i, j] -
+update(S[, ]) <- S[i, j] + n_IS[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
 
-update(T[, ]) <- T[i,j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
+update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
   sum(wT[i, j, ])
 
 ## Update population size
@@ -65,7 +65,7 @@ screened[, ] <- eta[i] * U[i, j]
 # vaccination -> no vaccination 'strategies' needed
 
 # waning
-n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j] , 1 - exp(D[j] * dt))
+n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j], 1 - exp(D[j] * dt))
 n_Iw[, ] <- rbinom(I[i, j] - n_IAS[i, j], 1 - exp(D[j] * dt))
 n_Aw[, ] <- rbinom(A[i, j] - n_AUT[i, j], 1 - exp(D[j] * dt))
 n_Sw[, ] <- rbinom(S[i, j] - n_ST[i, j], 1 - exp(D[j] * dt))
@@ -144,10 +144,10 @@ dim(screened) <- c(n_group, n_vax)
 dim(p_UI)     <- c(n_group, n_vax)
 dim(p_A_or_S) <- c(n_group, n_vax)
 dim(p_ST)     <- c(n_group, n_vax)
-dim(p_T_or_U) <- c(n_group, n_vax)   
+dim(p_T_or_U) <- c(n_group, n_vax)
 dim(p_TU)     <- c(n_group, n_vax)
 
-dim(r_AT) <- c(n_group, n_vax)        
+dim(r_AT) <- c(n_group, n_vax)
 dim(r_AU) <- c(n_group, n_vax)
 
 dim(cum_incid)      <- c(n_group, n_vax)
