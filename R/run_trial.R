@@ -7,7 +7,7 @@
 ##' @param vax_params = NULL
 ##' @param transform = TRUE
 ##' @param stochastic logical indicating if the run should be made with the 
-##' default deterministic trial model in continous time or stochastic trial
+##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
 ##' @export run
 

@@ -38,7 +38,10 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 ##' @param dur scalar indicating duration of the vaccine (in years)
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made
-##' through vaccine-protected strata until that protection has waned                    #add stochastic to documentation 
+##' @param stochastic logical indicating if the parameters are for the
+##' default deterministic trial model in continuous time or stochastic trial
+##' model in discrete time
+##' through vaccine-protected strata until that protection has waned
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
@@ -71,9 +74,9 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # compartments to which vaccine efficacy applies
   ve <- c(0, rep(1, n_erlang), 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
-  
+
   # create waning map
-  if(stochastic == TRUE){
+  if (stochastic == TRUE) {
     w <- sign(create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur)))
   }else{
     w <- create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur))
@@ -115,7 +118,9 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  is 0.5.
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made
-##' through vaccine-protected strata until that protection has waned
+##' @param stochastic logical indicating if the run should be made with the
+##' default deterministic trial model in continuous time or stochastic trial
+##' model in discrete time
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
 ##' @export

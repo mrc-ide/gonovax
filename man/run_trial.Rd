@@ -10,7 +10,8 @@ run_trial(
   gono_params,
   init_params = NULL,
   vax_params = NULL,
-  transform = TRUE
+  transform = TRUE,
+  stochastic = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,10 @@ run_trial(
 \item{vax_params}{= NULL}
 
 \item{transform}{= TRUE}
+
+\item{stochastic}{logical indicating if the run should be made with the 
+default deterministic trial model in continuous time or stochastic trial
+model in discrete time}
 }
 \description{
 Run odin model of gonorrhoea vaccine trial with or without
