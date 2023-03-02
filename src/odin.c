@@ -4635,7 +4635,7 @@ SEXP model_trial_stochastic_set_user(SEXP internal_p, SEXP user) {
   }
   for (int i = 1; i <= internal->dim_p_T_or_U_1; ++i) {
     for (int j = 1; j <= internal->dim_p_T_or_U_2; ++j) {
-      internal->p_T_or_U[i - 1 + internal->dim_p_T_or_U_1 * (j - 1)] = 1 - exp(-((internal->r_AT[internal->dim_r_AT_1 * (j - 1) + i - 1] + internal->r_AU[internal->dim_r_AU_1 * (j - 1) + i - 1] * internal->dt)));
+      internal->p_T_or_U[i - 1 + internal->dim_p_T_or_U_1 * (j - 1)] = 1 - exp(-((internal->r_AT[internal->dim_r_AT_1 * (j - 1) + i - 1] + internal->r_AU[internal->dim_r_AU_1 * (j - 1) + i - 1])) * internal->dt);
     }
   }
   return R_NilValue;

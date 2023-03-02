@@ -28,7 +28,7 @@ p_A_or_S[, ] <- 1 - exp(-sigma * dt)
 
 r_AT[, ] <- eta[i]
 r_AU[, ] <- nu / (1 - ved[j])
-p_T_or_U[, ] <- 1 - exp(- (r_AT[i, j] + r_AU[i, j] * dt))
+p_T_or_U[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j]) * dt)
 
 # draws from binomial distributions for numbers changing between compartments
 n_UI[, ] <- rbinom(U[i, j], p_UI[i, j])
