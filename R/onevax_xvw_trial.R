@@ -38,11 +38,11 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 ##' @param dur scalar indicating duration of the vaccine (in years)
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made
-##' through vaccine-protected strata until that protection has waned
+##' through vaccine-protected strata until that protection has waned                    #add stochastic to documentation 
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                           dur = 1e3, n_erlang = 1) {
+                           dur = 1e3, n_erlang = 1, stochastic = FALSE) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -71,13 +71,23 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # compartments to which vaccine efficacy applies
   ve <- c(0, rep(1, n_erlang), 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
+  
+  # create waning map
+  if(stochastic == TRUE){
+    w <- sign(create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur)))
+  }else{
+    w <- create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur))
+  }
+
+  D <- diag(w)
 
   list(n_vax = n_vax,
        vea   = vea * ve,
        vei   = vei * ve,
        ved   = ved * ve,
        ves   = ves * ve,
-       w     = create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur))
+       w     = w,
+       D     = D
   )
 }
 
@@ -114,7 +124,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0,
-                           p_v = 0.5, n_erlang = 1) {
+                           p_v = 0.5, n_erlang = 1,
+                           stochastic = FALSE) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
@@ -122,7 +133,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
-                    n_erlang = n_erlang)
+                    n_erlang = n_erlang, stochastic = stochastic)
 
   if (is.null(initial_params_trial)) {
     pars <- lapply(gono_params, model_params_trial)
@@ -133,6 +144,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
   ret <- Map(run_trial, gono_params = gono_params,
              init_params = init_params_trial,
              vax_params = vax_params,
+             stochastic = stochastic,
              MoreArgs = list(tt = tt))
 
   ret
