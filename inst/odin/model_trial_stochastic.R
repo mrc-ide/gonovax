@@ -79,11 +79,11 @@ wT[, , ] <- w[j, k] * n_Tw[i, k]
 
 ## outputs
 
-update(cum_incid[, ])      <- n_UI[i, j]
-update(cum_diag_a[, ])     <- n_AT[i, j]
-update(cum_diag_s[, ])     <- n_ST[i, j]
-update(cum_treated[, ])    <- n_TU[i, j]
-update(cum_screened[, ])   <- screened[i, j]
+update(cum_incid[, ])      <- cum_incid[i, j] + n_UI[i, j]
+update(cum_diag_a[, ])     <- cum_diag_a[i, j] + n_AT[i, j]
+update(cum_diag_s[, ])     <- cum_diag_s[i, j] + n_ST[i, j]
+update(cum_treated[, ])    <- cum_treated[i, j] + n_TU[i, j]
+update(cum_screened[, ])   <- cum_screened[i, j] + screened[i, j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)

@@ -4751,6 +4751,9 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   double * A = state + internal->offset_variable_A;
   double * S = state + internal->offset_variable_S;
   double * T = state + internal->offset_variable_T;
+  double * cum_incid = state + internal->offset_variable_cum_incid;
+  double * cum_diag_a = state + internal->offset_variable_cum_diag_a;
+  double * cum_diag_s = state + internal->offset_variable_cum_diag_s;
   double * cum_treated = state + internal->offset_variable_cum_treated;
   double * cum_screened = state + internal->offset_variable_cum_screened;
   state_next[0] = (step + 1) * internal->dt;
@@ -4781,7 +4784,7 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   }
   for (int i = 1; i <= internal->dim_cum_screened_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_screened_2; ++j) {
-      state_next[internal->offset_variable_cum_screened + i - 1 + internal->dim_cum_screened_1 * (j - 1)] = internal->screened[internal->dim_screened_1 * (j - 1) + i - 1];
+      state_next[internal->offset_variable_cum_screened + i - 1 + internal->dim_cum_screened_1 * (j - 1)] = cum_screened[internal->dim_cum_screened_1 * (j - 1) + i - 1] + internal->screened[internal->dim_screened_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_n_AUT_1; ++i) {
@@ -4816,17 +4819,17 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   }
   for (int i = 1; i <= internal->dim_cum_diag_s_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_diag_s_2; ++j) {
-      state_next[internal->offset_variable_cum_diag_s + i - 1 + internal->dim_cum_diag_s_1 * (j - 1)] = internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1];
+      state_next[internal->offset_variable_cum_diag_s + i - 1 + internal->dim_cum_diag_s_1 * (j - 1)] = cum_diag_s[internal->dim_cum_diag_s_1 * (j - 1) + i - 1] + internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_cum_incid_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_incid_2; ++j) {
-      state_next[internal->offset_variable_cum_incid + i - 1 + internal->dim_cum_incid_1 * (j - 1)] = internal->n_UI[internal->dim_n_UI_1 * (j - 1) + i - 1];
+      state_next[internal->offset_variable_cum_incid + i - 1 + internal->dim_cum_incid_1 * (j - 1)] = cum_incid[internal->dim_cum_incid_1 * (j - 1) + i - 1] + internal->n_UI[internal->dim_n_UI_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_cum_treated_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_treated_2; ++j) {
-      state_next[internal->offset_variable_cum_treated + i - 1 + internal->dim_cum_treated_1 * (j - 1)] = internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1];
+      state_next[internal->offset_variable_cum_treated + i - 1 + internal->dim_cum_treated_1 * (j - 1)] = cum_treated[internal->dim_cum_treated_1 * (j - 1) + i - 1] + internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_n_AT_1; ++i) {
@@ -4879,7 +4882,7 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   }
   for (int i = 1; i <= internal->dim_cum_diag_a_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_diag_a_2; ++j) {
-      state_next[internal->offset_variable_cum_diag_a + i - 1 + internal->dim_cum_diag_a_1 * (j - 1)] = internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1];
+      state_next[internal->offset_variable_cum_diag_a + i - 1 + internal->dim_cum_diag_a_1 * (j - 1)] = cum_diag_a[internal->dim_cum_diag_a_1 * (j - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_I_1; ++i) {
