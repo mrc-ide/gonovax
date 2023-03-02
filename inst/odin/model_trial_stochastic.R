@@ -61,7 +61,7 @@ update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
-screened[, ] <- eta[i] * U[i, j]
+screened[, ] <- eta[i] * U[i, j] * dt
 # vaccination -> no vaccination 'strategies' needed
 
 # waning
