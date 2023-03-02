@@ -4791,7 +4791,7 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   }
   for (int i = 1; i <= internal->dim_n_IA_1; ++i) {
     for (int j = 1; j <= internal->dim_n_IA_2; ++j) {
-      internal->n_IA[i - 1 + internal->dim_n_IA_1 * (j - 1)] = Rf_rbinom(round(internal->n_IAS[internal->dim_n_IAS_1 * (j - 1) + i - 1]), (1 - internal->ves[j - 1]) * internal->psi);
+      internal->n_IA[i - 1 + internal->dim_n_IA_1 * (j - 1)] = Rf_rbinom(round(internal->n_IAS[internal->dim_n_IAS_1 * (j - 1) + i - 1]), (1 - (1 - internal->ves[j - 1]) * internal->psi));
     }
   }
   for (int i = 1; i <= internal->dim_n_Iw_1; ++i) {
