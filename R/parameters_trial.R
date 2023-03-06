@@ -152,7 +152,7 @@ model_params_trial <- function(gono_params_trial = NULL,
 
 create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
 
-   stopifnot(z > 0)
+   stopifnot(z >= 0)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
