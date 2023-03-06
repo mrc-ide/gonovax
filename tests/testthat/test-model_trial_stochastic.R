@@ -462,3 +462,31 @@ test_that("stochasticity has been incorporated", {
   
 })
 
+test_that("waning parameters are being generated correctly", {
+
+ vax <- vax_params_xvw_trial(vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                       dur = 20, n_erlang = 1, stochastic = TRUE)
+
+ # When stochastic = TRUE ...
+   # the waning matrix should only be made up of 1, -1 and 0 (even though rate 
+   # is a draw made with rate 1/20)
+   expect_equal(vax$w, matrix(c(rep(0,4), -1, rep(0,2), 1, 0),
+                            nrow = 3, byrow = TRUE))
+ 
+   #D should be a vector of length 3, the  diagonal of the waning matrix
+   #but with -n_erlang/dur as the value for waning rate (at position 2)
+   expect_equal(vax$D, c(0, -0.05, 0))
+
+ # Edits made to vax_params_xvw_trial should not affect the expected waning maps 
+ # generated for the deterministic trial when stochastic = FALSE
+   
+  vax <- vax_params_xvw_trial(vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                               dur = 20, n_erlang = 1, stochastic = FALSE)
+   expect_equal(vax$w, matrix(c(rep(0, 4), -0.05, rep(0,2), 0.05, 0),
+                                nrow = 3, byrow = TRUE))
+   
+   #D is present as the diagonal of w (will not be used)
+   expect_equal(vax$D, c(0, -0.05, 0))
+
+
+})
