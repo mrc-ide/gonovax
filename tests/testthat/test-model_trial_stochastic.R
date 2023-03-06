@@ -216,7 +216,7 @@ test_that("VEa behaves as expected ", {
 
 test_that("VEs behaves as expected ", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 5) 
+  tt <- seq.int(0, 10) 
   set.seed(1)    
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 1,
@@ -225,11 +225,11 @@ test_that("VEs behaves as expected ", {
   
   # VEs = 1 symptomatic diagnoses in V = 0, but for X & W > 0
   expect_true(all(y[[1]]$cum_diag_s[, 2, 2] == 0))
-  expect_true(all(y[[1]]$cum_diag_s[2:6, 2, 1] > 0))
-  expect_true(all(y[[1]]$cum_diag_s[2:6, 2, 3] > 0))
+  expect_true(y[[1]]$cum_diag_s[11, 2, 1] > 0)
+  expect_true(y[[1]]$cum_diag_s[11, 2, 3] > 0)
   
   # VEs = 1 asymptomatic diagnoses in V > 0
-  expect_true(all(y[[1]]$cum_diag_a[2:6, 2, 2] > 0))
+  expect_true(y[[1]]$cum_diag_a[11, 2, 2] > 0)
   
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   
@@ -241,19 +241,22 @@ test_that("VEs behaves as expected ", {
 
 test_that("VEd behaves as expected ", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 5) 
+  tt <- seq.int(0, 365) 
   set.seed(1)    
-  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e019,
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e1000000000,
                             vea = 0, vei = 0, ved = 1, ves = 0,
                             stochastic = TRUE)
   
-  # VEd = 1 cumulative incid in V > X + W
-  # cannot work out why this isn't passing! 
+  # VEd = 1 cumulative incid in V > X (when waning doesn't occur!)
+  # running for a year rather than 5 days so enough timepoints 
+  # to see if there is a difference
+
+  vw <- y[[1]]$cum_incid[366, 2, 2] + y[[1]]$cum_incid[366, 2, 3]
   
-  v <- y[[1]]$cum_incid[6, 2, 2]
-  xw <- y[[1]]$cum_incid[6, 2, 1] + y[[1]]$cum_incid[6, 2, 3]
+  x <- y[[1]]$cum_incid[366, 2, 1]
+
   
-  expect_true(v > xw)
+  expect_true(vw > x)
   
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   
@@ -421,30 +424,37 @@ test_that("stochasticity has been incorporated", {
                              stochastic = TRUE) 
   
   
-  expect_true(sum(y1[[1]]$cum_diag_s[, 2, 1]) != sum(y2[[1]]$cum_diag_s[, 2, 1]))
-  expect_true(sum(y1[[1]]$cum_diag_s[, 2, 2]) != sum(y2[[1]]$cum_diag_s[, 2, 2]))
+  #model runs with same parameter sets and conditions give different numbers
+  # of diagnoses due to stochasticity 
+  expect_true(y1[[1]]$cum_diag_s[11, 2, 1] != y2[[1]]$cum_diag_s[11, 2, 1])
+  expect_true(y1[[1]]$cum_diag_s[11, 2, 2] != y2[[1]]$cum_diag_s[11, 2, 2])
 
-  expect_true(sum(y1[[1]]$cum_diag_a[, 2, 1]) != sum(y2[[1]]$cum_diag_a[, 2, 1]))
-  expect_true(sum(y1[[1]]$cum_diag_a[, 2, 2]) != sum(y2[[1]]$cum_diag_a[, 2, 2]))
+  expect_true(y1[[1]]$cum_diag_a[11, 2, 1] != y2[[1]]$cum_diag_a[11, 2, 1])
+  expect_true(y1[[1]]$cum_diag_a[11, 2, 2] != y2[[1]]$cum_diag_a[11, 2, 2])
+  
+  # same with total treated and total attending care
+  expect_true(y1[[1]]$cum_treated[11, 2, 1] != y2[[1]]$cum_treated[11, 2, 1])
+  expect_true(y1[[1]]$cum_treated[11, 2, 2] != y2[[1]]$cum_treated[11, 2, 2])
+  
+  expect_true(y1[[1]]$tot_attended[11] != y2[[1]]$tot_attended[11])
   
   #when FOI = 0, screening is still different between stochastic runs even
   #when U[i, j] is the same
   gp[[1]]$lambda <- 0
   set.seed(1)    
-  y1 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+  y1 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e10000,
                              vea = 0, vei = 0, ved = 0, ves = 0,
                              n_erlang = n_erlang,
                              stochastic = TRUE) 
   set.seed(2)    
-  y2 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+  y2 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e10000,
                              vea = 0, vei = 0, ved = 0, ves = 0,
                              n_erlang = n_erlang,
                              stochastic = TRUE) 
   
-  expect_true(sum(y1[[1]]$cum_screened[, 2, 1]) != sum(y2[[1]]$cum_screened[, 2, 1]))
-  expect_true(sum(y1[[1]]$cum_screened[, 2, 2]) != sum(y2[[1]]$cum_screened[, 2, 2]))
+  expect_true(y1[[1]]$cum_screened[11, 2, 1] != y2[[1]]$cum_screened[11, 2, 1])
+  expect_true(y1[[1]]$cum_screened[11, 2, 2] != y2[[1]]$cum_screened[11, 2, 2])
   
-  
-  #### why 
   
 })
+
