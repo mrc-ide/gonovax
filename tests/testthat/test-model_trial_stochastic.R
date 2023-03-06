@@ -438,6 +438,10 @@ test_that("stochasticity has been incorporated", {
   
   expect_true(y1[[1]]$tot_attended[11] != y2[[1]]$tot_attended[11])
   
+  # same with incidence
+  expect_true(y1[[1]]$cum_incid[11, 2, 1] != y2[[1]]$cum_incid[11, 2, 1])
+  expect_true(y1[[1]]$cum_incid[11, 2, 2] != y2[[1]]$cum_incid[11, 2, 2])
+  
   #when FOI = 0, screening is still different between stochastic runs even
   #when U[i, j] is the same
   gp[[1]]$lambda <- 0
