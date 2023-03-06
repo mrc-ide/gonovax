@@ -4759,7 +4759,7 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   state_next[0] = (step + 1) * internal->dt;
   for (int i = 1; i <= internal->dim_screened_1; ++i) {
     for (int j = 1; j <= internal->dim_screened_2; ++j) {
-      internal->screened[i - 1 + internal->dim_screened_1 * (j - 1)] = internal->eta[i - 1] * U[internal->dim_U_1 * (j - 1) + i - 1] * internal->dt;
+      internal->screened[i - 1 + internal->dim_screened_1 * (j - 1)] = Rf_rbinom(round(U[internal->dim_U_1 * (j - 1) + i - 1]), 1 - exp(-(internal->eta[i - 1]) * internal->dt));
     }
   }
   for (int i = 1; i <= internal->dim_n_IAS_1; ++i) {
