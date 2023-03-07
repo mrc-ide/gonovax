@@ -9,7 +9,7 @@
 ##' @param stochastic logical indicating if the run should be made with the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
-##' @export run
+##' @export run_trial
 
 
 run_trial <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
