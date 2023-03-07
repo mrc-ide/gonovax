@@ -496,7 +496,6 @@ output <- c("X", paste0("P", idx), paste0("V", idx), "W", paste0("R", idx), "H")
 
 }
 
-  
 ##' @name set_protection
 ##' @title generates vector which tells the model which strata are under
 ##' vaccine protection and what the value of protection for that strata is
