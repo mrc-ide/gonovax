@@ -42,7 +42,7 @@ n_IS[, ] <- n_IAS[i, j] - n_IA[i, j]
 n_AUT[, ] <- rbinom(A[i, j], p_T_or_U[i, j])
 n_AT[, ] <- rbinom(n_AUT[i, j], r_AT[i, j] / (r_AT[i, j] + r_AU[i, j]))
 n_AU[, ] <- n_AUT[i, j] - n_AT[i, j]
-  
+
 ## Core equations for transitions between compartments:
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
   n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])

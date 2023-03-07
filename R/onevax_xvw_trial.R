@@ -80,7 +80,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     map <- create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur))
     D <- diag(map)
     w <- sign(map)
-  }else{
+  } else {
     w <- create_waning_map_trial(n_vax, i_v, i_w, (n_erlang / dur))
     D <- diag(w)
   }
