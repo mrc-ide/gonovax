@@ -1,3 +1,7 @@
+# gonovax 0.4.9 
+* package now also includes a stochastic version of the xvw_trial model 
+
+
 # gonovax 0.4.8
 * model XPVWRH and XVW_trial can now have 'n' transitions between entering a vaccine-protected stratum and waning to no protection (erlang compartments)
 
