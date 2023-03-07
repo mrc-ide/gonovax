@@ -25,7 +25,7 @@ run_trial(
 
 \item{transform}{= TRUE}
 
-\item{stochastic}{logical indicating if the run should be made with the 
+\item{stochastic}{logical indicating if the run should be made with the
 default deterministic trial model in continuous time or stochastic trial
 model in discrete time}
 }
