@@ -15,10 +15,6 @@ dt <- 1 / steps_per_year
 initial(time) <- 0
 update(time) <- (step + 1) * dt
 
-## assign low and high activity screening rates
-eta[1] <- eta_l
-eta[2] <- eta_h
-
 # individual probabilities of transitioning between infection states
 p_UI[, ] <- 1 - exp(-lambda * (1 - vea[j]) * dt)
 p_ST[, ] <- 1 - exp(-mu * dt)
@@ -26,7 +22,7 @@ p_TU[, ] <- 1 - exp(-rho * dt)
 
 p_A_or_S[, ] <- 1 - exp(-sigma * dt)
 
-r_AT[, ] <- eta[i]
+r_AT[, ] <- eta
 r_AU[, ] <- nu / (1 - ved[j])
 p_T_or_U[, ] <- 1 - exp(- (r_AT[i, j] + r_AU[i, j]) * dt)
 
@@ -61,7 +57,7 @@ update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
-screened[, ] <- rbinom(U[i, j], 1 - exp(-eta[i] *  dt))
+screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
 # vaccination -> no vaccination 'strategies' needed
 
 # waning
@@ -158,9 +154,7 @@ dim(cum_screened)   <- c(n_group, n_vax)
 
 ## Parameters
 
-eta_l     <- user()
-eta_h     <- user()
-
+eta       <- user()
 sigma     <- user()
 psi       <- user()
 nu        <- user()
@@ -178,7 +172,6 @@ D[] <- user()
 
 ## par dimensions
 
-dim(eta)  <- n_group
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
 dim(ves)  <- n_vax
