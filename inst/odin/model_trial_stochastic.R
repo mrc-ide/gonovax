@@ -36,7 +36,7 @@ n_ST[, ] <- rbinom(S[i, j], p_ST[i, j])
 n_TU[, ] <- rbinom(T[i, j], p_TU[i, j])
 
 n_IAS[, ] <- rbinom(I[i, j], p_A_or_S[i, j])
-n_IA[, ] <- rbinom(n_IAS[i, j], (1 - (1 - ves[j]) * psi))
+n_IA[, ] <- rbinom(n_IAS[i, j], 1 - (1 - ves[j]) * psi)
 n_IS[, ] <- n_IAS[i, j] - n_IA[i, j]
 
 n_AUT[, ] <- rbinom(A[i, j], p_T_or_U[i, j])
