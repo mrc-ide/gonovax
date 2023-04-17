@@ -29,7 +29,7 @@ is vaccinated}
 \item{n_erlang}{scalar giving the number of transitions that need to be made
 through vaccine-protected strata until that protection has waned}
 
-\item{N}{integer to assign the total number of individuals in the trial 
+\item{N}{integer to assign the total number of individuals in the trial
 (split equally across the two arms)}
 }
 \value{

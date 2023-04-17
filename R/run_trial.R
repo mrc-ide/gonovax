@@ -1,7 +1,8 @@
 ##' @name run_trial
 ##' @title Run odin model of gonorrhoea vaccine trial with or without
 ##' vaccination
-##' @param tt a numeric vector of times at which the model state is output
+##' @param tt a numeric vector of times at which the model state is output in
+##' years
 ##' @param gono_params a data frame of parameters
 ##' @param init_params = NULL
 ##' @param vax_params = NULL
@@ -23,6 +24,7 @@ run_trial <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
 
   if (stochastic == TRUE) {
     mod <- model_trial_stochastic$new(user = pars, unused_user_action = FALSE)
+    tt <- seq(min(tt)*365, max(tt)*365)
 
   } else {
     mod <- model_trial$new(user = pars, unused_user_action = FALSE)

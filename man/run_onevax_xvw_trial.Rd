@@ -21,7 +21,8 @@ run_onevax_xvw_trial(
 )
 }
 \arguments{
-\item{tt}{a numeric vector of times at which the model state is output}
+\item{tt}{a numeric vector of times at which the model state is output in
+years}
 
 \item{gono_params}{list of gono params for a vaccination trial}
 

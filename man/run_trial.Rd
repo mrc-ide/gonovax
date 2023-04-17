@@ -16,7 +16,8 @@ run_trial(
 )
 }
 \arguments{
-\item{tt}{a numeric vector of times at which the model state is output}
+\item{tt}{a numeric vector of times at which the model state is output in
+years}
 
 \item{gono_params}{a data frame of parameters}
 
@@ -30,7 +31,7 @@ run_trial(
 default deterministic trial model in continuous time or stochastic trial
 model in discrete time}
 
-\item{N}{integer to assign the total number of individuals in the trial 
+\item{N}{integer to assign the total number of individuals in the trial
 (split equally across the two arms)}
 }
 \description{
