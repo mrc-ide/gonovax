@@ -10,7 +10,8 @@ model_params_trial(
   initial_params_trial = NULL,
   vax_params = NULL,
   p_v = 0,
-  n_erlang = 1
+  n_erlang = 1,
+  N = 6e+05
 )
 }
 \arguments{
@@ -27,6 +28,9 @@ is vaccinated}
 
 \item{n_erlang}{scalar giving the number of transitions that need to be made
 through vaccine-protected strata until that protection has waned}
+
+\item{N}{integer to assign the total number of individuals in the trial 
+(split equally across the two arms)}
 }
 \value{
 A list of inputs to the model many of which are fixed and

@@ -9,6 +9,8 @@
 ##' @param stochastic logical indicating if the run should be made with the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
+##' @param N integer to assign the total number of individuals in the trial 
+##' (split equally across the two arms)
 ##' @export run_trial
 
 

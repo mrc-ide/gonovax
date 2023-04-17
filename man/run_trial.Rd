@@ -11,7 +11,8 @@ run_trial(
   init_params = NULL,
   vax_params = NULL,
   transform = TRUE,
-  stochastic = FALSE
+  stochastic = FALSE,
+  N = 6e+05
 )
 }
 \arguments{
@@ -28,6 +29,9 @@ run_trial(
 \item{stochastic}{logical indicating if the run should be made with the
 default deterministic trial model in continuous time or stochastic trial
 model in discrete time}
+
+\item{N}{integer to assign the total number of individuals in the trial 
+(split equally across the two arms)}
 }
 \description{
 Run odin model of gonorrhoea vaccine trial with or without
