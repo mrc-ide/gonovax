@@ -13,9 +13,9 @@
 
 
 run_trial <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
-                transform = TRUE, stochastic = FALSE) {
+                transform = TRUE, stochastic = FALSE, N = 6e5) {
 
-  demographic_params_trial <-  demographic_params_trial()
+  demographic_params_trial <-  demographic_params_trial(N = N)
   ret <- c(demographic_params_trial, gono_params)
   pars <- c(ret, init_params, vax_params)
 

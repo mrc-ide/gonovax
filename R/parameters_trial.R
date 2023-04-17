@@ -54,8 +54,8 @@ check_gono_params_trial <- function(pars) {
 ## sets up total trial size and the proportion that are in the high activity
 ## group
 
-demographic_params_trial <- function() {
-  list(N0 = 6e5,
+demographic_params_trial <- function(N = 6e5) {
+  list(N0 = N,
        q = c(0, 1)
   )
 }
@@ -111,10 +111,10 @@ model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
                         initial_params_trial = NULL,
                         vax_params = NULL, p_v = 0,
-                        n_erlang = 1) {
+                        n_erlang = 1, N = 6e5) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <-
-    demographic_params_trial  %||% demographic_params_trial()
+    demographic_params_trial  %||% demographic_params_trial(N = N)
   ret <- c(demographic_params_trial, gono_params_trial)
 
   #check n_erlang supplied im model_params_trial() is same as
