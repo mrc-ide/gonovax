@@ -15,7 +15,7 @@ dt <- 1 / steps_per_year
 initial(time) <- 0
 update(time) <- (step + 1) * dt
 
-## assign low and high activity etas to the correct level
+## assign low and high activity screening rates
 eta[1] <- eta_l
 eta[2] <- eta_h
 
