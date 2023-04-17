@@ -20,7 +20,7 @@ eta[1] <- eta_l
 eta[2] <- eta_h
 
 # individual probabilities of transitioning between infection states
-p_UI[, ] <- 1 - exp(- (lambda * (1 - vea[j]) * dt))
+p_UI[, ] <- 1 - exp(-lambda * (1 - vea[j]) * dt)
 p_ST[, ] <- 1 - exp(-mu * dt)
 p_TU[, ] <- 1 - exp(-rho * dt)
 
