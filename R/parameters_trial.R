@@ -101,7 +101,7 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
 ##' @param initial_params_trial A list of starting conditions
 ##' @param n_erlang scalar giving the number of transitions that need to be made
 ##' through vaccine-protected strata until that protection has waned
-##' @param N integer to assign the total number of individuals in the trial 
+##' @param N integer to assign the total number of individuals in the trial
 ##' (split equally across the two arms)
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
