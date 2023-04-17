@@ -31,7 +31,7 @@ transform0_trial <- function(pars) {
   pars <- as.list(pars)              #converts each row of csv into list
   check_gono_params_trial(pars)
   with(pars, {
-    assert_scalar_positive(eta_h)
+    assert_scalar_positive(eta)
   })
 
   pars
