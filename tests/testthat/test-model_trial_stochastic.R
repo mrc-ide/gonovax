@@ -500,3 +500,22 @@ test_that("waning parameters are being generated correctly", {
 
 
 })
+
+test_that("model outputs for a basic run haven't changed between updates", {
+
+gp <- gono_params_trial(1)[1]
+n_erlang <- 1
+tt <- seq.int(0, 10)
+set.seed(1)
+y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                           vea = 0, vei = 0, ved = 0, ves = 0,
+                           n_erlang = n_erlang,
+                           stochastic = TRUE)
+
+expect_equal(y[[1]]$U,
+    array(c(rep(0, 11), 300000, 298815, 297591, 296378, 295159, 293984, 292849,
+            291682, 290503, 289368, 288252, rep(0, 11), 300000, 298699, 297499,
+            296313, 295124, 293844, 292641, 291449, 290315, 289208, 288109,
+            rep(0, 12), 1, 2, 2, 3, 4, 4, 5, 6, 6, 6), dim = c(11, 2, 3)))
+
+})
