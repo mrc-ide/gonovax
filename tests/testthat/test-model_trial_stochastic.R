@@ -538,3 +538,33 @@ test_that("correct number of individuals are set up in each trial arm", {
   expect_true(all(y[[1]]$N[, 2, 3] == 0))
 
 })
+
+
+test_that("model being run in days, but output in years is correct", {
+
+#NB stochastic model always runs in days, but we made changes to the code
+#so that we only output in years (same as the deterministic trial model)
+#want to check that we're pulling out a correct subset of these days which were
+#run i.e the days which are the last day of each year = final dataframe 
+#gives output of model in years
+
+gp <- gono_params_trial(1)[1]
+n_erlang <- 1
+tt <- seq.int(0, 10)
+set.seed(1)
+
+y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE)
+
+ #values of 't' are the days supplied to the model which are run
+ #values of 'time' are t/365 to give the years
+ #we should be pulling out t which are increments of 365
+ #therefore we should be pulling out time which is whole numbers from 0 to 10
+ #if 'time' isn't an integer the code for pulling out particular days is wrong
+
+ expect_equal(y[[1]]$t, seq(0, 3650, 365))
+ expect_equal(y[[1]]$time, seq(0, 10))
+
+})
