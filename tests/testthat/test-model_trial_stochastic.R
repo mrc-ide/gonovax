@@ -545,7 +545,7 @@ test_that("model being run in days, but output in years is correct", {
 #NB stochastic model always runs in days, but we made changes to the code
 #so that we only output in years (same as the deterministic trial model)
 #want to check that we're pulling out a correct subset of these days which were
-#run i.e the days which are the last day of each year = final dataframe 
+#run i.e the days which are the last day of each year = final dataframe
 #gives output of model in years
 
 gp <- gono_params_trial(1)[1]
