@@ -24,13 +24,33 @@ run_trial <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
 
   if (stochastic == TRUE) {
     mod <- model_trial_stochastic$new(user = pars, unused_user_action = FALSE)
-    tt <- seq(min(tt)*365, max(tt)*365)
+    tt <- seq(min(tt) * 365, max(tt) * 365)
 
   } else {
     mod <- model_trial$new(user = pars, unused_user_action = FALSE)
   }
 
   y <- mod$run(tt)
+
+  #if stochastic, only keep outputs for whole years
+    if (stochastic == TRUE) {
+
+      #obtain row numbers where time is 0 or full year
+      tt_output <- (tt[!tt %% 365]) + 1
+
+      #create empty array
+      y_output <- array(data = NA, dim = c(length(tt_output), dim(y)[2]))
+      colnames(y_output) <- as.list(colnames(y))
+
+      #populate array with y outputs for years only
+      for (i in tt_output) {
+      y_output[which(tt_output == i), ] <-  y[i, ]
+      }
+
+      #overwrite large original output array
+
+      y <- y_output
+    }
 
   if (transform) {
     y <- mod$transform_variables(y)
