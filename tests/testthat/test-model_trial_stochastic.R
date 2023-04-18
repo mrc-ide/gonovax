@@ -194,8 +194,8 @@ test_that("VEa behaves as expected ", {
   # VEa = 1, no infections in V, X >0, W >0 (after t=0)
 
   expect_true(all(y[[1]]$cum_incid[, 2, 2] == 0))
-  expect_true(all(y[[1]]$cum_incid[2:366, 2, 1] > 0))
-  expect_true(y[[1]]$cum_incid[366, 2, 3] > 0)
+  expect_true(all(y[[1]]$cum_incid[2:2, 2, 1] > 0))
+  expect_true(y[[1]]$cum_incid[2, 2, 3] > 0)
 
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
 
@@ -212,9 +212,9 @@ test_that("VEa behaves as expected ", {
                             vea = 0, vei = 0, ved = 0, ves = 0,
                             stochastic = TRUE)
 
-  x <- round(as.numeric(y[[1]]$cum_incid[366, 2, 1]), -2)
-  vw <- round(as.numeric(y[[1]]$cum_incid[366, 2, 2]) +
-    as.numeric(y[[1]]$cum_incid[366, 2, 3]), -2)
+  x <- round(as.numeric(y[[1]]$cum_incid[2, 2, 1]), -2)
+  vw <- round(as.numeric(y[[1]]$cum_incid[2, 2, 2]) +
+    as.numeric(y[[1]]$cum_incid[2, 2, 3]), -2)
 
 
   expect_true(all(unlist(y) >= 0))
@@ -234,11 +234,11 @@ test_that("VEs behaves as expected ", {
 
   # VEs = 1 symptomatic diagnoses in V = 0, but for X & W > 0
   expect_true(all(y[[1]]$cum_diag_s[, 2, 2] == 0))
-  expect_true(y[[1]]$cum_diag_s[366, 2, 1] > 0)
-  expect_true(y[[1]]$cum_diag_s[366, 2, 3] > 0)
+  expect_true(y[[1]]$cum_diag_s[2, 2, 1] > 0)
+  expect_true(y[[1]]$cum_diag_s[2, 2, 3] > 0)
 
   # VEs = 1 asymptomatic diagnoses in V > 0
-  expect_true(y[[1]]$cum_diag_a[366, 2, 2] > 0)
+  expect_true(y[[1]]$cum_diag_a[2, 2, 2] > 0)
 
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
 
@@ -260,9 +260,9 @@ test_that("VEd behaves as expected ", {
   # running for a year rather than 5 days so enough timepoints
   # to see if there is a difference
 
-  vw <- y[[1]]$cum_incid[366, 2, 2] + y[[1]]$cum_incid[366, 2, 3]
+  vw <- y[[1]]$cum_incid[2, 2, 2] + y[[1]]$cum_incid[2, 2, 3]
 
-  x <- y[[1]]$cum_incid[366, 2, 1]
+  x <- y[[1]]$cum_incid[2, 2, 1]
 
 
   expect_true(vw > x)
@@ -290,8 +290,8 @@ test_that("VEi behaves as expected ", {
 
   # Incidence in V is the same for VEi = 0 and VEi = 1
 
-  expect_equal(y0[[1]]$cum_incid[366, 2, 2],
-               y[[1]]$cum_incid[366, 2, 2])
+  expect_equal(y0[[1]]$cum_incid[2, 2, 2],
+               y[[1]]$cum_incid[2, 2, 2])
 
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
 
@@ -513,9 +513,7 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                            stochastic = TRUE)
 
 expect_equal(y[[1]]$U,
-    array(c(rep(0, 11), 300000, 298815, 297591, 296378, 295159, 293984, 292849,
-            291682, 290503, 289368, 288252, rep(0, 11), 300000, 298699, 297499,
-            296313, 295124, 293844, 292641, 291449, 290315, 289208, 288109,
-            rep(0, 12), 1, 2, 2, 3, 4, 4, 5, 6, 6, 6), dim = c(11, 2, 3)))
+    array(c(rep(0, 2), 300000, 249077, rep(0, 2), 300000, 248844,
+            rep(0, 3), 237), dim = c(2, 2, 3)))
 
 })
