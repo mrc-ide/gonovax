@@ -17,7 +17,8 @@ run_onevax_xvw_trial(
   ves = 0,
   p_v = 0.5,
   n_erlang = 1,
-  stochastic = FALSE
+  stochastic = FALSE,
+  N = 6e+05
 )
 }
 \arguments{
@@ -53,6 +54,9 @@ made}
 \item{stochastic}{logical indicating if the run should be made with the
 default deterministic trial model in continuous time or stochastic trial
 model in discrete time}
+
+\item{N}{integer to assign the total number of individuals in the trial
+(split equally across the two arms)}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

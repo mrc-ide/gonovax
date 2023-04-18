@@ -517,3 +517,24 @@ expect_equal(y[[1]]$U,
             rep(0, 3), 237), dim = c(2, 2, 3)))
 
 })
+
+test_that("correct number of individuals are set up in each trial arm", {
+
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 1)
+  set.seed(1)
+
+  N = 500
+
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            N = N)
+
+  expect_true(all(y[[1]]$N[, 2, 1] == N/2))
+  expect_true(all(y[[1]]$N[, 2, 2] == N/2))
+  expect_true(all(y[[1]]$N[, 2, 3] == 0))
+
+})

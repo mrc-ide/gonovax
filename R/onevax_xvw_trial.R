@@ -123,6 +123,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param stochastic logical indicating if the run should be made with the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
+##' @param N integer to assign the total number of individuals in the trial
+##' (split equally across the two arms)
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
 ##' @export
@@ -132,7 +134,8 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0,
                            p_v = 0.5, n_erlang = 1,
-                           stochastic = FALSE) {
+                           stochastic = FALSE, 
+                           N = 6e05) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
@@ -143,7 +146,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                     n_erlang = n_erlang, stochastic = stochastic)
 
   if (is.null(initial_params_trial)) {
-    pars <- lapply(gono_params, model_params_trial)
+    pars <- lapply(gono_params, model_params_trial, N = N)
     init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
                              p_v = p_v, n_erlang = n_erlang)
   }
@@ -152,7 +155,8 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
              init_params = init_params_trial,
              vax_params = vax_params,
              stochastic = stochastic,
-             MoreArgs = list(tt = tt))
+             MoreArgs = list(tt = tt),
+             N = N)
 
   ret
 }
