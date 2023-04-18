@@ -525,7 +525,7 @@ test_that("correct number of individuals are set up in each trial arm", {
   tt <- seq.int(0, 1)
   set.seed(1)
 
-  N = 500
+  N <- 500
 
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0,
@@ -533,8 +533,8 @@ test_that("correct number of individuals are set up in each trial arm", {
                             stochastic = TRUE,
                             N = N)
 
-  expect_true(all(y[[1]]$N[, 2, 1] == N/2))
-  expect_true(all(y[[1]]$N[, 2, 2] == N/2))
+  expect_true(all(y[[1]]$N[, 2, 1] == N / 2))
+  expect_true(all(y[[1]]$N[, 2, 2] == N / 2))
   expect_true(all(y[[1]]$N[, 2, 3] == 0))
 
 })

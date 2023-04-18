@@ -134,7 +134,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0,
                            p_v = 0.5, n_erlang = 1,
-                           stochastic = FALSE, 
+                           stochastic = FALSE,
                            N = 6e05) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
