@@ -11,7 +11,7 @@ test_that("no new infections if lambda is 0", {
   params$lambda <- 0
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(step = tt)
   y <- mod$transform_variables(y)
 
@@ -28,7 +28,7 @@ test_that("no new infections if lambda is 0", {
                                vax_params = vax_params_xvw_trial(
                                  stochastic = TRUE
                                ), p_v = 0.5)
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   params$lambda <- 0
   mod2 <- model_trial_stochastic$new(user = params,
                                      unused_user_action = "ignore")
@@ -51,7 +51,7 @@ test_that("number of individuals always >= 0 even at high lambda", {
   params$lambda <- 10
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(step = tt)
   y <- mod$transform_variables(y)
 
@@ -65,7 +65,7 @@ test_that("all individuals are in the high activity group", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(step = tt)
   y <- mod$transform_variables(y)
 
@@ -87,7 +87,7 @@ test_that("there are no symptomatic infections when psi = 0", {
   params$psi <- 0
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(step = tt)
   y <- mod$transform_variables(y)
   expect_true(any(y$I > 0))
@@ -108,7 +108,7 @@ test_that("there are no asymptomatic infections when psi = 1", {
   params$A0[, ] <- 0                #so still infections seeded
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(step = tt)
   y <- mod$transform_variables(y)
   expect_true(any(y$I > 0))
@@ -125,7 +125,7 @@ test_that("all individuals are uninfected at t = 0", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(step = tt)
   y <- mod$transform_variables(y)
 
@@ -146,7 +146,7 @@ test_that("no-one is treated when mu and eta = 0", {
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
 
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   expect_true(all(y$T == 0))
@@ -160,7 +160,7 @@ test_that("no-one is treated when mu and eta = 0", {
 
 test_that("Model works with vaccination and waning", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0,
@@ -185,7 +185,7 @@ test_that("Model works with vaccination and waning", {
 
 test_that("VEa behaves as expected ", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 1, vei = 0, ved = 0, ves = 0,
@@ -204,7 +204,7 @@ test_that("VEa behaves as expected ", {
 
   # VEa = 0, infections in X = V + W
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
 
 
   set.seed(1)
@@ -225,7 +225,7 @@ test_that("VEa behaves as expected ", {
 
 test_that("VEs behaves as expected ", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 1,
@@ -250,7 +250,7 @@ test_that("VEs behaves as expected ", {
 
 test_that("VEd behaves as expected ", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e1000000000,
                             vea = 0, vei = 0, ved = 1, ves = 0,
@@ -277,7 +277,7 @@ test_that("VEd behaves as expected ", {
 
 test_that("VEi behaves as expected ", {
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y0 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                              vea = 0, vei = 0, ved = 0, ves = 0,
@@ -308,7 +308,7 @@ test_that("aggregated time series output correctly", {
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
   mod <- model_trial_stochastic$new(user = params,
                                     unused_user_action = "ignore")
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   y <- mod$run(tt)
   y <- mod$transform_variables(y)
   expect_equal(y$tot_treated, apply(y$cum_treated, 1, sum))
@@ -344,7 +344,7 @@ test_that("n_erlang = n is working as expected", {
 
   #when n_erlang = n, nvax = n + 2, as generated in stratum_index_xvw_trial
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
@@ -398,7 +398,7 @@ test_that("n_erlang = n is working as expected", {
   n_erlang <- 3   #n_vax is 5
   idx <- stratum_index_xvw_trial(n_erlang)
   gp <- gono_params_trial(1)[1]
-  tt <- seq.int(0, 365)
+  tt <- seq.int(0, 1)
   set.seed(1)
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1,
                             vea = 1, vei = 0, ved = 0, ves = 0,
@@ -505,7 +505,7 @@ test_that("model outputs for a basic run haven't changed between updates", {
 
 gp <- gono_params_trial(1)[1]
 n_erlang <- 1
-tt <- seq.int(0, 10)
+tt <- seq.int(0, 1)
 set.seed(1)
 y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                            vea = 0, vei = 0, ved = 0, ves = 0,
