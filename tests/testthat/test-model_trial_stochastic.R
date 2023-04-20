@@ -540,13 +540,12 @@ test_that("correct number of individuals are set up in each trial arm", {
 })
 
 
-test_that("model being run in days, but output in years is correct", {
+test_that("model can be output more frequently than each year", {
 
-#NB stochastic model always runs in days, but we made changes to the code
-#so that we only output in years (same as the deterministic trial model)
-#want to check that we're pulling out a correct subset of these days which were
-#run i.e the days which are the last day of each year = final dataframe
-#gives output of model in years
+#NB stochastic model always runs in days but tt is supplied in year form
+# e.g c(0, 1, 2) same as in the deterministic trial, but gets converted to day
+# form under the hood e.g c(0, 365, 730)
+# testing this and that we can choose to output every 6 months or every quarter
 
 gp <- gono_params_trial(1)[1]
 n_erlang <- 1
@@ -558,13 +557,36 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             n_erlang = n_erlang,
                             stochastic = TRUE)
 
- #values of 't' are the days supplied to the model which are run
  #values of 'time' are t/365 to give the years
- #we should be pulling out t which are increments of 365
- #therefore we should be pulling out time which is whole numbers from 0 to 10
- #if 'time' isn't an integer the code for pulling out particular days is wrong
+ #values of 't' are increments of 365
+ #time should be whole numbers from 0 to 10
 
  expect_equal(y[[1]]$t, seq(0, 3650, 365))
  expect_equal(y[[1]]$time, seq(0, 10))
 
+
+ #every 6 months
+tt <- seq(0, 2, 1 / 2)
+set.seed(1)
+
+y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                          vea = 0, vei = 0, ved = 0, ves = 0,
+                          n_erlang = n_erlang,
+                          stochastic = TRUE)
+
+ expect_equal(y[[1]]$t, round(seq(0, 730, 365 / 2)))
+   expect_equal(round(y[[1]]$time, 2), seq(0, 2, 1 / 2))
+
+ #every 3 months
+tt <- seq(0, 2, 1 / 4)
+set.seed(1)
+y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang,
+                             stochastic = TRUE)
+
+  expect_equal(y[[1]]$t, round(seq(0, 730, 365 / 4)))
+    expect_equal(round(y[[1]]$time, 2), seq(0, 2, 1 / 4))
+
 })
+
