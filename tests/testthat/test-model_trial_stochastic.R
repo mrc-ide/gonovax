@@ -589,4 +589,3 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
     expect_equal(round(y[[1]]$time, 2), seq(0, 2, 1 / 4))
 
 })
-
