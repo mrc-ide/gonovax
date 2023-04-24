@@ -16,11 +16,14 @@ run_onevax_xvw_trial(
   ved = 0,
   ves = 0,
   p_v = 0.5,
-  n_erlang = 1
+  n_erlang = 1,
+  stochastic = FALSE,
+  N = 6e+05
 )
 }
 \arguments{
-\item{tt}{a numeric vector of times at which the model state is output}
+\item{tt}{a numeric vector of times at which the model state is output in
+years}
 
 \item{gono_params}{list of gono params for a vaccination trial}
 
@@ -46,8 +49,14 @@ efficacy of the vaccine against symptoms (between 0-1)}
 is 0.5.}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned}
+made}
+
+\item{stochastic}{logical indicating if the run should be made with the
+default deterministic trial model in continuous time or stochastic trial
+model in discrete time}
+
+\item{N}{integer to assign the total number of individuals in the trial
+(split equally across the two arms)}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

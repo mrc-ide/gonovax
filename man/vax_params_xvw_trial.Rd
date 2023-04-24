@@ -11,7 +11,8 @@ vax_params_xvw_trial(
   ved = 0,
   ves = 0,
   dur = 1000,
-  n_erlang = 1
+  n_erlang = 1,
+  stochastic = FALSE
 )
 }
 \arguments{
@@ -30,7 +31,11 @@ vax_params_xvw_trial(
 \item{dur}{scalar indicating duration of the vaccine (in years)}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
- made
+made}
+
+\item{stochastic}{logical indicating if the parameters are for the
+default deterministic trial model in continuous time or stochastic trial
+model in discrete time
 through vaccine-protected strata until that protection has waned}
 }
 \value{

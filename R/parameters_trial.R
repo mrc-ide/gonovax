@@ -31,7 +31,7 @@ transform0_trial <- function(pars) {
   pars <- as.list(pars)              #converts each row of csv into list
   check_gono_params_trial(pars)
   with(pars, {
-    assert_scalar_positive(eta_h)
+    assert_scalar_positive(eta)
   })
 
   pars
@@ -54,8 +54,8 @@ check_gono_params_trial <- function(pars) {
 ## sets up total trial size and the proportion that are in the high activity
 ## group
 
-demographic_params_trial <- function() {
-  list(N0 = 6e5,
+demographic_params_trial <- function(N = 6e5) {
+  list(N0 = N,
        q = c(0, 1)
   )
 }
@@ -101,6 +101,8 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
 ##' @param initial_params_trial A list of starting conditions
 ##' @param n_erlang scalar giving the number of transitions that need to be made
 ##' through vaccine-protected strata until that protection has waned
+##' @param N integer to assign the total number of individuals in the trial
+##' (split equally across the two arms)
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -111,10 +113,10 @@ model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
                         initial_params_trial = NULL,
                         vax_params = NULL, p_v = 0,
-                        n_erlang = 1) {
+                        n_erlang = 1, N = 6e5) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <-
-    demographic_params_trial  %||% demographic_params_trial()
+    demographic_params_trial  %||% demographic_params_trial(N = N)
   ret <- c(demographic_params_trial, gono_params_trial)
 
   #check n_erlang supplied im model_params_trial() is same as
@@ -152,7 +154,7 @@ model_params_trial <- function(gono_params_trial = NULL,
 
 create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
 
-   stopifnot(z > 0)
+   stopifnot(z >= 0)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))

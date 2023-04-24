@@ -18,6 +18,7 @@ vax_params0 <- function() {
        ves = 0,
        vei = 0,
        w = as.matrix(0),
+       D = 0,
        vax_t = c(0, 99),
        vax_y = c(0, 0))
 }

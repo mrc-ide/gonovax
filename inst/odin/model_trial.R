@@ -9,10 +9,6 @@
 n_group <- 2
 n_vax   <- user(1)
 
-## assign low and high activity etas to the correct level
-eta[1] <- eta_l
-eta[2] <- eta_h
-
 ## Core equations for transitions between compartments:
 
 deriv(U[, ]) <-  - n_UI[i, j] +
@@ -33,11 +29,11 @@ deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 n_UI[, ]     <- lambda * (1 - vea[j]) * U[i, j]  # force of infection constant
-n_AT[, ]     <- eta[i] * A[i, j]                 # in trial model
+n_AT[, ]     <- eta * A[i, j]                 # in trial model
 n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
-screened[, ] <- eta[i] * U[i, j]
+screened[, ] <- eta * U[i, j]
 
 # vaccination -> no vaccination 'strategies' needed
 
@@ -110,8 +106,7 @@ dim(cum_screened)   <- c(n_group, n_vax)
 
 ## Parameters
 
-eta_l     <- user()
-eta_h     <- user()
+eta       <- user()
 
 sigma     <- user()
 psi       <- user()
@@ -129,7 +124,6 @@ w[, ]    <- user()
 
 ## par dimensions
 
-dim(eta)  <- n_group
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
 dim(ves)  <- n_vax
