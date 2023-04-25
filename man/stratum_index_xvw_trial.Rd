@@ -4,11 +4,17 @@
 \alias{stratum_index_xvw_trial}
 \title{Generate the indices of all xvw trial strata}
 \usage{
-stratum_index_xvw_trial(n_erlang)
+stratum_index_xvw_trial(n_erlang, dh = 1)
 }
 \arguments{
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
+
+\item{dh}{integer giving the number of each X, V(erlang), and W stratum,
+allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1, 
+there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to 
+never-diagnosed individuals and 'b' is for individuals diagnosed at least 
+once.}
 }
 \value{
 A list of strata with their indices

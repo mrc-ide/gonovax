@@ -166,16 +166,21 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 ##' @title Generate the indices of all xvw trial strata
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
+##' @param dh integer giving the number of each X, V(erlang), and W stratum,
+##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1, 
+##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to 
+##' never-diagnosed individuals and 'b' is for individuals diagnosed at least 
+##' once.
 ##' @return A list of strata with their indices
 ##' @export
 
-stratum_index_xvw_trial <- function(n_erlang) {
+stratum_index_xvw_trial <- function(n_erlang, dh = 1) {
 
-  ret <- list(X = 1)
+  ret <- list(X = seq(1, dh))
 
-    ret$V <- max(ret$X) + seq_len(n_erlang)
-    ret$W <- max(ret$V) + 1
-    ret$n_vax <- ret$W
+    ret$V <- max(ret$X) + seq_len(n_erlang * dh)
+    ret$W <- seq(max(ret$V) + 1, max(ret$V) + dh)
+    ret$n_vax <- max(ret$W)
 
   ret
 }
