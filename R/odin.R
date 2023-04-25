@@ -266,8 +266,9 @@ model_trial_stochastic_ <- R6::R6Class(
     cfuns = list(
       rhs_dde = "model_trial_stochastic_rhs_dde"),
     dll = "gonovax",
-    user = c("A0", "D", "eta", "I0", "lambda", "mu", "nu", "psi", "rho",
-             "S0", "sigma", "T0", "U0", "vea", "ved", "ves", "w", "n_vax"),
+    user = c("A0", "D", "diag_rec", "eta", "I0", "lambda", "mu", "nu", "psi",
+             "rho", "S0", "sigma", "T0", "U0", "vea", "ved", "ves", "w",
+             "n_vax"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
