@@ -192,7 +192,10 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
              MoreArgs = list(tt = tt),
              N = N)
 
+  # name outputs
+  ret <- lapply(ret, name_outputs_trial, gen_trial_labels(n_erlang, dh))
   ret
+  
 }
 
 
@@ -217,4 +220,43 @@ stratum_index_xvw_trial <- function(n_erlang, dh = 1) {
     ret$n_vax <- max(ret$W)
 
   ret
+}
+
+##' @name gen_trial_labels
+##' @title generates the appropriate strata labels for the number of strata
+##' in the model, which depends on the value given to n_erlang and diagnosis
+##' history levels desired (dh)
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made through vaccine-protected strata until that protection has waned
+##' @param dh integer giving the number of levels of diagnosis history for 
+##' each X, V(*n_erlang), and W stratum
+##' @return a character vector of length n_vax containing strata labels
+##' @export
+gen_trial_labels <- function(n_erlang = 1, dh = 1) {
+
+  idx <- seq_len(n_erlang)
+  diag_hist <- paste0(".", as.roman(seq_len(dh)))
+
+  output <- c(paste0("X", diag_hist),
+              paste(paste0("V", rep(idx, each = dh)),
+                    rep(diag_hist, n_erlang), sep = ""),
+              paste0("W", diag_hist))
+
+  output
+
+}
+
+name_outputs_trial <- function(res, strata_names) {
+  
+  group_names <- c("L", "H")
+  state_names <- c("U", "I", "A", "S", "T", "N",
+                   "cum_incid", "cum_diag_a", "cum_diag_s",
+                   "cum_treated", "cum_screened")
+
+  for (nm in state_names) {
+
+    dimnames(res[[nm]]) <- list(NULL, group_names, strata_names)
+  }
+
+  res
 }
