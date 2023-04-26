@@ -5,20 +5,25 @@
 ##' @param pars A parameter list containing `N0`, and `q` elements.
 ##' @param p_v scalar giving proportion of the trial cohort vaccinated
 ##' @param n_erlang integer giving the number of transitions that need to be
-##'  made
-##' through vaccine-protected strata until that protection has waned
+##'  made through vaccine-protected strata until that protection has waned
+##' @param dh integer giving the number of each X, V(erlang), and W stratum,
+##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1, 
+##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to 
+##' never-diagnosed individuals and 'b' is for individuals diagnosed at least 
+##' once.
 ##' @return A list of initial conditions.
 ##' @export
 
-initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
-
+initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
+                                     dh = 1) {
   assert_scalar_unit_interval(p_v)
 
   # XVW n_vax = 3, if n_erlang = 1, this is the same, if n_erlang > 1 this
   # needs to be accounted for with additional strata
-  n_vax <- stratum_index_xvw_trial(n_erlang)$n_vax
-  cov <- c(1 - p_v, p_v, rep(0, n_erlang - 1), 0)
-  initial_params_trial(pars, n_vax, cov)
+  n_vax <- stratum_index_xvw_trial(n_erlang, dh)$n_vax
+  cov <- c(1 - p_v, rep(0, dh - 1), p_v, rep(0, (dh * n_erlang) - 1),
+           rep(0, dh))
+  initial_params_trial(pars, n_vax, cov, dh)
 }
 
 ## sets up vaccination efficacies, who experiences the effects of vaccination,
@@ -42,10 +47,16 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1) {
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
 ##' through vaccine-protected strata until that protection has waned
+##' @param dh integer giving the number of each X, V(erlang), and W stratum,
+##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1, 
+##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to 
+##' never-diagnosed individuals and 'b' is for individuals diagnosed at least 
+##' once.
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                           dur = 1e3, n_erlang = 1, stochastic = FALSE) {
+                           dur = 1e3, n_erlang = 1, stochastic = FALSE,
+                           dh = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -54,7 +65,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_positive(dur)
 
   # generate indices for all strata and
-  idx <- stratum_index_xvw_trial(n_erlang)
+  idx <- stratum_index_xvw_trial(n_erlang, dh)
 
   # waned vaccinees move through erlang compartments until they reach
   # the final waned compartment with no protection
@@ -69,10 +80,26 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
    i_v <- idx$V
 
   # strata that individuals wane to
-   i_w <- idx$V + 1
+   i_w <- c(idx$V[-(1:dh)], idx$W)
+   
+  # diagnosed individuals move to the next diagnosis-history stratum (if 
+  # dh > 1). These history strata are the same in their characteristics as the
+  # stratum the individual moved from e.g Va and Vb both experience protection
+  # and waning rate the same. This is for downstream calculation of person-years
+  # exposed etc.
+   
+  # diagnosed from
+  i_eligible <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 0]
 
+  # diagnosed to
+  i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 1]
+  
+  # create diagnosis history mapping
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(1,1), i_eligible, i_p,
+                           set_vbe = FALSE, idx)
+  
   # compartments to which vaccine efficacy applies
-  ve <- c(0, rep(1, n_erlang), 0)
+  ve <- c(rep(0, dh), rep(1, n_erlang * dh), rep(0, dh))
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   # create waning map
@@ -92,7 +119,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        ved   = ved * ve,
        ves   = ves * ve,
        w     = w,
-       D     = D
+       D     = D,
+       diag_rec = diag_rec
   )
 }
 
@@ -125,6 +153,11 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' model in discrete time
 ##' @param N integer to assign the total number of individuals in the trial
 ##' (split equally across the two arms)
+##' @param dh integer giving the number of each X, V(erlang), and W stratum,
+##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1, 
+##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to 
+##' never-diagnosed individuals and 'b' is for individuals diagnosed at least 
+##' once.
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
 ##' @export
@@ -135,7 +168,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                            vea = 0, vei = 0, ved = 0, ves = 0,
                            p_v = 0.5, n_erlang = 1,
                            stochastic = FALSE,
-                           N = 6e05) {
+                           N = 6e05, dh = 1) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
@@ -143,12 +176,13 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
-                    n_erlang = n_erlang, stochastic = stochastic)
+                    n_erlang = n_erlang, stochastic = stochastic,
+                    dh = dh)
 
   if (is.null(initial_params_trial)) {
-    pars <- lapply(gono_params, model_params_trial, N = N)
+    pars <- lapply(gono_params, model_params_trial, N = N, dh = dh)
     init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
-                             p_v = p_v, n_erlang = n_erlang)
+                             p_v = p_v, n_erlang = n_erlang, dh = dh)
   }
 
   ret <- Map(run_trial, gono_params = gono_params,
