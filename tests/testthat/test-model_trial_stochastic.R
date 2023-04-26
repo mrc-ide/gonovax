@@ -514,7 +514,9 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
 
 expect_equal(y[[1]]$U,
     array(c(rep(0, 2), 300000, 249077, rep(0, 2), 300000, 248844,
-            rep(0, 3), 237), dim = c(2, 2, 3)))
+            rep(0, 3), 237), dim = c(2, 2, 3), dimnames = list(NULL,
+                                                      c("L", "H"),
+                                                      c("X.I", "V1.I", "W.I"))))
 
 })
 
