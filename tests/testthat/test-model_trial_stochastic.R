@@ -343,6 +343,7 @@ test_that("expected cumulative outputs are cumulative", {
 test_that("n_erlang = n is working as expected", {
 
   #when n_erlang = n, nvax = n + 2, as generated in stratum_index_xvw_trial
+  #(for dh = 1 only)
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 1)
   set.seed(1)
@@ -539,6 +540,21 @@ test_that("correct number of individuals are set up in each trial arm", {
   expect_true(all(y[[1]]$N[, 2, 2] == N / 2))
   expect_true(all(y[[1]]$N[, 2, 3] == 0))
 
+  # for dh > 1
+
+  dh <- 3
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            N = N, dh = dh)
+
+  # N/2 in X.I and V1.I for t = 0
+  expect_true(all(y[[1]]$N[1, 2, c(1, 4)] == N / 2))
+
+  # 0 elsewhere 
+  expect_true(all(y[[1]]$N[1, 2, c(2, 3, 5:9)] == 0))
+
 })
 
 
@@ -589,5 +605,108 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
 
   expect_equal(y[[1]]$t, round(seq(0, 730, 365 / 4)))
     expect_equal(round(y[[1]]$time, 2), seq(0, 2, 1 / 4))
+
+})
+
+test_that("for dh > 1, total N summed over X or V+W is the same and correct", {
+  
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 5)
+  set.seed(1)
+  dh <- 3
+  N <- 6e+05
+  
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e03,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            dh = dh, N = N)
+  
+  #X.I, X.II, X.III
+  expect_equal(rowSums(y[[1]]$N[, 2, 1:3]), rep(N/2, length(tt)))
+    
+  #V1.I, V1.II, V1.III, W.I, W.II, WIII
+  expect_equal(rowSums(y[[1]]$N[, 2, 4:9]), rep(N/2, length(tt)))
+  
+  # and for n_erlang > 1
+  n_erlang <- 2
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e03,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            dh = dh, N = N)
+  
+  #X.I, X.II, X.III
+  expect_equal(rowSums(y[[1]]$N[, 2, 1:3]), rep(N/2, length(tt)))
+  expect_equal(rowSums(y[[1]]$N[, 2, 4:12]), rep(N/2, length(tt)))
+  
+})
+
+test_that("for dh > 1, the number treated = the number recorded as diagnosed", {
+  
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 5)
+  set.seed(1)
+  dh <- 2
+  N <- 6e+05
+  
+  #no waning for simplicity
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            dh = dh, N = N)  
+  
+  # number treated in '.I' becomes the number in '.II'
+  expect_true(all(y[[1]]$cum_treated[, 2, 1] == y[[1]]$N[, 2, 2]))
+  expect_true(all(y[[1]]$cum_treated[, 2, 3] == y[[1]]$N[, 2, 4]))
+  expect_true(all(y[[1]]$cum_treated[, 2, 5] == y[[1]]$N[, 2, 6]))
+  
+  dh <- 3
+
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            dh = dh, N = N)  
+  
+  # number treated each year in '.I' becomes the N gained in '.II' AND 
+  # '.III' diagnosis history strata for that year 
+  # (because some people could get diagnosed twice in one year)
+  # and number treated in '.II' becomes the number in '.III' diagnosis history
+  
+  expect_true(all(diff(y[[1]]$cum_treated[, 2, 1]) ==
+                    diff(rowSums(y[[1]]$N[, 2, 2:3]))))
+  expect_true(all(diff(y[[1]]$cum_treated[, 2, 2]) == diff(y[[1]]$N[, 2, 3])))
+  
+  diff(y[[1]]$cum_treated[, 2, 1])
+  diff(rowSums(y[[1]]$N[, 2, 2:3]))
+
+})
+
+test_that("for dh > 1, when lambda = 0,
+          diagnosis history strata > '.I' are empty", {
+            
+gp <- gono_params_trial(1)[1]
+gp[[1]]$lambda <- 0
+n_erlang <- 1
+tt <- seq.int(0, 5)
+set.seed(1)
+dh <- 3
+ 
+y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e1000000,
+                           vea = 0, vei = 0, ved = 0, ves = 0,
+                           n_erlang = n_erlang,
+                           stochastic = TRUE,
+                           dh = dh)
+
+# no one has been diagnosed = no diagnosis history movement 
+expect_true(all(rowSums(y[[1]]$N[, 2, c(2, 3, 5, 6, 8, 9)]) == 0))    
+expect_true(all(rowSums(y[[1]]$N[, 2, c(1, 4)]) == 6e+05))       
+
+# and no one in the low activity group
+expect_true(all(rowSums(y[[1]]$N[, 1, ]) == 0)) 
 
 })
