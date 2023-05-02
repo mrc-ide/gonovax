@@ -95,9 +95,9 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 1]
   
   # create diagnosis history mapping
-  diag_rec <- create_vax_map_branching(idx$n_vax, c(1,1), i_eligible, i_p,
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(0,1), i_eligible, i_p,
                            set_vbe = FALSE, idx)
-  
+
   # compartments to which vaccine efficacy applies
   ve <- c(rep(0, dh), rep(1, n_erlang * dh), rep(0, dh))
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
