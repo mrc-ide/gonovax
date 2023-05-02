@@ -62,7 +62,7 @@ screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history 
 
-n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[j, k]
+n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
 # waning
 n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j], 1 - exp(D[j] * dt))
