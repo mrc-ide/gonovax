@@ -104,9 +104,9 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1, dh = dh) {
 ##' @param N integer to assign the total number of individuals in the trial
 ##' (split equally across the two arms)
 ##' @param dh integer giving the number of each X, V(erlang), and W stratum,
-##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1, 
-##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to 
-##' never-diagnosed individuals and 'b' is for individuals diagnosed at least 
+##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1,
+##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to
+##' never-diagnosed individuals and 'b' is for individuals diagnosed at least
 ##' once.
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
@@ -131,25 +131,25 @@ model_params_trial <- function(gono_params_trial = NULL,
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
     stopifnot(unique(dim(vax_params$w)) ==  (2 + n_erlang) * dh)
   } else {
-    
+
     #also add in diag_rec if vax_params not supplied
-      vax_params <- vax_params0(dh = dh) 
+      vax_params <- vax_params0(dh = dh)
       n_vax <- vax_params$n_vax
-      i_eligible <-  if(identical(seq_len(n_vax)[seq_len(n_vax) %% dh != 0],
+      i_eligible <-  if (identical(seq_len(n_vax)[seq_len(n_vax) %% dh != 0],
                                   integer(0))) {
                         i_eligible <- 0
-                        } else { 
+                        } else {
                         i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% dh != 0]
                         }
-         
-        vax_params$diag_rec <- create_vax_map(n_vax, c(1,1), i_eligible,
+
+        vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
                               seq_len(n_vax)[seq_len(n_vax) %% dh != 1])
   }
-  
+
   #passing initial parameters
   if (p_v == 0) {                             #no vaccination = placebo arm
     cov <- c(1, rep(0, vax_params$n_vax - 1))
-    
+
     initial_params <-
       initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov,
                                                      dh = dh)
