@@ -4,7 +4,14 @@
 \alias{vax_params0}
 \title{create vaccination parameters for use in novax model (null)}
 \usage{
-vax_params0()
+vax_params0(dh = 1)
+}
+\arguments{
+\item{dh}{integer giving the number of each X, V(erlang), and W stratum,
+allowing tracking of diagnosis history in the trial versions of the model.
+e.g for a dh = 2 and erlang = 1, there will be Xa, Xb, V1a, V1b, Wa, Wb 
+strata. Where 'a' corresponds to never-diagnosed individuals and 'b' is for
+individuals diagnosed at least once.}
 }
 \value{
 A list parameters in the model input format

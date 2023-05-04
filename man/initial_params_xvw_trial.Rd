@@ -4,7 +4,7 @@
 \alias{initial_params_xvw_trial}
 \title{Initial conditions for the model in a vaccine trial}
 \usage{
-initial_params_xvw_trial(pars, p_v = 0.5, n_erlang = 1)
+initial_params_xvw_trial(pars, p_v = 0.5, n_erlang = 1, dh = 1)
 }
 \arguments{
 \item{pars}{A parameter list containing `N0`, and `q` elements.}
@@ -12,8 +12,13 @@ initial_params_xvw_trial(pars, p_v = 0.5, n_erlang = 1)
 \item{p_v}{scalar giving proportion of the trial cohort vaccinated}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned}
+made through vaccine-protected strata until that protection has waned}
+
+\item{dh}{integer giving the number of each X, V(erlang), and W stratum,
+allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1,
+there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
+corresponds to never-diagnosed individuals and '.II' is for individuals
+ diagnosed at least once.}
 }
 \value{
 A list of initial conditions.

@@ -69,6 +69,11 @@ demographic_params_trial <- function(N = 6e5) {
 ##' @param n_vax an integer indicating the number of vaccine compartments
 ##' @param p_v a vector of length `n_vax` that sums to 1 denoting the
 ##' proportion in each vaccine stratum
+##' @param dh integer giving the number of each X, V(erlang), and W stratum,
+##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1,
+##' there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
+##' corresponds to never-diagnosed individuals and '.II' is for individuals
+##' diagnosed at least once.
 ##' @return A list of initial model states
 ##' @export
 
@@ -105,9 +110,9 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1, dh = dh) {
 ##' (split equally across the two arms)
 ##' @param dh integer giving the number of each X, V(erlang), and W stratum,
 ##' allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1,
-##' there will be Xa, Xb, V1a, V1b, Wa, Wb strata. Where 'a' corresponds to
-##' never-diagnosed individuals and 'b' is for individuals diagnosed at least
-##' once.
+##' there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
+##' corresponds to never-diagnosed individuals and '.II' is for individuals
+##' diagnosed at least once.
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
