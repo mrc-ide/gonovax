@@ -305,7 +305,7 @@ expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
                         dim = c(6, 2, 3), dimnames = list(NULL,
                                                           c("L", "H"),
                                                           c("X.I",
-                                                            "V1.I","W.I"))))
+                                                            "V1.I", "W.I"))))
 })
 
 
