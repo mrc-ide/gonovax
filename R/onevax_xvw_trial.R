@@ -80,7 +80,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
    i_v <- idx$V
 
   # strata that individuals wane to
-   i_w <- c(idx$V[- (1:dh)], idx$W)
+   i_w <- idx$V + dh
 
   # diagnosed individuals move to the next diagnosis-history stratum (if
   # dh > 1). These history strata are the same in their characteristics as the
