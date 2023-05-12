@@ -47,11 +47,11 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
 ##' through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W stratum,
-##' allowing tracking of diagnosis history. e.g for a n_diag_rec = 2 and erlang = 1,
-##' there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
-##' corresponds to never-diagnosed individuals and '.II' is for individuals
-##'  diagnosed at least once.
+##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+##' individuals diagnosed at least once.
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
@@ -83,10 +83,10 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
    i_w <- idx$V + n_diag_rec
 
   # diagnosed individuals move to the next diagnosis-history stratum (if
-  # n_diag_rec > 1). These history strata are the same in their characteristics as the
-  # stratum the individual moved from e.g Va and Vb both experience protection
-  # and waning rate the same. This is for downstream calculation of person-years
-  # exposed etc.
+  # n_diag_rec > 1). These history strata are the same in their characteristics
+  # as the stratum the individual moved from e.g Va and Vb both experience
+  # protection and waning rate the same. This is for downstream calculation
+  # of person-years exposed etc.
 
   i <- seq_len(idx$n_vax)
   # diagnosed from
@@ -154,11 +154,11 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' model in discrete time
 ##' @param N integer to assign the total number of individuals in the trial
 ##' (split equally across the two arms)
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W stratum,
-##' allowing tracking of diagnosis history. e.g for a n_diag_rec = 2 and erlang = 1,
-##' there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
-##' corresponds to never-diagnosed individuals and '.II' is for individuals
-##' diagnosed at least once.
+##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+##' individuals diagnosed at least once.
 ##' @inheritParams run_trial
 ##' @inheritParams vax_params_xvw_trial
 ##' @export
@@ -181,9 +181,11 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                     n_diag_rec = n_diag_rec)
 
   if (is.null(initial_params_trial)) {
-    pars <- lapply(gono_params, model_params_trial, N = N, n_diag_rec = n_diag_rec)
+    pars <- lapply(gono_params, model_params_trial, N = N,
+                   n_diag_rec = n_diag_rec)
     init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
-                             p_v = p_v, n_erlang = n_erlang, n_diag_rec = n_diag_rec)
+                             p_v = p_v, n_erlang = n_erlang,
+                             n_diag_rec = n_diag_rec)
   }
 
   ret <- Map(run_trial, gono_params = gono_params,
@@ -204,20 +206,20 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 ##' @title Generate the indices of all xvw trial strata
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W stratum,
-##' allowing tracking of diagnosis history. e.g for a n_diag_rec = 2 and erlang = 1,
-##' there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
-##' corresponds to never-diagnosed individuals and '.II' is for individuals
-##' diagnosed at least once.
+##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+##' individuals diagnosed at least once.
 ##' @return A list of strata with their indices
 ##' @export
 
 stratum_index_xvw_trial <- function(n_erlang, n_diag_rec = 1) {
 
-  #for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned will be in
-  #the following order, where roman numerals refer to n_diag_rec, and arabic numerals
-  #refer to erlang:
-  #X.I, X.II, V1.I, V1.II, V2.I, V2.II, V3.I, V3.II, W.I, W.II
+  # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
+  # will be in the following order, where roman numerals refer to n_diag_rec,
+  # and arabic numerals refer to erlang:
+  # X.I, X.II, V1.I, V1.II, V2.I, V2.II, V3.I, V3.II, W.I, W.II
 
   ret <- list(X = seq_len(n_diag_rec))
 
@@ -234,8 +236,8 @@ stratum_index_xvw_trial <- function(n_erlang, n_diag_rec = 1) {
 ##' history levels desired (n_diag_rec)
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec integer giving the number of levels of diagnosis history for
-##' each X, V(*n_erlang), and W stratum
+##' @param n_diag_rec integer giving the number of levels of diagnosis history
+##' for each X, V(*n_erlang), and W stratum
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
 gen_trial_labels <- function(n_erlang = 1, n_diag_rec = 1) {
