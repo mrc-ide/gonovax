@@ -339,10 +339,10 @@ test_that("expected cumulative outputs are cumulative", {
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1), 2, ]) > 0))
 
   set.seed(1)
-  dh <- 2
+  n_diag_rec <- 2
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
-                            stochastic = TRUE, dh = dh)
+                            stochastic = TRUE, n_diag_rec = n_diag_rec)
 
   expect_true(all(diff(y[[1]]$cum_diag_a[c(years - 10, years + 1), 2,
                                          c(2, 4, 6)]) > 0))
@@ -361,7 +361,7 @@ test_that("expected cumulative outputs are cumulative", {
 test_that("n_erlang = n is working as expected", {
 
   #when n_erlang = n, nvax = n + 2, as generated in stratum_index_xvw_trial
-  #(for dh = 1 only)
+  #(for n_diag_rec = 1 only)
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 1)
   set.seed(1)
@@ -392,18 +392,18 @@ test_that("n_erlang = n is working as expected", {
   idx <- stratum_index_xvw_trial(n_erlang)
   expect_equal(dim(y3[[1]]$N)[3], idx$n_vax)
 
-  #for dh > 2
+  #for n_diag_rec > 2
   n_erlang <- 2
-  dh <- 2
+  n_diag_rec <- 2
   tt <- seq.int(0, 1)
   set.seed(1)
   y2 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                              vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
                              n_erlang = n_erlang,
                              stochastic = TRUE,
-                             dh = dh)
+                             n_diag_rec = n_diag_rec)
 
-  idx <- stratum_index_xvw_trial(n_erlang, dh)
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
   expect_equal(idx$n_vax, 8)
   expect_equal(dim(y2[[1]]$N)[3], idx$n_vax)
 
@@ -426,12 +426,12 @@ test_that("n_erlang = n is working as expected", {
                      byrow = TRUE)
   expect_equal(erlang_2, matrix_2)
 
-  dh <- 2
+  n_diag_rec <- 2
   n_erlang <- 2 #n_vax is 8
-  idx <- stratum_index_xvw_trial(n_erlang, dh)
-  erlang_2_dh_2 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang,
-                                   dh = dh)$w
-  matrix_2_dh_2 <- matrix(data = (c(rep(0, 18),
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+  erlang_2_n_diag_rec_2 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang,
+                                   n_diag_rec = n_diag_rec)$w
+  matrix_2_n_diag_rec_2 <- matrix(data = (c(rep(0, 18),
                                     -n_erlang / dur,
                                     rep(0, 8),
                                -n_erlang / dur,
@@ -446,7 +446,7 @@ test_that("n_erlang = n is working as expected", {
                                n_erlang / dur, 0, 0)),
                           ncol = idx$n_vax,
                      byrow = TRUE)
-  expect_equal(erlang_2_dh_2, matrix_2_dh_2)
+  expect_equal(erlang_2_n_diag_rec_2, matrix_2_n_diag_rec_2)
 
   # when vea is perfect, there are no infections in any of the
   # erlang strata
@@ -471,9 +471,9 @@ test_that("n_erlang = n is working as expected", {
   expect_true(sum(y[[1]]$cum_incid[-1, 2, 5]) != 0) #W not under protection, has
   expect_true(sum(y[[1]]$cum_incid[-1, 2, idx$W]) != 0) # infections
 
-  dh <- 2
+  n_diag_rec <- 2
   n_erlang <- 3   #n_vax is 10
-  idx <- stratum_index_xvw_trial(n_erlang, dh)
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 1)
   set.seed(1)
@@ -481,7 +481,7 @@ test_that("n_erlang = n is working as expected", {
                             vea = 1, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang,
                             stochastic = TRUE,
-                            dh = dh)
+                            n_diag_rec = n_diag_rec)
 
   expect_true(all(y[[1]]$cum_incid[, , c(idx$V)] == 0)) #all of V no infections
   expect_true(all(y[[1]]$cum_incid[-1, 2, idx$X] != 0)) #X still has infections
@@ -493,19 +493,19 @@ test_that("n_erlang = n is working as expected", {
 test_that("create_vax_map_branching is appropriately generating the
           diagnosis history mapping (diag_rec)", {
 
-  #default is n_erlang = 1, dh = 1
+  #default is n_erlang = 1, n_diag_rec = 1
   #expect mapping to not move anyone upon diagnosis
 
      n_erlang <- 1
-     dh <- 1
+     n_diag_rec <- 1
      #copied from vax_params_xvw_trial code:
      idx <- stratum_index_xvw_trial(n_erlang)
 
      # diagnosed from
-     i_eligible <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 0]
+     i_eligible <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% n_diag_rec != 0]
 
      # diagnosed to
-     i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 1]
+     i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% n_diag_rec != 1]
 
      # create diagnosis history mapping
        diag_rec <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
@@ -514,19 +514,19 @@ test_that("create_vax_map_branching is appropriately generating the
       expect_equal(idx$n_vax, 3)
       expect_equal(diag_rec, array(0, dim = c(2, idx$n_vax, idx$n_vax)))
 
-  #n_erlang = 2, dh = 2
+  #n_erlang = 2, n_diag_rec = 2
 
       n_erlang <- 2
-      dh <- 2
+      n_diag_rec <- 2
 
       #copied from vax_params_xvw_trial code:
-      idx <- stratum_index_xvw_trial(n_erlang, dh)
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
 
       # diagnosed from
-      i_eligible <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 0]
+      i_eligible <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% n_diag_rec != 0]
 
       # diagnosed to
-      i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 1]
+      i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% n_diag_rec != 1]
 
       # create diagnosis history mapping
       diag_rec <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
@@ -645,13 +645,13 @@ expect_equal(y[[1]]$U,
 #and with n_erlang and diagnosis history:
 gp <- gono_params_trial(1)[1]
 n_erlang <- 2
-dh <- 2
+n_diag_rec <- 2
 tt <- seq.int(0, 1)
 set.seed(1)
 y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                           vea = 0, vei = 0, ved = 0, ves = 0,
                           n_erlang = n_erlang,
-                          stochastic = TRUE, dh = dh)
+                          stochastic = TRUE, n_diag_rec = n_diag_rec)
 
 expect_equal(y[[1]]$U,
 array(c(rep(0, 2), 300000, 136780, rep(0, 3), 112247, rep(0, 2), 300000, 136361,
@@ -681,14 +681,14 @@ test_that("correct number of individuals are set up in each trial arm", {
   expect_true(all(y[[1]]$N[, 2, 2] == N / 2))
   expect_true(all(y[[1]]$N[, 2, 3] == 0))
 
-  # for dh > 1
+  # for n_diag_rec > 1
 
-  dh <- 3
+  n_diag_rec <- 3
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang,
                             stochastic = TRUE,
-                            N = N, dh = dh)
+                            N = N, n_diag_rec = n_diag_rec)
 
   # N/2 in X.I and V1.I for t = 0
   expect_true(all(y[[1]]$N[1, 2, c(1, 4)] == N / 2))
@@ -749,20 +749,20 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
 
 })
 
-test_that("for dh > 1, total N summed over X or V+W is the same and correct", {
+test_that("for n_diag_rec > 1, total N summed over X or V+W is the same and correct", {
 
   gp <- gono_params_trial(1)[1]
   n_erlang <- 1
   tt <- seq.int(0, 5)
   set.seed(1)
-  dh <- 3
+  n_diag_rec <- 3
   N <- 6e+05
 
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e03,
                             vea = 0, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang,
                             stochastic = TRUE,
-                            dh = dh, N = N)
+                            n_diag_rec = n_diag_rec, N = N)
 
   #X.I, X.II, X.III
   expect_equal(rowSums(y[[1]]$N[, 2, 1:3]), rep(N / 2, length(tt)))
@@ -776,7 +776,7 @@ test_that("for dh > 1, total N summed over X or V+W is the same and correct", {
                             vea = 0, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang,
                             stochastic = TRUE,
-                            dh = dh, N = N)
+                            n_diag_rec = n_diag_rec, N = N)
 
   #X.I, X.II, X.III
   expect_equal(rowSums(y[[1]]$N[, 2, 1:3]), rep(N / 2, length(tt)))
@@ -784,13 +784,13 @@ test_that("for dh > 1, total N summed over X or V+W is the same and correct", {
 
 })
 
-test_that("for dh > 1, the number treated = the number recorded as diagnosed", {
+test_that("for n_diag_rec > 1, the number treated = the number recorded as diagnosed", {
 
   gp <- gono_params_trial(1)[1]
   n_erlang <- 1
   tt <- seq.int(0, 5)
   set.seed(1)
-  dh <- 2
+  n_diag_rec <- 2
   N <- 6e+05
 
   #no waning for simplicity
@@ -798,20 +798,20 @@ test_that("for dh > 1, the number treated = the number recorded as diagnosed", {
                             vea = 0, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang,
                             stochastic = TRUE,
-                            dh = dh, N = N)
+                            n_diag_rec = n_diag_rec, N = N)
 
   # number treated in '.I' becomes the number in '.II'
   expect_true(all(y[[1]]$cum_treated[, 2, 1] == y[[1]]$N[, 2, 2]))
   expect_true(all(y[[1]]$cum_treated[, 2, 3] == y[[1]]$N[, 2, 4]))
   expect_true(all(y[[1]]$cum_treated[, 2, 5] == y[[1]]$N[, 2, 6]))
 
-  dh <- 3
+  n_diag_rec <- 3
 
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
                             vea = 0, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang,
                             stochastic = TRUE,
-                            dh = dh, N = N)
+                            n_diag_rec = n_diag_rec, N = N)
 
   # number treated each year in '.I' becomes the N gained in '.II' AND
   # '.III' diagnosis history strata for that year
@@ -827,7 +827,7 @@ test_that("for dh > 1, the number treated = the number recorded as diagnosed", {
 
 })
 
-test_that("for dh > 1, when lambda = 0,
+test_that("for n_diag_rec > 1, when lambda = 0,
           diagnosis history strata > '.I' are empty", {
 
 gp <- gono_params_trial(1)[1]
@@ -835,13 +835,13 @@ gp[[1]]$lambda <- 0
 n_erlang <- 1
 tt <- seq.int(0, 5)
 set.seed(1)
-dh <- 3
+n_diag_rec <- 3
 
 y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e1000000,
                            vea = 0, vei = 0, ved = 0, ves = 0,
                            n_erlang = n_erlang,
                            stochastic = TRUE,
-                           dh = dh)
+                           n_diag_rec = n_diag_rec)
 
 # no one has been diagnosed = no diagnosis history movement
 expect_true(all(rowSums(y[[1]]$N[, 2, c(2, 3, 5, 6, 8, 9)]) == 0))
