@@ -12,7 +12,7 @@ model_params_trial(
   p_v = 0,
   n_erlang = 1,
   N = 6e+05,
-  dh = 1
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -33,8 +33,8 @@ through vaccine-protected strata until that protection has waned}
 \item{N}{integer to assign the total number of individuals in the trial
 (split equally across the two arms)}
 
-\item{dh}{integer giving the number of each X, V(erlang), and W stratum,
-allowing tracking of diagnosis history. e.g for a dh = 2 and erlang = 1,
+\item{n_diag_rec}{integer giving the number of each X, V(erlang), and W stratum,
+allowing tracking of diagnosis history. e.g for a n_diag_rec = 2 and erlang = 1,
 there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
 corresponds to never-diagnosed individuals and '.II' is for individuals
 diagnosed at least once.}

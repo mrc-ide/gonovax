@@ -4,15 +4,15 @@
 \alias{gen_trial_labels}
 \title{generates the appropriate strata labels for the number of strata
 in the model, which depends on the value given to n_erlang and diagnosis
-history levels desired (dh)}
+history levels desired (n_diag_rec)}
 \usage{
-gen_trial_labels(n_erlang = 1, dh = 1)
+gen_trial_labels(n_erlang = 1, n_diag_rec = 1)
 }
 \arguments{
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
 
-\item{dh}{integer giving the number of levels of diagnosis history for
+\item{n_diag_rec}{integer giving the number of levels of diagnosis history for
 each X, V(*n_erlang), and W stratum}
 }
 \value{
@@ -21,5 +21,5 @@ a character vector of length n_vax containing strata labels
 \description{
 generates the appropriate strata labels for the number of strata
 in the model, which depends on the value given to n_erlang and diagnosis
-history levels desired (dh)
+history levels desired (n_diag_rec)
 }
