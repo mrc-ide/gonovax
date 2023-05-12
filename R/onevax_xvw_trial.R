@@ -217,7 +217,7 @@ stratum_index_xvw_trial <- function(n_erlang, dh = 1) {
   ret <- list(X = seq_len(dh))
 
     ret$V <- max(ret$X) + seq_len(n_erlang * dh)
-    ret$W <- seq(max(ret$V) + 1, max(ret$V) + dh)
+    ret$W <- max(ret$V) + seq_len(dh)
     ret$n_vax <- max(ret$W)
 
   ret
