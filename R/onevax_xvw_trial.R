@@ -214,6 +214,11 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 
 stratum_index_xvw_trial <- function(n_erlang, dh = 1) {
 
+  #for an n_erlang of 3, and dh of 2, the list of indexes returned will be in
+  #the following order, where roman numerals refer to dh, and arabic numerals
+  #refer to erlang:
+  #X.I, X.II, V1.I, V1.II, V2.I, V2.II, V3.I, V3.II, W.I, W.II
+
   ret <- list(X = seq_len(dh))
 
     ret$V <- max(ret$X) + seq_len(n_erlang * dh)
