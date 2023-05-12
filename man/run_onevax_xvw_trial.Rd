@@ -59,11 +59,11 @@ model in discrete time}
 \item{N}{integer to assign the total number of individuals in the trial
 (split equally across the two arms)}
 
-\item{n_diag_rec}{integer giving the number of each X, V(erlang), and W stratum,
-allowing tracking of diagnosis history. e.g for a n_diag_rec = 2 and erlang = 1,
-there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
-corresponds to never-diagnosed individuals and '.II' is for individuals
-diagnosed at least once.}
+\item{n_diag_rec}{integer giving the number of each X, V(erlang), and W
+stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+individuals diagnosed at least once.}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

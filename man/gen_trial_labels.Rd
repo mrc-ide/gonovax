@@ -12,8 +12,8 @@ gen_trial_labels(n_erlang = 1, n_diag_rec = 1)
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
 
-\item{n_diag_rec}{integer giving the number of levels of diagnosis history for
-each X, V(*n_erlang), and W stratum}
+\item{n_diag_rec}{integer giving the number of levels of diagnosis history
+for each X, V(*n_erlang), and W stratum}
 }
 \value{
 a character vector of length n_vax containing strata labels
