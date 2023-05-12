@@ -430,7 +430,7 @@ test_that("n_erlang = n is working as expected", {
   n_erlang <- 2 #n_vax is 8
   idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
   erlang_2_n_diag_rec_2 <- vax_params_xvw_trial(vea = 1, dur = dur,
-                           n_erlang = n_erlang, _diag_rec = n_diag_rec)$w
+                           n_erlang = n_erlang, diag_rec = n_diag_rec)$w
   matrix_2_n_diag_rec_2 <- matrix(data = (c(rep(0, 18),
                                     -n_erlang / dur,
                                     rep(0, 8),
