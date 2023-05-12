@@ -429,8 +429,8 @@ test_that("n_erlang = n is working as expected", {
   n_diag_rec <- 2
   n_erlang <- 2 #n_vax is 8
   idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
-  erlang_2_n_diag_rec_2 <- vax_params_xvw_trial(vea = 1, dur = dur, n_erlang = n_erlang,
-                                   n_diag_rec = n_diag_rec)$w
+  erlang_2_n_diag_rec_2 <- vax_params_xvw_trial(vea = 1, dur = dur,
+                           n_erlang = n_erlang, _diag_rec = n_diag_rec)$w
   matrix_2_n_diag_rec_2 <- matrix(data = (c(rep(0, 18),
                                     -n_erlang / dur,
                                     rep(0, 8),
@@ -749,7 +749,8 @@ y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
 
 })
 
-test_that("for n_diag_rec > 1, total N summed over X or V+W is the same and correct", {
+test_that("for n_diag_rec > 1, total N summed over X or V+W is
+          the same and correct", {
 
   gp <- gono_params_trial(1)[1]
   n_erlang <- 1
@@ -784,7 +785,8 @@ test_that("for n_diag_rec > 1, total N summed over X or V+W is the same and corr
 
 })
 
-test_that("for n_diag_rec > 1, the number treated = the number recorded as diagnosed", {
+test_that("for n_diag_rec > 1, the number treated = the number recorded
+          as diagnosed", {
 
   gp <- gono_params_trial(1)[1]
   n_erlang <- 1

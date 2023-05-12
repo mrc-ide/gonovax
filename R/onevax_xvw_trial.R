@@ -6,11 +6,11 @@
 ##' @param p_v scalar giving proportion of the trial cohort vaccinated
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W stratum,
-##' allowing tracking of diagnosis history. e.g for a n_diag_rec = 2 and erlang = 1,
-##' there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata. Where '.I'
-##' corresponds to never-diagnosed individuals and '.II' is for individuals
-##'  diagnosed at least once.
+##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+##' individuals diagnosed at least once.
 ##' @return A list of initial conditions.
 ##' @export
 
@@ -21,7 +21,8 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
   # XVW n_vax = 3, if n_erlang = 1, this is the same, if n_erlang > 1 this
   # needs to be accounted for with additional strata
   n_vax <- stratum_index_xvw_trial(n_erlang, n_diag_rec)$n_vax
-  cov <- c(1 - p_v, rep(0, n_diag_rec - 1), p_v, rep(0, (n_diag_rec * n_erlang) - 1),
+  cov <- c(1 - p_v, rep(0, n_diag_rec - 1), p_v,
+           rep(0, (n_diag_rec * n_erlang) - 1),
            rep(0, n_diag_rec))
   initial_params_trial(pars, n_vax, cov, n_diag_rec)
 }
