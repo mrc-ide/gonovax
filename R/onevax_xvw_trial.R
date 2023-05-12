@@ -88,11 +88,12 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # and waning rate the same. This is for downstream calculation of person-years
   # exposed etc.
 
+  i <- seq_len(idx$n_vax)
   # diagnosed from
-  i_eligible <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 0]
+  i_eligible <- i[i %% dh != 0]
 
   # diagnosed to
-  i_p <- seq_len(idx$n_vax)[seq_len(idx$n_vax) %% dh != 1]
+  i_p <- i[i %% dh != 1]
 
   # create diagnosis history mapping
   diag_rec <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
