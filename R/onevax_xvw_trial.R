@@ -234,12 +234,11 @@ stratum_index_xvw_trial <- function(n_erlang, dh = 1) {
 ##' @export
 gen_trial_labels <- function(n_erlang = 1, dh = 1) {
 
-  idx <- seq_len(n_erlang)
+
   diag_hist <- paste0(".", as.roman(seq_len(dh)))
 
   output <- c(paste0("X", diag_hist),
-              paste(paste0("V", rep(idx, each = dh)),
-                    rep(diag_hist, n_erlang), sep = ""),
+              paste0("V", rep(seq_len(n_erlang), each = dh), diag_hist),
               paste0("W", diag_hist))
 
   output
