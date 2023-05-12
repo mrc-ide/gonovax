@@ -140,8 +140,7 @@ model_params_trial <- function(gono_params_trial = NULL,
     #also add in diag_rec if vax_params not supplied
       vax_params <- vax_params0(dh = dh)
       n_vax <- vax_params$n_vax
-      i_eligible <-  if (identical(seq_len(n_vax)[seq_len(n_vax) %% dh != 0],
-                                  integer(0))) {
+      i_eligible <-  if (dh == 1) {
                         i_eligible <- 0
                         } else {
                         i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% dh != 0]
