@@ -214,7 +214,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
 
 stratum_index_xvw_trial <- function(n_erlang, dh = 1) {
 
-  ret <- list(X = seq(1, dh))
+  ret <- list(X = seq_len(dh))
 
     ret$V <- max(ret$X) + seq_len(n_erlang * dh)
     ret$W <- seq(max(ret$V) + 1, max(ret$V) + dh)
