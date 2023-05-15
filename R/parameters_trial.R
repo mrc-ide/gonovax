@@ -69,10 +69,16 @@ demographic_params_trial <- function(N = 6e5) {
 ##' @param n_vax an integer indicating the number of vaccine compartments
 ##' @param p_v a vector of length `n_vax` that sums to 1 denoting the
 ##' proportion in each vaccine stratum
+##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+##' individuals diagnosed at least once.
 ##' @return A list of initial model states
 ##' @export
 
-initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
+initial_params_trial <- function(pars, n_vax = 1, p_v = 1,
+                                 n_diag_rec = n_diag_rec) {
 
   stopifnot(length(p_v) == n_vax)
   stopifnot(sum(p_v) == 1)
@@ -103,6 +109,11 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1) {
 ##' through vaccine-protected strata until that protection has waned
 ##' @param N integer to assign the total number of individuals in the trial
 ##' (split equally across the two arms)
+##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+##' individuals diagnosed at least once.
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -113,31 +124,46 @@ model_params_trial <- function(gono_params_trial = NULL,
                         demographic_params_trial = NULL,
                         initial_params_trial = NULL,
                         vax_params = NULL, p_v = 0,
-                        n_erlang = 1, N = 6e5) {
+                        n_erlang = 1, N = 6e5,
+                        n_diag_rec = 1) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <-
     demographic_params_trial  %||% demographic_params_trial(N = N)
   ret <- c(demographic_params_trial, gono_params_trial)
 
-  #check n_erlang supplied im model_params_trial() is same as
+  #check n_erlang supplied in model_params_trial() is same as
   #n_erlang supplied to vax_params_xvw_trial()
   #unless vax_params not supplied
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
-    stopifnot(unique(dim(vax_params$w)) ==  2 + n_erlang)
-  }
+    stopifnot(unique(dim(vax_params$w)) ==  (2 + n_erlang) * n_diag_rec)
+  } else {
 
-  vax_params <- vax_params %||% vax_params0()
+    #also add in diag_rec if vax_params not supplied
+      vax_params <- vax_params0(n_diag_rec = n_diag_rec)
+      n_vax <- vax_params$n_vax
+      i_eligible <-  if (n_diag_rec == 1) {
+                i_eligible <- 0
+                } else {
+                i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
+                }
+
+        vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
+                              seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1])
+  }
 
   #passing initial parameters
   if (p_v == 0) {                             #no vaccination = placebo arm
     cov <- c(1, rep(0, vax_params$n_vax - 1))
+
     initial_params <-
-      initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov)
+      initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov,
+                                                     n_diag_rec = n_diag_rec)
                               #if no vaccination then no need for V and W strata
 
   } else {                                  #p_v greater than 0 = vaccinated arm
     initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v,
-                                               n_erlang = n_erlang)
+                                               n_erlang = n_erlang,
+                                               n_diag_rec = n_diag_rec)
   }
 
   c(ret, initial_params, vax_params)

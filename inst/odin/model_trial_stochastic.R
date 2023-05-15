@@ -41,7 +41,7 @@ n_AU[, ] <- n_AUT[i, j] - n_AT[i, j]
 
 ## Core equations for transitions between compartments:
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
-  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
+  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) - sum(n_diag_rec[i, j, ])
 
 update(I[, ]) <- I[i, j] + n_UI[i, j] - n_IAS[i, j] + sum(wI[i, j, ])
 
@@ -58,7 +58,11 @@ update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
-# vaccination -> no vaccination 'strategies' needed
+
+# mechanism to record number of times infected by moving diagnosed
+# individuals into stratum with the relevant diagnosis history 
+
+n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
 # waning
 n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j], 1 - exp(D[j] * dt))
@@ -152,6 +156,9 @@ dim(cum_diag_s)     <- c(n_group, n_vax)
 dim(cum_treated)    <- c(n_group, n_vax)
 dim(cum_screened)   <- c(n_group, n_vax)
 
+dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
+dim(diag_rec)   <- c(n_group, n_vax, n_vax)
+
 ## Parameters
 
 eta       <- user()
@@ -167,8 +174,11 @@ vea[] <- user() # efficacy against acquisition
 ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
 
-w[, ]    <- user()
+# mapping
+w[, ]    <- user() 
 D[] <- user()
+
+diag_rec[, , ] <- user() 
 
 ## par dimensions
 
