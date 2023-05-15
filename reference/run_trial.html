@@ -20,7 +20,7 @@ vaccination"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.10</span>
       </span>
     </div>
 
@@ -67,14 +67,17 @@ vaccination</p>
 <span>  <span class="va">gono_params</span>,</span>
 <span>  init_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vax_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  transform <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  transform <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  stochastic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  N <span class="op">=</span> <span class="fl">6e+05</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>tt</dt>
-<dd><p>a numeric vector of times at which the model state is output</p></dd>
+<dd><p>a numeric vector of times at which the model state is output in
+years</p></dd>
 
 
 <dt>gono_params</dt>
@@ -91,6 +94,17 @@ vaccination</p>
 
 <dt>transform</dt>
 <dd><p>= TRUE</p></dd>
+
+
+<dt>stochastic</dt>
+<dd><p>logical indicating if the run should be made with the
+default deterministic trial model in continuous time or stochastic trial
+model in discrete time</p></dd>
+
+
+<dt>N</dt>
+<dd><p>integer to assign the total number of individuals in the trial
+(split equally across the two arms)</p></dd>
 
 </dl></div>
 

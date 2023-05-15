@@ -23,7 +23,7 @@ eligible for re-vaccination."><!-- mathjax --><script src="https://cdnjs.cloudfl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.10</span>
       </span>
     </div>
 
@@ -77,14 +77,18 @@ eligible for re-vaccination.</p>
 <span>  ved <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  ves <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  p_v <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  n_erlang <span class="op">=</span> <span class="fl">1</span></span>
+<span>  n_erlang <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  stochastic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  N <span class="op">=</span> <span class="fl">6e+05</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>tt</dt>
-<dd><p>a numeric vector of times at which the model state is output</p></dd>
+<dd><p>a numeric vector of times at which the model state is output in
+years</p></dd>
 
 
 <dt>gono_params</dt>
@@ -128,8 +132,26 @@ is 0.5.</p></dd>
 
 <dt>n_erlang</dt>
 <dd><p>integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned</p></dd>
+made</p></dd>
+
+
+<dt>stochastic</dt>
+<dd><p>logical indicating if the run should be made with the
+default deterministic trial model in continuous time or stochastic trial
+model in discrete time</p></dd>
+
+
+<dt>N</dt>
+<dd><p>integer to assign the total number of individuals in the trial
+(split equally across the two arms)</p></dd>
+
+
+<dt>n_diag_rec</dt>
+<dd><p>integer giving the number of each X, V(erlang), and W
+stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+individuals diagnosed at least once.</p></dd>
 
 </dl></div>
 

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.10</span>
       </span>
     </div>
 
@@ -57,7 +57,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">initial_params_xvw_trial</span><span class="op">(</span><span class="va">pars</span>, p_v <span class="op">=</span> <span class="fl">0.5</span>, n_erlang <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">initial_params_xvw_trial</span><span class="op">(</span><span class="va">pars</span>, p_v <span class="op">=</span> <span class="fl">0.5</span>, n_erlang <span class="op">=</span> <span class="fl">1</span>, n_diag_rec <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -72,8 +72,15 @@
 
 <dt>n_erlang</dt>
 <dd><p>integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned</p></dd>
+made through vaccine-protected strata until that protection has waned</p></dd>
+
+
+<dt>n_diag_rec</dt>
+<dd><p>integer giving the number of each X, V(erlang), and W
+stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
+and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
+Where '.I' corresponds to never-diagnosed individuals and '.II' is for
+individuals diagnosed at least once.</p></dd>
 
 </dl></div>
     <div id="value">
