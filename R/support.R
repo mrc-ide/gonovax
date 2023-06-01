@@ -6,15 +6,25 @@
 ##' @param stratum an integer denoting the stratum to aggregate over, if NULL
 ##' aggregation is over all strata
 ##' @param f function to apply across parameter sets (eg. mean / median)
+##' @param stochastic indicates if function is being used on output of 
+##' stochastic or deterministic version of the trial model, only matters if 
+##' as_incid = TRUE
 ##' @param ... named arguments to pass to f
 ##' @return a transformed time series / array
 ##' @export
 aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
-                      f = identity, ...) {
+                      f = identity, stochastic = FALSE, ...) {
   strata <- stratum %||% seq_len(dim(x[[1]][[what]])[3])
   y <- sapply(x, function(x) apply(x[[what]][, , strata], 1, sum))
+  
   if (as_incid) {
-    dt <- diff(x[[1]]$t)
+      
+      if(stochastic == TRUE){
+        dt <- diff(x[[1]]$time)
+      }else{
+        dt <- diff(x[[1]]$t)
+      }
+
     y <- apply(y, 2, diff) / dt
   }
   apply(y, 1, f, ...)
