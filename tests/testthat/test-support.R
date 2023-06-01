@@ -57,6 +57,126 @@ test_that("extract_flows works", {
   expect_equal(z$offered_primary, z$vaccinated - z$revaccinated - z$vbe)
 })
 
+test_that("extract_flows_trial works", {
+  
+  #n_erlang = 1, n_diag_rec = 1
+  gp <- gono_params_trial(1:3)
+  n_erlang <- 1
+  n_diag_rec <- 1
+  tt <- seq.int(0, 10)
+  N <- 600
+  set.seed(1)
+  
+    #stochastic
+ y1s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)  
+ 
+ y1s_flows <- extract_flows_trial(y1s,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ 
+    #deterministic
+ y1d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 0.5, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                             stochastic = FALSE, N = N)  
+
+ y1d_flows <- extract_flows_trial(y1d,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ 
+ #n_erlang = 1, n_diag_rec > 1
+ n_diag_rec <- 2
+ set.seed(1)
+ 
+    #stochastic
+ y2s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)  
+ 
+ y2s_flows <- extract_flows_trial(y2s,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+    #deterministic
+ y2d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = FALSE, N = N) 
+
+ y2d_flows <- extract_flows_trial(y2d,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ 
+ #n_erlang > 1, n_diag_rec = 1
+ n_erlang <- 3
+ n_diag_rec <- 1
+ set.seed(1)
+ 
+    #stochastic
+ y3s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)  
+ 
+ y3s_flows <- extract_flows_trial(y3s,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+    #deterministic
+ y3d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 0.5, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                             stochastic = FALSE, N = N)  
+ 
+ y3d_flows <- extract_flows_trial(y3d,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ 
+ #n_erlang > 1, n_diag_rec > 1
+ n_diag_rec <- 2
+ set.seed(1)
+    
+    #stochastic
+ y4s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)  
+ y4s_flows <- extract_flows_trial(y4s,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ 
+    #deterministic 
+ y4d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 0.5, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                             stochastic = TRUE, N = N)  
+ 
+ y4d_flows <- extract_flows_trial(y4d,
+                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ 
+ 
+ ## tests:
+ 
+ #core code from extract_flows is unchanged 
+ 
+ z <- y1s[[1]]
+ expect_equal(z$cum_treated[1, ], z$treated[1, ])
+ expect_equal(z$cum_treated[2, ] - z$cum_treated[1, ], z$treated[2, ])
+ expect_equal(z$vaccinated, t(aggregate(y, "cum_vaccinated", as_incid = TRUE)))
+ expect_equal(t(aggregate(y, "cum_vaccinated", as_incid = TRUE)),
+              (z$primary_total + z$part_to_full +
+                 z$revaccinated))
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+})
+
+test_that("never_diag_hist works as expected" {
+  
+  
+  #ADD STUFF HERE 
+  
+  
+})
 
 test_that("gonovax_year works as expected", {
   expect_equal(gonovax_year(2009), 0)
