@@ -141,7 +141,8 @@ never_diag_hist_id <- function(vec, n_erlang, n_diag_rec){
 ##' @export
 extract_flows_trial <- function(y, idx) {
   # extract cumulative flows (standard)
-  flow_names <- c("cum_diag_a", "cum_diag_s", "cum_incid", "cum_treated", "cum_screened",
+  flow_names <- c("cum_diag_a", "cum_diag_s", "cum_incid",
+                  "cum_treated", "cum_screened",
                   "N")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
@@ -163,7 +164,7 @@ extract_flows_trial <- function(y, idx) {
   #  asymptomatic diagnoses in first diagnosis history strata of V+W only
   cumulative_flows$cum_diag_a_VW_first_diag_hist <-
     t(aggregate(y, "cum_diag_a",
-                stratum = c(never_diag_hist_id(idx$V, idx$n_erlang, idx$n_diag_rec),
+            stratum = c(never_diag_hist_id(idx$V, idx$n_erlang, idx$n_diag_rec),
                             idx$W[1])))
   
   ###(S)
