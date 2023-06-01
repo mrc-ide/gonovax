@@ -104,8 +104,8 @@ extract_flows <- function(y) {
 ##'  made to wane entirely
 ##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
 ##' stratum, allowing tracking of diagnosis history.
-##' @return vector of indices matching vaccianted strata in which diagnosis 
-##' has not yet occured
+##' @return vector of indices matching vaccinated strata in which diagnosis 
+##' has not yet occurred
 ##' @export
 
 never_diag_hist_id <- function(vec, n_erlang, n_diag_rec){
