@@ -231,9 +231,25 @@ test_that("extract_flows_trial works", {
 
 test_that("never_diag_hist works as expected" {
   
+  #expected stratum indices are generated
   
-  #ADD STUFF HERE 
+  n_erlang <- 1
+  n_diag_rec <- 3
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+  ret <- never_diag_hist_id(idx$V, n_erlang, n_diag_rec)
+  expect_true(ret == 4)
   
+  n_erlang <- 4
+  n_diag_rec <- 3
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+  ret <- never_diag_hist_id(idx$V, n_erlang, n_diag_rec)
+  expect_true(all(ret == c(4, 7, 10, 13)))
+  
+  n_erlang <- 4
+  n_diag_rec <- 1
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+  ret <- never_diag_hist_id(idx$V, n_erlang, n_diag_rec)
+  expect_true(all(ret == c(2, 3, 4, 5)))
   
 })
 
