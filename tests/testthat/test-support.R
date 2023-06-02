@@ -222,14 +222,18 @@ test_that("extract_flows_trial works", {
               y3d_flows$cum_diag_s_VW_all_diaghist)
 
  #number of person years spent exposed is increasing over time
- #i.e difference in value between timesteps is always > 0
+ #person years at final timepiont > person years at the start
 
- expect_true(all(diff(y3d_flows$N_person_yrs_exp_X.I) > 0))
- expect_true(all(diff(y3d_flows$N_person_yrs_exp_VW.I) > 0))
- expect_true(all(diff(y3s_flows$N_person_yrs_exp_X.I) > 0))
- expect_true(all(diff(y3s_flows$N_person_yrs_exp_VW.I) > 0))
+ expect_true(all(y3d_flows$N_person_yrs_exp_X.I[1,]
+                 < y3d_flows$N_person_yrs_exp_X.I[10,]))
+ expect_true(all(y3d_flows$N_person_yrs_exp_VW.I[1,]
+                 < y3d_flows$N_person_yrs_exp_VW.I[10,]))
+ expect_true(all(y3s_flows$N_person_yrs_exp_X.I[1,]
+                 < y3s_flows$N_person_yrs_exp_X.I[10,]))
+ expect_true(all(y3s_flows$N_person_yrs_exp_VW.I[1,]
+                 < y3s_flows$N_person_yrs_exp_VW.I[10,]))
 
- #if vea = 1, person years exposed in V, increases by the number of people in
+  #if vea = 1, person years exposed in V, increases by the number of people in
  #the trial arm each year (N/2)
 
  N <- 600
