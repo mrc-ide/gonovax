@@ -177,7 +177,7 @@ extract_flows_trial <- function(y, idx) {
     t(aggregate(y, "cum_diag_a",
             stratum = c(never_diag_hist_id(idx$V, idx$n_erlang, idx$n_diag_rec),
                             idx$W[1])))
-  
+
   #  symptomatic diagnoses across all X
   cumulative_flows$cum_diag_s_X_all_diaghist <-
     t(aggregate(y, "cum_diag_s", stratum = idx$X))

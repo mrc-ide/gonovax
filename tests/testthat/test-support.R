@@ -224,14 +224,14 @@ test_that("extract_flows_trial works", {
  #number of person years spent exposed is increasing over time
  #person years at final timepiont > person years at the start
 
- expect_true(all(y3d_flows$N_person_yrs_exp_X.I[1,]
-                 < y3d_flows$N_person_yrs_exp_X.I[10,]))
- expect_true(all(y3d_flows$N_person_yrs_exp_VW.I[1,]
-                 < y3d_flows$N_person_yrs_exp_VW.I[10,]))
- expect_true(all(y3s_flows$N_person_yrs_exp_X.I[1,]
-                 < y3s_flows$N_person_yrs_exp_X.I[10,]))
- expect_true(all(y3s_flows$N_person_yrs_exp_VW.I[1,]
-                 < y3s_flows$N_person_yrs_exp_VW.I[10,]))
+ expect_true(all(y3d_flows$N_person_yrs_exp_X.I[1, ]
+                 < y3d_flows$N_person_yrs_exp_X.I[10, ]))
+ expect_true(all(y3d_flows$N_person_yrs_exp_VW.I[1, ]
+                 < y3d_flows$N_person_yrs_exp_VW.I[10, ]))
+ expect_true(all(y3s_flows$N_person_yrs_exp_X.I[1, ]
+                 < y3s_flows$N_person_yrs_exp_X.I[10, ]))
+ expect_true(all(y3s_flows$N_person_yrs_exp_VW.I[1, ]
+                 < y3s_flows$N_person_yrs_exp_VW.I[10, ]))
 
   #if vea = 1, person years exposed in V, increases by the number of people in
  #the trial arm each year (N/2)
