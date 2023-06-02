@@ -149,6 +149,7 @@ never_diag_hist_id <- function(vec, n_erlang, n_diag_rec) {
 ##' number strata belongs to which stratum type X, V or W
 ##' @return cumulative and incident flows
 ##' @export
+
 extract_flows_trial <- function(y, idx) {
   # extract cumulative flows (standard)
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_incid",
@@ -158,7 +159,7 @@ extract_flows_trial <- function(y, idx) {
   names(cumulative_flows) <- flow_names
 
   ## extract strata separately
-  ## A'
+
   #  asymptomatic diagnoses across all X
   cumulative_flows$cum_diag_a_X_all_diaghist <-
     t(aggregate(y, "cum_diag_a", stratum = idx$X))
@@ -176,8 +177,7 @@ extract_flows_trial <- function(y, idx) {
     t(aggregate(y, "cum_diag_a",
             stratum = c(never_diag_hist_id(idx$V, idx$n_erlang, idx$n_diag_rec),
                             idx$W[1])))
-
-  ###'S'
+  
   #  symptomatic diagnoses across all X
   cumulative_flows$cum_diag_s_X_all_diaghist <-
     t(aggregate(y, "cum_diag_s", stratum = idx$X))
