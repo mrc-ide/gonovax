@@ -242,7 +242,7 @@ test_that("extract_flows_trial works", {
                              vea = 1, vei = 0, ved = 0, ves = 0,
                              n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                              stochastic = TRUE, N = N)
- y4s_flows <- extract_flows_trial(y3s, idx)
+ y4s_flows <- extract_flows_trial(y4s, idx)
 
  expect_true(all(diff(y4s_flows$N_person_yrs_exp_VW.I) == N / 2))
 
