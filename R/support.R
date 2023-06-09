@@ -150,19 +150,25 @@ never_diag_hist_id <- function(vec, n_erlang, n_diag_rec) {
 ##' @return cumulative and incident flows
 ##' @export
 
-extract_flows_trial <- function(y, idx) {
+extract_flows_trial <- function(y) {
   # extract cumulative flows (standard)
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_incid",
                   "cum_treated", "cum_screened",
                   "N")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
+  
+  strata <- dimnames(y[[1]]$N)[[3]] # extract strata names
+  n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
+  n_erlang <- sum(grepl("V1", strata)) # count erlang
+  
+  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+  idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
 
   ## extract strata separately
 
   #  asymptomatic diagnoses across all X
   cumulative_flows$cum_diag_a_X_all_diaghist <-
-    t(aggregate(y, "cum_diag_a", stratum = idx$X))
 
   #  asymptomatic diagnoses across all V+W
   cumulative_flows$cum_diag_a_VW_all_diaghist <-
@@ -174,9 +180,7 @@ extract_flows_trial <- function(y, idx) {
 
   #  asymptomatic diagnoses in first diagnosis history strata of V+W only
   cumulative_flows$cum_diag_a_VW_first_diag_hist <-
-    t(aggregate(y, "cum_diag_a",
-            stratum = c(never_diag_hist_id(idx$V, idx$n_erlang, idx$n_diag_rec),
-                            idx$W[1])))
+    t(aggregate(y, "cum_diag_a", stratum = idx$never_diag))
 
   #  symptomatic diagnoses across all X
   cumulative_flows$cum_diag_s_X_all_diaghist <-
@@ -192,30 +196,20 @@ extract_flows_trial <- function(y, idx) {
 
   #  symptomatic diagnoses in first diagnosis history strata of V+W only
   cumulative_flows$cum_diag_s_VW_first_diag_hist <-
-    t(aggregate(y, "cum_diag_s",
-                stratum = c(never_diag_hist_id(idx$V, idx$n_erlang,
-                          idx$n_diag_rec), idx$W[1])))
+    t(aggregate(y, "cum_diag_s", stratum = idx$never_diag))
 
   # Now we want person years of exposure in each timestep
   # Person-years of exposure before first diagnosis
   ## firstly in X (note this isn't cumulative)
 
   # total number in X.I, and V.I&W.I at each time point
-  N_diag_hist_X <-
-    t(aggregate(y, "N", stratum = idx$X[1]))
-  N_diag_hist_VW <-
-    t(aggregate(y, "N",
-                stratum = c(never_diag_hist_id(idx$V, idx$n_erlang,
-                            idx$n_diag_rec), idx$W[1])))
+  N_diag_hist_X <- t(aggregate(y, "N", stratum = idx$X[1]))
+  N_diag_hist_VW <- t(aggregate(y, "N", stratum = idx$never_diag))
 
   # number in X.I and V.I&W.I undergoing treatment i.e people 'exposed' after
   # diagnosis
-  N_diag_hist_X_T <-
-    t(aggregate(y, "T", stratum = idx$X[1]))
-  N_diag_hist_VW_T <-
-    t(aggregate(y, "T",
-                stratum = c(never_diag_hist_id(idx$V, idx$n_erlang,
-                            idx$n_diag_rec), idx$W[1])))
+  N_diag_hist_X_T <- t(aggregate(y, "T", stratum = idx$X[1]))
+  N_diag_hist_VW_T <- t(aggregate(y, "T", stratum = idx$never_diag))
 
   # obtain person-years exposed before first diagnosis i.e person-years in
   # treatment don't count towards this
@@ -241,6 +235,7 @@ extract_flows_trial <- function(y, idx) {
 
   ret
 }
+
 
 ##' Convert a year into the number of years after 2009
 ##'
