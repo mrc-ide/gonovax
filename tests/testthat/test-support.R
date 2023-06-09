@@ -246,27 +246,77 @@ test_that("extract_flows_trial works", {
 
 })
 
-test_that("never_diag_hist works as expected", {
+test_that("generating indices for never-diagnosed VW strata is correct", {
 
-  #expected stratum indices are generated
+  #for n_erlang 1 but diagnosis history > 1
+      n_erlang <- 1
+      n_diag_rec <- 3
+      gp <- gono_params_trial(1:3)
+      tt <- seq.int(0, 10)
+      N <- 600
+      set.seed(1)
 
-  n_erlang <- 1
-  n_diag_rec <- 3
-  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
-  ret <- never_diag_hist_id(idx$V, n_erlang, n_diag_rec)
-  expect_true(ret == 4)
+      #stochastic
+      y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                                  vea = 0.5, vei = 0, ved = 0, ves = 0,
+                                  n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                                  stochastic = TRUE, N = N)
 
-  n_erlang <- 4
-  n_diag_rec <- 3
-  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
-  ret <- never_diag_hist_id(idx$V, n_erlang, n_diag_rec)
-  expect_true(all(ret == c(4, 7, 10, 13)))
+      #code for strat, n_diag_hist and n_erlang as is in extract_flows_trial()
+      strata <- dimnames(y[[1]]$N)[[3]]
+      n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+      idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
+                            length.out = n_erlang + 1)
 
-  n_erlang <- 4
-  n_diag_rec <- 1
-  idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
-  ret <- never_diag_hist_id(idx$V, n_erlang, n_diag_rec)
-  expect_true(all(ret == c(2, 3, 4, 5)))
+  expect_true(all(idx$never_diag == c(4, 7)))
+
+  # same but n_erlang > 1
+      n_erlang <- 4
+      n_diag_rec <- 3
+      gp <- gono_params_trial(1:3)
+      tt <- seq.int(0, 10)
+      N <- 600
+      set.seed(1)
+
+      #stochastic
+      y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                                vea = 0.5, vei = 0, ved = 0, ves = 0,
+                                n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                                stochastic = TRUE, N = N)
+
+      strata <- dimnames(y[[1]]$N)[[3]]
+      n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+      idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
+                            length.out = n_erlang + 1)
+
+  expect_true(all(idx$never_diag == c(4, 7, 10, 13, 16)))
+
+  # same but diagnosis history is 1
+      n_erlang <- 4
+      n_diag_rec <- 1
+      gp <- gono_params_trial(1:3)
+      tt <- seq.int(0, 10)
+      N <- 600
+      set.seed(1)
+
+      #stochastic
+      y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                                vea = 0.5, vei = 0, ved = 0, ves = 0,
+                                n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                                stochastic = TRUE, N = N)
+
+      strata <- dimnames(y[[1]]$N)[[3]]
+      n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+      idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
+                            length.out = n_erlang + 1)
+
+  expect_true(all(idx$never_diag == c(2, 3, 4, 5, 6)))
 
 })
 
