@@ -264,8 +264,8 @@ test_that("generating indices for never-diagnosed VW strata is correct", {
 
       #code for strat, n_diag_hist and n_erlang as is in extract_flows_trial()
       strata <- dimnames(y[[1]]$N)[[3]]
-      n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
-      n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
+      n_diag_rec <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_rec # count erlang
       idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
       idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
                             length.out = n_erlang + 1)
@@ -287,8 +287,8 @@ test_that("generating indices for never-diagnosed VW strata is correct", {
                                 stochastic = TRUE, N = N)
 
       strata <- dimnames(y[[1]]$N)[[3]]
-      n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
-      n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
+      n_diag_rec <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_rec # count erlang
       idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
       idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
                             length.out = n_erlang + 1)
@@ -310,8 +310,8 @@ test_that("generating indices for never-diagnosed VW strata is correct", {
                                 stochastic = TRUE, N = N)
 
       strata <- dimnames(y[[1]]$N)[[3]]
-      n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
-      n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
+      n_diag_rec <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_rec # count erlang
       idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
       idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
                             length.out = n_erlang + 1)
