@@ -57,7 +57,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aggregate</span><span class="op">(</span><span class="va">x</span>, <span class="va">what</span>, as_incid <span class="op">=</span> <span class="cn">FALSE</span>, stratum <span class="op">=</span> <span class="cn">NULL</span>, f <span class="op">=</span> <span class="va">identity</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aggregate</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">what</span>,</span>
+<span>  as_incid <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  stratum <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  f <span class="op">=</span> <span class="va">identity</span>,</span>
+<span>  stochastic <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -81,6 +89,12 @@ aggregation is over all strata</p></dd>
 
 <dt>f</dt>
 <dd><p>function to apply across parameter sets (eg. mean / median)</p></dd>
+
+
+<dt>stochastic</dt>
+<dd><p>indicates if function is being used on output of
+stochastic or deterministic version of the trial model, only matters if
+as_incid = TRUE</p></dd>
 
 
 <dt>...</dt>
