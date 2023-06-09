@@ -4,7 +4,7 @@
 \alias{extract_flows_trial}
 \title{extract flows for the XVW trial model}
 \usage{
-extract_flows_trial(y, idx)
+extract_flows_trial(y)
 }
 \arguments{
 \item{y}{a transformed model run output}
