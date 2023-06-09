@@ -160,7 +160,7 @@ extract_flows_trial <- function(y) {
   
   strata <- dimnames(y[[1]]$N)[[3]] # extract strata names
   n_diag_hist <- sum(grepl("W", strata)) # count diag hist categories
-  n_erlang <- sum(grepl("V1", strata)) # count erlang
+  n_erlang <- sum((grepl("V", strata))) / n_diag_hist # count erlang
   
   idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
   idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
