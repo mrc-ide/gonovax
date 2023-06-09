@@ -131,6 +131,7 @@ extract_flows_trial <- function(y) {
 
   #  asymptomatic diagnoses across all X
   cumulative_flows$cum_diag_a_X_all_diaghist <-
+    t(aggregate(y, "cum_diag_a", stratum = idx$X))
 
   #  asymptomatic diagnoses across all V+W
   cumulative_flows$cum_diag_a_VW_all_diaghist <-
