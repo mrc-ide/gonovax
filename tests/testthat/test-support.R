@@ -73,8 +73,7 @@ test_that("extract_flows_trial works", {
                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                             stochastic = TRUE, N = N)
 
- y1s_flows <- extract_flows_trial(y1s,
-                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ y1s_flows <- extract_flows_trial(y1s)
 
  #core code from extract_flows is unchanged , and works for stochastic
  z <- y1s_flows
@@ -97,8 +96,7 @@ test_that("extract_flows_trial works", {
                              n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                              stochastic = FALSE, N = N)
 
- y1d_flows <- extract_flows_trial(y1d,
-                                  stratum_index_xvw_trial(n_erlang, n_diag_rec))
+ y1d_flows <- extract_flows_trial(y1d)
 
  #core code from extract_flows is unchanged, and works for deterministic
  z <- y1d_flows
@@ -127,14 +125,14 @@ test_that("extract_flows_trial works", {
                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                             stochastic = TRUE, N = N)
 
- y2s_flows <- extract_flows_trial(y2s, idx)
+ y2s_flows <- extract_flows_trial(y2s)
     #deterministic
  y2d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                             stochastic = FALSE, N = N)
 
- y2d_flows <- extract_flows_trial(y2d, idx)
+ y2d_flows <- extract_flows_trial(y2d)
 
  #for n_diag_rec > 1, cumulative diagnoses in first diagnosis history strata
  #is < diagnoses across all diagnosis history strata
@@ -170,7 +168,7 @@ test_that("extract_flows_trial works", {
                             vea = 0.5, vei = 0, ved = 0, ves = 0,
                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                             stochastic = TRUE, N = N)
- y3s_flows <- extract_flows_trial(y3s, idx)
+ y3s_flows <- extract_flows_trial(y3s)
 
     #deterministic
  y3d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
@@ -178,7 +176,7 @@ test_that("extract_flows_trial works", {
                              n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                              stochastic = FALSE, N = N)
 
- y3d_flows <- extract_flows_trial(y3d, idx)
+ y3d_flows <- extract_flows_trial(y3d)
 
  #when n_erlang > 1  and n_diag_rec > 1 tests still pass
  #stochastic
@@ -242,7 +240,7 @@ test_that("extract_flows_trial works", {
                              vea = 1, vei = 0, ved = 0, ves = 0,
                              n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                              stochastic = TRUE, N = N)
- y4s_flows <- extract_flows_trial(y4s, idx)
+ y4s_flows <- extract_flows_trial(y4s)
 
  expect_true(all(diff(y4s_flows$N_person_yrs_exp_VW.I) == N / 2))
 
