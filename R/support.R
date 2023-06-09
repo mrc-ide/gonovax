@@ -19,7 +19,7 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 
   if (as_incid) {
 
-      if (stochastic == TRUE) {
+      if (stochastic) {
         dt <- diff(x[[1]]$time)
       }else {
         dt <- diff(x[[1]]$t)
