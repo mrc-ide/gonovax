@@ -57,6 +57,268 @@ test_that("extract_flows works", {
   expect_equal(z$offered_primary, z$vaccinated - z$revaccinated - z$vbe)
 })
 
+test_that("extract_flows_trial works", {
+
+  #n_erlang = 1, n_diag_rec = 1
+  gp <- gono_params_trial(1:3)
+  n_erlang <- 1
+  n_diag_rec <- 1
+  tt <- seq.int(0, 10)
+  N <- 600
+  set.seed(1)
+
+    #stochastic
+ y1s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)
+
+ y1s_flows <- extract_flows_trial(y1s)
+
+ #core code from extract_flows is unchanged , and works for stochastic
+ z <- y1s_flows
+ idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+ expect_equal(z$cum_treated[1, ], z$treated[1, ])
+ expect_equal(z$cum_treated[2, ] - z$cum_treated[1, ], z$treated[2, ])
+ #same for new outputs
+ expect_equal(z$diag_a_X_all_diaghist, t(aggregate(y1s, "cum_diag_a",
+              stratum = idx$X, stochastic = TRUE, as_incid = TRUE)))
+ expect_equal(z$diag_a_VW_all_diaghist, t(aggregate(y1s, "cum_diag_a",
+              stratum = c(idx$V, idx$W), stochastic = TRUE, as_incid = TRUE)))
+ expect_equal(z$diag_s_X_all_diaghist, t(aggregate(y1s, "cum_diag_s",
+              stratum = idx$X, stochastic = TRUE, as_incid = TRUE)))
+ expect_equal(z$diag_s_VW_all_diaghist, t(aggregate(y1s, "cum_diag_s",
+              stratum = c(idx$V, idx$W), stochastic = TRUE, as_incid = TRUE)))
+
+ #deterministic
+ y1d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 0.5, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                             stochastic = FALSE, N = N)
+
+ y1d_flows <- extract_flows_trial(y1d)
+
+ #core code from extract_flows is unchanged, and works for deterministic
+ z <- y1d_flows
+ idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+ expect_equal(z$cum_treated[1, ], z$treated[1, ])
+ expect_equal(z$cum_treated[2, ] - z$cum_treated[1, ], z$treated[2, ])
+ #same for new outputs
+ expect_equal(z$diag_a_X_all_diaghist, t(aggregate(y1d, "cum_diag_a",
+              stratum = idx$X, as_incid = TRUE)))
+ expect_equal(z$diag_a_VW_all_diaghist, t(aggregate(y1d, "cum_diag_a",
+              stratum = c(idx$V, idx$W), as_incid = TRUE)))
+ expect_equal(z$diag_s_X_all_diaghist, t(aggregate(y1d, "cum_diag_s",
+               stratum = idx$X,  as_incid = TRUE)))
+ expect_equal(z$diag_s_VW_all_diaghist, t(aggregate(y1d, "cum_diag_s",
+              stratum = c(idx$V, idx$W), as_incid = TRUE)))
+
+
+ #n_erlang = 1, n_diag_rec > 1
+ n_diag_rec <- 2
+ idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+ set.seed(1)
+
+    #stochastic
+ y2s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)
+
+ y2s_flows <- extract_flows_trial(y2s)
+    #deterministic
+ y2d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = FALSE, N = N)
+
+ y2d_flows <- extract_flows_trial(y2d)
+
+ #for n_diag_rec > 1, cumulative diagnoses in first diagnosis history strata
+ #is < diagnoses across all diagnosis history strata
+ #stochastic
+ expect_true(all(y2s_flows$cum_diag_a_X_first_diag_hist
+                 < y2s_flows$cum_diag_a_X_all_diaghist))
+ expect_true(all(y2s_flows$cum_diag_a_VW_first_diag_hist
+                 < y2s_flows$cum_diag_a_VW_all_diaghist))
+ expect_true(all(y2s_flows$cum_diag_s_X_first_diag_hist
+                 < y2s_flows$cum_diag_s_X_all_diaghist))
+ expect_true(all(y2s_flows$cum_diag_s_VW_first_diag_hist
+                 < y2s_flows$cum_diag_s_VW_all_diaghist))
+
+ #deterministic - no migration to diagnosis history strata so first diagnosis
+ #history strata should = number diagnoses across all diagnosis history
+ expect_equal(y2d_flows$cum_diag_a_X_first_diag_hist,
+              y2d_flows$cum_diag_a_X_all_diaghist)
+ expect_equal(y2d_flows$cum_diag_a_VW_first_diag_hist,
+              y2d_flows$cum_diag_a_VW_all_diaghist)
+ expect_equal(y2d_flows$cum_diag_s_X_first_diag_hist,
+              y2d_flows$cum_diag_s_X_all_diaghist)
+ expect_equal(y2d_flows$cum_diag_s_VW_first_diag_hist,
+              y2d_flows$cum_diag_s_VW_all_diaghist)
+
+ #n_erlang > 1, n_diag_rec > 1
+ n_diag_rec <- 2
+ n_erlang <- 3
+ idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+ set.seed(1)
+
+      #stochastic
+ y3s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                            vea = 0.5, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                            stochastic = TRUE, N = N)
+ y3s_flows <- extract_flows_trial(y3s)
+
+    #deterministic
+ y3d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 0.5, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                             stochastic = FALSE, N = N)
+
+ y3d_flows <- extract_flows_trial(y3d)
+
+ #when n_erlang > 1  and n_diag_rec > 1 tests still pass
+ #stochastic
+ z <- y3s_flows
+ expect_equal(z$diag_a_X_all_diaghist, t(aggregate(y3s, "cum_diag_a",
+              stratum = idx$X, stochastic = TRUE, as_incid = TRUE)))
+ expect_equal(z$diag_a_VW_all_diaghist, t(aggregate(y3s, "cum_diag_a",
+              stratum = c(idx$V, idx$W), stochastic = TRUE, as_incid = TRUE)))
+ expect_equal(z$diag_s_X_all_diaghist, t(aggregate(y3s, "cum_diag_s",
+              stratum = idx$X, stochastic = TRUE, as_incid = TRUE)))
+ expect_equal(z$diag_s_VW_all_diaghist, t(aggregate(y3s, "cum_diag_s",
+              stratum = c(idx$V, idx$W), stochastic = TRUE, as_incid = TRUE)))
+
+ expect_true(all(y3s_flows$cum_diag_a_X_first_diag_hist
+                 < y3s_flows$cum_diag_a_X_all_diaghist))
+ expect_true(all(y3s_flows$cum_diag_a_VW_first_diag_hist
+                 < y3s_flows$cum_diag_a_VW_all_diaghist))
+ expect_true(all(y3s_flows$cum_diag_s_X_first_diag_hist
+                 < y3s_flows$cum_diag_s_X_all_diaghist))
+ expect_true(all(y3s_flows$cum_diag_s_VW_first_diag_hist
+                 < y3s_flows$cum_diag_s_VW_all_diaghist))
+
+ #deterministic
+ z <- y3d_flows
+ expect_equal(z$diag_a_X_all_diaghist, t(aggregate(y3d, "cum_diag_a",
+              stratum = idx$X, as_incid = TRUE)))
+ expect_equal(z$diag_a_VW_all_diaghist, t(aggregate(y3d, "cum_diag_a",
+             stratum = c(idx$V, idx$W), as_incid = TRUE)))
+ expect_equal(z$diag_s_X_all_diaghist, t(aggregate(y3d, "cum_diag_s",
+             stratum = idx$X, as_incid = TRUE)))
+ expect_equal(z$diag_s_VW_all_diaghist, t(aggregate(y3d, "cum_diag_s",
+             stratum = c(idx$V, idx$W), as_incid = TRUE)))
+
+ expect_equal(y3d_flows$cum_diag_a_X_first_diag_hist,
+              y3d_flows$cum_diag_a_X_all_diaghist)
+ expect_equal(y3d_flows$cum_diag_a_VW_first_diag_hist,
+              y3d_flows$cum_diag_a_VW_all_diaghist)
+ expect_equal(y3d_flows$cum_diag_s_X_first_diag_hist,
+              y3d_flows$cum_diag_s_X_all_diaghist)
+ expect_equal(y3d_flows$cum_diag_s_VW_first_diag_hist,
+              y3d_flows$cum_diag_s_VW_all_diaghist)
+
+ #number of person years spent exposed is increasing over time
+ #person years at final timepiont > person years at the start
+
+ expect_true(all(y3d_flows$N_person_yrs_exp_X.I[1, ]
+                 < y3d_flows$N_person_yrs_exp_X.I[10, ]))
+ expect_true(all(y3d_flows$N_person_yrs_exp_VW.I[1, ]
+                 < y3d_flows$N_person_yrs_exp_VW.I[10, ]))
+ expect_true(all(y3s_flows$N_person_yrs_exp_X.I[1, ]
+                 < y3s_flows$N_person_yrs_exp_X.I[10, ]))
+ expect_true(all(y3s_flows$N_person_yrs_exp_VW.I[1, ]
+                 < y3s_flows$N_person_yrs_exp_VW.I[10, ]))
+
+  #if vea = 1, person years exposed in V, increases by the number of people in
+ #the trial arm each year (N/2)
+
+ N <- 600
+ set.seed(1)
+ y4s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                             vea = 1, vei = 0, ved = 0, ves = 0,
+                             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                             stochastic = TRUE, N = N)
+ y4s_flows <- extract_flows_trial(y4s)
+
+ expect_true(all(diff(y4s_flows$N_person_yrs_exp_VW.I) == N / 2))
+
+})
+
+test_that("generating indices for never-diagnosed VW strata is correct", {
+
+  #for n_erlang 1 but diagnosis history > 1
+      n_erlang <- 1
+      n_diag_rec <- 3
+      gp <- gono_params_trial(1:3)
+      tt <- seq.int(0, 10)
+      N <- 600
+      set.seed(1)
+
+      #stochastic
+      y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                                  vea = 0.5, vei = 0, ved = 0, ves = 0,
+                                  n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                                  stochastic = TRUE, N = N)
+
+      #code for strat, n_diag_hist and n_erlang as is in extract_flows_trial()
+      strata <- dimnames(y[[1]]$N)[[3]]
+      n_diag_rec <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_rec # count erlang
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+      idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
+                            length.out = n_erlang + 1)
+
+  expect_true(all(idx$never_diag == c(4, 7)))
+
+  # same but n_erlang > 1
+      n_erlang <- 4
+      n_diag_rec <- 3
+      gp <- gono_params_trial(1:3)
+      tt <- seq.int(0, 10)
+      N <- 600
+      set.seed(1)
+
+      #stochastic
+      y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                                vea = 0.5, vei = 0, ved = 0, ves = 0,
+                                n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                                stochastic = TRUE, N = N)
+
+      strata <- dimnames(y[[1]]$N)[[3]]
+      n_diag_rec <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_rec # count erlang
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+      idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
+                            length.out = n_erlang + 1)
+
+  expect_true(all(idx$never_diag == c(4, 7, 10, 13, 16)))
+
+  # same but diagnosis history is 1
+      n_erlang <- 4
+      n_diag_rec <- 1
+      gp <- gono_params_trial(1:3)
+      tt <- seq.int(0, 10)
+      N <- 600
+      set.seed(1)
+
+      #stochastic
+      y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                                vea = 0.5, vei = 0, ved = 0, ves = 0,
+                                n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                                stochastic = TRUE, N = N)
+
+      strata <- dimnames(y[[1]]$N)[[3]]
+      n_diag_rec <- sum(grepl("W", strata)) # count diag hist categories
+      n_erlang <- sum((grepl("V", strata))) / n_diag_rec # count erlang
+      idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
+      idx$never_diag <- seq(idx$V[1], by = n_diag_rec,
+                            length.out = n_erlang + 1)
+
+  expect_true(all(idx$never_diag == c(2, 3, 4, 5, 6)))
+
+})
 
 test_that("gonovax_year works as expected", {
   expect_equal(gonovax_year(2009), 0)
