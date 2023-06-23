@@ -18,7 +18,7 @@ deriv(I[, ]) <- n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
 
 deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
   n_AU[i, j] + sum(wA[i, j, ])
-  
+
 deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
 
@@ -36,7 +36,7 @@ n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta * U[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
-# individuals into stratum with the relevant diagnosis history 
+# individuals into stratum with the relevant diagnosis history
 
 n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
