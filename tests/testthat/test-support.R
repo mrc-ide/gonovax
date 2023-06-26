@@ -148,14 +148,14 @@ test_that("extract_flows_trial works", {
 
  #deterministic - no migration to diagnosis history strata so first diagnosis
  #history strata should = number diagnoses across all diagnosis history
- expect_equal(y2d_flows$cum_diag_a_X_first_diag_hist,
-              y2d_flows$cum_diag_a_X_all_diaghist)
- expect_equal(y2d_flows$cum_diag_a_VW_first_diag_hist,
-              y2d_flows$cum_diag_a_VW_all_diaghist)
- expect_equal(y2d_flows$cum_diag_s_X_first_diag_hist,
-              y2d_flows$cum_diag_s_X_all_diaghist)
- expect_equal(y2d_flows$cum_diag_s_VW_first_diag_hist,
-              y2d_flows$cum_diag_s_VW_all_diaghist)
+ expect_true(all(y2d_flows$cum_diag_a_X_first_diag_hist
+                 < y2d_flows$cum_diag_a_X_all_diaghist))
+ expect_true(all(y2d_flows$cum_diag_a_VW_first_diag_hist
+                 < y2d_flows$cum_diag_a_VW_all_diaghist))
+ expect_true(all(y2d_flows$cum_diag_s_X_first_diag_hist
+                 < y2d_flows$cum_diag_s_X_all_diaghist))
+ expect_true(all(y2d_flows$cum_diag_s_VW_first_diag_hist
+                 < y2d_flows$cum_diag_s_VW_all_diaghist))
 
  #n_erlang > 1, n_diag_rec > 1
  n_diag_rec <- 2
@@ -210,14 +210,14 @@ test_that("extract_flows_trial works", {
  expect_equal(z$diag_s_VW_all_diaghist, t(aggregate(y3d, "cum_diag_s",
              stratum = c(idx$V, idx$W), as_incid = TRUE)))
 
- expect_equal(y3d_flows$cum_diag_a_X_first_diag_hist,
-              y3d_flows$cum_diag_a_X_all_diaghist)
- expect_equal(y3d_flows$cum_diag_a_VW_first_diag_hist,
-              y3d_flows$cum_diag_a_VW_all_diaghist)
- expect_equal(y3d_flows$cum_diag_s_X_first_diag_hist,
-              y3d_flows$cum_diag_s_X_all_diaghist)
- expect_equal(y3d_flows$cum_diag_s_VW_first_diag_hist,
-              y3d_flows$cum_diag_s_VW_all_diaghist)
+ expect_true(all(y3d_flows$cum_diag_a_X_first_diag_hist
+                 < y3d_flows$cum_diag_a_X_all_diaghist))
+ expect_true(all(y3d_flows$cum_diag_a_VW_first_diag_hist
+                 < y3d_flows$cum_diag_a_VW_all_diaghist))
+ expect_true(all(y3d_flows$cum_diag_s_X_first_diag_hist
+                 < y3d_flows$cum_diag_s_X_all_diaghist))
+ expect_true(all(y3d_flows$cum_diag_s_VW_first_diag_hist
+                 < y3d_flows$cum_diag_s_VW_all_diaghist))
 
  #number of person years spent exposed is increasing over time
  #person years at final timepiont > person years at the start

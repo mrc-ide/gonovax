@@ -677,9 +677,9 @@ test_that("correct number of individuals are set up in each trial arm", {
                             stochastic = TRUE,
                             N = N)
 
-  expect_true(all(y[[1]]$N[, 2, 1] == N / 2))
-  expect_true(all(y[[1]]$N[, 2, 2] == N / 2))
-  expect_true(all(y[[1]]$N[, 2, 3] == 0))
+  expect_equal(y[[1]]$N[1, 2, 1], N / 2)
+  expect_equal(y[[1]]$N[1, 2, 2], N / 2)
+  expect_equal(y[[1]]$N[1, 2, 3], 0)
 
   # for n_diag_rec > 1
 

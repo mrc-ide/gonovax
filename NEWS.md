@@ -1,4 +1,7 @@
-# gonovax 0.5.0
+# gonovax 0.4.11
+* deterministic version of the xvw_trial model can now have parallel strata that account for diagnosis history
+
+# gonovax 0.4.10
 * stochastic version of the xvw_trial model can now have parallel strata that account for diagnosis history
 
 # gonovax 0.4.9 
