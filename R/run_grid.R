@@ -73,9 +73,9 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @title compare model runs with vaccination to a baseline run for the
 ##' branching XPVWRH model where both partial and full vaccination have a
 ##' given level of efficacy
-##' @param y list of model runs, e.g. created by `run_onevax_xvwv`, each list
+##' @param y list of model runs, e.g. created by `run_onevax_xpvwrh`, each list
 ##' entry refers to a different parameter set
-##' @param baseline list of baseline runs e.g. created by `run_onevax_xvwv`.
+##' @param baseline list of baseline runs e.g. created by `run_onevax_xpvwrh`.
 ##' Should be same length as `y`
 ##' @param cost_params list of cost effectiveness parameters, containing entries
 ##' `qaly_loss_per_diag_s`, `unit_cost_manage_symptomatic`,

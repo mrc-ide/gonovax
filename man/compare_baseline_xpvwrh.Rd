@@ -18,10 +18,10 @@ compare_baseline_xpvwrh(
 )
 }
 \arguments{
-\item{y}{list of model runs, e.g. created by `run_onevax_xvwv`, each list
+\item{y}{list of model runs, e.g. created by `run_onevax_xpvwrh`, each list
 entry refers to a different parameter set}
 
-\item{baseline}{list of baseline runs e.g. created by `run_onevax_xvwv`.
+\item{baseline}{list of baseline runs e.g. created by `run_onevax_xpvwrh`.
 Should be same length as `y`}
 
 \item{uptake_first_dose}{numeric (0-1) either length 1 or same as `y`}
