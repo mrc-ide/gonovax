@@ -43,6 +43,8 @@ test_that("extract_flows_xpvwrh works", {
 
   # asymptomatic and symptomatic diagnoses are calculated for vaccine protected
   # and non-vaccine protected strata correctly when adjusted baseline supplied
+  # (extract_flows_xpvwrh() is within compare_baseline_xpvwrh() and baseline
+  # comparision occurs within the latter after the former called )
 
   tt <- seq(0, 2)
   y  <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4, r1 = 1,
@@ -79,7 +81,7 @@ test_that("extract_flows_xpvwrh works", {
   expect_true(all(z$inc_diag_a_pvr == 0))
   expect_true(all(z$inc_diag_s_pvr == 0))
   
-  #extract_flows works with n_erlang > 1. Doesn't throw error
+  #extract_flows_xpvwrh() works with n_erlang > 1. Doesn't throw error
   #2. If people overall take longer to wane (with n_erlang > 1)
   # fewer diagnoses overall as more people protected
 
