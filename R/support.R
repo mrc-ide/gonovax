@@ -58,6 +58,36 @@ extract_flows_xpvwrh <- function(y) {
   cumulative_flows$cum_revaccinated <-
     t(aggregate(y, "cum_vaccinated", stratum = 4))
 
+  ######################
+  #X = 1, P = 2, V = 3, W = 4, R = 5, H = 6, (for n_erlang = 1)
+  # extract asymptomatic and symptomatic diagnoses in vaccinated (P,V,R)
+  # and unvaccinated strata separately (X,W)
+
+  #asymptomatic, unvax
+  cumulative_flows$cum_diag_a_xwh <-
+    t(aggregate(y, "cum_diag_a", stratum = c(1, 4, 6)))
+
+  #symptomatic, unvax
+  cumulative_flows$cum_diag_s_xwh <-
+    t(aggregate(y, "cum_diag_s", stratum = c(1, 4, 6)))
+
+  #asymptomatic, all-vax
+  cumulative_flows$cum_diag_a_pvr <-
+    t(aggregate(y, "cum_diag_a", stratum = c(2, 3, 5)))
+
+  #symptomatic, all-vax
+  cumulative_flows$cum_diag_s_pvr <-
+    t(aggregate(y, "cum_diag_s", stratum = c(2, 3, 5)))
+
+  #total, unvax (cumulative treated will be a bit different to the sum of a & s)
+  # unvax
+  cumulative_flows$cum_diag_t_xwh <-
+    cumulative_flows$cum_diag_a_xwh + cumulative_flows$cum_diag_s_xwh
+
+  # all-vax
+  cumulative_flows$cum_diag_t_pvr <-
+    cumulative_flows$cum_diag_a_pvr + cumulative_flows$cum_diag_s_pvr
+
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
   names(flows) <- gsub("^cum_", "", names(cumulative_flows))
