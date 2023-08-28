@@ -78,6 +78,30 @@ test_that("extract_flows_xpvwrh works", {
   expect_true(all(z$inc_diag_s_xwh > 0))
   expect_true(all(z$inc_diag_a_pvr == 0))
   expect_true(all(z$inc_diag_s_pvr == 0))
+  
+  #extract_flows works with n_erlang > 1. Doesn't throw error
+  #2. If people overall take longer to wane (with n_erlang > 1)
+  # fewer diagnoses overall as more people protected
+
+  y_erlang <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4,
+                                r1 = 1, r2 = 1, strategy = "VoD", n_erlang = 3)
+  y0_erlang <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 0, dur_v = 4,
+                                r1 = 0, r2 = 0, strategy = "VoD", n_erlang = 3)
+  baseline_erlang <- extract_flows_xpvwrh(adjust_baseline(y0_erlang, y_erlang))
+  z_erlang <- compare_baseline_xpvwrh(y_erlang, baseline_erlang,
+                                      1, 1, cp, 0, 1, 1)
+  
+  y <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4,
+                                r1 = 1, r2 = 1, strategy = "VoD", n_erlang = 1)
+  y0 <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 0, dur_v = 4,
+                                 r1 = 0, r2 = 0, strategy = "VoD", n_erlang = 1)
+  
+  baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y))
+  z <- compare_baseline_xpvwrh(y, baseline, 1, 1, cp, 0, 1, 1)
+
+  #overall
+  expect_true(all(z_erlang$inc_diag_a < z$inc_diag_a)) 
+  expect_true(all(z_erlang$inc_diag_s < z$inc_diag_s))
 
 })
 
