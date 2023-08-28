@@ -43,20 +43,25 @@ extract_flows_xpvwrh <- function(y) {
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
+ strata <- dimnames(y[[1]]$N)[[3]] # extract strata names
+ n_erlang <- sum((grepl("V", strata))) # count erlang
+
+ idx <- stratum_index_xpvwrh(n_erlang)
+                             
 ## extract vaccinations and revaccinations separately
   # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
   cumulative_flows$cum_primary_total <-
-    t(aggregate(y, "cum_vaccinated", stratum = 1))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$X))
 
   # partial to full = everyone vaccinated from P(2)
   # in earlier models this will be V, we expect this to be 0
   cumulative_flows$cum_part_to_full <-
-    t(aggregate(y, "cum_vaccinated", stratum = 2))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$P))
 
   # revaccinated = everyone vaccinated from W(4), note does not include
   # vaccination of individuals in X who have waned from P
   cumulative_flows$cum_revaccinated <-
-    t(aggregate(y, "cum_vaccinated", stratum = 4))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$W))
 
   ######################
   #X = 1, P = 2, V = 3, W = 4, R = 5, H = 6, (for n_erlang = 1)
@@ -65,19 +70,19 @@ extract_flows_xpvwrh <- function(y) {
 
   #asymptomatic, unvax
   cumulative_flows$cum_diag_a_xwh <-
-    t(aggregate(y, "cum_diag_a", stratum = c(1, 4, 6)))
+    t(aggregate(y, "cum_diag_a", stratum = c(idx$X, idx$W, idx$H)))
 
   #symptomatic, unvax
   cumulative_flows$cum_diag_s_xwh <-
-    t(aggregate(y, "cum_diag_s", stratum = c(1, 4, 6)))
+    t(aggregate(y, "cum_diag_s", stratum = c(idx$X, idx$W, idx$H)))
 
   #asymptomatic, all-vax
   cumulative_flows$cum_diag_a_pvr <-
-    t(aggregate(y, "cum_diag_a", stratum = c(2, 3, 5)))
+    t(aggregate(y, "cum_diag_a", stratum = c(idx$P, idx$V, idx$R)))
 
   #symptomatic, all-vax
   cumulative_flows$cum_diag_s_pvr <-
-    t(aggregate(y, "cum_diag_s", stratum = c(2, 3, 5)))
+    t(aggregate(y, "cum_diag_s", stratum = c(idx$P, idx$V, idx$R)))
 
   #total, unvax (cumulative treated will be a bit different to the sum of a & s)
   # unvax
