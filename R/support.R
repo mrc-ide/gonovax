@@ -304,3 +304,17 @@ name_outputs <- function(res, strata_names) {
 
   res
 }
+
+adjust_baseline <- function(baseline, y) {
+
+  N <- sum(baseline[[1]]$N[1, ,1])
+
+  for (i in seq_along(baseline)) {
+    # this uses the population structure of the vaccination run in the baseline
+    baseline[[i]]$cum_diag_a <-
+      c(baseline[[i]]$cum_diag_a[, , "X"]) * y[[i]]$N / N
+    baseline[[i]]$cum_diag_s <-
+      c(baseline[[i]]$cum_diag_s[, , "X"]) * y[[i]]$N / N
+  }
+  baseline
+}
