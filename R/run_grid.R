@@ -201,6 +201,18 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' given timepoint. Given as the sum of the products of the number of partially
 ##' and fully vaccinated individuals and the one dose and two dose vaccine
 ##' efficacies respectively.
+##' `inc_diag_a_xwh` = annual number of asymptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_diag_s_xwh` = annual number of symptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_diag_t_xwh` = annual number of total diagnoses in non-vaccine
+##' protected strata compared to an adjusted baseline
+##' `inc_diag_a_pvr` = annual number of asymptomatic diagnoses in vaccine
+##' protected strata compared to an adjusted baseline
+##' `inc_diag_s_pvr` = annual number of symptomatic diagnoses in vaccine
+##'  protected strata compared to an adjusted baseline
+##' `inc_diag_t_pvr` = annual number of total diagnoses in vaccine protected
+##' strata compared to an adjusted baseline
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
@@ -315,6 +327,15 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
 
   ## output present value of cases averted
   ret$pv_cases_averted <- calc_pv(-ret$inc_treated, disc_rate)
+
+  ## output cumulative diagnoses for symp, asymp, and vax vs non vax strata
+  ret$inc_cum_diag_a_xwh <- apply(ret$inc_diag_a_xwh, 2, cumsum)
+  ret$inc_cum_diag_s_xwh <- apply(ret$inc_diag_s_xwh, 2, cumsum)
+  ret$inc_cum_diag_t_xwh <- apply(ret$inc_diag_t_xwh, 2, cumsum)
+
+  ret$inc_cum_diag_a_pvr <- apply(ret$inc_diag_a_pvr, 2, cumsum)
+  ret$inc_cum_diag_s_pvr <- apply(ret$inc_diag_s_pvr, 2, cumsum)
+  ret$inc_cum_diag_t_pvr <- apply(ret$inc_diag_t_pvr, 2, cumsum)
 
   ret
 }
