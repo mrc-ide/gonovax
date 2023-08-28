@@ -41,6 +41,44 @@ test_that("extract_flows_xpvwrh works", {
   expect_equal(z$revaccinated[2, ],
                sapply(y, function(x) diff(rowSums(x$cum_vaccinated[-1, , 4]))))
 
+  # asymptomatic and symptomatic diagnoses are calculated for vaccine protected
+  # and non-vaccine protected strata correctly when adjusted baseline supplied
+
+  tt <- seq(0, 2)
+  y  <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4, r1 = 1,
+                         r2 = 1, strategy = "VoD")
+  y0 <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 0, dur_v = 4, r1 = 0,
+                           r2 = 0, strategy = "VoD")
+
+  baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y))
+  cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
+             unit_cost_manage_symptomatic = c(98, 99),
+             unit_cost_manage_asymptomatic = c(93, 94),
+             unit_cost_screen_uninfected = c(70, 71))
+
+  z <- compare_baseline_xpvwrh(y, baseline, 1, 1, cp, 0, 1, 1)
+
+  # inc_diag_a = inc_diag_a_xwh + inc_diag_a_pvr (same for s)
+
+  expect_equal(z$inc_diag_a_xwh + z$inc_diag_a_pvr, z$inc_diag_a)
+  expect_equal(z$inc_diag_s_xwh + z$inc_diag_s_pvr, z$inc_diag_s)
+
+  # for vaccine uptake > 1 and efficacy > 1, inc_diag_a_pvr and
+  # inc_diag_s_pvr -'ve
+
+  expect_true(all(z$inc_diag_a_pvr < 0))
+  expect_true(all(z$inc_diag_s_pvr < 0))
+
+  # if vaccination uptake = 0,inc_diag_a_pvr, inc_diag_s_pvr = 0 but xwh > 0
+
+  baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y0))
+  z <- compare_baseline_xpvwrh(y0, baseline, 1, 1, cp, 0, 1, 1)
+
+  expect_true(all(z$inc_diag_a_xwh > 0))
+  expect_true(all(z$inc_diag_s_xwh > 0))
+  expect_true(all(z$inc_diag_a_pvr == 0))
+  expect_true(all(z$inc_diag_s_pvr == 0))
+
 })
 
 test_that("extract_flows works", {
