@@ -155,6 +155,30 @@ some form of vaccine protection at a given timepoint
 given timepoint. Given as the sum of the products of the number of partially
 and fully vaccinated individuals and the one dose and two dose vaccine
 efficacies respectively.
+`inc_diag_a_xwh` = annual number of asymptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_diag_s_xwh` = annual number of symptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_diag_t_xwh` = annual number of total diagnoses in non-vaccine
+protected strata compared to an adjusted baseline
+`inc_diag_a_pvr` = annual number of asymptomatic diagnoses in vaccine
+protected strata compared to an adjusted baseline
+`inc_diag_s_pvr` = annual number of symptomatic diagnoses in vaccine
+ protected strata compared to an adjusted baseline
+`inc_diag_t_pvr` = annual number of total diagnoses in vaccine protected
+strata compared to an adjusted baseline
+`inc_cum_diag_a_xwh` = cumulative number of asymptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_cum_diag_s_xwh` = cumulative number of symptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_cum_diag_t_xwh` = cumulative number of total diagnoses in non-vaccine
+protected strata compared to an adjusted baseline
+`inc_cum_diag_a_pvr` = cumulative number of asymptomatic diagnoses in
+vaccine protected strata compared to an adjusted baseline
+`inc_cum_diag_s_pvr` = cumulative number of symptomatic diagnoses in vaccine
+ protected strata compared to an adjusted baseline
+`inc_cum_diag_t_pvr` = cumulative number of total diagnoses in vaccine
+protected strata compared to an adjusted baseline
 }
 \description{
 compare model runs with vaccination to a baseline run for the

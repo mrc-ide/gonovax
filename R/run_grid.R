@@ -213,6 +213,18 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##'  protected strata compared to an adjusted baseline
 ##' `inc_diag_t_pvr` = annual number of total diagnoses in vaccine protected
 ##' strata compared to an adjusted baseline
+##' `inc_cum_diag_a_xwh` = cumulative number of asymptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_cum_diag_s_xwh` = cumulative number of symptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_cum_diag_t_xwh` = cumulative number of total diagnoses in non-vaccine
+##' protected strata compared to an adjusted baseline
+##' `inc_cum_diag_a_pvr` = cumulative number of asymptomatic diagnoses in
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_cum_diag_s_pvr` = cumulative number of symptomatic diagnoses in vaccine
+##'  protected strata compared to an adjusted baseline
+##' `inc_cum_diag_t_pvr` = cumulative number of total diagnoses in vaccine
+##' protected strata compared to an adjusted baseline
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                              uptake_second_dose, cost_params,
