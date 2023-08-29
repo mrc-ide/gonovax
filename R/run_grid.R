@@ -48,7 +48,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
   ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
                             .f = compare_baseline,
                             cost_params = cost_params,
-                          uptake_first_dose = uptake_total / uptake_second_dose,
+                            uptake_first_dose =
+                              uptake_total / uptake_second_dose,
                             uptake_second_dose = uptake_second_dose,
                             disc_rate = disc_rate)
 
@@ -227,8 +228,8 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' protected strata compared to an adjusted baseline
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
-                             uptake_second_dose, cost_params,
-                             disc_rate, vea, vea_p) {
+                                    uptake_second_dose, cost_params,
+                                    disc_rate, vea, vea_p) {
 
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
@@ -237,39 +238,39 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret <- c(flows, ret)
 
   ## extract number under vaccine protection
-      vacsnap <- list()
-     # fully vaccine protected, snapshot of N in: V(3) and R(5)
-        vacsnap$vacprotec_full <-
-        t(aggregate(y, "N", stratum = c(3, 5)))
+  vacsnap <- list()
+  # fully vaccine protected, snapshot of N in: V(3) and R(5)
+  vacsnap$vacprotec_full <-
+    t(aggregate(y, "N", stratum = c(3, 5)))
 
-    # partially vaccine protected, snapshot of N in: P(2)
-        vacsnap$vacprotec_part <-
-         t(aggregate(y, "N", stratum = 2))
+  # partially vaccine protected, snapshot of N in: P(2)
+  vacsnap$vacprotec_part <-
+    t(aggregate(y, "N", stratum = 2))
 
-    # vaccine protected total, snapshot of N in: P(2), V(3), R(5)
-        vacsnap$vacprotec_total <-
-        t(aggregate(y, "N", stratum = c(2, 3, 5)))
+  # vaccine protected total, snapshot of N in: P(2), V(3), R(5)
+  vacsnap$vacprotec_total <-
+    t(aggregate(y, "N", stratum = c(2, 3, 5)))
 
-    # remove t = 0, so object dimensions for prevalence measures match those for
-    # annual and cumulative flows
-        vacsnap <- lapply(vacsnap, "[", -1, )
+  # remove t = 0, so object dimensions for prevalence measures match those for
+  # annual and cumulative flows
+  vacsnap <- lapply(vacsnap, "[", -1, )
 
   ret <- c(vacsnap, ret)
 
   ## calculate proportion of the population under vaccine protection
-    # get total pop size  (including H!) This should be the same across
-    # all model runs for all timepoints
-    # t() added as ret$vacprotec_* are dim(t, n_par), so arrays are conformable
-    N <- t(aggregate(y, "N")[, -1])
+  # get total pop size  (including H!) This should be the same across
+  # all model runs for all timepoints
+  # t() added as ret$vacprotec_* are dim(t, n_par), so arrays are conformable
+  N <- t(aggregate(y, "N")[, -1])
 
-    ret$vacprotec_full_prop <- ret$vacprotec_full / N
-    ret$vacprotec_part_prop <- ret$vacprotec_part / N
-    ret$vacprotec_total_prop <- ret$vacprotec_total / N
+  ret$vacprotec_full_prop <- ret$vacprotec_full / N
+  ret$vacprotec_part_prop <- ret$vacprotec_part / N
+  ret$vacprotec_total_prop <- ret$vacprotec_total / N
 
   ## calculate level of vaccine protection in the population
 
-   ret$level_vacprotec <- ((ret$vacprotec_part * vea_p) +
-                             (ret$vacprotec_full * vea)) / N
+  ret$level_vacprotec <- ((ret$vacprotec_part * vea_p) +
+                            (ret$vacprotec_full * vea)) / N
 
   ## calculate number receiving primary vaccination
   ret$inc_primary <- ret$inc_primary_total - ret$inc_vbe
@@ -309,9 +310,9 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret$inc_cum_booster_doses <- apply(ret$inc_booster_doses, 2, cumsum)
 
   ret$inc_doses <- ret$inc_primary_total_doses +
-                    ret$inc_part_to_full_doses +
-                    ret$inc_booster_doses +
-                    ret$inc_vbe_doses
+    ret$inc_part_to_full_doses +
+    ret$inc_booster_doses +
+    ret$inc_vbe_doses
   ret$inc_cum_doses <- apply(ret$inc_doses, 2, cumsum)
 
   ret$cases_averted_per_dose <- calc_cases_averted_per_dose(ret, 0)
