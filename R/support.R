@@ -310,16 +310,51 @@ name_outputs <- function(res, strata_names) {
   res
 }
 
+##' @name adjust_baseline
+##' @title adjust model run in absence of vaccination so diagnoses are
+##' spread across vaccine protected and non-vaccine protected strata as if
+##' the rate of movement was the same as in an equivalent model run in the
+##' presence of vaccination
+##' @param baseline A model run in the absence of vaccine uptake
+##' @param y A model run in the presence of vaccine uptake
+##' @return An adjusted baseline in which 'a' and 's' diagnoses in the baseline
+##' are divided across vaccine protected and non-vaccine protected strata
+##' allowing comparison of model runs with of baselines by vaccine-status
+##' @export
 adjust_baseline <- function(baseline, y) {
 
-  N <- sum(baseline[[1]]$N[1, , 1])
-
+  #total population size
+  N_tot <- sum(baseline[[1]]$N[1, , 1])
+  
   for (i in seq_along(baseline)) {
-    # this uses the population structure of the vaccination run in the baseline
+    
+    #proportion of the total population, by sexual activity group, 
+    #by vaccination strata in y for each timepoint
+    #i.e the population structure in y, how people are spread across strata
+    prop_N <-  (y[[i]]$N / N_tot)
+    
+    #proportion of population in L and H e.g c(0.85, 0.15)
+    #people do not move between L and H so this proportion will remain the same
+    #over time when summed over strata
+    prop_N_vec <- c(prop_N[1, , "X"])
+    
+    #divide each timepoint in the population structure of y (prop_N)
+    #by prop_N_vec to give population structure given sexual activity group
+    for(j in seq_len(dim(prop_N)[1])){
+      prop_N[j, ,] <- prop_N[j, , ] / prop_N_vec
+    }
+
+    #adjust baseline asymptomatic and symptomatic diagnoses by multiplying by
+    #prop_N, i.e how people are spread across strata given their sexual activity
+    #level = spreads diagnoses in 'X' in the baseline across the other strata
+    #in the same pattern as y, making the baseline run comparable to the vaccine
+    #run when looking at either vaccine protected or non-vaccine protected 
+    #strata in isolation
+
     baseline[[i]]$cum_diag_a <-
-      c(baseline[[i]]$cum_diag_a[, , "X"]) * y[[i]]$N / N
+      c(baseline[[i]]$cum_diag_a[, , "X"]) * prop_N
     baseline[[i]]$cum_diag_s <-
-      c(baseline[[i]]$cum_diag_s[, , "X"]) * y[[i]]$N / N
+      c(baseline[[i]]$cum_diag_s[, , "X"]) * prop_N
   }
   baseline
 }
