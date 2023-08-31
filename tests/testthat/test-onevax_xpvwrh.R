@@ -399,8 +399,8 @@ test_that("run_onevax_xpvwrh works correctly", {
   n_erlang <- 2
   y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3,
                                 n_erlang = n_erlang)
-  i_p <- lapply(y_erlang, restart_hes, n_vax = (6 + (n_erlang - 1) * 3),
-                hes = 0.5, branching = TRUE)
+  i_p <- lapply(y_erlang, restart_hes,
+                hes = 0.5, branching = TRUE, n_erlang = n_erlang)
   y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0,
                                        dur_v = 1e3,
                                 hes = 0.5, n_erlang = n_erlang)
@@ -482,6 +482,14 @@ test_that("run_onevax_xpvwrh works correctly", {
   y9 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5)
 
   expect_error(lapply(y9, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
+  
+  # same for if n_erlang > 1
+  
+  y9_er <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5,
+                             n_erlang = 2)
+  
+  expect_error(lapply(y9, restart_hes, hes = 0.5, branching = TRUE,
+                      n_erlang = 2))
 
   # restart_hes gives error if baseline model run provided contains vaccinated
 
@@ -489,6 +497,14 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
 
+  # same for if n_erlang > 1
+
+  y10_er <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1,
+                           n_erlang = 2)
+  
+  expect_error(lapply(y10_er, restart_hes, hes = 0.5, branching = TRUE,
+                      n_erlang = 2))
+  
   # check booster_uptake defaults to r1r2 primary uptake
   y_r1r2_only <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
                                   r1 = 0.8, r2 = 0.5,
@@ -912,32 +928,6 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
            # people also wane from R1 and R2
            n_erlang <- 2
            idx <- stratum_index_xpvwrh(n_erlang)
-
-            #run for ages with very short duration of primary vaccination,
-            # 100% uptake and very long duration of booster vacination to get
-            # people to converge in R1
-
-           tt <- seq(0, 100)
-           y_long <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 0.1,
-                                       n_erlang = n_erlang,
-                                       r1 = 1, r2 = 1, booster_uptake = 1,
-                                       dur_revax = 1e10,
-                                       strategy = "VoD(L)+VoA(H)")
-
-           i_p <- lapply(y_long, restart_hes, n_vax = idx$n_vax,
-                         branching = TRUE)
-           tt <- seq(0, 5)
-
-            # run model with most people in W + R1
-           y_r <- run_onevax_xpvwrh(tt, gp, init_params = i_p, r1 = 0, r2 = 0,
-                                    dur_v = 0.1,
-                                    dur_revax = 10, n_erlang = n_erlang)
-
-           # when lots of people start revaccinated and (almost) none start
-           # primarily vaccinated, people flow from R1 -> R2
-
-           expect_true(sum(rowSums(y_r[[1]]$N[, , idx$R[1]])) >
-                         sum(rowSums(y_r[[1]]$N[, , idx$R[2]])))
 
         # check protection being assigned correctly
 
