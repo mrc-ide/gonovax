@@ -922,7 +922,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   expect_true(all(y_p[[1]]$N[-1, , c(idx$X, idx$P)] > 0))
 
   # no one in V1, V2, W, R1 or R2
-  xpect_true(all(y_p[[1]]$N[, , c(idx$V, idx$W, idx$R)] ==  0))
+  expect_true(all(y_p[[1]]$N[, , c(idx$V, idx$W, idx$R)] ==  0))
 
   # people are flowing from P1(2) -> P2(3)
   expect_true(sum(rowSums(y_p[[1]]$N[, , idx$P[1]])) >
