@@ -177,27 +177,48 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @inheritParams restart_params
 ##' @param hes proportion of population vaccine hesitant
 ##' @param branching boolean to denote if xpvwrh branching model in use
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made through vaccine-protected strata until that protection has waned,
+##'  only needs to be provided here if > 1 and model 'xpvwrh' structure used.
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'
 ##' @export
 
-restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
+restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE, n_erlang = NULL) {
 
   dim_y <- dim(y[["U"]])
-
-   if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
-    stop("Provided model run already contains hesitancy > 0")
-   }
-
-  if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
-    stop("Provided model run has vaccination, baseline run should have all V
-          = 0")
-  }
-
-  # branched xpvwrh models have 2 primary vaccination compartments to check
+  
+  # XPVWRH model is branching, has more compartments to  check
   if (branching == TRUE) {
-    if (round(rowSums(y$N[, , 3])[dim_y[1]], 5) > 0) {
+    
+    if(is.null(n_erlang)){
+      n_erlang <- 1
+    }
+    
+    idx <- stratum_index_xpvwrh(n_erlang)
+    n_vax <- idx$n_vax
+    
+    #check for people in H
+    if (round(rowSums(y$N[, , idx$H])[dim_y[1]], 5) > 0) {
+      stop("Provided model run already contains hesitancy > 0")
+    }
+    
+    #check for people vaccine protected
+    if (round(rowSums(y$N[, , c(idx$V, idx$P, idx$R)])[dim_y[1]], 5) > 0) {
+      stop("Provided model run has vaccination, baseline run should have all V
+          = 0")
+    }
+    
+  } else {
+    
+    #check for people in H
+    if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
+      stop("Provided model run already contains hesitancy > 0")
+    }
+    
+    #check for people in V
+    if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
       stop("Provided model run has vaccination, baseline run should have all V
           = 0")
     }
