@@ -74,19 +74,25 @@ test_that("extract_flows_xpvwrh works", {
   expect_true(all(z$inc_diag_a_pvr < 0))
   expect_true(all(z$inc_diag_s_pvr < 0))
 
-  # if vaccination uptake = 0,inc_diag_a_pvr, inc_diag_s_pvr = 0 but xwh > 0
+  # sense check: adjusted baseline should give same resutls as vaccine with
+  # 0 uptake
+  # if vaccination uptake = 0 in vaccine run, inc_diag_a_pvr, inc_diag_s_pvr = 0
+  # because no one is entering vaccine strata in the model run
+  # and inc_diag_a_xwh, inc_diag_s_xwh = 0
+  # because there is no difference in diagnoses between the adjusted baseline 
+  # and the model run with no uptake
 
   baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y0))
   z <- compare_baseline_xpvwrh(y0, baseline, 1, 1, cp, 0, 1, 1)
 
-  expect_true(all(z$inc_diag_a_xwh > 0))
-  expect_true(all(z$inc_diag_s_xwh > 0))
-  expect_true(all(z$inc_diag_a_pvr == 0))
-  expect_true(all(z$inc_diag_s_pvr == 0))
+  expect_true(all(round(z$inc_diag_a_xwh, 10) == 0))
+  expect_true(all(round(z$inc_diag_s_xwh, 10) == 0))
+  expect_true(all(round(z$inc_diag_a_pvr, 10) == 0))
+  expect_true(all(round(z$inc_diag_s_pvr, 10) == 0))
 
   #extract_flows_xpvwrh() works with n_erlang > 1. Doesn't throw error
   #2. If people overall take longer to wane (with n_erlang > 1)
-  # fewer diagnoses overall as more people protected
+  # fewer diagnoses overall as more people protected at a given time
 
   y_erlang <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4,
                                 r1 = 1, r2 = 1, strategy = "VoD", n_erlang = 3)
