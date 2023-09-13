@@ -7,21 +7,14 @@ Saves down the number of individuals in each compartment, and moves
 a given proportion (hes) of them from the X to the H strata to generate
 new initial conditions in the presence of hesitancy.}
 \usage{
-restart_hes(y, n_vax = 5, hes = 0, branching = FALSE, n_erlang = NULL)
+restart_hes(y, hes = 0, branching = FALSE)
 }
 \arguments{
 \item{y}{a transformed model run output}
 
-\item{n_vax}{an integer indicating the number of vaccine compartments,
-consistent with the input}
-
 \item{hes}{proportion of population vaccine hesitant}
 
 \item{branching}{boolean to denote if xpvwrh branching model in use}
-
-\item{n_erlang}{integer giving the number of transitions that need to be
-made through vaccine-protected strata until that protection has waned,
-only needs to be provided here if > 1 and model 'xpvwrh' structure used.}
 }
 \value{
 A list of initial conditions to restart a model with n_vax

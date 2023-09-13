@@ -550,6 +550,7 @@ stratum_index_xpvwrh <- function(n_erlang) {
     ret$R <- max(ret$W) + seq_len(n_erlang)
     ret$H <- max(ret$R) + 1
     ret$n_vax <- ret$H
+    ret$vaccinated <- c(ret$P, ret$V, ret$R)
 
   ret
 
