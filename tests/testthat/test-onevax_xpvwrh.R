@@ -399,8 +399,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   n_erlang <- 2
   y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3,
                                 n_erlang = n_erlang)
-  i_p <- lapply(y_erlang, restart_hes,
-                hes = 0.5, branching = TRUE, n_erlang = n_erlang)
+  i_p <- lapply(y_erlang, restart_hes, hes = 0.5, branching = TRUE)
   y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0,
                                        dur_v = 1e3,
                                        hes = 0.5, n_erlang = n_erlang)
@@ -983,7 +982,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   expect_true(all(w[idx$X,    idx$P[3]] ==  n_erlang / dur_p))
 
   #people wane from V1 -> V2 -> V3 -> W at the same, expected rate
-  expect_true(all(w[idx$V[1], idx$v[1]] == -n_erlang / dur_v))
+  expect_true(all(w[idx$V[1], idx$V[1]] == -n_erlang / dur_v))
   expect_true(all(w[idx$V[2], idx$V[1]] ==  n_erlang / dur_v))
   expect_true(all(w[idx$V[2], idx$V[2]] == -n_erlang / dur_v))
   expect_true(all(w[idx$V[3], idx$V[2]] ==  n_erlang / dur_v))

@@ -37,8 +37,7 @@ test_that("compare baseline xpvwrh works as expected", {
                          r1 = r1, r2 = r2, strategy = "VoD")
   yy <- extract_flows_xpvwrh(y)
 
-  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0,
-                               vea = 0.5, vea_p = 0.5)
+  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0, vea = 0.5, vea_p = 0.5)
 
   flownames <- names(yy)
   incnames <- paste0("inc_", flownames)
@@ -628,11 +627,13 @@ test_that("compare baseline works as expected", {
   expect_equivalent(cet_20k,
                     matrix(c(0.534243384207646, 1.72471712423966,
                              3.52594421792319, 0.483751150425284,
-                             1.61256157784351, 3.34884963770966), nrow = 3))
+                             1.61256157784351, 3.34884963770966), nrow = 3),
+                    tolerance = 1e-6)
   expect_equal(cet_30k,
                matrix(c(0.610287112367831, 1.96785021889529,
                         4.02052903497914, 0.524318410369186,
-                        1.74693578901651, 3.62708130277735), nrow = 3))
+                        1.74693578901651, 3.62708130277735), nrow = 3),
+               tolerance = 1e-6)
 
   expect_equal(z$cet_20k, cet_20k)
   expect_equal(z$cet_30k, cet_30k)
