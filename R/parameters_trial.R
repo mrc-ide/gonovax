@@ -190,10 +190,7 @@ create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
   }
 
   for (i in i_v) {
-    idx <- i_v %>% {
-      which(. == i)
-    }
-
+    idx <- which(i_v == i)
     w[i, i] <- -w[i_w[idx], i]
   }
 
