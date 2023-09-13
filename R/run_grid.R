@@ -231,25 +231,25 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                                     uptake_second_dose, cost_params,
                                     disc_rate, vea, vea_p) {
 
+  strata <- dimnames(y[[1]]$N)[[3]]
+  n_erlang <- sum(grepl(pattern = "V", strata)) # count erlangs
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
+  idx <- stratum_index_xpvwrh(n_erlang)
+  idx$full <- c(idx$V, idx$R)
 
   ## extract number under vaccine protection
   vacsnap <- list()
   # fully vaccine protected, snapshot of N in: V(3) and R(5)
-  vacsnap$vacprotec_full <-
-    t(aggregate(y, "N", stratum = c(3, 5)))
+  vacsnap$vacprotec_full <- t(aggregate(y, "N", stratum = idx$full))
 
   # partially vaccine protected, snapshot of N in: P(2)
-  vacsnap$vacprotec_part <-
-    t(aggregate(y, "N", stratum = 2))
-
+  vacsnap$vacprotec_part <- t(aggregate(y, "N", stratum = idx$P))
   # vaccine protected total, snapshot of N in: P(2), V(3), R(5)
-  vacsnap$vacprotec_total <-
-    t(aggregate(y, "N", stratum = c(2, 3, 5)))
+  vacsnap$vacprotec_total <- t(aggregate(y, "N", stratum = idx$vaccinated))
 
   # remove t = 0, so object dimensions for prevalence measures match those for
   # annual and cumulative flows
