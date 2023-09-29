@@ -4,7 +4,15 @@
 \alias{aggregate}
 \title{aggregate model runs by vaccination group x vaccine strata}
 \usage{
-aggregate(x, what, as_incid = FALSE, stratum = NULL, f = identity, ...)
+aggregate(
+  x,
+  what,
+  as_incid = FALSE,
+  stratum = NULL,
+  f = identity,
+  stochastic = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{a transformed model run output}
@@ -17,6 +25,10 @@ aggregate(x, what, as_incid = FALSE, stratum = NULL, f = identity, ...)
 aggregation is over all strata}
 
 \item{f}{function to apply across parameter sets (eg. mean / median)}
+
+\item{stochastic}{indicates if function is being used on output of
+stochastic or deterministic version of the trial model, only matters if
+as_incid = TRUE}
 
 \item{...}{named arguments to pass to f}
 }

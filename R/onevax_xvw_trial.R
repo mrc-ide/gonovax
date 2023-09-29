@@ -227,6 +227,8 @@ stratum_index_xvw_trial <- function(n_erlang, n_diag_rec = 1) {
     ret$V <- max(ret$X) + seq_len(n_erlang * n_diag_rec)
     ret$W <- max(ret$V) + seq_len(n_diag_rec)
     ret$n_vax <- max(ret$W)
+    ret$n_erlang <- n_erlang
+    ret$n_diag_rec <- n_diag_rec
 
   ret
 }
