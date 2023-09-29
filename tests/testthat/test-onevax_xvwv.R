@@ -48,10 +48,10 @@ test_that("run_onevax_xvwv works correctly", {
                          uptake = uptake)
   for (i in seq_along(y4e)) {
     # no-one in stratum V is vaccinated again
-  expect_equal(sum(y4e[[i]]$cum_vaccinated[, , 2]), 0)
-  expect_equal(y4e[[i]]$cum_vaccinated[, , -2] / uptake[i],
-               y4e[[i]]$cum_screened[, , -2] + y4e[[i]]$cum_treated[, , -2])
-  expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
+    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , 2]), 0)
+    expect_equal(y4e[[i]]$cum_vaccinated[, , -2] / uptake[i],
+                 y4e[[i]]$cum_screened[, , -2] + y4e[[i]]$cum_treated[, , -2])
+    expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
   }
   # check vaccination targeting
   y5e <- run_onevax_xvwv(tt, gp, vea = 1, dur = 1e3, strategy = "VoD(L)+VoA(H)",
@@ -69,7 +69,7 @@ test_that("run_onevax_xvwv works correctly", {
 
   # check length of uptake vector must be 1 or length(gp)
   expect_error(run_onevax_xvwv(tt, gp, vea = 1, dur = 1e3, strategy = "VbE",
-                  uptake = c(0, 0.5, 1)))
+                               uptake = c(0, 0.5, 1)))
   expect_error(run_onevax_xvwv(tt, gp, vea = c(0, 1, 2), dur = 1e3,
                                strategy = "VbE", uptake = 1))
   expect_error(run_onevax_xvwv(tt, gp, vea = 1, dur = c(0, 1e2, 1e3),

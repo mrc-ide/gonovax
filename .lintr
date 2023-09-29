@@ -6,4 +6,3 @@ linters: linters_with_defaults(
     T_and_F_symbol_linter = NULL
     )
 exclusions: list("R/odin.R", "tests/testthat.R")
-encoding: "UTF-8"

@@ -8,8 +8,8 @@
 ##'
 ##' @export
 gonovax_data <- function() {
-if (is.null(cache$data)) {
-  cache$data <- read_csv(gonovax_file("extdata/observed_data.csv"))
-}
+  if (is.null(cache$data)) {
+    cache$data <- read_csv(gonovax_file("extdata/observed_data.csv"))
+  }
   cache$data
 }

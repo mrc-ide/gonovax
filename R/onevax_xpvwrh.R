@@ -37,36 +37,36 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
     stop("You cannot have 100% coverage for initial conditions")
   } else {
 
-  assert_scalar_unit_interval(coverage_p)
-  assert_scalar_unit_interval(coverage_v)
-  n_vax <- idx$n_vax
-  willing <- 1 - hes
-  x_init <- willing * (1 - coverage_p - coverage_v)
-  p_init <- willing * coverage_p
-  v_init <- willing * coverage_v
+    assert_scalar_unit_interval(coverage_p)
+    assert_scalar_unit_interval(coverage_v)
+    n_vax <- idx$n_vax
+    willing <- 1 - hes
+    x_init <- willing * (1 - coverage_p - coverage_v)
+    p_init <- willing * coverage_p
+    v_init <- willing * coverage_v
 
-## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
-  cov <- c(x_init, p_init, rep(0, n_erlang - 1), v_init, rep(0, n_erlang - 1),
-           0, rep(0, n_erlang), hes)
+    ## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
+    cov <- c(x_init, p_init, rep(0, n_erlang - 1), v_init, rep(0, n_erlang - 1),
+             0, rep(0, n_erlang), hes)
 
-  stopifnot(length(cov) == n_vax)
-  stopifnot(sum(cov) == 1)
+    stopifnot(length(cov) == n_vax)
+    stopifnot(sum(cov) == 1)
 
     U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
-  # separate into 1:low and 2:high activity groups and by coverage
-  N0 <- pars$N0 * outer(pars$q, cov)
-  # set initial asymptomatic prevalence in each group (X AND H)
-  A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
-  A0[, n_vax] <- round(N0[, n_vax] * c(pars$prev_Asl, pars$prev_Ash))
+    # separate into 1:low and 2:high activity groups and by coverage
+    N0 <- pars$N0 * outer(pars$q, cov)
+    # set initial asymptomatic prevalence in each group (X AND H)
+    A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
+    A0[, n_vax] <- round(N0[, n_vax] * c(pars$prev_Asl, pars$prev_Ash))
 
-  # set initial uninfecteds
-  U0 <- round(N0) - A0
+    # set initial uninfecteds
+    U0 <- round(N0) - A0
 
-  if (t > 0) {
-    list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = t)
-  } else {
-    list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
-  }
+    if (t > 0) {
+      list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = t)
+    } else {
+      list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+    }
 
   }
 
@@ -156,21 +156,21 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # n_erlang
 
   # 1. strata eligible for vaccination
-    # note: X is repeated twice as vaccination can
-    # occur in 2 directions from X, to P or X to V.
+  # note: X is repeated twice as vaccination can
+  # occur in 2 directions from X, to P or X to V.
 
   i_eligible <- c(idx$X, idx$X, idx$P, idx$W)
 
   # 2. strata individuals get vaccinated into
-    # Will always be the first of the erlang stack [1]
-    # note: V[1] is repeated n_erlang + 1 times because as well as un-vaccinated
-    # individuals (X) becoming fully vaccinated (V), partially vaccinated people
-    # in P can become fully vaccinated from any of the P erlang compartments
+  # Will always be the first of the erlang stack [1]
+  # note: V[1] is repeated n_erlang + 1 times because as well as un-vaccinated
+  # individuals (X) becoming fully vaccinated (V), partially vaccinated people
+  # in P can become fully vaccinated from any of the P erlang compartments
 
   i_p <- c(idx$P[1], rep(idx$V[1], n_erlang + 1), idx$R[1])
 
   # 3. strata individuals wane from
-    # i.e All strata under protection P, V and R
+  # i.e All strata under protection P, V and R
 
   i_v <- c(idx$P, idx$V, idx$R)
 
@@ -200,24 +200,24 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   u <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, idx)
 
   list(n_vax   = n_vax,
-       willing = c((1 - hes), rep(0, n_vax - 2), hes),
-       u       = u,
-       u_vbe   = vbe,
-       vbe     = vbe_map,
-       vod     = vod,
-       vos     = vos,
-       vea     = set_protection(i_v, idx, n_vax, vea_p, vea, vea_revax),
-       vei     = set_protection(i_v, idx, n_vax, vei_p, vei, vei_revax),
-       ved     = set_protection(i_v, idx, n_vax, ved_p, ved, ved_revax),
-       ves     = set_protection(i_v, idx, n_vax, ves_p, ves, ves_revax),
-       w       = create_waning_map_branching(n_vax,
-                                             i_v,
-                                             i_w,
-                                             n_erlang / c(dur_p,
-                                                   dur_v, dur_revax),
-                                             n_erlang),
-       vax_t   = c(0, t_stop),
-       vax_y   = c(1, 0)
+    willing = c((1 - hes), rep(0, n_vax - 2), hes),
+    u       = u,
+    u_vbe   = vbe,
+    vbe     = vbe_map,
+    vod     = vod,
+    vos     = vos,
+    vea     = set_protection(i_v, idx, n_vax, vea_p, vea, vea_revax),
+    vei     = set_protection(i_v, idx, n_vax, vei_p, vei, vei_revax),
+    ved     = set_protection(i_v, idx, n_vax, ved_p, ved, ved_revax),
+    ves     = set_protection(i_v, idx, n_vax, ves_p, ves, ves_revax),
+    w       = create_waning_map_branching(n_vax,
+                                          i_v,
+                                          i_w,
+                                          n_erlang / c(dur_p,
+                                                       dur_v, dur_revax),
+                                          n_erlang),
+    vax_t   = c(0, t_stop),
+    vax_y   = c(1, 0)
   )
 }
 
@@ -247,31 +247,31 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
                                      idx) {
 
   # note, these indices are specific to the branching pattern of xpvwrh
-    ## individuals in X accept vaccination of the 1st dose at an uptake of r1
+  ## individuals in X accept vaccination of the 1st dose at an uptake of r1
   array[, 1, 1] <- array[, 1, 1] * r1
 
-    ## individuals entering V (fully vaccinated) also then accept
-    ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
-    ## vaccinated is given by r1 * r2
-    ## idx$V[1] gives index of the top of the V erlang stack
+  ## individuals entering V (fully vaccinated) also then accept
+  ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
+  ## vaccinated is given by r1 * r2
+  ## idx$V[1] gives index of the top of the V erlang stack
   array[, idx$V[1], 1] <- array[, idx$V[1], 1] * (r1 * r2)
 
-    ## individuals entering P (partially vaccinated) do not then accept
-    ## vaccination with the 2nd dose so proportion partially vaccinated is
-    ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
-    ## 2nd dose given they have recieved the 1st dose
-    ## idx$P[1] gives index of the top of the P erlang stack
+  ## individuals entering P (partially vaccinated) do not then accept
+  ## vaccination with the 2nd dose so proportion partially vaccinated is
+  ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
+  ## 2nd dose given they have recieved the 1st dose
+  ## idx$P[1] gives index of the top of the P erlang stack
   array[, idx$P[1], 1] <- array[, idx$P[1], 1] * (r1 * (1 - r2))
 
-    ## individuals with only the 1st dose can later accept vaccination with the
-    ## 2nd dose at an uptake of r2_p
-    ## idx$P gives indices for all P erlang strata, r2_p applies to all equally
+  ## individuals with only the 1st dose can later accept vaccination with the
+  ## 2nd dose at an uptake of r2_p
+  ## idx$P gives indices for all P erlang strata, r2_p applies to all equally
   array[, , idx$P] <- array[, , idx$P] * r2_p
 
-    ## individuals who were fully vaccinated and whose immunity has waned (W)
-    ## can accept vaccination with a single booster dose at an uptake of
-    ## booster_uptake
-    ## idx$W gives the the index for (W)
+  ## individuals who were fully vaccinated and whose immunity has waned (W)
+  ## can accept vaccination with a single booster dose at an uptake of
+  ## booster_uptake
+  ## idx$W gives the the index for (W)
   array[, , idx$W] <- array[, , idx$W] * booster_uptake
 
   # values must be positive - otherwise negative values in this array will
@@ -305,7 +305,7 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang) {
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
 
-    for (i in seq_along(i_v)) {
+  for (i in seq_along(i_v)) {
 
     w[i_v[i], i_v[i]] <- -z_erlang[i]
     w[i_w[i], i_v[i]] <- z_erlang[i]
@@ -349,20 +349,20 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
 
   if (set_vbe == TRUE) {
 
-  vax_map[, idx$X, idx$X] <-  v
-  vax_map[, idx$V[1], idx$X] <- -v
+    vax_map[, idx$X, idx$X] <-  v
+    vax_map[, idx$V[1], idx$X] <- -v
 
   } else {
 
-  #repeat over stratum 1 column 1 for ease
+    #repeat over stratum 1 column 1 for ease
 
-  for (i in seq_along(i_e)) {
+    for (i in seq_along(i_e)) {
 
-    vax_map[, i_e[i], i_e[i]] <-  v
-    vax_map[, i_p[i], i_e[i]] <- -v
+      vax_map[, i_e[i], i_e[i]] <-  v
+      vax_map[, i_p[i], i_e[i]] <- -v
 
+    }
   }
-}
 
   vax_map
 }
@@ -426,17 +426,18 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
-                             dur_v = 1e3, dur_p = dur_v,
-                             vea = 0, vei = 0, ved = 0, ves = 0,
-                             dur_revax = dur_v,
-                             vea_revax = vea, vei_revax = vei,
-                             ved_revax = ved, ves_revax = ves,
-                             vea_p = vea, vei_p = vei, ved_p = ved, ves_p = ves,
-                             vbe = 0,
-                             r1 = 0, r2 = 0, r2_p = 0,
-                             booster_uptake = (r1 * r2), strategy = NULL,
-                             t_stop = 99, hes = 0,
-                             n_erlang = 1) {
+                              dur_v = 1e3, dur_p = dur_v,
+                              vea = 0, vei = 0, ved = 0, ves = 0,
+                              dur_revax = dur_v,
+                              vea_revax = vea, vei_revax = vei,
+                              ved_revax = ved, ves_revax = ves,
+                              vea_p = vea, vei_p = vei, ved_p = ved,
+                              ves_p = ves,
+                              vbe = 0,
+                              r1 = 0, r2 = 0, r2_p = 0,
+                              booster_uptake = (r1 * r2), strategy = NULL,
+                              t_stop = 99, hes = 0,
+                              n_erlang = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei,
                              ved, ves, vea_revax, vei_revax, ved_revax,
@@ -489,8 +490,9 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @export
 gen_erlang_labels <- function(n_erlang = 1) {
 
-idx <- seq_len(n_erlang)
-output <- c("X", paste0("P", idx), paste0("V", idx), "W", paste0("R", idx), "H")
+  idx <- seq_len(n_erlang)
+  output <- c("X", paste0("P", idx), paste0("V", idx),
+              "W", paste0("R", idx), "H")
 
   output
 
@@ -544,12 +546,12 @@ stratum_index_xpvwrh <- function(n_erlang) {
 
   ret <- list(X = 1)
 
-    ret$P <- max(ret$X) + seq_len(n_erlang)
-    ret$V <- max(ret$P) + seq_len(n_erlang)
-    ret$W <- max(ret$V) + 1
-    ret$R <- max(ret$W) + seq_len(n_erlang)
-    ret$H <- max(ret$R) + 1
-    ret$n_vax <- ret$H
+  ret$P <- max(ret$X) + seq_len(n_erlang)
+  ret$V <- max(ret$P) + seq_len(n_erlang)
+  ret$W <- max(ret$V) + 1
+  ret$R <- max(ret$W) + seq_len(n_erlang)
+  ret$H <- max(ret$R) + 1
+  ret$n_vax <- ret$H
 
   ret
 

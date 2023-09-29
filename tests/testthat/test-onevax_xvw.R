@@ -21,8 +21,8 @@ test_that("run_onevax_xvw works correctly", {
   y2 <- run_onevax_xvw(tt, gp, vea = 0, dur = 1e3, vbe = 1)
   init_params <- lapply(y2, restart_params)
   y3 <- run_onevax_xvw(seq(max(tt), length.out = 2, by = 1),
-                        gp, init_params,
-                        vea = 0, dur = 1e3, vbe = 1)
+                       gp, init_params,
+                       vea = 0, dur = 1e3, vbe = 1)
   for (i in seq_along(y2)) {
     expect_equal(y2[[i]]$U[length(tt), , ], y3[[i]]$U[1, , ])
     expect_equal(y2[[i]]$I[length(tt), , ], y3[[i]]$I[1, , ])
@@ -34,7 +34,7 @@ test_that("run_onevax_xvw works correctly", {
   uptake <- c(0.5, 1) ## i.e. 50% for 1st param set, 100% for second
   # check VoD is working correctly
   y3e <- run_onevax_xvw(tt, gp, vea = 1, dur = 1e3, strategy = "VoD",
-                         uptake = uptake)
+                        uptake = uptake)
 
   for (i in seq_along(y3e)) {
     # no-one in stratum V or W is vaccinated again
@@ -55,31 +55,31 @@ test_that("run_onevax_xvw works correctly", {
 
   # check VoA is working correctly
   y4e <- run_onevax_xvw(tt, gp, vea = 1, dur = 1e3, strategy = "VoA",
-                         uptake = uptake)
+                        uptake = uptake)
   for (i in seq_along(y4e)) {
-  # no-one in stratum V or W is vaccinated again
-  expect_equal(sum(y4e[[i]]$cum_vaccinated[, , "V"]), 0)
-  expect_equal(sum(y4e[[i]]$cum_vaccinated[, , "W"]), 0)
+    # no-one in stratum V or W is vaccinated again
+    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , "V"]), 0)
+    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , "W"]), 0)
 
-  # uptake % of treated are vaccinated
-  expect_equal(y4e[[i]]$cum_vaccinated[, , "X"] / uptake[i],
-               y4e[[i]]$cum_screened[, , "X"] + y4e[[i]]$cum_treated[, , "X"])
+    # uptake % of treated are vaccinated
+    expect_equal(y4e[[i]]$cum_vaccinated[, , "X"] / uptake[i],
+                 y4e[[i]]$cum_screened[, , "X"] + y4e[[i]]$cum_treated[, , "X"])
 
-  # all those in X treated  or screened are offered vaccine
-  expect_equal(y4e[[i]]$cum_offered[, , "X"],
-               y4e[[i]]$cum_treated[, , "X"] + y4e[[i]]$cum_screened[, , "X"])
-  # only those in X are offered vaccine
-  expect_equal(sum(y4e[[i]]$cum_offered[, , c("V", "W")]), 0)
+    # all those in X treated  or screened are offered vaccine
+    expect_equal(y4e[[i]]$cum_offered[, , "X"],
+                 y4e[[i]]$cum_treated[, , "X"] + y4e[[i]]$cum_screened[, , "X"])
+    # only those in X are offered vaccine
+    expect_equal(sum(y4e[[i]]$cum_offered[, , c("V", "W")]), 0)
 
-  # efficacy is perfect
-  expect_equal(sum(y4e[[i]]$cum_treated[, , "V"]), 0)
-  # no-one is lost
-  expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
+    # efficacy is perfect
+    expect_equal(sum(y4e[[i]]$cum_treated[, , "V"]), 0)
+    # no-one is lost
+    expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
   }
 
   # check vaccination targeting
   y5e <- run_onevax_xvw(tt, gp, vea = 1, dur = 1e3, strategy = "VoD(L)+VoA(H)",
-                         uptake = uptake)
+                        uptake = uptake)
   for (i in seq_along(y5e)) {
     # no-one in stratum V or W is vaccinated again
     expect_equal(sum(y5e[[i]]$cum_vaccinated[, , "V"]), 0)
@@ -107,11 +107,11 @@ test_that("run_onevax_xvw works correctly", {
 
   # check length of uptake vector must be 1 or length(gp)
   expect_error(run_onevax_xvw(tt, gp, vea = 1, dur = 1e3, strategy = "VbE",
-                  uptake = c(0, 0.5, 1)))
+                              uptake = c(0, 0.5, 1)))
   expect_error(run_onevax_xvw(tt, gp, vea = c(0, 1, 2), dur = 1e3,
-                               strategy = "VbE", uptake = 1))
+                              strategy = "VbE", uptake = 1))
   expect_error(run_onevax_xvw(tt, gp, vea = 1, dur = c(0, 1e2, 1e3),
-                               strategy = "VbE", uptake = 1))
+                              strategy = "VbE", uptake = 1))
 })
 
 test_that("vaccine effects work as expected", {
@@ -120,7 +120,7 @@ test_that("vaccine effects work as expected", {
 
   ## check perfect protection against symptoms works
   y1 <- run_onevax_xvw(tt, gp, ves = 1, dur = 1,
-                        uptake = 1, strategy = "VoA")[[1]]
+                       uptake = 1, strategy = "VoA")[[1]]
 
   expect_true(all(y1$S[, , 2] == 0))
   expect_true(all(y1$S[-1, , 3] > 1e-6))
@@ -128,7 +128,7 @@ test_that("vaccine effects work as expected", {
 
   ## check perfect protection against duration works
   y2 <- run_onevax_xvw(tt, gp, ved = 1, dur = 1,
-                        uptake = 1, strategy = "VoA")[[1]]
+                       uptake = 1, strategy = "VoA")[[1]]
 
   expect_true(all(y2$A[, , 2] < 1e-6))
   expect_true(all(y2$A[-1, , 3] > 1e-6))

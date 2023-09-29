@@ -67,7 +67,7 @@ test_that("mcmc runs", {
   ## what do results look like?
   p <- z$mcmc$pars[nrow(z$mcmc$pars), ]
   mod <- model$new(user = model_params(transform0(p)),
-               unused_user_action = "ignore")
+                   unused_user_action = "ignore")
   data <- cache$data
   y <- mod$run(seq(0, nrow(data)))
 
@@ -82,9 +82,9 @@ test_that("mcmc runs", {
 
   par(mfrow = c(2, 5))
   lapply(colnames(z$pars),
-         function(y) plot(z$iteration, z$pars[, y], type = "l",
-                          ylab = y, xlab = "iter"))
-
+         function(y) {
+                      plot(z$iteration, z$pars[, y], type = "l",
+                           ylab = y, xlab = "iter")})
 })
 
 test_that("mcmc runs with multiple chains", {

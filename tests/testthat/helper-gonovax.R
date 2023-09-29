@@ -32,10 +32,9 @@ example_mcmc2 <- function() {
     z <- list()
     z$pars <- mcstate::pmcmc_parameters$new(params, proposal)
     set.seed(1)
-    z$results <- list(
-      mcmc(z$pars, 10),
-      mcmc(z$pars, 10),
-      mcmc(z$pars, 10))
+    z$results <- list(mcmc(z$pars, 10),
+                      mcmc(z$pars, 10),
+                      mcmc(z$pars, 10))
     test_cache$example_mcmc2 <- z
   }
   test_cache$example_mcmc2
