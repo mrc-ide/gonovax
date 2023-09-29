@@ -16,28 +16,70 @@ initial(time) <- 0
 update(time) <- (step + 1) * dt
 
 # individual probabilities of transitioning between infection states
-p_UI[, ] <- 1 - exp(-lambda * (1 - vea[j]) * dt)
-p_ST[, ] <- 1 - exp(-mu * dt)
-p_TU[, ] <- 1 - exp(-rho * dt)
-
-p_A_or_S[, ] <- 1 - exp(-sigma * dt)
-
 r_AT[, ] <- eta
 r_AU[, ] <- nu / (1 - ved[j])
-p_T_or_U[, ] <- 1 - exp(- (r_AT[i, j] + r_AU[i, j]) * dt)
 
-# draws from binomial distributions for numbers changing between compartments
-n_UI[, ] <- rbinom(U[i, j], p_UI[i, j])
-n_ST[, ] <- rbinom(S[i, j], p_ST[i, j])
-n_TU[, ] <- rbinom(T[i, j], p_TU[i, j])
+#TRYSTAN EDIT
+# probability of individuals leaving compartments
+p_U_ext[, ] <- (1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt))
+p_I_ext[, ] <- 1 - exp(-(sigma - D[j]) * dt)
+p_S_ext[, ] <- 1 - exp(-(mu - D[j]) * dt)
+p_A_ext[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] - D[j]) * dt)
+p_T_ext[, ] <- 1 - exp(-(rho - D[j]) * dt)
 
-n_IAS[, ] <- rbinom(I[i, j], p_A_or_S[i, j])
+#TRYSTAN EDIT
+# draws from binomial distribution for numbers exiting compartments
+n_U_ext[, ] <- rbinom(U[i, j], p_U_ext[i, j])
+n_I_ext[, ] <- rbinom(I[i, j], p_I_ext[i, j])
+n_S_ext[, ] <- rbinom(S[i, j], p_S_ext[i, j])
+n_A_ext[, ] <- rbinom(A[i, j], p_A_ext[i, j])
+n_T_ext[, ] <- rbinom(T[i, j], p_T_ext[i, j])
+
+#TRYSTAN EDIT
+#Relative probabilities of infection transition vs vaccine transition
+Rel_U[, ] <- if ((lambda * (1 - vea[j]) - D[j]) == 0) 0 else
+  lambda * (1 - vea[j]) / (lambda * (1 - vea[j]) - D[j])
+
+Rel_I[, ] <- if (sigma - D[j] == 0) 0 else sigma / (sigma - D[j])
+Rel_S[, ] <- if (mu - D[j] == 0) 0 else mu / (mu - D[j])
+Rel_A[, ] <- if (r_AT[i, j] + r_AU[i, j] - D[j] == 0) 0 else
+  (r_AT[i, j] + r_AU[i, j]) / (r_AT[i, j] + r_AU[i, j] - D[j])
+
+Rel_T[, ] <- if (rho - D[j] == 0) 0 else  rho / (rho - D[j])
+
+#TRYSTAN EDIT
+#draw numbers changing between specific compartments
+n_UI[, ] <- rbinom(n_U_ext[i, j], Rel_U[i, j])
+n_Uw[, ] <- n_U_ext[i, j] - n_UI[i, j]
+
+n_IAS[, ] <- rbinom(n_I_ext[i, j], Rel_I[i, j])
+n_Iw[, ] <- n_I_ext[i, j] - n_IAS[i, j]
 n_IA[, ] <- rbinom(n_IAS[i, j], 1 - (1 - ves[j]) * psi)
 n_IS[, ] <- n_IAS[i, j] - n_IA[i, j]
 
-n_AUT[, ] <- rbinom(A[i, j], p_T_or_U[i, j])
+n_ST[, ] <- rbinom(n_S_ext[i, j], Rel_S[i, j])
+n_Sw[, ] <- n_S_ext[i, j] - n_ST[i, j]
+
+n_AUT[, ] <- rbinom(n_A_ext[i, j], Rel_A[i, j])
+n_Aw[, ] <- n_A_ext[i, j] - n_AUT[i, j]
 n_AT[, ] <- rbinom(n_AUT[i, j], r_AT[i, j] / (r_AT[i, j] + r_AU[i, j]))
 n_AU[, ] <- n_AUT[i, j] - n_AT[i, j]
+
+n_TU[, ] <- rbinom(n_T_ext[i, j], Rel_T[i, j])
+n_Tw[, ] <- n_T_ext[i, j] - n_TU[i, j]
+
+
+# mechanism to record number of times infected by moving diagnosed
+# individuals into stratum with the relevant diagnosis history
+
+n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
+
+#waning
+wU[, , ] <- w[j, k] * n_Uw[i, k]
+wI[, , ] <- w[j, k] * n_Iw[i, k]
+wA[, , ] <- w[j, k] * n_Aw[i, k]
+wS[, , ] <- w[j, k] * n_Sw[i, k]
+wT[, , ] <- w[j, k] * n_Tw[i, k]
 
 ## Core equations for transitions between compartments:
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
@@ -45,11 +87,9 @@ update(U[, ]) <- U[i, j] - n_UI[i, j] +
 
 update(I[, ]) <- I[i, j] + n_UI[i, j] - n_IAS[i, j] + sum(wI[i, j, ])
 
-update(A[, ]) <- A[i, j] + n_IA[i, j] -
-               n_AUT[i, j] + sum(wA[i, j, ])
+update(A[, ]) <- A[i, j] + n_IA[i, j] - n_AUT[i, j] + sum(wA[i, j, ])
 
-update(S[, ]) <- S[i, j] + n_IS[i, j] -
-  n_ST[i, j]  + sum(wS[i, j, ])
+update(S[, ]) <- S[i, j] + n_IS[i, j] - n_ST[i, j]  + sum(wS[i, j, ])
 
 update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
   sum(wT[i, j, ])
@@ -59,26 +99,8 @@ N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
 
-# mechanism to record number of times infected by moving diagnosed
-# individuals into stratum with the relevant diagnosis history 
-
-n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
-
-# waning
-n_Uw[, ] <- rbinom(U[i, j] - n_UI[i, j], 1 - exp(D[j] * dt))
-n_Iw[, ] <- rbinom(I[i, j] - n_IAS[i, j], 1 - exp(D[j] * dt))
-n_Aw[, ] <- rbinom(A[i, j] - n_AUT[i, j], 1 - exp(D[j] * dt))
-n_Sw[, ] <- rbinom(S[i, j] - n_ST[i, j], 1 - exp(D[j] * dt))
-n_Tw[, ] <- rbinom(T[i, j] - n_TU[i, j], 1 - exp(D[j] * dt))
-
-wU[, , ] <- w[j, k] * n_Uw[i, k]
-wI[, , ] <- w[j, k] * n_Iw[i, k]
-wA[, , ] <- w[j, k] * n_Aw[i, k]
-wS[, , ] <- w[j, k] * n_Sw[i, k]
-wT[, , ] <- w[j, k] * n_Tw[i, k]
 
 ## outputs
-
 update(cum_incid[, ])      <- cum_incid[i, j] + n_UI[i, j]
 update(cum_diag_a[, ])     <- cum_diag_a[i, j] + n_AT[i, j]
 update(cum_diag_s[, ])     <- cum_diag_s[i, j] + n_ST[i, j]
@@ -141,11 +163,27 @@ dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 
-dim(p_UI)     <- c(n_group, n_vax)
-dim(p_A_or_S) <- c(n_group, n_vax)
-dim(p_ST)     <- c(n_group, n_vax)
-dim(p_T_or_U) <- c(n_group, n_vax)
-dim(p_TU)     <- c(n_group, n_vax)
+#TRYSTAN EDIT - added in probability of individuals leaving compartments
+dim(p_U_ext) <- c(n_group, n_vax)
+dim(p_I_ext) <- c(n_group, n_vax)
+dim(p_S_ext) <- c(n_group, n_vax)
+dim(p_A_ext) <- c(n_group, n_vax)
+dim(p_T_ext) <- c(n_group, n_vax)
+
+#TRYSTAN EDIT - added in number of individuals leaving compartments
+dim(n_U_ext) <- c(n_group, n_vax)
+dim(n_I_ext) <- c(n_group, n_vax)
+dim(n_S_ext) <- c(n_group, n_vax)
+dim(n_A_ext) <- c(n_group, n_vax)
+dim(n_T_ext) <- c(n_group, n_vax)
+
+#TRYSTAN EDIT - Relative probabilities of infection transition
+# vs vaccine  transition
+dim(Rel_U) <- c(n_group, n_vax)
+dim(Rel_I) <- c(n_group, n_vax)
+dim(Rel_A) <- c(n_group, n_vax)
+dim(Rel_S) <- c(n_group, n_vax)
+dim(Rel_T) <- c(n_group, n_vax)
 
 dim(r_AT) <- c(n_group, n_vax)
 dim(r_AU) <- c(n_group, n_vax)
@@ -160,7 +198,6 @@ dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
 dim(diag_rec)   <- c(n_group, n_vax, n_vax)
 
 ## Parameters
-
 eta       <- user()
 sigma     <- user()
 psi       <- user()
@@ -175,13 +212,12 @@ ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
 
 # mapping
-w[, ]    <- user() 
+w[, ]    <- user()
 D[] <- user()
 
-diag_rec[, , ] <- user() 
+diag_rec[, , ] <- user()
 
 ## par dimensions
-
 dim(vea)  <- n_vax
 dim(ved)  <- n_vax
 dim(ves)  <- n_vax
@@ -195,4 +231,4 @@ dim(wA)   <- c(n_group, n_vax, n_vax)
 dim(wS)   <- c(n_group, n_vax, n_vax)
 dim(wT)   <- c(n_group, n_vax, n_vax)
 
-output(N)   <- N
+output(N) <- N

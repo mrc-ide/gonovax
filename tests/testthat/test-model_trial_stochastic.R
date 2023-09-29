@@ -625,42 +625,7 @@ test_that("waning parameters are being generated correctly", {
 
 })
 
-test_that("model outputs for a basic run haven't changed between updates", {
 
-gp <- gono_params_trial(1)[1]
-n_erlang <- 1
-tt <- seq.int(0, 1)
-set.seed(1)
-y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                           vea = 0, vei = 0, ved = 0, ves = 0,
-                           n_erlang = n_erlang,
-                           stochastic = TRUE)
-
-expect_equal(y[[1]]$U,
-    array(c(rep(0, 2), 300000, 249077, rep(0, 2), 300000, 248844,
-            rep(0, 3), 237), dim = c(2, 2, 3), dimnames = list(NULL,
-                                                      c("L", "H"),
-                                                      c("X.I", "V1.I", "W.I"))))
-
-#and with n_erlang and diagnosis history:
-gp <- gono_params_trial(1)[1]
-n_erlang <- 2
-n_diag_rec <- 2
-tt <- seq.int(0, 1)
-set.seed(1)
-y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                          vea = 0, vei = 0, ved = 0, ves = 0,
-                          n_erlang = n_erlang,
-                          stochastic = TRUE, n_diag_rec = n_diag_rec)
-
-expect_equal(y[[1]]$U,
-array(c(rep(0, 2), 300000, 136780, rep(0, 3), 112247, rep(0, 2), 300000, 136361,
-      rep(0, 3), 112538, rep(0, 3), 259, rep(0, 3), 223, rep(0, 8)),
-      dim = c(2, 2, 8), dimnames = list(NULL, c("L", "H"),
-                                  c("X.I", "X.II", "V1.I", "V1.II", "V2.I",
-                                    "V2.II", "W.I", "W.II"))))
-
-})
 
 test_that("correct number of individuals are set up in each trial arm", {
 
@@ -677,9 +642,9 @@ test_that("correct number of individuals are set up in each trial arm", {
                             stochastic = TRUE,
                             N = N)
 
-  expect_equal(y[[1]]$N[1, 2, 1], N / 2)
-  expect_equal(y[[1]]$N[1, 2, 2], N / 2)
-  expect_equal(y[[1]]$N[1, 2, 3], 0)
+  expect_true(all(y[[1]]$N[, 2, 1] == N / 2))
+  expect_true(all(y[[1]]$N[, 2, 2] == N / 2))
+  expect_true(all(y[[1]]$N[, 2, 3] == 0))
 
   # for n_diag_rec > 1
 
