@@ -177,85 +177,66 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @inheritParams restart_params
 ##' @param hes proportion of population vaccine hesitant
 ##' @param branching boolean to denote if xpvwrh branching model in use
-##' @param n_erlang integer giving the number of transitions that need to be
-##'  made through vaccine-protected strata until that protection has waned,
-##'  only needs to be provided here if > 1 and model 'xpvwrh' structure used.
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'
 ##' @export
 
-restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE,
-                        n_erlang = NULL) {
+restart_hes <- function(y, hes = 0, branching = FALSE) {
 
-  dim_y <- dim(y[["U"]])
-
-  # XPVWRH model is branching, has more compartments to  check
-  if (branching == TRUE) {
-
-    if (is.null(n_erlang)) {
-      n_erlang <- 1
-    }
-
+  if (branching) {
+    # count erlang compartments
+    n_erlang <- sum(grepl(pattern = "V", dimnames(y$N)[[3]]))
     idx <- stratum_index_xpvwrh(n_erlang)
-    n_vax <- idx$n_vax
-
-    #check for people in H
-    if (round(rowSums(y$N[, , idx$H])[dim_y[1]], 5) > 0) {
-      stop("Provided model run already contains hesitancy > 0")
-    }
-
-    #check for people vaccine protected
-    if (round(rowSums(y$N[, , c(idx$V, idx$P, idx$R)])[dim_y[1]], 5) > 0) {
-      stop("Provided model run has vaccination, baseline run should have all V
-          = 0")
-    }
-
   } else {
-
-    #check for people in H
-    if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
-      stop("Provided model run already contains hesitancy > 0")
-    }
-
-    #check for people in V
-    if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
-      stop("Provided model run has vaccination, baseline run should have all V
-          = 0")
-    }
+    idx <- stratum_index_xvwrh()
   }
 
-  i_t <- dim_y[1]                     # number of timepoints
-  n_vax <- n_vax %||% dim_y[3]        # number of strata
+  dim_y <- dim(y$N)
 
-  n_vax_input <- dim_y[3]
-  i_vax <- seq_len(min(n_vax,  n_vax_input))
+  if (any(y$N[, , idx$H] > 0)) stop("Model already contains hesitancy")
+  if (any(y$N[, , idx$vaccinated] > 0)) stop("Model already has vaccination")
+  if (dim(y$N)[3] != idx$n_vax) stop("Model strata != n_vax")
 
-  #create blank array, 2activity groups by number of strata
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+  i_t <- nrow(y$N)  # number of timepoints
+
+  #create blank array, 2 activity groups by number of strata
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, idx$n_vax))
 
   # set compartments new initial conditions based on final position of y
-  U0[, i_vax] <- y$U[i_t, , i_vax]
-  I0[, i_vax] <- y$I[i_t, , i_vax]
-  A0[, i_vax] <- y$A[i_t, , i_vax]
-  S0[, i_vax] <- y$S[i_t, , i_vax]
-  T0[, i_vax] <- y$T[i_t, , i_vax]
+  U0[, -idx$H] <- y$U[i_t, , -idx$H]
+  I0[, -idx$H] <- y$I[i_t, , -idx$H]
+  A0[, -idx$H] <- y$A[i_t, , -idx$H]
+  S0[, -idx$H] <- y$S[i_t, , -idx$H]
+  T0[, -idx$H] <- y$T[i_t, , -idx$H]
 
   # move correct number from equilibrium X to H
-  U0[, n_vax] <- h <- U0[, 1] * hes
-  U0[, 1] <- U0[, 1] - h
+  U0[, idx$H] <- U0[, idx$X] * hes
+  U0[, idx$X] <- U0[, idx$X] - U0[, idx$H]
 
-  I0[, n_vax] <- h <- I0[, 1] * hes
-  I0[, 1] <- I0[, 1] - h
+  I0[, idx$H] <- I0[, idx$X] * hes
+  I0[, idx$X] <- I0[, idx$X] - I0[, idx$H]
 
-  A0[, n_vax] <- h <- A0[, 1] * hes
-  A0[, 1] <- A0[, 1] - h
+  A0[, idx$H] <- A0[, idx$X] * hes
+  A0[, idx$X] <- A0[, idx$X] - A0[, idx$H]
 
-  S0[, n_vax] <- h <- S0[, 1] * hes
-  S0[, 1] <- S0[, 1] - h
+  S0[, idx$H] <- S0[, idx$X] * hes
+  S0[, idx$X] <- S0[, idx$X] - S0[, idx$H]
 
-  T0[, n_vax] <- h <- T0[, 1] * hes
-  T0[, 1] <- T0[, 1] - h
+  T0[, idx$H] <- T0[, idx$X] * hes
+  T0[, idx$X] <- T0[, idx$X] - T0[, idx$H]
 
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
+}
+
+
+##' @name stratum_index_xvwrh
+##' @title Generate the indices of all xvwrh strata
+##' @return A list of strata with their indicies
+##' @export
+
+stratum_index_xvwrh <- function() {
+  ret <- list(X = 1, V = 2, W = 3, R = 4, H = 5, n_vax = 5)
+  ret$vaccinated <- c(ret$V, ret$R)
+  ret
 }

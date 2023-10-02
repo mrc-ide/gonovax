@@ -322,39 +322,20 @@ name_outputs <- function(res, strata_names) {
 ##' allowing comparison of model runs with of baselines by vaccine-status
 ##' @export
 adjust_baseline <- function(baseline, y) {
+  Map(adjust_baseline_one, baseline, y)
+}
 
-  #total population size
-  N_tot <- sum(baseline[[1]]$N[1, , 1])
+adjust_baseline_one <- function(baseline, y) {
+  # create an array in the same dimensions as y$N, where each entry is the
+  # modelled proportion in each stratum for each risk group at time t
+  # i.e. summing across strata will give 1: apply(prop_N, c(1, 2), sum)
+  prop_N <-  y$N / array(apply(y$N, c(1, 2), sum), dim(y$N))
 
-  for (i in seq_along(baseline)) {
-
-    #proportion of the total population, by sexual activity group,
-    #by vaccination strata in y for each timepoint
-    #i.e the population structure in y, how people are spread across strata
-    prop_N <-  (y[[i]]$N / N_tot)
-
-    #proportion of population in L and H e.g c(0.85, 0.15)
-    #people do not move between L and H so this proportion will remain the same
-    #over time when summed over strata
-    prop_N_vec <- c(prop_N[1, , "X"])
-
-    #divide each timepoint in the population structure of y (prop_N)
-    #by prop_N_vec to give population structure given sexual activity group
-    for (j in seq_len(dim(prop_N)[1])){
-      prop_N[j, , ] <- prop_N[j, , ] / prop_N_vec
-    }
-
-    #adjust baseline asymptomatic and symptomatic diagnoses by multiplying by
-    #prop_N, i.e how people are spread across strata given their sexual activity
-    #level = spreads diagnoses in 'X' in the baseline across the other strata
-    #in the same pattern as y, making the baseline run comparable to the vaccine
-    #run when looking at either vaccine protected or non-vaccine protected
-    #strata in isolation
-
-    baseline[[i]]$cum_diag_a <-
-      c(baseline[[i]]$cum_diag_a[, , "X"]) * prop_N
-    baseline[[i]]$cum_diag_s <-
-      c(baseline[[i]]$cum_diag_s[, , "X"]) * prop_N
-  }
-  baseline
+  # identify states that are compartments [time, group, strata]
+  idx_state <- which(lengths(lapply(baseline, dim)) == 3)
+  # distribute individuals in the baseline across strata in the same proportion
+  # as in the model run
+  adjusted_states <- lapply(baseline[idx_state],
+                            function(state) c(state[, , 1]) * prop_N)
+  replace(baseline, idx_state, adjusted_states)
 }
