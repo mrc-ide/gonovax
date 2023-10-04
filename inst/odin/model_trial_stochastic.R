@@ -159,7 +159,7 @@ dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 
-#TRYSTAN EDIT - added in probability of individuals leaving compartments
+# Probability of individuals leaving compartments
 dim(p_U_ext) <- c(n_group, n_vax)
 dim(p_I_ext) <- c(n_group, n_vax)
 dim(p_S_ext) <- c(n_group, n_vax)
