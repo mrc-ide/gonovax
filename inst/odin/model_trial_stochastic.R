@@ -20,7 +20,7 @@ r_AT[, ] <- eta
 r_AU[, ] <- nu / (1 - ved[j])
 
 # probability of individuals leaving compartments
-p_U_ext[, ] <- (1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt))
+p_U_ext[, ] <- 1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt)
 p_I_ext[, ] <- 1 - exp(-(sigma - D[j]) * dt)
 p_S_ext[, ] <- 1 - exp(-(mu - D[j]) * dt)
 p_A_ext[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] - D[j]) * dt)
