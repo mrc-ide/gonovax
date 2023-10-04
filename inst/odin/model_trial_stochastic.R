@@ -173,7 +173,7 @@ dim(n_S_ext) <- c(n_group, n_vax)
 dim(n_A_ext) <- c(n_group, n_vax)
 dim(n_T_ext) <- c(n_group, n_vax)
 
-#TRYSTAN EDIT - Relative probabilities of infection transition
+#Relative probabilities of infection transition
 # vs vaccine  transition
 dim(Rel_U) <- c(n_group, n_vax)
 dim(Rel_I) <- c(n_group, n_vax)
