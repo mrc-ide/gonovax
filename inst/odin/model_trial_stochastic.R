@@ -19,15 +19,13 @@ update(time) <- (step + 1) * dt
 r_AT[, ] <- eta
 r_AU[, ] <- nu / (1 - ved[j])
 
-#TRYSTAN EDIT
 # probability of individuals leaving compartments
-p_U_ext[, ] <- (1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt))
+p_U_ext[, ] <- 1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt)
 p_I_ext[, ] <- 1 - exp(-(sigma - D[j]) * dt)
 p_S_ext[, ] <- 1 - exp(-(mu - D[j]) * dt)
 p_A_ext[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] - D[j]) * dt)
 p_T_ext[, ] <- 1 - exp(-(rho - D[j]) * dt)
 
-#TRYSTAN EDIT
 # draws from binomial distribution for numbers exiting compartments
 n_U_ext[, ] <- rbinom(U[i, j], p_U_ext[i, j])
 n_I_ext[, ] <- rbinom(I[i, j], p_I_ext[i, j])
@@ -35,7 +33,6 @@ n_S_ext[, ] <- rbinom(S[i, j], p_S_ext[i, j])
 n_A_ext[, ] <- rbinom(A[i, j], p_A_ext[i, j])
 n_T_ext[, ] <- rbinom(T[i, j], p_T_ext[i, j])
 
-#TRYSTAN EDIT
 #Relative probabilities of infection transition vs vaccine transition
 Rel_U[, ] <- if ((lambda * (1 - vea[j]) - D[j]) == 0) 0 else
   lambda * (1 - vea[j]) / (lambda * (1 - vea[j]) - D[j])
@@ -47,7 +44,6 @@ Rel_A[, ] <- if (r_AT[i, j] + r_AU[i, j] - D[j] == 0) 0 else
 
 Rel_T[, ] <- if (rho - D[j] == 0) 0 else  rho / (rho - D[j])
 
-#TRYSTAN EDIT
 #draw numbers changing between specific compartments
 n_UI[, ] <- rbinom(n_U_ext[i, j], Rel_U[i, j])
 n_Uw[, ] <- n_U_ext[i, j] - n_UI[i, j]
@@ -163,21 +159,21 @@ dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 
-#TRYSTAN EDIT - added in probability of individuals leaving compartments
+# Probability of individuals leaving compartments
 dim(p_U_ext) <- c(n_group, n_vax)
 dim(p_I_ext) <- c(n_group, n_vax)
 dim(p_S_ext) <- c(n_group, n_vax)
 dim(p_A_ext) <- c(n_group, n_vax)
 dim(p_T_ext) <- c(n_group, n_vax)
 
-#TRYSTAN EDIT - added in number of individuals leaving compartments
+#Number of individuals leaving compartments
 dim(n_U_ext) <- c(n_group, n_vax)
 dim(n_I_ext) <- c(n_group, n_vax)
 dim(n_S_ext) <- c(n_group, n_vax)
 dim(n_A_ext) <- c(n_group, n_vax)
 dim(n_T_ext) <- c(n_group, n_vax)
 
-#TRYSTAN EDIT - Relative probabilities of infection transition
+#Relative probabilities of infection transition
 # vs vaccine  transition
 dim(Rel_U) <- c(n_group, n_vax)
 dim(Rel_I) <- c(n_group, n_vax)
