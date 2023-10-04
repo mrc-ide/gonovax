@@ -31,12 +31,12 @@ assert_integer <- function(x, name = deparse(substitute(x)),
 }
 
 assert_positive_integer <- function(x, name = deparse(substitute(x))) {
-    force(name)
-    x <- assert_integer(x, name)
-    if (any(x < 1L)) {
-      stop(sprintf("'%s' must be at least 1", name), call. = FALSE)
-    }
-    invisible(x)
+  force(name)
+  x <- assert_integer(x, name)
+  if (any(x < 1L)) {
+    stop(sprintf("'%s' must be at least 1", name), call. = FALSE)
+  }
+  invisible(x)
 }
 
 
@@ -86,7 +86,7 @@ assert_scalar_positive <- function(x, name = deparse(substitute(x))) {
 assert_scalar_unit_interval <- function(x, name = deparse(substitute(x))) {
   force(name)
   assert_scalar(x, name)
-  if (x < 0 | x > 1) {
+  if (x < 0 || x > 1) {
     stop(sprintf("'%s' must be between 0 and 1", name), call. = FALSE)
   }
   invisible(x)

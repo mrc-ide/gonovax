@@ -19,11 +19,11 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 
   if (as_incid) {
 
-      if (stochastic) {
-        dt <- diff(x[[1]]$time)
-      }else {
-        dt <- diff(x[[1]]$t)
-      }
+    if (stochastic) {
+      dt <- diff(x[[1]]$time)
+    }else {
+      dt <- diff(x[[1]]$t)
+    }
 
     y <- apply(y, 2, diff) / dt
   }
@@ -37,13 +37,13 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 ##' @return cumulative and incident flows
 ##' @export
 extract_flows_xpvwrh <- function(y) {
-# extract cumulative flows
+  # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
                   "cum_vaccinated", "cum_vbe")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
-## extract vaccinations and revaccinations separately
+  ## extract vaccinations and revaccinations separately
   # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
   cumulative_flows$cum_primary_total <-
     t(aggregate(y, "cum_vaccinated", stratum = 1))

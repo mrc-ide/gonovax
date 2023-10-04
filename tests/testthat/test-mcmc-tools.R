@@ -78,8 +78,8 @@ test_that("can combine chains", {
 test_that("can combine chains with list interface", {
   results <- example_mcmc2()$results
   expect_identical(
-    mcmc_combine(results[[1]], results[[2]], results[[3]]),
-    mcmc_combine(samples = results))
+                   mcmc_combine(results[[1]], results[[2]], results[[3]]),
+                   mcmc_combine(samples = results))
 })
 
 
@@ -92,8 +92,9 @@ test_that("can drop burnin from combined chains", {
 
   ## Same performed either way:
   expect_identical(
-    res,
-    mcmc_combine(samples = lapply(results, mcmc_thin, burnin = 5)))
+                   res,
+                   mcmc_combine(samples = lapply(results, mcmc_thin,
+                                                 burnin = 5)))
 })
 
 
@@ -106,8 +107,8 @@ test_that("can thin combined chains", {
 
   ## Same performed either way:
   expect_identical(
-    res,
-    mcmc_combine(samples = lapply(results, mcmc_thin, 2, 2)))
+                   res,
+                   mcmc_combine(samples = lapply(results, mcmc_thin, 2, 2)))
 })
 
 test_that("mcmc_combine works as expected", {

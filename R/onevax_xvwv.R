@@ -35,19 +35,19 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                          i_eligible = i_eligible, i_v = i_v)
 
   list(n_vax   = n_vax,
-       willing = c(1, 0, 0),
-       u       = u,
-       u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
-       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea     = vea * ve,
-       vei     = vei * ve,
-       ved     = ved * ve,
-       ves     = ves * ve,
-       w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
-       vax_t   = c(0, t_stop),
-       vax_y   = c(1, 0)
+    willing = c(1, 0, 0),
+    u       = u,
+    u_vbe   = vbe,
+    vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+    vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+    vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+    vea     = vea * ve,
+    vei     = vei * ve,
+    ved     = ved * ve,
+    ves     = ves * ve,
+    w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
+    vax_t   = c(0, t_stop),
+    vax_y   = c(1, 0)
   )
 }
 
@@ -87,7 +87,7 @@ run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
 
   if (is.null(init_params)) {
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
-              MoreArgs = list(tt = tt))
+               MoreArgs = list(tt = tt))
   } else {
     ret <- Map(run, gono_params = gono_params, init_params = init_params,
                vax_params = vax_params,

@@ -17,9 +17,9 @@ test_that("no new infections if lambda is 0", {
   expect_true(all(y$cum_incid == 0))
   expect_true(all(unlist(y) >= 0))                     #no compartments negative
   expect_true(all(round(rowSums(y$N)) == params$N0))   #number of participants
-                                                       #doesn't change
-  # presence of vaccination
+  #doesn't change
 
+  # presence of vaccination
   params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]],
                                vax_params = vax_params_xvw_trial(), p_v = 0.5)
   tt <- seq.int(0, 5) / 365
@@ -54,21 +54,21 @@ test_that("number of individuals always >= 0 even at high lambda", {
 
 test_that("all individuals are in the high activity group", {
 
-params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
-mod <- model_trial$new(user = params, unused_user_action = "ignore")
-tt <- seq.int(0, 5) / 365
-y <- mod$run(t = tt)
-y <- mod$transform_variables(y)
+  params <- model_params_trial(gono_params_trial = gono_params_trial(1)[[1]])
+  mod <- model_trial$new(user = params, unused_user_action = "ignore")
+  tt <- seq.int(0, 5) / 365
+  y <- mod$run(t = tt)
+  y <- mod$transform_variables(y)
 
-#low activity group empty
-expect_true(all(y$U[, 1, ] == 0))
-expect_true(all(y$I[, 1, ] == 0))
-expect_true(all(y$A[, 1, ] == 0))
-expect_true(all(y$S[, 1, ] == 0))
-expect_true(all(y$T[, 1, ] == 0))
+  #low activity group empty
+  expect_true(all(y$U[, 1, ] == 0))
+  expect_true(all(y$I[, 1, ] == 0))
+  expect_true(all(y$A[, 1, ] == 0))
+  expect_true(all(y$S[, 1, ] == 0))
+  expect_true(all(y$T[, 1, ] == 0))
 
-expect_true(all(unlist(y) >= 0))
-expect_true(all(round(rowSums(y$N)) == params$N0))
+  expect_true(all(unlist(y) >= 0))
+  expect_true(all(round(rowSums(y$N)) == params$N0))
 
 })
 
@@ -149,7 +149,7 @@ test_that("Model works with vaccination and waning", {
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 5) / 365
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                       vea = 0, vei = 0, ved = 0, ves = 0)
+                            vea = 0, vei = 0, ved = 0, ves = 0)
 
   #Total N in high group in X and  V is equal and non zero at t = 0
   expect_true(all(y[[1]]$N[1, 2, 1] == y[[1]]$N[1, 2, 2]))
@@ -254,7 +254,7 @@ test_that("VEi behaves as expected ", {
                              vea = 0, vei = 0, ved = 0, ves = 0)
 
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                           vea = 0, vei = 1, ved = 0, ves = 0)
+                            vea = 0, vei = 1, ved = 0, ves = 0)
 
   # Incidence in V is the same for VEi = 0 and VEi = 1
 
@@ -290,22 +290,25 @@ test_that("aggregated time series output correctly", {
 
 test_that("outputs for vaccination run as expected", {
 
-gp <- gono_params_trial(1)[1]
-tt <- seq.int(0, 5) / 365
-y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+  gp <- gono_params_trial(1)[1]
+  tt <- seq.int(0, 5) / 365
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5)
 
-expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
-                          297547.433626743, 296334.908051234, 295135.061477033,
-                          293950.297077376, 0, 0, 0, 0, 0, 0, 3e+05,
-                          299383.713797674, 298770.717502468, 298162.935800213,
-                          297562.116361515, 296969.7952273, 0, 0, 0, 0, 0, 0, 0,
-                          0.819388141002698, 1.63374216215416, 2.4431142416253,
-                          3.24757521226149, 4.04721268804341),
-                        dim = c(6, 2, 3), dimnames = list(NULL,
-                                                          c("L", "H"),
-                                                          c("X.I",
-                                                            "V1.I", "W.I"))))
+  expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
+                                 297547.433626743, 296334.908051234,
+                                 295135.061477033, 293950.297077376, 0, 0, 0,
+                                 0, 0, 0, 3e+05, 299383.713797674,
+                                 298770.717502468, 298162.935800213,
+                                 297562.116361515, 296969.7952273, 0, 0, 0, 0,
+                                 0, 0, 0, 0.819388141002698, 1.63374216215416,
+                                 2.4431142416253, 3.24757521226149,
+                                 4.04721268804341),
+                               dim = c(6, 2, 3), dimnames = list(NULL,
+                                                                 c("L", "H"),
+                                                                 c("X.I",
+                                                                   "V1.I",
+                                                                   "W.I"))))
 })
 
 
@@ -321,8 +324,8 @@ test_that("n_erlang = n is working as expected", {
 
   n_erlang <- 2
   y2 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                            vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
-                            n_erlang = n_erlang)
+                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                             n_erlang = n_erlang)
 
   expect_equal(dim(y2[[1]]$N)[3], n_erlang + 2)
   idx <- stratum_index_xvw_trial(n_erlang)
@@ -330,8 +333,8 @@ test_that("n_erlang = n is working as expected", {
 
   n_erlang <- 5
   y3 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                            vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
-                            n_erlang = n_erlang)
+                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                             n_erlang = n_erlang)
   expect_equal(dim(y3[[1]]$N)[3], n_erlang + 2)
   idx <- stratum_index_xvw_trial(n_erlang)
   expect_equal(dim(y3[[1]]$N)[3], idx$n_vax)
@@ -341,10 +344,10 @@ test_that("n_erlang = n is working as expected", {
   n_diag_rec <- 2
   tt <- seq.int(0, 1)
   y_2_2 <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
-                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
-                             n_erlang = n_erlang,
-                             stochastic = FALSE,
-                             n_diag_rec = n_diag_rec)
+                                vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
+                                n_erlang = n_erlang,
+                                stochastic = FALSE,
+                                n_diag_rec = n_diag_rec)
 
   idx <- stratum_index_xvw_trial(n_erlang, n_diag_rec)
   expect_equal(idx$n_vax, 8)
@@ -404,7 +407,7 @@ test_that("n_erlang = n is working as expected", {
   expect_true(all(y[[1]]$cum_incid[, , c(idx$V)] == 0)) #all of V no infections
   expect_true(all(y[[1]]$cum_incid[-1, 2, idx$X] != 0)) #X still has infections
   expect_true(sum(y[[1]]$cum_incid[-1, 2, idx$W]) != 0) #W not under protection,
-                                                        #has infections
+  #has infections
 
 })
 
@@ -457,7 +460,8 @@ test_that("model outputs for a basic run haven't changed between updates", {
                array(c(rep(0, 2), 300000, 250162.7, rep(0, 2), 300000, 249912.6,
                        rep(0, 3), 250.0376), dim = c(2, 2, 3),
                      dimnames = list(NULL, c("L", "H"),
-                                c("X.I", "V1.I", "W.I"))), tolerance = 1e-2)
+                                     c("X.I", "V1.I", "W.I"))),
+               tolerance = 1e-2)
 
   #and with n_erlang and diagnosis history:
   gp <- gono_params_trial(1)[1]
@@ -470,15 +474,16 @@ test_that("model outputs for a basic run haven't changed between updates", {
                             stochastic = FALSE, n_diag_rec = n_diag_rec)
 
   expect_equal(y[[1]]$U,
-     array(c(rep(0, 2), 300000, 136724.6, rep(0, 3),
-             113438.1, rep(0, 2), 300000, 136451.4,
-            rep(0, 3), 113211.5, rep(0, 3), 272.9028,
-            rep(0, 3), 226.4229, rep(0, 3),
-            0.2730848, rep(0, 3), 0.2265739),
+               array(c(rep(0, 2), 300000, 136724.6, rep(0, 3),
+                       113438.1, rep(0, 2), 300000, 136451.4,
+                       rep(0, 3), 113211.5, rep(0, 3), 272.9028,
+                       rep(0, 3), 226.4229, rep(0, 3),
+                       0.2730848, rep(0, 3), 0.2265739),
                      dim = c(2, 2, 8),
-           dimnames = list(NULL, c("L", "H"),
-           c("X.I", "X.II", "V1.I", "V1.II", "V2.I",
-           "V2.II", "W.I", "W.II"))), tolerance = 1e-2)
+                     dimnames = list(NULL, c("L", "H"),
+                                     c("X.I", "X.II", "V1.I", "V1.II", "V2.I",
+                                       "V2.II", "W.I", "W.II"))),
+               tolerance = 1e-2)
 
 })
 
@@ -591,9 +596,9 @@ test_that("for n_diag_rec > 1, the number treated = the number recorded
             # history
 
             expect_true(all(round(diff(y[[1]]$cum_treated[, 2, 1]), 3) ==
-                                  round(diff(rowSums(y[[1]]$N[, 2, 2:3])), 3)))
+                              round(diff(rowSums(y[[1]]$N[, 2, 2:3])), 3)))
             expect_true(all(round(diff(y[[1]]$cum_treated[, 2, 2]), 3) ==
-                                  round(diff(y[[1]]$N[, 2, 3]), 3)))
+                              round(diff(y[[1]]$N[, 2, 3]), 3)))
 
             diff(y[[1]]$cum_treated[, 2, 1])
             diff(rowSums(y[[1]]$N[, 2, 2:3]))

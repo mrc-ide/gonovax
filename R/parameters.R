@@ -1,9 +1,9 @@
 demographic_params <- function() {
   list(N0 = 6e5,
-       q = c(0.85, 0.15), # proportion in group L
-       p = c(0.6, 15.6), # partner change rate in group L/H
-       enr = 12000,
-       exr = 1 / 50
+    q = c(0.85, 0.15), # proportion in group L
+    p = c(0.6, 15.6), # partner change rate in group L/H
+    enr = 12000,
+    exr = 1 / 50
   )
 }
 
@@ -32,23 +32,23 @@ gono_params <- function(n = NULL) {
 }
 
 transform0 <- function(pars) {
-    # reformat time-varying pars
-    pars <- as.list(pars)
+  # reformat time-varying pars
+  pars <- as.list(pars)
 
-    check_gono_params(pars)
-    with(pars, {
-      assert_scalar_positive(beta)
-      assert_scalar_positive(eta)
-    })
+  check_gono_params(pars)
+  with(pars, {
+    assert_scalar_positive(beta)
+    assert_scalar_positive(eta)
+  })
 
 
-    pars$tt <- c(0, 1e3)
-    pars$beta_t <-  rep(pars$beta, 2)
-    pars$eta_l_t <- rep(pars$eta, 2)
-    pars$eta_h_t <- pars$eta_l_t
-    pars$beta <- pars$eta <- NULL
+  pars$tt <- c(0, 1e3)
+  pars$beta_t <-  rep(pars$beta, 2)
+  pars$eta_l_t <- rep(pars$eta, 2)
+  pars$eta_h_t <- pars$eta_l_t
+  pars$beta <- pars$eta <- NULL
 
-    pars
+  pars
 }
 
 ##' Transform fitted parameters into gonovax params
@@ -329,17 +329,17 @@ check_gono_params <- function(pars) {
 create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
                               i_eligible, i_v) {
 
-# set up uptake matrix rows = groups, columns = vaccine strata
-u <- array(0, dim = c(n_group, n_vax, n_vax))
+  # set up uptake matrix rows = groups, columns = vaccine strata
+  u <- array(0, dim = c(n_group, n_vax, n_vax))
 
-u_vals <- c(primary_uptake, booster_uptake)
+  u_vals <- c(primary_uptake, booster_uptake)
 
-for (i in seq_along(i_eligible)) {
+  for (i in seq_along(i_eligible)) {
 
-  u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
-  u[, i_v[i], i_eligible[i]]      <- u_vals[i]
+    u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
+    u[, i_v[i], i_eligible[i]]      <- u_vals[i]
 
-}
+  }
 
-u
+  u
 }

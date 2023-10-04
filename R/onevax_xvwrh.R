@@ -86,19 +86,19 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                          i_eligible = i_eligible, i_v = i_v)
 
   list(n_vax   = n_vax,
-       willing = c((1 - hes), 0, 0, 0, hes),
-       u       = u,
-       u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, c(1, 1), c(2, 2)),
-       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea     = c(0, vea, 0, vea_revax, 0),
-       vei     = c(0, vei, 0, vei_revax, 0),
-       ved     = c(0, ved, 0, ved_revax, 0),
-       ves     = c(0, ves, 0, ves_revax, 0),
-       w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
-       vax_t   = c(0, t_stop),
-       vax_y   = c(1, 0)
+    willing = c((1 - hes), 0, 0, 0, hes),
+    u       = u,
+    u_vbe   = vbe,
+    vbe     = create_vax_map(n_vax, p$vbe, c(1, 1), c(2, 2)),
+    vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+    vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+    vea     = c(0, vea, 0, vea_revax, 0),
+    vei     = c(0, vei, 0, vei_revax, 0),
+    ved     = c(0, ved, 0, ved_revax, 0),
+    ves     = c(0, ves, 0, ves_revax, 0),
+    w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
+    vax_t   = c(0, t_stop),
+    vax_y   = c(1, 0)
   )
 }
 
@@ -186,9 +186,9 @@ restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
 
   dim_y <- dim(y[["U"]])
 
-   if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
+  if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
     stop("Provided model run already contains hesitancy > 0")
-   }
+  }
 
   if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
     stop("Provided model run has vaccination, baseline run should have all V

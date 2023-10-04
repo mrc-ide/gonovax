@@ -4,7 +4,7 @@ test_that("cannot input bad parameters", {
   p <- read_csv(gonovax_file("extdata/gono_params.csv"))[1, ]
 
   expect_error(check_gono_params(replace(p, "prev_Asl", -1)),
-                                 "'prev_Asl' must be between 0 and 1")
+               "'prev_Asl' must be between 0 and 1")
   expect_error(check_gono_params(replace(p, "prev_Ash", 2)),
                "'prev_Ash' must be between 0 and 1")
   expect_error(check_gono_params(replace(p, "epsilon", 2)),
@@ -155,7 +155,7 @@ test_that("transform works as expected", {
   gp2 <- transform(p, FALSE)
 
   expect_equal(diff(gp2$beta_t), rep(p$beta2009 * p$phi_beta,
-                                   length(gp2$tt) - 1L))
+                                     length(gp2$tt) - 1L))
   expect_equal(diff(gp2$eta_h_t), rep(p$eta_h * p$phi_eta, length(gp2$tt) - 1L))
   expect_equal(diff(gp2$eta_l_t), rep(p$eta_h * p$phi_eta * p$omega,
                                       length(gp2$tt) - 1L))

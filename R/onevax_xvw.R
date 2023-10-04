@@ -33,7 +33,7 @@ initial_params_xvw <- function(pars, coverage = 0) {
 ##' @param t_stop time at which vaccination should stop (years)
 ##' @return A list parameters in the model input format
 vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                            dur = 1e3, uptake = 0, strategy = NULL, vbe = 0,
+                           dur = 1e3, uptake = 0, strategy = NULL, vbe = 0,
                            t_stop = 99) {
 
   assert_scalar_unit_interval(vea)
@@ -64,19 +64,19 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                          i_eligible = i_eligible, i_v = i_v)
 
   list(n_vax   = n_vax,
-       willing = c(1, 0, 0),
-       u       = u,
-       u_vbe   = vbe,
-       vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
-       vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-       vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-       vea     = c(0, vea, 0),
-       vei     = c(0, vei, 0),
-       ved     = c(0, ved, 0),
-       ves     = c(0, ves, 0),
-       w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
-       vax_t   = c(0, t_stop),
-       vax_y   = c(1, 0)
+    willing = c(1, 0, 0),
+    u       = u,
+    u_vbe   = vbe,
+    vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
+    vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
+    vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+    vea     = c(0, vea, 0),
+    vei     = c(0, vei, 0),
+    ved     = c(0, ved, 0),
+    ves     = c(0, ves, 0),
+    w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
+    vax_t   = c(0, t_stop),
+    vax_y   = c(1, 0)
   )
 }
 
@@ -105,9 +105,9 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @inheritParams vax_params_xvw
 ##' @export
 run_onevax_xvw <- function(tt, gono_params, init_params = NULL, dur = 1e3,
-                            vea = 0, vei = 0, ved = 0, ves = 0, vbe = coverage,
-                            uptake = 0, strategy = NULL, coverage = 0,
-                            t_stop = 99) {
+                           vea = 0, vei = 0, ved = 0, ves = 0, vbe = coverage,
+                           uptake = 0, strategy = NULL, coverage = 0,
+                           t_stop = 99) {
 
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
