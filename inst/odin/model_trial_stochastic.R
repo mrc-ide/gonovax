@@ -19,7 +19,6 @@ update(time) <- (step + 1) * dt
 r_AT[, ] <- eta
 r_AU[, ] <- nu / (1 - ved[j])
 
-#TRYSTAN EDIT
 # probability of individuals leaving compartments
 p_U_ext[, ] <- (1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt))
 p_I_ext[, ] <- 1 - exp(-(sigma - D[j]) * dt)
