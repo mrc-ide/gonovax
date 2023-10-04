@@ -45,7 +45,6 @@ Rel_A[, ] <- if (r_AT[i, j] + r_AU[i, j] - D[j] == 0) 0 else
 
 Rel_T[, ] <- if (rho - D[j] == 0) 0 else  rho / (rho - D[j])
 
-#TRYSTAN EDIT
 #draw numbers changing between specific compartments
 n_UI[, ] <- rbinom(n_U_ext[i, j], Rel_U[i, j])
 n_Uw[, ] <- n_U_ext[i, j] - n_UI[i, j]
