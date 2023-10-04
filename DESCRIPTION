@@ -1,6 +1,6 @@
 Package: gonovax
 Title: Deterministic Compartmental Model of Gonorrhoea with Vaccination
-Version: 0.4.12
+Version: 0.4.11
 Authors@R:
     c( person(given = "Lilith",
            family = "Whittles",
@@ -9,7 +9,11 @@ Authors@R:
 	person(given = "Dariya",
 	   family = "Nikitin",
 	   role = c("aut"),
-	   email = "d.nikitin20@imperial.ac.uk"))
+	   email = "d.nikitin20@imperial.ac.uk"),
+	person(given = "Trystan",
+	   family = "Leng",
+	   role = c("aut"),
+	   email = "trystan.leng@imperial.ac.uk"))
 Description: Model for gonorrhoea vaccination, using odin.
 License: MIT + file LICENSE
 Encoding: UTF-8
