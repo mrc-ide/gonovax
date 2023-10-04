@@ -166,7 +166,7 @@ dim(p_S_ext) <- c(n_group, n_vax)
 dim(p_A_ext) <- c(n_group, n_vax)
 dim(p_T_ext) <- c(n_group, n_vax)
 
-#TRYSTAN EDIT - added in number of individuals leaving compartments
+#Number of individuals leaving compartments
 dim(n_U_ext) <- c(n_group, n_vax)
 dim(n_I_ext) <- c(n_group, n_vax)
 dim(n_S_ext) <- c(n_group, n_vax)
