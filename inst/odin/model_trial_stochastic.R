@@ -33,7 +33,6 @@ n_S_ext[, ] <- rbinom(S[i, j], p_S_ext[i, j])
 n_A_ext[, ] <- rbinom(A[i, j], p_A_ext[i, j])
 n_T_ext[, ] <- rbinom(T[i, j], p_T_ext[i, j])
 
-#TRYSTAN EDIT
 #Relative probabilities of infection transition vs vaccine transition
 Rel_U[, ] <- if ((lambda * (1 - vea[j]) - D[j]) == 0) 0 else
   lambda * (1 - vea[j]) / (lambda * (1 - vea[j]) - D[j])
