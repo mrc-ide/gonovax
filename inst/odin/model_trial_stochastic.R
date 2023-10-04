@@ -27,7 +27,6 @@ p_S_ext[, ] <- 1 - exp(-(mu - D[j]) * dt)
 p_A_ext[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] - D[j]) * dt)
 p_T_ext[, ] <- 1 - exp(-(rho - D[j]) * dt)
 
-#TRYSTAN EDIT
 # draws from binomial distribution for numbers exiting compartments
 n_U_ext[, ] <- rbinom(U[i, j], p_U_ext[i, j])
 n_I_ext[, ] <- rbinom(I[i, j], p_I_ext[i, j])
