@@ -281,17 +281,21 @@ create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
   w <- array(0, dim = c(n_vax, n_vax))
   
   
-  for (j in 1:n_diag_rec){
+
     
-    w[i_w[j], i_v[j]] <-  z
+  for (i in 1:length(i_v)) {
+      
+      for (j in 1:n_diag_rec){
     
-    for (i in i_v) {
-      w[i_v[j], i_v[j]] <- -w[i_w[j], i_v[j]]
+      w[i_w[j], i_v[(i-1)*n_diag_rec + j]] <- ifelse(length(z) == 1,  z, z[i])
+      
+      w[i_v[(i-1)*n_diag_rec + j], i_v[(i-1)*n_diag_rec + j]] <- -w[i_w[j], i_v[(i-1)*n_diag_rec + j]]
     }
   }
   
   w
 }
+
 
 
 ##' @name create_Diagnosiswaning_map
@@ -315,9 +319,10 @@ create_Diagnosiswaning_map <- function(n_vax, z, n_diag_rec = 1) {
   
   if (n_diag_rec >=2){
     
-    for (j in 1:(n_diag_rec-1)){
       
-      for (k in 1:(ntype)){
+    for (k in 1:(ntype)){
+        
+      for (j in 1:(n_diag_rec-1)){
         
         wd[(k-1)*n_diag_rec +j, (k-1)*n_diag_rec + j+1] = z
         wd[(k-1)*n_diag_rec +j+1, (k-1)*n_diag_rec +j+1] = -z

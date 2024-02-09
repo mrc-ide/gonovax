@@ -15,7 +15,7 @@ NULL
 ##' @param transform = TRUE
 ##' @export run
 
-run <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
+run <- function(tt, gono_params, init_params = NULL, vax_params = NULL, n_diag_rec = 1,
                 transform = TRUE) {
 
   pars <- model_params(gono_params = gono_params,
