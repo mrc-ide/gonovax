@@ -171,7 +171,7 @@ run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
   }
   
   # name outputs
-  ret <- lapply(ret, name_outputs_trial, gen_trial_labels(1, n_diag_rec))
+  ret <- lapply(ret, name_outputs, gen_labels(1, n_diag_rec))
   
   ret
 }
