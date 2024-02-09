@@ -9,19 +9,28 @@
 vax_params0 <- function(n_diag_rec = 1) {
   n_group <- 2
   n_vax <- n_diag_rec
+  
+  willing = rep(0, n_diag_rec)
+  willing[1] = 1
+  
+  
   v <- array(0, dim = c(n_group, n_vax, n_vax))
   list(n_vax = n_diag_rec,
-       willing = 1,
+       willing = willing,
        u_vbe = 0,
-       u = v,
+       u_d = v,
+       u_s = v,
        vbe = v,
        vos = v,
        vod = v,
-       vea = 0,
-       ved = 0,
-       ves = 0,
-       vei = 0,
-       w = as.matrix(0),
+       vopn = v,
+       notification_param = 0,
+       vea = rep(0, n_diag_rec),
+       ved = rep(0, n_diag_rec),
+       ves = rep(0, n_diag_rec),
+       vei = rep(0, n_diag_rec),
+       w = array(0, dim = c(n_diag_rec, n_diag_rec)),
+       wd = create_Diagnosiswaning_map(n_vax, 1 , n_diag_rec),
        D = 0,
        vax_t = c(0, 99),
        vax_y = c(0, 0))

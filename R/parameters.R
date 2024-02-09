@@ -221,8 +221,7 @@ model_params <- function(gono_params = NULL,
   
   cov <- c(1, rep(0, vax_params$n_vax - 1))
   init_params <-
-    init_params%||% initial_params(ret, vax_params$n_vax, cov,
-                                             n_diag_rec = n_diag_rec)
+    init_params%||% initial_params(ret, vax_params$n_vax, cov)
   
   
   c(ret, init_params, vax_params)
