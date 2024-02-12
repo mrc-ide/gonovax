@@ -32,13 +32,15 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
   
   idx <- stratum_index_xpvwrh(n_erlang, n_diag_rec)
   
-  #  print("checking here 3")
+    print("checking here 3")
   
-  # print(coverage_p)
-  # print(coverage_v)
-  #  print(hes)
+   print(coverage_p)
+   print(coverage_v)
+    print(hes)
   #  print(n_diag_rec)
   # print(n_erlang)
+    
+
   
   if (coverage_p + coverage_v + hes > 1) {
     stop("sum of coverages and/or hesitancy must not exceed 1")
@@ -120,7 +122,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                         dur_revax = dur_v, r1 = 0, r2 = 0, r2_p = 0,
                                         booster_uptake = r1 * r2, strategy = NULL,
                                         vbe = 0, t_stop = 99, hes = 0,
-                                        n_erlang = n_erlang, n_diag_rec = n_diag_rec, notification_param = 0) {
+                                        n_erlang = 1, n_diag_rec = 1, notification_param = 0) {
   
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
