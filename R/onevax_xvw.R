@@ -54,6 +54,8 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # generate indices for all strata and
   idx <- stratum_index_xvw_trial(1, n_diag_rec)
   n_vax <- idx$n_vax
+  
+  
   i_v <- idx$V
   i_w <- idx$V + n_diag_rec
   i <- seq_len(idx$n_vax)

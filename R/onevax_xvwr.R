@@ -24,7 +24,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             dur = 1e3, dur_revax = dur, primary_uptake = 0,
                             booster_uptake = primary_uptake,
                             strategy = NULL,
-                            vbe = 0, t_stop = 99) {
+                            vbe = 0, t_stop = 99, n_diag_rec = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -43,11 +43,62 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # waned vaccinees move to own stratum, but are eligible for re-vaccination
   # re-vaccination is into a fourth stratum (r)
   # 1:x -> 2:v -> 3:w <-> 4:r
-  i_eligible <- c(1, 3)
-  i_w <- 3
-  i_v <- c(2, 4)
-  n_vax <- 4
+  
+  
+  
+  
+  # generate indices for all strata and
+  idx <- stratum_index_xvwr(n_diag_rec)
+  
+  n_vax <- idx$n_vax
+  
+  i_v <- idx$V
+  
+  i_w <- idx$V + n_diag_rec
+  
+  i <- seq_len(idx$n_vax)
+  
+  # diagnosed from
+  i_diagnosedfrom <- i[i %% n_diag_rec != 0]
+  #i_eligible <-  c(1, 3)
+  
+  # diagnosed to
+  
+  i_diagnosedto <- i[i %% n_diag_rec != 1]
+  
+  
+  
+  #i_eligible <- c(1, 3)
+  #i_v <- c(2, 4)
+  
+  
+  i_eligible_temp <- c(1:n_diag_rec, ( (2*n_diag_rec + 1) :3*n_diag_rec))
+  i_v_temp <- c((1*(n_diag_rec) + 1): (2*(n_diag_rec)), (3*(n_diag_rec) + 1): (4*(n_diag_rec)))
+  
+  
+  ## Could be implemented better
+  if (length(strategy) > 0){
+    if ( strategy == "VaH"){
+      i_eligible_temp2 <- i_eligible_temp[-c(1, (n_diag_rec+1))]
+      i_v_temp2 <- i_v_temp[-c(1,(n_diag_rec+1))]
+    }
+    else{
+      i_eligible_temp2 = i_eligible_temp
+      i_v_temp2 = i_v_temp
+    }
+  }
+  else{
+    i_eligible_temp2 = i_eligible_temp
+    i_v_temp2 = i_v_temp
+  }
+  
+  
   n_group <- 2
+  
+  # create diagnosis history mapping
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), i_diagnosedfrom, i_diagnosedto,
+                                       set_vbe = FALSE, idx)
+  
 
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
@@ -56,26 +107,42 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
+  
+  print("hello")
+  
+  print(i_eligible_temp)
+  print(i_v_temp)
+  
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
-                         primary_uptake = primary_uptake,
-                         booster_uptake = booster_uptake,
-                         i_eligible = i_eligible, i_v = i_v)
+                         primary_uptake = rep(primary_uptake, n_diag_rec),
+                         booster_uptake = rep(booster_uptake, n_diag_rec),
+                         i_eligible = i_eligible_temp, i_v = i_v_temp)
+  
+  
+  print("hello 2")
+  
+  willing = rep(0, n_vax)
+  willing[1] = 1
 
   list(n_vax   = n_vax,
-    willing = c(1, 0, 0, 0),
-    u       = u,
+    willing = willing,
+    u_s     = u,
+    u_d     = u,
     u_vbe   = vbe,
-    vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
-    vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-    vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+    vbe     = create_vax_map(n_vax, p$vbe, i_eligible_temp, i_v_temp),
+    vod     = create_vax_map(n_vax, p$vod, i_eligible_temp, i_v_temp),
+    vos     = create_vax_map(n_vax, p$vos, i_eligible_temp2, i_v_temp2),
     vea     = c(0, vea, 0, vea_revax),
     vei     = c(0, vei, 0, vei_revax),
     ved     = c(0, ved, 0, ved_revax),
     ves     = c(0, ves, 0, ves_revax),
-    w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
+    w       = create_waning_map(n_vax, i_v, i_w, 1 / dur, n_diag_rec),
+    wd      = create_Diagnosiswaning_map(n_vax, 1 , n_diag_rec),
     vax_t   = c(0, t_stop),
-    vax_y   = c(1, 0)
+    vax_y   = c(1, 0),
+    diag_rec = diag_rec,
+    notification_param = 0
   )
 }
 
@@ -112,7 +179,7 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                             dur_revax = dur,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
-                            vbe = 0, primary_uptake = 0,
+                            vbe = 0, primary_uptake = 0, n_diag_rec = 1,
                             booster_uptake = primary_uptake, strategy = NULL,
                             t_stop = 99) {
 

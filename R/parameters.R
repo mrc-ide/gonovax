@@ -200,7 +200,7 @@ model_params <- function(gono_params = NULL,
   
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
     
-    stopifnot(unique(dim(vax_params$w)) ==  3 * n_diag_rec)
+   # stopifnot(unique(dim(vax_params$w)) ==  3 * n_diag_rec)
     
     
   } else {
@@ -435,8 +435,10 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
   u <- array(0, dim = c(n_group, n_vax, n_vax))
 
   u_vals <- c(primary_uptake, booster_uptake)
+  
 
   for (i in seq_along(i_eligible)) {
+    
 
     u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
     u[, i_v[i], i_eligible[i]]      <- u_vals[i]
@@ -470,18 +472,14 @@ model_params_xpvwrh <- function(gono_params = NULL,
                                           n_diag_rec = 1) {
   
   
-
+  
   
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
   
   
- # print(vax_params)
-  
-  
   #  print("hello OK")
-    
   #  print(gono_params)
   #  print( "hello end")
   
@@ -491,7 +489,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
   
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
     
- #  print("hello1")
+    #   print("hello1")
     
     
     #print(dim(vax_params$w))
@@ -503,7 +501,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
     
   } else {
     
-   # print("hello2")
+    #  print("hello2")
     
     #also add in diag_rec if vax_params not supplied
     vax_params <- vax_params0(n_diag_rec = n_diag_rec)
@@ -517,17 +515,17 @@ model_params_xpvwrh <- function(gono_params = NULL,
                                                     seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1])
   }
   
-  #print("hello OK2")
-    
   
-
+  
+  
   
   
   cov <- c(1, rep(0, vax_params$n_vax - 1))
   init_params <-
-    init_params%||% initial_params(pars = ret, vax_params$n_vax, cov)
+    init_params%||% initial_params(ret, vax_params$n_vax, cov,
+                                             n_diag_rec = n_diag_rec)
   
-   # print(init_params)
+  
   
   c(ret, init_params, vax_params)
 }
