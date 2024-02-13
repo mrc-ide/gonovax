@@ -52,7 +52,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   n_vax <- idx$n_vax
   
-  i_v <- idx$V
+  i_v <- c(idx$V, idx$R)
   
   i_w <- idx$V + n_diag_rec
   
