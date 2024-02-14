@@ -237,8 +237,8 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
       else {
         
         #Remove values corresponding to no diagnosis history
-        i_eligible_temp <- i_eligible[-c( n_diag_rec*(0:(n_diag_rec-1)) + 1, length(i_eligible) - (n_diag_rec - 1))]
-        i_p_temp <- i_p[-c( n_diag_rec*(0:(n_diag_rec-1)) + 1, length(i_eligible) - (n_diag_rec - 1))]
+        i_eligible_temp <- i_eligible[-c( n_diag_rec*(0:2) + 1, length(i_eligible) - (n_diag_rec - 1))]
+        i_p_temp <- i_p[-c( n_diag_rec*(0:2) + 1, length(i_eligible) - (n_diag_rec - 1))]
       }
     }else{
       i_eligible_temp = i_eligible
@@ -251,6 +251,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   
   i_eligible_temp_2 = i_eligible
+  
+  
+  #print(i_eligible)
+  #print(i_eligible_temp)
 
   
   # i_p for vaccination by diagnosis -> individuals move up a level of diagnosis

@@ -388,9 +388,6 @@ test_that("Test VoD is working correctly", {
 
   for (i in seq_along(y3e)) {
     
-    # Need to double check this is working probably - think it might not be! Trystan 15 Dec
-    
-
 
     ## all treated in X, p or W are offered vaccination
     expect_equal(y3e[[i]]$cum_offered[, , c(1:n_diag_rec, n_diag_rec + 1:n_diag_rec, 3*n_diag_rec + 1:n_diag_rec)],
@@ -411,8 +408,6 @@ test_that("Test VoD is working correctly", {
     # and no-one else
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1:n_diag_rec, n_diag_rec + 1:n_diag_rec, 3*n_diag_rec + 1:n_diag_rec)]), 0)
 
-
-    
     
     ## all treated in X, p or W are offered vaccination
     # and no-one else
@@ -543,8 +538,77 @@ test_that("Test vaccination targeting", {
   
   })
   
-  #Trystan - to add in equivalent checks for VoRD and VoPN
+
+test_that("Test vaccination according to history is working correctly", {
   
+  tt <- seq(0, 5)
+  gp <- gono_params(1:2)
+  r1 <- c(0.25, 0.5)
+  r2 <- c(0.5, 0.75)
+  r2_p <- c(0.4, 0.8)
+  booster_uptake <- c(0.3, 0.75)
+  
+  
+  for (j in 1:5){
+    
+    n_diag_rec <- j
+    
+    # check vaccination targeting
+    y5e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1,
+                             strategy = "VaH",
+                             r1 = r1, r2 = r2, r2_p = r2_p,
+                             booster_uptake = booster_uptake, n_diag_rec = n_diag_rec)
+    
+    
+    #for (i in seq_along(y5e)) {
+    for (i in 1:1) {
+      ## Individuals with no diagnosis history who are treated in X, P, or W are offered vaccination
+      
+      expect_equal(y5e[[i]]$cum_offered[, , c(1, n_diag_rec + 1, 3*n_diag_rec+ 1)],
+                   y5e[[i]]$cum_treated[, , c(1, n_diag_rec + 1, 3*n_diag_rec+ 1)])
+      
+      
+      ## Individuals with diagnosis history who are are treated or screened in X, P, or W are offered vaccination
+      if (j >1){
+        
+        expect_equal(y5e[[i]]$cum_offered[, , c(2:n_diag_rec, n_diag_rec + 2:n_diag_rec, 3*n_diag_rec+(2:n_diag_rec))],
+                     y5e[[i]]$cum_treated[, ,  c(2:n_diag_rec, n_diag_rec + 2:n_diag_rec, 3*n_diag_rec+(2:n_diag_rec))] +
+                       y5e[[i]]$cum_screened[, , c(2:n_diag_rec, n_diag_rec + 2:n_diag_rec, 3*n_diag_rec+(2:n_diag_rec))])
+        
+      }
+      
+      # and no-one else
+      expect_equal(sum(y5e[[i]]$cum_offered[, , -c(1:n_diag_rec, n_diag_rec + 1:n_diag_rec, 3*n_diag_rec+(1:n_diag_rec))]), 0)
+      
+      # uptake % of offered are vaccinated
+      expect_equal(y5e[[i]]$cum_offered[, , 1:n_diag_rec] * r1[i],
+                   y5e[[i]]$cum_vaccinated[, , 1:n_diag_rec])
+      
+      # uptake % of 1st dose offered 2nd dose are vaccinated
+      expect_equal(rowSums(y5e[[i]]$cum_offered[, , n_diag_rec + 1:n_diag_rec] * r2_p[i]),
+                   rowSums(y5e[[i]]$cum_vaccinated[, , n_diag_rec + 1:n_diag_rec]))
+      
+      # uptake % of offered booster are vaccinated
+      expect_equal(y5e[[i]]$cum_offered[, , 3*n_diag_rec + 1:n_diag_rec] * booster_uptake[i],
+                   y5e[[i]]$cum_vaccinated[, , 3*n_diag_rec + 1:n_diag_rec])
+      
+      # and no-one else
+      expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1:n_diag_rec, n_diag_rec + 1:n_diag_rec, 3*n_diag_rec+(1:n_diag_rec))]), 0)
+      
+      # no-one is lost
+      expect_equal(apply(y5e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
+ 
+      
+      
+    }
+    
+  
+  
+  }
+  
+})
+
+
 test_that("Test length of uptake vector must be 1 or length gp", {
   
   tt <- seq(0, 5)
