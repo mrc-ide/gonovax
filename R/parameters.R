@@ -184,42 +184,34 @@ restart_params <- function(y, n_vax = NULL) {
 ##'   just before the model is run.
 ##' @export
 model_params <- function(gono_params = NULL,
-                                   demographic_params = NULL,
-                                   init_params = NULL,
-                                   vax_params = NULL,
-                                   n_diag_rec = 1) {
-  
-  
+                         demographic_params = NULL,
+                         init_params = NULL,
+                         vax_params = NULL,
+                         n_diag_rec = 1) {
+
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-  
-  if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
-    
-   # stopifnot(unique(dim(vax_params$w)) ==  3 * n_diag_rec)
-    
-    
-  } else {
-    
+
+  if (is.null(vax_params)) {
     #also add in diag_rec if vax_params not supplied
     vax_params <- vax_params0(n_diag_rec = n_diag_rec)
     n_vax <- vax_params$n_vax
-    i_eligible <-  if (n_diag_rec == 1) {
+    if (n_diag_rec == 1) {
+      i_diag <-  NULL
     } else {
-      i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
+      i_diag <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
     }
-    
-    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
-                                                    seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1])
+
+    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_diag,
+                                          seq_len(n_vax)[seq_len(n_vax)
+                                                         %% n_diag_rec != 1])
+
   }
-  
-  
-  
+
   cov <- c(1, rep(0, vax_params$n_vax - 1))
-  init_params <-
-    init_params%||% initial_params(ret, vax_params$n_vax, cov)
-  
-  
+  init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
+
   c(ret, init_params, vax_params)
 }
 
@@ -236,27 +228,24 @@ model_params <- function(gono_params = NULL,
 ##' @return an array of the mapping
 
 create_vax_map <- function(n_vax, v, i_u, i_v) {
-  
+
   # ensure vaccine input is of correct length
   n_group <- 2
-  
-  
+
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
-  ## stopifnot(length(i_v) == length(i_u))
-  if (length(i_v) > 0){
+  if (length(i_v) > 0) {
     stopifnot(max(i_u, i_v) <= n_vax)
   }
-  
-  
+
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
-  
+
   for (i in seq_along(i_u)) {
     vax_map[, i_u[i], i_u[i]] <-  v
     vax_map[, i_v[i], i_u[i]] <- -v
   }
-  
+
   vax_map
 }
 
@@ -270,26 +259,24 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 ##' @return an array of the mapping
 
 create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
-  
+
   stopifnot(z > 0)
   stopifnot(length(z) %in% c(1, length(i_v)))
   stopifnot(length(i_w) == n_diag_rec)
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
-  
-  
 
-    
-  for (i in 1:length(i_v)) {
-      
-      for (j in 1:n_diag_rec){
-    
-      w[i_w[j], i_v[(i-1)*n_diag_rec + j]] <- ifelse(length(z) == 1,  z, z[i])
-      
-      w[i_v[(i-1)*n_diag_rec + j], i_v[(i-1)*n_diag_rec + j]] <- -w[i_w[j], i_v[(i-1)*n_diag_rec + j]]
+  for (i in seq_along(i_v)) {
+    for (j in 1:n_diag_rec){
+
+      w[i_w[j], i_v[(i - 1) * n_diag_rec + j]] <-
+        ifelse(length(z) == 1,  z, z[i])
+
+      w[i_v[(i - 1) * n_diag_rec + j], i_v[(i - 1) * n_diag_rec + j]] <-
+        -w[i_w[j], i_v[(i - 1) * n_diag_rec + j]]
     }
   }
-  
+
   w
 }
 
@@ -303,31 +290,26 @@ create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 ##' @return an array of the mapping
 
 create_Diagnosiswaning_map <- function(n_vax, z, n_diag_rec = 1) {
-  
+
   stopifnot(z > 0)
-  stopifnot(n_vax%%n_diag_rec == 0)
-  
+  stopifnot(n_vax %% n_diag_rec == 0)
+
   # set up waning map
   wd <- array(0, dim = c(n_vax, n_vax))
-  
-  
-  ntype = n_vax/n_diag_rec #different base number of vaccine statuses (e.g. if X, V, W, then ntype = 3)
 
-  
-  if (n_diag_rec >=2){
-    
-      
-    for (k in 1:(ntype)){
-        
-      for (j in 1:(n_diag_rec-1)){
-        
-        wd[(k-1)*n_diag_rec +j, (k-1)*n_diag_rec + j+1] = z
-        wd[(k-1)*n_diag_rec +j+1, (k-1)*n_diag_rec +j+1] = -z
+  #different base number of vaccine statuses (e.g. if X, V, W, then ntype = 3)
+  ntype <- n_vax / n_diag_rec
+
+  if (n_diag_rec >= 2) {
+    for (k in 1:(ntype)) {
+      for (j in 1:(n_diag_rec - 1)) {
+        wd[(k - 1) * n_diag_rec + j, (k - 1) * n_diag_rec + j + 1] <- z
+        wd[(k - 1) * n_diag_rec + j + 1, (k - 1) * n_diag_rec + j + 1] <- -z
       }
-      
+
     }
   }
-  
+
   wd
 }
 
@@ -349,53 +331,50 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
   novax  <- c(0, 0)
   vax_lh <- c(1, 1)
   vax_h  <- c(0, 1)
-  
+
   if (is.null(strategy)) {
     vos <- vod <- novax
-    
+
   } else if (strategy == "VoD") {
     vod <- vax_lh
     vos <- novax
-    
+
   } else if (strategy == "VoA") {
     vod <- vos <- vax_lh
-    
+
   } else if (strategy == "VoD(H)") {
     vod <- vax_h
     vos <- novax
-    
+
   } else if (strategy == "VoA(H)") {
     vod <- vos <- vax_h
-    
+
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- vax_lh
     vos <- vax_h
-    
+
   } else if (strategy == "VoS") {
     vod <- novax
     vos <- vax_lh
 
-  }
-  else if (strategy == "VaH"){
+  } else if (strategy == "VaH") {
     vod <- vax_lh
     vos <- vax_lh
-  }
-  
-  else if (strategy == "VaHonly"){
+
+  } else if (strategy == "VaHonly") {
     vod <- novax
     vos <- vax_lh
-  }
-  
-  else {
+
+  } else {
     stop("strategy not recognised")
   }
-  
+
   if (include_vbe) {
     vbe <- vax_lh
   } else {
     vbe <- novax
   }
-  
+
   list(vod = vod, vos = vos, vbe = vbe)
 }
 
@@ -437,15 +416,9 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
   u <- array(0, dim = c(n_group, n_vax, n_vax))
 
   u_vals <- c(primary_uptake, booster_uptake)
-  
-  
-  
-  
-  
-  
+
 
   for (i in seq_along(i_eligible)) {
-    
 
     u[, i_eligible[i], i_eligible[i]] <- u_vals[i]
     u[, i_v[i], i_eligible[i]]      <- u_vals[i]
@@ -468,52 +441,40 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
 ##'   just before the model is run.
 ##' @export
 model_params_xpvwrh <- function(gono_params = NULL,
-                                          demographic_params = NULL,
-                                          init_params = NULL,
-                                          vax_params = NULL,
-                                          n_erlang = 1,
-                                          n_diag_rec = 1) {
-  
-  
-  
-  
+                                demographic_params = NULL,
+                                init_params = NULL,
+                                vax_params = NULL,
+                                n_erlang = 1,
+                                n_diag_rec = 1) {
+
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-  
 
-  
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
-    
-    
-    stopifnot(unique(dim(vax_params$w)) ==  3*n_diag_rec + 3*n_diag_rec*n_erlang)
-    
-    
+
+    stopifnot(unique(dim(vax_params$w)) ==
+                3 * n_diag_rec + 3 * n_diag_rec * n_erlang)
+
   } else {
-    
+
     #also add in diag_rec if vax_params not supplied
     vax_params <- vax_params0(n_diag_rec = n_diag_rec)
     n_vax <- vax_params$n_vax
-    i_eligible <-  if (n_diag_rec == 1) {
+    if (n_diag_rec == 1) {
+      i_diag <-  NULL
     } else {
-      i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
+      i_diag <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
     }
-    
-    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
-                                                    seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1])
+
+    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_diag,
+                                          seq_len(n_vax)
+                                          [seq_len(n_vax) %% n_diag_rec != 1])
   }
-  
-  
-  
-  
-  
-  
+
+
   cov <- c(1, rep(0, vax_params$n_vax - 1))
-  init_params <-
-    init_params%||% initial_params(ret, vax_params$n_vax, cov)
-  
-  
-  
+  init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
+
   c(ret, init_params, vax_params)
 }
-
