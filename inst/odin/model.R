@@ -20,7 +20,7 @@ tt[] <- user()
 dim(tt) <- user()
 beta  <- interpolate(tt, beta_t,  "linear")
 eta_l <- interpolate(tt, eta_l_t, "linear")
-eta_h <- interpolate(tt, eta_h_t, "linear") 
+eta_h <- interpolate(tt, eta_h_t, "linear")
 eta[1] <- eta_l
 eta[2] <- eta_h
 
@@ -28,9 +28,11 @@ eta[2] <- eta_h
 
 deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
   n_AU[i, j] + n_TU[i, j] - sum(n_diag_rec[i, j, ])  + sum(wU[i, j, ]) -
-  sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ])  + sum(wdU[i, j, ])
+  sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ])  +
+  sum(wdU[i, j, ])
 
-deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ]) + sum(wdI[i, j, ])
+deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ]) +
+  sum(wdI[i, j, ])
 
 deriv(A[, ]) <- (1 - (1 - ves[j]) * psi) * sigma * I[i, j] - n_AT[i, j] -
   n_AU[i, j] - exr * A[i, j] + sum(wA[i, j, ]) + sum(wdA[i, j, ])
@@ -49,7 +51,7 @@ entrants[, ] <- enr * q[i] * willing[j]
 # calculate mixing matrix, probability of infection and force of infection
 C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
 prop_C[] <- sum(C[i, ]) / sum(N[i, ])
-Np[]    <- sum(N[i, ]) * p[i] 
+Np[]    <- sum(N[i, ]) * p[i]
 
 foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])
 lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
@@ -63,7 +65,7 @@ n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta[i] * U[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
-# individuals into stratum with the relevant diagnosis history 
+# individuals into stratum with the relevant diagnosis history
 n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
 
@@ -114,7 +116,7 @@ deriv(cum_vaccinated_screen[, ])  <- n_vos[i, j, j]
 
 deriv(cum_vbe[, ])         <- n_vbe[i, j, j]
 deriv(cum_offered_vbe[, ]) <- n_obe[i, j, j]
-deriv(cum_entrants[,]) <- entrants[i,j]
+deriv(cum_entrants[, ]) <- entrants[i, j]
 
 
 # aggregated time series for fitting mcmc
@@ -151,7 +153,7 @@ initial(cum_vaccinated_screen[, ])  <- 0
 initial(cum_vbe[, ])         <- 0
 initial(cum_offered_vbe[, ]) <- 0
 
-initial(cum_entrants[,]) <- 0
+initial(cum_entrants[, ]) <- 0
 
 
 
@@ -242,7 +244,7 @@ w[, ]    <- user() # Waning map
 vax_t[]  <- user()
 vax_y[]  <- user()
 
-wd[,]   <- user() # Waning of diagnosis map
+wd[, ]   <- user() # Waning of diagnosis map
 
 diag_rec[, , ] <- user()  ## recording diagnosis history mapping
 
