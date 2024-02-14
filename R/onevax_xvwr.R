@@ -17,6 +17,7 @@
 ##' @param booster_uptake scalar or numeric vector with same length as
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list parameters in the model input format
 vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             vea_revax = vea, vei_revax = vei,
@@ -109,20 +110,14 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
-  
-  print("hello")
-  
-  print(i_eligible_temp)
-  print(i_v_temp)
+
   
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
                          primary_uptake = rep(primary_uptake, n_diag_rec),
                          booster_uptake = rep(booster_uptake, n_diag_rec),
                          i_eligible = i_eligible_temp, i_v = i_v_temp)
-  
-  
-  print("hello 2")
+
   
   willing = rep(0, n_vax)
   willing[1] = 1
@@ -172,6 +167,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
 ##'   Defaults to supplied value of `primary_uptake`.
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
@@ -180,7 +176,7 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                             dur_revax = dur,
                             vea_revax = vea, vei_revax = vei,
                             ved_revax = ved, ves_revax = ves,
-                            vbe = 0, primary_uptake = 0, n_diag_rec = 1,
+                            vbe = 0, n_diag_rec = 1,primary_uptake = 0, 
                             booster_uptake = primary_uptake, strategy = NULL,
                             t_stop = 99) {
 

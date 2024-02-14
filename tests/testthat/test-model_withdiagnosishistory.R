@@ -876,11 +876,7 @@ test_that("Vaccination according to history works as expected with the XPVWRH
   
   
   n_diag_rec <- 3
-  
 
-  
-  ## Need to set some initial people up so that they can be recently diagnosed! or else they just end up vaccinated on diagnosis
-  ## 17 July to pick up
   
   
   tt <- seq.int(0, 10)

@@ -31,6 +31,7 @@ initial_params_xvw <- function(pars, coverage = 0) {
 ##' @param strategy single character string in "VoD", "VoD(H)",
 ##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination
 ##' @param t_stop time at which vaccination should stop (years)
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list parameters in the model input format
 vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                            dur = 1e3, uptake = 0, strategy = NULL, vbe = 0,
@@ -148,6 +149,7 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  efficacy of the vaccine against symptoms (between 0-1)
 ##' @param vbe scalar giving uptake of vaccination before
 ##' entry into population (i.e. adolescent vaccination) defaults to same as
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' `coverage`
 ##' @param dur  scalar or numeric vector with same length as `gono_params`
 ##'  giving duration of the vaccine (in years)

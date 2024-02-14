@@ -152,34 +152,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   
 } )
   
-## Cannot currently check - not implemented xvwr with previous diagnosis!
-  
 
-# not_checking = 1
-#   
-# if (not_checking){  
-#   
-#   # if proportion hesitant is 0%, = outputs same as xvwr model
-#   # choose a difficult case where there are very few zero outputs.
-#   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
-#                            r2 = 1, r1 = 0.5, booster_uptake = 0.3,
-#                            strategy = "VoD(L)+VoA(H)")
-#   y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
-#                             primary_uptake = 0.5, booster_uptake = 0.3,
-#                             strategy = "VoD(L)+VoA(H)")
-#   # make output names match
-#   y_xvwr <- lapply(y_xvwr, name_outputs, c("X", "V1", "W", "R1"))
-# 
-# 
-#   for (i in seq_along(y_h4)) {
-#   expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
-#   expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U)
-#   expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
-# 
-# }
-# 
-#   
-# }
   # Test the vaccination maps are being generated as expected
   
 test_that("The vaccination maps are being generated as expected", {
@@ -234,9 +207,7 @@ test_that("The vaccination maps are being generated as expected", {
   vbe_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vbe, i_eligible, i_p,
                                       set_vbe = TRUE, idx = idx)
 
-  # for vod, expect:
-  
-  #Trystan note - make this test work for general n_diag_rec
+
   
   for (d in (1:n_diag_rec)){
   
@@ -743,10 +714,6 @@ test_that("Test restart with hesistancy is working", {
 
   y8 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, n_diag_rec = n_diag_rec)
   
-  ## Trystan note - this does not work -- 
-  #   Provided model run has vaccination, baseline run should have all V = 0
-  
-  ## Trystan next note - restart_hes_Diagnosis should be working now!
 
   i_p <- lapply(y8, restart_hes, n_vax = 6*n_diag_rec, hes = 0.5, branching = TRUE, n_erlang = 1, n_diag_rec = n_diag_rec)
   y_hesres <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
@@ -1075,16 +1042,6 @@ test_that("Test vea_p works independently of vex", {
 test_that("run_onevax_xpvwrh works when n_erlang > 1", {
 
   
-  
-  # correct number of erlang compartments are generated in initial params
-
-#  tt <- seq(0, 5)
-#  pars <- lapply(gono_params()[1], model_params)
-
-#  n_erlang_2 <- initial_params_xpvwrh(pars[[1]], n_erlang = 2)
-#  expect_equal(dim(n_erlang_2[[1]]), c(2, 9))
-
-  
 for (j in 1:5){  
   
   
@@ -1172,39 +1129,17 @@ for (j in 1:5){
 
         expect_equal(i_eligible, c(idx$X, idx$X, idx$P, idx$W))
 
-       # i_p <- c(2, 4, 4, 4, 7)
-
-
-      #  expect_equal(i_p, c(idx$P[1], rep(idx$V[1], n_erlang + 1), idx$R[1]))
-
         i_p <- c((n_diag_rec+1) : (n_diag_rec  + n_diag_rec), rep((n_diag_rec + n_diag_rec*n_erlang + 1) : (n_diag_rec + n_diag_rec*n_erlang + n_diag_rec), n_erlang+1), ( (2*n_diag_rec + 2*n_diag_rec*n_erlang + 1): (2*n_diag_rec + 2*n_diag_rec*n_erlang + n_diag_rec)))
 
-      #  i_p <- c( seq( from = n_diag_rec + 1, to = n_diag_rec + n_diag_rec*n_erlang, by = n_erlang), seq(from = (n_diag_rec + n_diag_rec*n_erlang + 1), to =  (n_diag_rec + 2*n_diag_rec*n_erlang), by = n_erlang),rep(seq(from = (n_diag_rec + n_diag_rec*n_erlang + 1), to =  (n_diag_rec + 2*n_diag_rec*n_erlang), by = n_erlang), each = n_erlang), seq(from = (2*n_diag_rec + 2*n_diag_rec*n_erlang + 1), to =  (2*n_diag_rec + 3*n_diag_rec*n_erlang), by = n_erlang))
-
-      #  seq(from = (2*n_diag_rec + 2*n_diag_rec*n_erlang + 1), to =  (2*n_diag_rec + 3*n_diag_rec*n_erlang), by = n_erlang)
-
-
-       # expect_equal(i_p , c(idx$P[seq(from = 1, to = n_diag_rec*n_erlang, by = n_erlang)], idx$V[seq(from = 1, to = n_diag_rec*n_erlang, by = n_erlang)] ,rep(idx$V[seq(from = 1, to = n_diag_rec*n_erlang, by = n_erlang)], each = n_erlang), idx$R[seq(from = 1, to = n_diag_rec*n_erlang, by = n_erlang)]))
 
         expect_equal(i_p , c(idx$P[1:n_diag_rec], rep(idx$V[1:n_diag_rec], n_erlang + 1), idx$R[1:n_diag_rec]))
         
 
 
-
-
         # Note to Trystan - need to make some formal check with this??
         i_p_temp_2 = i_p
-
-        
         i_p_temp_2[i_p%%n_diag_rec != 0] = i_p[i_p%%n_diag_rec != 0] + 1
         
-       ##  i_p_temp_2[ (i_p - n_erlang)%%n_diag_rec != 0] = i_p[(i_p - n_erlang)%%n_diag_rec != 0] + 1
-
-
-       # i_p_temp_2[ (i_p + (n_erlang - 1))%%n_diag_rec != 0] = i_p[(i_p + (n_erlang - 1))%%n_diag_rec != 0] + n_erlang
-
-
-      #  i_p_temp_2[i_p%%n_diag_rec != 0] = i_p[i_p%%n_diag_rec != 0] + n_erlang
 
         i_eligible_temp_2 = i_eligible
 
@@ -1256,22 +1191,6 @@ for (j in 1:5){
         }
         
 
-
-        # for (d in 1:n_diag_rec){
-        #   for (e in 1:n_erlang){
-        # 
-        #     # print(c((d-1)*n_erlang + e, d, e))
-        # 
-        #     if (d < n_diag_rec){
-        #     expect_true(unique(vod_map[, idx$V[d + 1], idx$P[(d-1)*n_erlang + e]]  == c(-1, -1)))
-        #     }
-        #     else{
-        #      expect_true(unique(vod_map[, idx$V[d], idx$P[(d-1)*n_erlang + e]]  == c(-1, -1)))
-        # 
-        #     }
-        #   }
-        # }
-
         for (d in 1:n_diag_rec){
             expect_true(unique(vod_map[, idx$W[d], idx$W[d]]  == c(1, 1)))
 
@@ -1286,16 +1205,6 @@ for (j in 1:5){
             expect_true(unique(vod_map[, idx$R[d], idx$W[d]]  == c(-1, -1)))
           }
         }
-
-
-
-      #  expect_true(unique(vod_map[, idx$V[1], idx$X]  == c(-1, -1)))
-      #  expect_true(unique(vod_map[, idx$P[1], idx$P[1]]  == c(1, 1)))
-      #  expect_true(unique(vod_map[, idx$V[1], idx$P[1]]  == c(-1, -1)))
-      #  expect_true(unique(vod_map[, idx$P[2], idx$P[2]]  == c(1, 1)))
-      #  expect_true(unique(vod_map[, idx$V[1], idx$P[2]]  == c(-1, -1)))
-      #  expect_true(unique(vod_map[, idx$W, idx$W]  == c(1, 1)))
-      #  expect_true(unique(vod_map[, idx$R[1], idx$W]  == c(-1, -1)))
 
           # everything else is 0 in those i_eligible strata
 
@@ -1324,18 +1233,6 @@ for (j in 1:5){
           }
         }
 
-        # for (d in 1:n_diag_rec){
-        #   for (e in 1:n_erlang){
-        # 
-        #     if (d < n_diag_rec){
-        #       expect_equal(sum(abs(vod_map[, -c(idx$P[(d-1)*n_erlang + e], idx$V[d*n_erlang + 1]), idx$P[(d-1)*n_erlang + e]])), 0)
-        #     }
-        #     else{
-        #       expect_equal(sum(abs(vod_map[, -c(idx$P[(d-1)*n_erlang + e], idx$V[(d-1)*n_erlang + 1]), idx$P[(d-1)*n_erlang + e]])), 0)
-        #     }
-        # 
-        #   }
-        # }
 
         for (d in 1:n_diag_rec){
           if (d < n_diag_rec){
@@ -1346,19 +1243,9 @@ for (j in 1:5){
           }
         }
 
-  #      expect_equal(sum(vod_map[, -c(idx$X, idx$P[1], idx$V[1]), 1]), 0)
-  #      expect_equal(sum(abs(vod_map[, -c(idx$P[1], idx$V[1]), idx$P[1]])), 0)
-  #      expect_equal(sum(abs(vod_map[, -c(idx$P[2], idx$V[1]), idx$P[2]])), 0)
-  #      expect_equal(sum(abs(vod_map[, -c(idx$W, idx$R[1]), idx$W])), 0)
-
-         # everything is entirely 0 when not in i_eligible strata
-
-        #expect_equal(sum(vod_map[, , c(4, 5, 7, 8, 9)]), 0)
-
         expect_equal(sum(vod_map[, , -c(i_eligible_temp_2)]), 0)
 
 
-        ### TRYSTAN - TO PICK UP FROM 19 DeC
 
 
         # for vos, expect:
@@ -1383,12 +1270,6 @@ for (j in 1:5){
           }
         }
 
-       # for (d in 1:n_diag_rec){
-       #   for (e in 1:n_erlang){
-       #     expect_true(unique(vos_map[, idx$P[(d-1)*n_erlang + e], idx$P[(d-1)*n_erlang + e]] == c(0, 1)))
-       #     expect_true(unique(vos_map[, idx$V[(d-1)*n_erlang + 1], idx$P[(d-1)*n_erlang + e]] == c(0, -1)))
-       #   }
-       # }
 
         # everything else is 0 in those i_eligible strata
 
@@ -1405,11 +1286,6 @@ for (j in 1:5){
           }
         }
         
-        # for (d in 1:n_diag_rec){
-        #   for (e in 1:n_erlang){
-        #     expect_equal(sum(abs(vos_map[, -c(idx$P[(d-1)*n_erlang+e], idx$V[(d-1)*n_erlang+1]), idx$P[(d-1)*n_erlang+e]])), 0)
-        #   }
-        # }
 
         # everything is entirely 0 when not in i_eligible strata
         expect_equal(sum(vos_map[, , -c(i_eligible)]), 0)
@@ -1487,29 +1363,8 @@ for (j in 1:5){
           }
 
 
-          # for (d in 1:n_diag_rec){
-          #   for (e in 1:n_erlang){
-          #     expect_true(unique(acc_vax[, idx$P[(d-1)*n_erlang + e], idx$P[(d-1)*n_erlang + e]] == c(r2_p[i],
-          #                                                           r2_p[i])))
-          # 
-          #     if (d < n_diag_rec){
-          #     expect_true(unique(acc_vax[, idx$V[(d)*n_erlang+1], idx$P[(d-1)*n_erlang+e]] == -c(r2_p[i],
-          #                                                            r2_p[i])))
-          #     }
-          #     else{
-          #       expect_true(unique(acc_vax[, idx$V[(d-1)*n_erlang+1], idx$P[(d-1)*n_erlang+e]] == -c(r2_p[i],
-          #                                                                                            r2_p[i])))
-          #     }
-          #   }
-          # }
-
         }
 
-
-
-        ## TRYSTAN - ISSUE with waning - to look at after lunch! 19 Dec
-
-        ## should be working now - but to check properly and check this hasn't messed up when n_Erlang = 1
 
         # people wane as expected
           # entire population starts in V1 and wanes through V2 to W only
@@ -1546,11 +1401,6 @@ for (j in 1:5){
                              sum(rowSums(y_v[[1]]$N[, , idx$W[1]])))
              }
            }
-           # 
-           # expect_true(sum(rowSums(y_v[[1]]$N[, , idx$V[1]])) >
-           #               sum(rowSums(y_v[[1]]$N[, , idx$V[2]])))
-           # expect_true(sum(rowSums(y_v[[1]]$N[, , idx$V[2]])) >
-           #               sum(rowSums(y_v[[1]]$N[, , idx$W])))
 
           # entire population starts in P1 and wanes through P2 to X only
           # ( + no further vaccination)

@@ -44,9 +44,6 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), i_diagnosedfrom, i_diagnosedto,
                                        set_vbe = FALSE, idx)
   
-
-  
-  ### no longer set up properly - needs fixed in line with xpvwrh changes! 17 July
   
   i_eligible_temp <- c(1:n_diag_rec, (2*(n_diag_rec) + 1): (3*(n_diag_rec)))
   i_v_temp <- c((1*(n_diag_rec) + 1): (2*(n_diag_rec)), ((1*(n_diag_rec) + 1): (2*(n_diag_rec))))
@@ -131,11 +128,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  giving duration of the vaccine (in years)
 ##' @param uptake  scalar or numeric vector with same length as `gono_params`
 ##'  giving pc of population vaccinated as part of strategy
-##'  @param n_diag_rec integer giving the number of each X, V(erlang), and W
-##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
-##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
-##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
-##' individuals diagnosed at least once.
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvwv
 ##' @export

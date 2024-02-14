@@ -12,6 +12,7 @@ NULL
 ##' @param gono_params a data frame of parameters
 ##' @param init_params = NULL
 ##' @param vax_params = NULL
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @param transform = TRUE
 ##' @export run
 
@@ -38,6 +39,9 @@ run <- function(tt, gono_params, init_params = NULL, vax_params = NULL, n_diag_r
 ##' @param gono_params a data frame of parameters
 ##' @param init_params = NULL
 ##' @param vax_params = NULL
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made through vaccine-protected strata until that protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @param transform = TRUE
 ##' @export run
 
@@ -56,9 +60,7 @@ run_xpvwrh <- function(tt, gono_params, init_params = NULL, vax_params = NULL, n
   
   mod <- model$new(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)
-  
-  #print("after run")
-  
+
   if (transform) {
     y <- mod$transform_variables(y)
   }

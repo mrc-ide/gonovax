@@ -31,15 +31,6 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
                                             hes = 0, t = FALSE, n_erlang = 1, n_diag_rec = 1) {
   
   idx <- stratum_index_xpvwrh(n_erlang, n_diag_rec)
-  
-    print("checking here 3")
-  
-   print(coverage_p)
-   print(coverage_v)
-    print(hes)
-  #  print(n_diag_rec)
-  # print(n_erlang)
-    
 
   
   if (coverage_p + coverage_v + hes > 1) {
@@ -59,8 +50,6 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0,
     ## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
     cov <- c(x_init, rep(0, n_diag_rec - 1), p_init, rep(0, n_diag_rec*n_erlang - 1), v_init, rep(0, n_diag_rec*n_erlang - 1),
              rep(0, n_diag_rec), rep(0, n_diag_rec*n_erlang), hes, rep(0, n_diag_rec-1))
-    
-    # print(cov)
     
     stopifnot(length(cov) == n_vax)
     stopifnot(sum(cov) == 1)
@@ -249,12 +238,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     i_p_temp = i_p
   }
   
-  
   i_eligible_temp_2 = i_eligible
-  
-  
-  #print(i_eligible)
-  #print(i_eligible_temp)
 
   
   # i_p for vaccination by diagnosis -> individuals move up a level of diagnosis
@@ -362,11 +346,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
                                                idx, n_diag_rec = 1, n_erlang = 1, screening_or_diagnosis) {
-  
-  # print(array[1,,])
-  
-  
-  
+
   
   
   for (i in 1:n_diag_rec){
@@ -424,13 +404,9 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
   ## booster_uptake
   ## idx$W gives the the index for (W)
   
-  #  print("idxW")
-  
   array[, , idx$W] <- array[, , idx$W] * booster_uptake
   
-  #print(array[1,,])
-  
-  
+
   # values must be positive - otherwise negative values in this array will
   # cancel those in the vos and vod arrays = incorrect vaccination
   abs(array)
@@ -459,8 +435,7 @@ create_waning_map_branching<- function(n_vax, i_v, i_w, z, n_erlang = 1, n_diag_
   
   #creates vector containing rates
   z_erlang <- rep(z, each = n_erlang*n_diag_rec)
-  
-  #print(z_erlang)
+
   
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
@@ -499,16 +474,12 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
   # ensure vaccine input is of correct length
   n_group <- 2
   n_vax <- idx$n_vax
-  
-  # print(length(v))
+
   
   
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
   
-  # print(i_e)
-  #  print(i_p)
-  ##stopifnot(length(i_e) == length(i_p))
   
   if (length(i_e) > 0){
     stopifnot(max(i_e, i_p) <= n_vax)
@@ -589,11 +560,9 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE,
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
 ##'   Defaults to supplied value of r1 * r2
-##' @param n_erlang integer giving the number of transitions that need to be
-##'  made
-##' @param n_diag_rec
-##' through vaccine-protected strata until that protection has waned
-##' @param notification_param
+##' @param n_erlang integer giving the number of erlang vaccination transitions 
+##'  through vaccine-protected strata until that protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
@@ -608,7 +577,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                                         r1 = 0, r2 = 0, r2_p = 0,
                                         booster_uptake = (r1 * r2), strategy = NULL,
                                         t_stop = 99, hes = 0,
-                                        n_erlang = 1, n_diag_rec = 1, notification_param = 0) {
+                                        n_erlang = 1, n_diag_rec = 1) {
   
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei,
                              ved, ves, vea_revax, vei_revax, ved_revax,
@@ -616,8 +585,6 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                              dur_v, dur_p,
                              ves_revax, dur_revax)) %in%
                   c(1, length(gono_params))))
-  
-  #print("checking here 2")
   
   
   vax_params <- Map(vax_params_xpvwrh, r1 = r1, r2 = r2, r2_p = r2_p,
@@ -627,7 +594,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                     dur_revax = dur_revax, dur_p = dur_p,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
-                    n_erlang = n_erlang, n_diag_rec = n_diag_rec, notification_param = notification_param,
+                    n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
   
@@ -636,8 +603,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
   if (is.null(init_params)) {
     pars <- lapply(gono_params, model_params)
     
-    #print("checking here 2b")
-    
+
     init_params <- lapply(pars, initial_params_xpvwrh, hes = hes,
                           n_erlang = n_erlang, n_diag_rec = n_diag_rec)
   } else {
@@ -645,18 +611,9 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
     #check if init_params supplied, n_vax corresponds to the n_erlang
     # supplied to the run function
     
-    # print(length(init_params[[1]][[1]]) / 2)
-    #  print(3*n_diag_rec + (3*n_diag_rec*n_erlang))
-    
     stopifnot(length(init_params[[1]][[1]]) / 2 == 3*n_diag_rec + (3*n_diag_rec*n_erlang)   )
     
   }
-  
-  #  print("checking here 4")
-  
-  # print("check here")
-  # print(vax_params$w)
-  
   
   
   ret <- Map(run_xpvwrh, gono_params = gono_params, vax_params = vax_params,
@@ -664,13 +621,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
              MoreArgs = list(tt = tt))
   
   
-  
-  # print("issue after here?")
-  
-  
   # name outputs
   ret <- lapply(ret, name_outputs, gen_erlang_labels(n_erlang, n_diag_rec))
-  #  print("issue here?")
   ret
 }
 
@@ -679,8 +631,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
 ##' @title generates the appropriate strata labels for the number of strata
 ##' in the model, which depends on the value given to n_erlang
 ##' @param n_erlang integer giving the number of transitions that need to be
-##'  made
-##' through vaccine-protected strata until that protection has waned
+##'  made through vaccine-protected strata until that protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
 gen_erlang_labels <- function(n_erlang = 1, n_diag_rec = 1) {
@@ -692,23 +644,6 @@ gen_erlang_labels <- function(n_erlang = 1, n_diag_rec = 1) {
   output = c()
   
   stratavec = c("X", "P", "V", "W", "R", "H")
-  
-  # for (k in 1:6){
-  #   strata = stratavec[k]
-  #   for (i in idy){
-  #     if (strata == "X" | (strata == "W" | strata == "H")){
-  #       output <- c(output , paste0(strata, ".", as.roman(i)))
-  #     }
-  #     else{
-  #       output <- c(output, paste0(strata, idx, ".", as.roman(i)))
-  #     }
-  #     
-  # 
-  #     
-  #   }
-  #   
-  # 
-  # }
   
   
   diag_hist <- paste0(".", as.roman(seq_len(n_diag_rec)))
@@ -796,6 +731,9 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1) {
 ##' @inheritParams restart_params
 ##' @param hes proportion of population vaccine hesitant
 ##' @param branching boolean to denote if xpvwrh branching model in use
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'

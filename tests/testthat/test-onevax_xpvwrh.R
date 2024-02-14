@@ -98,29 +98,26 @@ test_that("run_onevax_xpvwrh works correctly", {
     # Number of infections in X and H equal for no vaccination and hes = 0.5
     expect_equal(y_h3[[i]]$cum_incid[, , 1], y_h3[[i]]$cum_incid[, , 6])
   }
-  
-  ### commented for the moment - no xvwr not set up with diagnosis history
-  
-  
-  # 
-  # # if proportion hesitant is 0%, = outputs same as xvwr model
-  # # choose a difficult case where there are very few zero outputs.
-  # y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
-  #                           r2 = 1, r1 = 0.5, booster_uptake = 0.3,
-  #                           strategy = "VoD(L)+VoA(H)")
-  # y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
-  #                           primary_uptake = 0.5, booster_uptake = 0.3,
-  #                           strategy = "VoD(L)+VoA(H)")
-  # # make output names match
-  # y_xvwr <- lapply(y_xvwr, name_outputs, c("X", "V1", "W", "R1"))
-  # 
-  # 
-  # for (i in seq_along(y_h4)) {
-  #   expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
-  #   expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U)
-  #   expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
-  # 
-  # }
+
+
+  # if proportion hesitant is 0%, = outputs same as xvwr model
+  # choose a difficult case where there are very few zero outputs.
+  y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
+                            r2 = 1, r1 = 0.5, booster_uptake = 0.3,
+                            strategy = "VoD(L)+VoA(H)")
+  y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
+                            primary_uptake = 0.5, booster_uptake = 0.3,
+                            strategy = "VoD(L)+VoA(H)")
+  # make output names match
+  y_xvwr <- lapply(y_xvwr, name_outputs, c("X.I", "V1.I", "W.I", "R1.I"))
+
+
+  for (i in seq_along(y_h4)) {
+    expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
+    expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U)
+    expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
+
+  }
 
   # Test the vaccination maps are being generated as expected
 
@@ -683,8 +680,6 @@ test_that("run_onevax_xpvwrh works correctly", {
       expect_true(sum(y17[[i]]$N[j, , 4]) > 0)
     }
 
-    ######## difference in W
-    ######### isnt quite 1200
     # R, W are empty for all time
     expect_equal(rowSums(y17[[i]]$N[, , 5:6]), rep(0, 6))
   }

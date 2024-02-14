@@ -177,11 +177,7 @@ restart_params <- function(y, n_vax = NULL) {
 ##' @param demographic_params A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param init_params A list of starting conditions
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
-##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
-##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
-##' Where '.I' corresponds to individuals diagnosed in previous year and '.II' is for
-##' individuals diagnosed once.
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -270,6 +266,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 ##' @param i_v indices of strata being vaccinated
 ##' @param i_w Integer in (0, 5) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return an array of the mapping
 
 create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
@@ -302,6 +299,7 @@ create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 ##' @title Create mapping for movement between strata due to diagnosis waning
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
 ##' @param z Scalar denoting rate of waning diagnosis
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return an array of the mapping
 
 create_Diagnosiswaning_map <- function(n_vax, z, n_diag_rec = 1) {
@@ -314,8 +312,7 @@ create_Diagnosiswaning_map <- function(n_vax, z, n_diag_rec = 1) {
   
   
   ntype = n_vax/n_diag_rec #different base number of vaccine statuses (e.g. if X, V, W, then ntype = 3)
-  
-  #print(wd)
+
   
   if (n_diag_rec >=2){
     
@@ -464,11 +461,7 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
 ##' @param demographic_params A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param init_params A list of starting conditions
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
-##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
-##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
-##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
-##' individuals diagnosed at least once.
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -488,30 +481,15 @@ model_params_xpvwrh <- function(gono_params = NULL,
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
   
-  
-  #  print("hello OK")
-  #  print(gono_params)
-  #  print( "hello end")
-  
-  
-  
-  #n_erlang = 1
+
   
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
     
-    #   print("hello1")
-    
-    
-    #print(dim(vax_params$w))
-    
-    #  print(n_erlang)
     
     stopifnot(unique(dim(vax_params$w)) ==  3*n_diag_rec + 3*n_diag_rec*n_erlang)
     
     
   } else {
-    
-    #  print("hello2")
     
     #also add in diag_rec if vax_params not supplied
     vax_params <- vax_params0(n_diag_rec = n_diag_rec)
