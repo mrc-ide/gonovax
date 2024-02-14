@@ -290,14 +290,14 @@ name_outputs <- function(res, strata_names) {
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
 gen_labels <- function(n_erlang = 1, n_diag_rec = 1) {
-  
-  
+
+
   diag_hist <- paste0(".", as.roman(seq_len(n_diag_rec)))
-  
+
   output <- c(paste0("X", diag_hist),
               paste0("V", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
               paste0("W", diag_hist))
-  
+
   output
-  
+
 }

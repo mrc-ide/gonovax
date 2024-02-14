@@ -11,21 +11,21 @@
 ##' @export
 
 stratum_index_xvwr <- function(n_diag_rec = 1) {
-  
+
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
   # will be in the following order, where roman numerals refer to n_diag_rec,
   # and arabic numerals refer to erlang:
   # X.I, X.II, V1.I, V1.II, V2.I, V2.II, V3.I, V3.II, W.I, W.II
-  
+
   ret <- list(X = seq_len(n_diag_rec))
-  
+
   ret$V <- max(ret$X) + seq_len(n_diag_rec)
   ret$W <- max(ret$V) + seq_len(n_diag_rec)
   ret$R <- max(ret$W) + seq_len(n_diag_rec)
-  
+
   ret$n_vax <- max(ret$R)
   ret$n_diag_rec <- n_diag_rec
-  
+
   ret
 }
 
@@ -41,21 +41,21 @@ stratum_index_xvwr <- function(n_diag_rec = 1) {
 ##' @return A list of strata with their indices
 ##' @export
 stratum_index_xvwrh <- function(n_diag_rec = 1) {
-  
+
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
   # will be in the following order, where roman numerals refer to n_diag_rec,
   # and arabic numerals refer to erlang:
   # X.I, X.II, V1.I, V1.II, V2.I, V2.II, V3.I, V3.II, W.I, W.II
-  
+
   ret <- list(X = seq_len(n_diag_rec))
-  
+
   ret$V <- max(ret$X) + seq_len(n_diag_rec)
   ret$W <- max(ret$V) + seq_len(n_diag_rec)
   ret$R <- max(ret$W) + seq_len(n_diag_rec)
   ret$H <- max(ret$R) + seq_len(n_diag_rec)
-  
+
   ret$n_vax <- max(ret$H)
   ret$n_diag_rec <- n_diag_rec
-  
+
   ret
 }

@@ -15,7 +15,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
 
-  # waned vaccinees move to own stratum, and are not eligible for re-vaccination
+  # waned vaccinees move to own stratum, but are eligible for re-vaccination
   # unvaccinated 1:n_diag_rec (x)
   # vaccinated from n_diag_rec+1 to 2*n_diag_rec (v)
   # waned from  2*n_diag_rec+1 to 3*n_diag_rec (w)
