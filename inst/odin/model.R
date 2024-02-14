@@ -64,7 +64,6 @@ screened[, ] <- eta[i] * U[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history 
-
 n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
 

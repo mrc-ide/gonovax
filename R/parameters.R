@@ -384,6 +384,11 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
     vos <- vax_lh
   }
   
+  else if (strategy == "VaHonly"){
+    vod <- novax
+    vos <- vax_lh
+  }
+  
   else {
     stop("strategy not recognised")
   }
@@ -429,12 +434,17 @@ check_gono_params <- function(pars) {
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
-                              i_eligible, i_v) {
+                              i_eligible, i_v, screening_or_diagnosis) {
 
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- array(0, dim = c(n_group, n_vax, n_vax))
 
   u_vals <- c(primary_uptake, booster_uptake)
+  
+  
+  
+  
+  
   
 
   for (i in seq_along(i_eligible)) {
@@ -522,8 +532,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
   
   cov <- c(1, rep(0, vax_params$n_vax - 1))
   init_params <-
-    init_params%||% initial_params(ret, vax_params$n_vax, cov,
-                                             n_diag_rec = n_diag_rec)
+    init_params%||% initial_params(ret, vax_params$n_vax, cov)
   
   
   

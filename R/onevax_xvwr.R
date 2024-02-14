@@ -78,7 +78,9 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   ## Could be implemented better
   if (length(strategy) > 0){
-    if ( strategy == "VaH"){
+    if ( strategy == "VaH" | strategy == "VaHonly"){
+      
+      #Remove values corresponding to no diagnosis history
       i_eligible_temp2 <- i_eligible_temp[-c(1, (n_diag_rec+1))]
       i_v_temp2 <- i_v_temp[-c(1,(n_diag_rec+1))]
     }
@@ -141,8 +143,7 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     wd      = create_Diagnosiswaning_map(n_vax, 1 , n_diag_rec),
     vax_t   = c(0, t_stop),
     vax_y   = c(1, 0),
-    diag_rec = diag_rec,
-    notification_param = 0
+    diag_rec = diag_rec
   )
 }
 
@@ -193,7 +194,7 @@ run_onevax_xvwr <- function(tt, gono_params, init_params = NULL,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,
-                    ved_revax = ved_revax, ves_revax = ves_revax,
+                    ved_revax = ved_revax, ves_revax = ves_revax, n_diag_rec = n_diag_rec,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 

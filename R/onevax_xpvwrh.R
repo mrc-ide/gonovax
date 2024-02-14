@@ -200,15 +200,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # note: V[1] is repeated n_erlang + 1 times because as well as un-vaccinated
   # individuals (X) becoming fully vaccinated (V), partially vaccinated people
   # in P can become fully vaccinated from any of the P erlang compartments
-  
-  
-  
-  
-  #Trystan edit 18/12 - sorting out so works properly with multiple n_erlang compartments!
-  # i_p <- c( seq( from = n_diag_rec + 1, to = n_diag_rec + n_diag_rec*n_erlang, by = n_erlang), rep(seq(from = (n_diag_rec + n_diag_rec*n_erlang + 1), to =  (n_diag_rec + 2*n_diag_rec*n_erlang), by = n_erlang), n_erlang+1), seq(from = (2*n_diag_rec + 2*n_diag_rec*n_erlang + 1), to =  (2*n_diag_rec + 3*n_diag_rec*n_erlang), by = n_erlang))
-  
-  
-  #Trystan edit 20/12 - think this is working now! to double check with the erlang tests
+ 
   i_p <- c(idx$P[1:n_diag_rec], rep(idx$V[1:n_diag_rec], n_erlang + 1), idx$R[1:n_diag_rec])
   
   # 3. strata individuals wane from
@@ -236,19 +228,18 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   ## Could be implemented better - temporary!
   if (length(strategy) > 0){
-    if ( strategy == "VaH"){
-      
-      #print("VoRD")
+    if ( strategy == "VaH" | strategy == "VaHonly"){
       
       if (n_diag_rec == 1){
         i_eligible_temp <- c()
         i_p_temp <- c()
       }
       else {
+        
+        #Remove values corresponding to no diagnosis history
         i_eligible_temp <- i_eligible[-c( n_diag_rec*(0:(n_diag_rec-1)) + 1, length(i_eligible) - (n_diag_rec - 1))]
         i_p_temp <- i_p[-c( n_diag_rec*(0:(n_diag_rec-1)) + 1, length(i_eligible) - (n_diag_rec - 1))]
       }
-      #print(c( n_diag_rec*(0:(n_diag_rec-1)) + 1, length(i_eligible) - (n_diag_rec - 1)))
     }else{
       i_eligible_temp = i_eligible
       i_p_temp = i_p
@@ -259,9 +250,11 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   }
   
   
-  
   i_eligible_temp_2 = i_eligible
 
+  
+  # i_p for vaccination by diagnosis -> individuals move up a level of diagnosis
+  # when vaccinated on diagnosis
   i_p_temp_2 = i_p
   i_p_temp_2[i_p%%n_diag_rec != 0] = i_p[i_p%%n_diag_rec != 0] + 1
   
@@ -274,17 +267,12 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   vod <-  create_vax_map_branching(n_vax, p$vod, i_eligible_temp_2, i_p_temp_2,
                                              set_vbe = FALSE, idx)
-  
-  # print("vod")
-  #  print(vod)
+
   
   vos <-  create_vax_map_branching(n_vax, p$vos, i_eligible_temp, i_p_temp,
                                              set_vbe = FALSE, idx)
   
-  #print("vos")
-  #print(vos)
-  
-  # print("vbe")
+
   vbe_map <-  create_vax_map_branching(n_vax, p$vbe, i_eligible, i_p,
                                                  set_vbe = TRUE, idx)
   
@@ -341,8 +329,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
        wd      = wd,
        vax_t   = c(0, t_stop),
        vax_y   = c(1, 0),
-       diag_rec = diag_rec,
-       notification_param = notification_param
+       diag_rec = diag_rec
   )
 }
 
@@ -389,11 +376,9 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
     } else if (screening_or_diagnosis == "diagnosis"){
       
       if (i < n_diag_rec){
-        #temp = (i)*n_erlang+1
         temp = i+1
       }
       else{
-        #temp = (i-1)*n_erlang+1
         temp = i
         
       }

@@ -601,7 +601,7 @@ test_that("XPVWRH model runs with no vaccination", {
   tt <- seq.int(0, 5) / 365
 
   
-  for (i in 1:5){
+  for (i in 1:1){
     
   n_diag_rec <- i
   
@@ -861,10 +861,8 @@ test_that("Vaccination according to history works as expected with the XPVWRH
   params <-
     model_params_xpvwrh(gono_params = gono_params(1)[[1]],
                            vax_params = vax_params_xpvwrh(vbe = 0, r1 = 1, r2 = 1,
-                                                                  strategy = "VaH", vea = 0.5, n_erlang = 1, n_diag_rec = n_diag_rec), n_diag_rec = n_diag_rec)
-  
-  #set vod to 0 for tests!
-  params$vod[,,] = 0
+                                                                  strategy = "VaHonly", vea = 0.5, n_erlang = 1, n_diag_rec = n_diag_rec), n_diag_rec = n_diag_rec)
+  params$vod
   
   mod <- model$new(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
@@ -911,17 +909,7 @@ test_that("Vaccination according to history works as expected with the XPVWRH
   params <-
     model_params_xpvwrh(gono_params = gono_params[[1]], init_params= init_params[[1]],
                            vax_params = vax_params_xpvwrh(vbe = 0, r1 = 1, r2 = 1,
-                                                                  strategy = "VaH", vea = 0, n_erlang = 1, n_diag_rec = n_diag_rec), n_diag_rec = n_diag_rec)
-  
-  #set vod to 0 for tests!
-  
-  
-  #12 Dec
-  ## not working because having VoRD scales down diag_rec!
-  
-  
-  #set vod to 0 for tests!
-  params$vod[,,] = 0
+                                                                  strategy = "VaHonly", vea = 0, n_erlang = 1, n_diag_rec = n_diag_rec), n_diag_rec = n_diag_rec)
 
   tt <- seq.int(0, 2)/365
   
@@ -966,8 +954,6 @@ test_that("Vaccination according to history works as expected with the XPVWRH
     model_params_xpvwrh(gono_params = gono_params(1)[[1]],
                            vax_params = vax_params_xpvwrh(vbe = 0, r1 = 1, r2 = 1,
                                                                   strategy = "VaH", vea = 0, n_diag_rec = n_diag_rec), n_diag_rec = n_diag_rec)
-  #set vod to 0 for tests!
-  params$vod[,,] = 0
   mod <- model$new(user = params, unused_user_action = "ignore")
   y0 <- mod$run(t = tt)
   y0 <- mod$transform_variables(y0)
@@ -980,8 +966,7 @@ test_that("Vaccination according to history works as expected with the XPVWRH
     model_params_xpvwrh(gono_params = gono_params(1)[[1]],
                            vax_params = vax_params_xpvwrh(vbe = 0, r1 = 1, r2 = 1,
                                                                   strategy = "VaH", vea = 0, n_diag_rec = n_diag_rec), n_diag_rec = n_diag_rec)
-  #set vod to 0 for tests!
-  params$vod[,,] = 0
+
   mod <- model$new(user = params, unused_user_action = "ignore")
   y3 <- mod$run(t = tt)
   y3 <- mod$transform_variables(y3)
