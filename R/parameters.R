@@ -282,14 +282,14 @@ create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 
 
 
-##' @name create_Diagnosiswaning_map
+##' @name create_diagnosis_waning_map
 ##' @title Create mapping for movement between strata due to diagnosis waning
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
 ##' @param z Scalar denoting rate of waning diagnosis
 ##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return an array of the mapping
 
-create_Diagnosiswaning_map <- function(n_vax, z, n_diag_rec = 1) {
+create_diagnosis_waning_map <- function(n_vax, z, n_diag_rec = 1) {
 
   stopifnot(z > 0)
   stopifnot(n_vax %% n_diag_rec == 0)

@@ -33,7 +33,7 @@ run <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
   y
 }
 
-##' @name run_Diagnosis
+##' @name run_xpvwrh
 ##' @title Run odin model of gonorrhoea with or without vaccination
 ##' @param tt a numeric vector of times at which the model state is output
 ##' @param gono_params a data frame of parameters

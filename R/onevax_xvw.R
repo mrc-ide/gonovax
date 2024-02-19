@@ -56,7 +56,7 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   n_vax <- idx$n_vax
 
   i_v <- idx$V
-  i_w <- idx$V + n_diag_rec
+  i_w <- idx$W
   i <- seq_len(idx$n_vax)
 
   # strata people are diagnosed from
@@ -73,24 +73,17 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
   i_eligible_temp <- c(1:n_diag_rec)
-  i_v_temp <- c((1 * (n_diag_rec) + 1): (2 * (n_diag_rec)))
+  i_v_temp <- i_v[1:n_diag_rec]
 
   ## Could be implemented better
-  if (length(strategy) > 0) {
-    if (strategy == "VaH" || strategy == "VaHonly") {
-
-      #Remove values corresponding to no diagnosis history
-      i_eligible_temp2 <- i_eligible_temp[-c(1, (n_diag_rec + 1))]
-      i_v_temp2 <- i_v_temp[-c(1, (n_diag_rec + 1))]
+  if (!is.null(strategy)) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy == "VaHonly")) {
+      i_eligible_vos <- i_eligible[-1] # only eligible after first diagnosis
+      i_v_vos <- i_v[-1]
     } else {
-      i_eligible_temp2 <- i_eligible_temp
-      i_v_temp2 <- i_v_temp
+      i_eligible_vos <- i_eligible
+      i_v_vos <- i_v
     }
-  } else {
-    i_eligible_temp2 <- i_eligible_temp
-    i_v_temp2 <- i_v_temp
-  }
-
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
