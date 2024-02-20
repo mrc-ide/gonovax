@@ -27,7 +27,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   n_vax <- idx$n_vax
 
   i_v <- idx$V
-  i_w <- idx$V + n_diag_rec
+  i_w <- idx$W
 
   n_group <- 2
 
@@ -56,6 +56,7 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   
   willing <- rep(0, n_vax)
   willing[1] <- 1
+  
 
   list(n_vax   = n_vax,
     willing = willing,
