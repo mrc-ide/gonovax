@@ -52,67 +52,50 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # waned from  2*n_diag_rec+1 to 3*n_diag_rec (w)
 
   # generate indices for all strata and
-  idx <- stratum_index_xvw_trial(1, n_diag_rec)
+  idx <- stratum_index_xvw(1, n_diag_rec = n_diag_rec, strategy = strategy)
+  
   n_vax <- idx$n_vax
-
   i_v <- idx$V
   i_w <- idx$W
-  i <- seq_len(idx$n_vax)
-
-  # strata people are diagnosed from
-  i_diagnosedfrom <- i[i %% n_diag_rec != 0]
-
-  # strata people are diagnosed to
-  i_diagnosedto <- i[i %% n_diag_rec != 1]
 
   n_group <- 2
 
   # create diagnosis history mapping
-  diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), i_diagnosedfrom,
-                                       i_diagnosedto, set_vbe = FALSE, idx)
-
-  # waned vaccinees move to own stratum, and are not eligible for re-vaccination
-  i_eligible_temp <- c(1:n_diag_rec)
-  i_v_temp <- i_v[1:n_diag_rec]
-
-  ## Could be implemented better
-  if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy == "VaHonly")) {
-      i_eligible_vos <- i_eligible[-1] # only eligible after first diagnosis
-      i_v_vos <- i_v[-1]
-    } else {
-      i_eligible_vos <- i_eligible
-      i_v_vos <- i_v
-    }
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), idx$diagnosedfrom,
+                                       idx$diagnosedto, set_vbe = FALSE, idx)
+  
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
-  u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
-                         primary_uptake = rep(uptake, n_diag_rec),
-                         booster_uptake = rep(uptake, n_diag_rec),
-                         i_eligible = i_eligible_temp, i_v = i_v_temp)
-
+  
+  u_s <- create_uptake_map_xvw(n_group = n_group, n_vax = n_vax,
+                         uptake = rep(uptake, n_diag_rec), idx,
+                         screening_or_diagnosis = "screening")
+  
+  u_d <- create_uptake_map_xvw(n_group = n_group, n_vax = n_vax,
+                           uptake = rep(uptake, n_diag_rec), idx,
+                           screening_or_diagnosis = "diagnosis")
 
   willing <- rep(0, n_vax)
   willing[1] <- 1
 
   list(n_vax   = n_vax,
     willing = willing,
-    u_s     = u,
-    u_d     = u,
+    u_s     = u_s,
+    u_d     = u_d,
     u_vbe   = vbe,
-    vbe     = create_vax_map(n_vax, p$vbe, i_eligible_temp, i_v_temp),
-    vod     = create_vax_map(n_vax, p$vod, i_eligible_temp, i_v_temp),
-    vos     = create_vax_map(n_vax, p$vos, i_eligible_temp2, i_v_temp2),
+    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe, idx$vaccinatedto_vbe),
+    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod, idx$vaccinatedto_vod),
+    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos, idx$vaccinatedto_vos),
     vea     = c(0, vea, 0),
     vei     = c(0, vei, 0),
     ved     = c(0, ved, 0),
     ves     = c(0, ves, 0),
     w       = create_waning_map(n_vax, i_v, i_w, 1 / dur, n_diag_rec),
-    wd      = create_Diagnosiswaning_map(n_vax, 1, n_diag_rec),
+    wd      = create_diagnosis_waning_map(n_vax, 1, n_diag_rec),
     vax_t   = c(0, t_stop),
     vax_y   = c(1, 0),
     diag_rec = diag_rec

@@ -29,7 +29,7 @@ vax_params0 <- function(n_diag_rec = 1) {
        ves = rep(0, n_diag_rec),
        vei = rep(0, n_diag_rec),
        w = array(0, dim = c(n_diag_rec, n_diag_rec)),
-       wd = create_Diagnosiswaning_map(n_vax, 1, n_diag_rec),
+       wd = create_diagnosis_waning_map(n_vax, 1, n_diag_rec),
        D = 0,
        vax_t = c(0, 99),
        vax_y = c(0, 0))
