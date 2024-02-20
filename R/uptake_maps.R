@@ -37,6 +37,49 @@ create_uptake_map_xvw <- function(n_group, n_vax, uptake, idx,
   u
 }
 
+##' @name create_uptake_map_xvwv
+##' @title Creates uptake mapping array with dimensions n_group x n_vax x n_vax
+##' and assigns the relevant primary uptake and booster uptake values defined
+##' by the user.
+##' @param n_group scalar indicating number of activity groups
+##' @param n_vax scalar indicating number the number of stratum in the model
+##' @param uptake proportion of the unvaccinated population who accept
+##' vaccination
+##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
+
+create_uptake_map_xvwv <- function(n_group, n_vax, primary_uptake, booster_uptake,
+                                  idx, n_diag_rec = 1, screening_or_diagnosis) {
+  
+  # set up uptake matrix rows = groups, columns = vaccine strata
+  u <- array(0, dim = c(n_group, n_vax, n_vax))
+  
+  for (i in 1: n_diag_rec){
+    
+    if (screening_or_diagnosis == "screening") {
+      temp <- i
+    } else if (screening_or_diagnosis == "diagnosis") {
+      
+      if (i < n_diag_rec) {
+        temp <- i + 1
+      } else {
+        temp <- i
+      }
+    } else {
+      print("uptake map type not specified.")
+    }
+    
+    u[, i, i] <- primary_uptake
+    u[, idx$V[temp], i] <- primary_uptake
+    
+    u[, idx$W[i], idx$W[i]] <- booster_uptake
+    u[, idx$V[temp], idx$W[i]] <- booster_uptake
+    
+    
+  }
+  
+  u
+}
+
 
 ##' @name create_uptake_map_xpvwrh
 ##' @title Creates uptake mapping for the branching XPVWRH model where

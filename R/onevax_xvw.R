@@ -70,7 +70,6 @@ vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
-  
   u_s <- create_uptake_map_xvw(n_group = n_group, n_vax = n_vax,
                          uptake = rep(uptake, n_diag_rec), idx,
                          screening_or_diagnosis = "screening")
