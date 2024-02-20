@@ -11,6 +11,9 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$n_vax <- max(ret$W)
   n_vax <- ret$n_vax
   
+  ret$V1 <- ret$V[1:n_diag_rec]
+  
+  
   # strata people are diagnosed from
   ret$diagnosedfrom = seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]
   
@@ -25,10 +28,10 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   if (!is.null(strategy)){
   if (!is.null(strategy) & (strategy == "VaH" | strategy ==  "VaHonly")){
     ret$vaccinatedfrom_vos = ret$X[-1]
-    ret$vaccinatedto_vos = ret$V[2:n_diag_rec]
+    ret$vaccinatedto_vos = ret$V1[-1]
   } else {
     ret$vaccinatedfrom_vos = ret$X
-    ret$vaccinatedto_vos = ret$V
+    ret$vaccinatedto_vos = ret$V1
   }
   }
   
@@ -54,6 +57,8 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$n_vax <- max(ret$W)
   n_vax <- ret$n_vax
   
+  ret$V1 <- ret$V[1:n_diag_rec]
+  
   # strata people are diagnosed from
   ret$diagnosedfrom = seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]
   
@@ -65,13 +70,14 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vbe = ret$V
   
   # strata people are vaccinated (on screening) from and to
+  
   if (!is.null(strategy)){
     if (!is.null(strategy) & (strategy == "VaH" | strategy ==  "VaHonly")){
       ret$vaccinatedfrom_vos = c(ret$X[-1], ret$W[-1])
-      ret$vaccinatedto_vos = c(ret$V[2:n_diag_rec], ret$V[2:n_diag_rec])
+      ret$vaccinatedto_vos = c(ret$V1[-1], ret$V1[-1])
     } else {
       ret$vaccinatedfrom_vos = c(ret$X, ret$W)
-      ret$vaccinatedto_vos = c(ret$V, ret$V)
+      ret$vaccinatedto_vos = c(ret$V1, ret$V1)
     }
   }
   
@@ -114,6 +120,9 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$n_vax <- max(ret$R)
   n_vax <- ret$n_vax
   
+  ret$V1 <- ret$V[1:n_diag_rec]
+  ret$R1 <- ret$R[1:n_diag_rec]
+  
   # strata people are diagnosed from
   ret$diagnosedfrom = seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]
   
@@ -128,10 +137,10 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   if (!is.null(strategy)){
     if (!is.null(strategy) & (strategy == "VaH" | strategy ==  "VaHonly")){
       ret$vaccinatedfrom_vos = c(ret$X[-1], ret$W[-1])
-      ret$vaccinatedto_vos = c(ret$V[2:n_diag_rec], ret$R[2:n_diag_rec])
+      ret$vaccinatedto_vos = c(ret$V1[-1], ret$R1[-1])
     } else {
       ret$vaccinatedfrom_vos = c(ret$X, ret$W)
-      ret$vaccinatedto_vos = c(ret$V, ret$R)
+      ret$vaccinatedto_vos = c(ret$V1, ret$R1)
     }
   }
   
@@ -160,7 +169,7 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 ##' individuals diagnosed at least once.
 ##' @return A list of strata with their indices
 ##' @export
-stratum_index_xvwrh <- function(n_diag_rec = 1) {
+stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL){
 
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
   # will be in the following order, where roman numerals refer to n_diag_rec,
@@ -169,14 +178,43 @@ stratum_index_xvwrh <- function(n_diag_rec = 1) {
 
   ret <- list(X = seq_len(n_diag_rec))
 
-  ret$V <- max(ret$X) + seq_len(n_diag_rec)
+  ret$V <- max(ret$X) + seq_len(n_erlang * n_diag_rec)
   ret$W <- max(ret$V) + seq_len(n_diag_rec)
-  ret$R <- max(ret$W) + seq_len(n_diag_rec)
+  ret$R <- max(ret$W) + seq_len(n_erlang * n_diag_rec)
   ret$H <- max(ret$R) + seq_len(n_diag_rec)
+  
+  ret$V1 <- ret$V[1:n_diag_rec]
+  ret$R1 <- ret$R[1:n_diag_rec]
 
   ret$n_vax <- max(ret$H)
-  ret$n_diag_rec <- n_diag_rec
+  n_vax <- ret$n_vax
   
+  # strata people are diagnosed from
+  ret$diagnosedfrom = seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]
+  
+  # strata people are diagnosed to
+  ret$diagnosedto = seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
+  
+  # strata people are vaccinated (before entry) from and to
+  ret$vaccinatedfrom_vbe = ret$X
+  ret$vaccinatedto_vbe = ret$V
+  
+  # strata people are vaccinated (on screening) from and to
+  if (!is.null(strategy)){
+    if (!is.null(strategy) & (strategy == "VaH" | strategy ==  "VaHonly")){
+      ret$vaccinatedfrom_vos = c(ret$X[-1], ret$W[-1])
+      ret$vaccinatedto_vos = c(ret$V1[-1], ret$R1[-1])
+    } else {
+      ret$vaccinatedfrom_vos = c(ret$X, ret$W)
+      ret$vaccinatedto_vos = c(ret$V1, ret$R1)
+    }
+  }
+  
+  #strata people are vaccinated (on diagnosis) from and to
+  ret$vaccinatedfrom_vod = c(ret$X, ret$W)
+  ret$vaccinatedto_vod = c(ret$V, ret$R)
+  ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] = 
+    ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] + 1
 
   ret
 }
