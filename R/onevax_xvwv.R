@@ -45,18 +45,26 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # set up uptake matrix rows = groups, columns = vaccine strata
   u_s <- create_uptake_map_xvwv(n_group = n_group, n_vax = n_vax,
-                               primary_uptake = rep(uptake, n_diag_rec),
-                               booster_uptake = rep(uptake, n_diag_rec),
-                               idx, screening_or_diagnosis = "screening")
+                               primary_uptake = uptake,
+                               booster_uptake = uptake,
+                               idx, n_diag_rec = n_diag_rec,
+                               screening_or_diagnosis = "screening")
   
   u_d <- create_uptake_map_xvwv(n_group = n_group, n_vax = n_vax,
-                               primary_uptake = rep(uptake, n_diag_rec),
-                               booster_uptake = rep(uptake, n_diag_rec),
+                               primary_uptake = uptake,
+                               booster_uptake = uptake,
+                               n_diag_rec = n_diag_rec,
                                idx, screening_or_diagnosis = "diagnosis")
+  
+  if (sum(p$vod) > 0){
+    #vaccination on diagnosis occuring, so need to scale down diag_rec
+    
+    diag_rec[, idx$X, ] <- (1 - uptake) * diag_rec[, idx$X, ]
+    diag_rec[, idx$W, ] <- (1 - uptake) * diag_rec[, idx$W, ]
+  }
   
   willing <- rep(0, n_vax)
   willing[1] <- 1
-  
 
   list(n_vax   = n_vax,
     willing = willing,

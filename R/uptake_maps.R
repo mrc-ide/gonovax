@@ -53,7 +53,7 @@ create_uptake_map_xvwv <- function(n_group, n_vax, primary_uptake, booster_uptak
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- array(0, dim = c(n_group, n_vax, n_vax))
   
-  for (i in 1: n_diag_rec){
+  for (i in 1:n_diag_rec){
     
     if (screening_or_diagnosis == "screening") {
       temp <- i

@@ -294,7 +294,7 @@ test_that("The vaccination maps are being generated as expected", {
     for (i in seq_along(r1)) {
       u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
                                     booster_uptake[i], idx,
-                                    n_diag_rec = n_diag_rec, n_erlang = 1,
+                                    n_diag_rec = n_diag_rec,
                                     screening_or_diagnosis = "diagnosis")
 
       acc_vax <- u * vod_map
@@ -1479,7 +1479,6 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
       u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
                                     booster_uptake[i],
                                     idx = idx, n_diag_rec = n_diag_rec,
-                                    n_erlang = n_erlang,
                                     screening_or_diagnosis = "diagnosis")
 
       # vaccination mapping multiplied by corresponding uptake % mapping

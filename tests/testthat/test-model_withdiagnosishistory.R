@@ -311,7 +311,7 @@ test_that("Bex model runs with vbe", {
 
 
 test_that("Check vaccination on screening in Bex model", {
-  tt <- seq.int(0, 2) / 365
+  tt <- seq.int(0, 2)/365
 
   for (i in 1:5) {
 
