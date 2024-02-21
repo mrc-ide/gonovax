@@ -71,21 +71,19 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                 booster_uptake = booster_uptake,
                                 n_diag_rec = n_diag_rec,
                                 idx, screening_or_diagnosis = "screening")
-  
+
   u_d <- create_uptake_map_xvwr(n_group = n_group, n_vax = n_vax,
                                 primary_uptake = primary_uptake,
                                 booster_uptake = booster_uptake,
-                                idx, n_diag_rec = n_diag_rec, 
+                                idx, n_diag_rec = n_diag_rec,
                                 screening_or_diagnosis = "diagnosis")
 
   if (sum(p$vod) > 0) {
     #vaccination on diagnosis occuring, so need to scale down diag_rec
-    
     diag_rec[, idx$X, ] <- (1 - primary_uptake) * diag_rec[, idx$X, ]
     diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
   }
-  
-  
+
   willing <- rep(0, n_vax)
   willing[1] <- 1
 
@@ -94,9 +92,12 @@ vax_params_xvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     u_s     = u_s,
     u_d     = u_d,
     u_vbe   = vbe,
-    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe, idx$vaccinatedto_vbe),
-    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod, idx$vaccinatedto_vod),
-    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos, idx$vaccinatedto_vos),
+    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
+                             idx$vaccinatedto_vbe),
+    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod,
+                             idx$vaccinatedto_vod),
+    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos,
+                             idx$vaccinatedto_vos),
     vea     = c(0, vea, 0, vea_revax),
     vei     = c(0, vei, 0, vei_revax),
     ved     = c(0, ved, 0, ved_revax),

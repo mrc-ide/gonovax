@@ -165,52 +165,19 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   i <- seq_len(idx$n_vax)
 
-  # diagnosed from
-  # i_diagnosedfrom <- c(idx$X[seq_len(n_diag_rec) %% n_diag_rec != 0],
-  #                      idx$P[seq_len(n_diag_rec * n_erlang) %% n_diag_rec != 0],
-  #                      idx$V[seq_len(n_diag_rec * n_erlang) %% n_diag_rec != 0],
-  #                      idx$W[seq_len(n_diag_rec) %% n_diag_rec != 0],
-  #                      idx$R[seq_len(n_diag_rec * n_erlang) %% n_diag_rec != 0],
-  #                      idx$H[seq_len(n_diag_rec) %% n_diag_rec != 0])
-  # i_diagnosedto <-  c(idx$X[seq_len(n_diag_rec) %% n_diag_rec != 1],
-  #                     idx$P[seq_len(n_diag_rec * n_erlang) %% n_diag_rec != 1],
-  #                     idx$V[seq_len(n_diag_rec * n_erlang) %% n_diag_rec != 1],
-  #                     idx$W[seq_len(n_diag_rec) %% n_diag_rec != 1],
-  #                     idx$R[seq_len(n_diag_rec * n_erlang) %% n_diag_rec != 1],
-  #                     idx$H[seq_len(n_diag_rec) %% n_diag_rec != 1])
-
   n_group <- 2
-  
-  #print("hello before")
 
   # create diagnosis history mapping
   diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), idx$diagnosedfrom,
                                        idx$diagnosedto, set_vbe = FALSE, idx)
-  
-  #print("hello")
 
-  # 1. strata eligible for vaccination
-  # note: X is repeated twice as vaccination can
-  # occur in 2 directions from X, to P or X to V.
 
-  i_eligible <- c(idx$X, idx$X, idx$P, idx$W)
+  # strata individuals wane from
+  # i.e All strata under protection P, V and R
 
-  # 2. strata individuals get vaccinated into
-  # Will always be the first of the erlang stack [1]
-  # note: V[1] is repeated n_erlang + 1 times because as well as un-vaccinated
-  # individuals (X) becoming fully vaccinated (V), partially vaccinated people
-  # in P can become fully vaccinated from any of the P erlang compartments
+  i_v <- c(idx$P, idx$V, idx$R)
 
-  # i_p <- c(idx$P[1:n_diag_rec], rep(idx$V[1:n_diag_rec], n_erlang + 1),
-  #          idx$R[1:n_diag_rec])
-  #
-  
-   # 3. strata individuals wane from
-   # i.e All strata under protection P, V and R
-   
-   i_v <- c(idx$P, idx$V, idx$R)
-
-  # 4. strata individuals wane to
+  # strata individuals wane to
 
   i_w <- c(idx$P[-(1:n_diag_rec)], idx$X, idx$V[-(1:n_diag_rec)], idx$W,
            idx$R[-(1:n_diag_rec)], idx$W)
@@ -223,66 +190,14 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
+  vod <- create_vax_map_branching(n_vax, p$vod, idx$vaccinatedfrom_vod,
+                                  idx$vaccinatedto_vod, set_vbe = FALSE, idx)
 
+  vos <- create_vax_map_branching(n_vax, p$vos, idx$vaccinatedfrom_vos,
+                                  idx$vaccinatedto_vos, set_vbe = FALSE, idx)
 
-  ## Could be implemented better
-  # if (length(strategy) > 0) {
-  #   if (strategy == "VaH" || strategy == "VaHonly") {
-  # 
-  #     if (n_diag_rec == 1) {
-  #       i_eligible_temp <- c()
-  #       i_p_temp <- c()
-  #     } else {
-  # 
-  #       #Remove values corresponding to no diagnosis history
-  #       i_eligible_temp <- i_eligible[-c(n_diag_rec * (0:2) + 1,
-  #                                        length(i_eligible) - (n_diag_rec - 1))]
-  #       i_p_temp <- i_p[-c(n_diag_rec * (0:2) + 1,
-  #                          length(i_eligible) - (n_diag_rec - 1))]
-  #     }
-  #   }else {
-  #     i_eligible_temp <- i_eligible
-  #     i_p_temp <- i_p
-  #   }
-  # }else {
-  #   i_eligible_temp <- i_eligible
-  #   i_p_temp <- i_p
-  # }
-  # 
-  # i_eligible_temp_2 <- i_eligible
-  # 
-  # # i_p for vaccination by diagnosis -> individuals move up a level of diagnosis
-  # # when vaccinated on diagnosis
-  # i_p_temp_2 <- i_p
-  # i_p_temp_2[i_p %% n_diag_rec != 0] <- i_p[i_p %% n_diag_rec != 0] + 1
-
-  # generate vaccine maps to determine where individuals are being vaccinated
-  # from and which strata they are then entering
-
-  #print("hello 1")
-  
-  
-  vod <-  create_vax_map_branching(n_vax, p$vod, idx$vaccinatedfrom_vod, idx$vaccinatedto_vod,
-                                   set_vbe = FALSE, idx)
-
-  #print("hello 2")
-  
-  
-  #print(p$vos)
-  #print(idx$vaccinatedfrom_vos)
-  #print(idx$vaccinatedto_vos)
-  
-
-  vos <-  create_vax_map_branching(n_vax, p$vos, idx$vaccinatedfrom_vos, idx$vaccinatedto_vos,
-                                   set_vbe = FALSE, idx)
-
-  # print("hello 3")
-  
-  
-  vbe_map <-  create_vax_map_branching(n_vax, p$vbe, idx$vaccinatedfrom_vbe, idx$vaccinatedto_vbe,
-                                       set_vbe = TRUE, idx)
-
-  # print("hello 4")
+  vbe_map <- create_vax_map_branching(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
+                                      idx$vaccinatedto_vbe, set_vbe = TRUE, idx)
 
   if (sum(abs(vod)) > 0) {
     #vaccination on diagnosis occuring, so need to scale down diag_rec

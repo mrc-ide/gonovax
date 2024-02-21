@@ -76,37 +76,12 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # generate indices for all strata and
   idx <- stratum_index_xvwrh(1, n_diag_rec = n_diag_rec, strategy = strategy)
-  
+
   n_vax <- idx$n_vax
 
   i_v <- c(idx$V, idx$R)
   i_w <- idx$W
   i <- seq_len(idx$n_vax)
-
-  # diagnosed from
-  # i_diagnosedfrom <- i[i %% n_diag_rec != 0]
-  # 
-  # # diagnosed to
-  # i_diagnosedto <- i[i %% n_diag_rec != 1]
-  # 
-  # i_eligible_temp <- c(1:n_diag_rec, ((2 * n_diag_rec + 1) :3 * n_diag_rec))
-  # i_v_temp <- c((1 * (n_diag_rec) + 1): (2 * (n_diag_rec)),
-  #               (3 * (n_diag_rec) + 1): (4 * (n_diag_rec)))
-
-  # ## Could be implemented better
-  # if (length(strategy) > 0) {
-  #   if (strategy == "VaH" || strategy == "VaHonly") {
-  #     #Remove values corresponding to no diagnosis history
-  #     i_eligible_temp2 <- i_eligible_temp[-c(1, (n_diag_rec + 1))]
-  #     i_v_temp2 <- i_v_temp[-c(1, (n_diag_rec + 1))]
-  #   } else {
-  #     i_eligible_temp2 <- i_eligible_temp
-  #     i_v_temp2 <- i_v_temp
-  #   }
-  # }  else {
-  #   i_eligible_temp2 <- i_eligible_temp
-  #   i_v_temp2 <- i_v_temp
-  # }
 
   #number of compartments
   n_group <- 2
@@ -128,22 +103,20 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                 booster_uptake = booster_uptake,
                                 n_diag_rec = n_diag_rec,
                                 idx, screening_or_diagnosis = "screening")
-  
+
   u_d <- create_uptake_map_xvwr(n_group = n_group, n_vax = n_vax,
                                 primary_uptake = primary_uptake,
                                 booster_uptake = booster_uptake,
                                 n_diag_rec = n_diag_rec,
                                 idx, screening_or_diagnosis = "diagnosis")
-  
-  
+
   if (sum(p$vod) > 0) {
     #vaccination on diagnosis occuring, so need to scale down diag_rec
-    
     diag_rec[, idx$X, ] <- (1 - primary_uptake) * diag_rec[, idx$X, ]
     diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
   }
-  
-  
+
+
   willing <- c((1 - hes), rep(0, n_vax - 1 - n_diag_rec), hes,
                rep(0, n_diag_rec - 1))
 
@@ -152,9 +125,12 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     u_s     = u_s,
     u_d     = u_d,
     u_vbe   = vbe,
-    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe, idx$vaccinatedto_vbe),
-    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod, idx$vaccinatedto_vod),
-    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos, idx$vaccinatedto_vos),
+    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
+                             idx$vaccinatedto_vbe),
+    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod,
+                             idx$vaccinatedto_vod),
+    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos,
+                             idx$vaccinatedto_vos),
     vea     = c(0, vea, 0, vea_revax, 0),
     vei     = c(0, vei, 0, vei_revax, 0),
     ved     = c(0, ved, 0, ved_revax, 0),

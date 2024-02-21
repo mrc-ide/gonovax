@@ -311,7 +311,7 @@ test_that("Bex model runs with vbe", {
 
 
 test_that("Check vaccination on screening in Bex model", {
-  tt <- seq.int(0, 2)/365
+  tt <- seq.int(0, 2) / 365
 
   for (i in 1:5) {
 
@@ -891,7 +891,7 @@ test_that("VaH works as expected with the XPVWRH model", {
   y0 <- mod$transform_variables(y0)
 
   n_diag_rec <- 3
-  
+
   vax_params <- vax_params_xpvwrh(vbe = 0, r1 = 1, r2 = 1, strategy = "VaH",
                                   vea = 0, n_diag_rec = n_diag_rec)
 
