@@ -85,12 +85,12 @@ y <- run_onevax_xvwv(tt,
                      vea = ve$vea, ved = ve$ved, ves = ve$ves,
                      uptake = 1, strategy = "VoA")
 
-names(y[[1]])
-dim(y[[1]]$cum_incid)
-dimnames(y[[1]]$cum_incid)
+#names(y[[1]])
+#dim(y[[1]]$cum_incid)
+#dimnames(y[[1]]$cum_incid)
 
 # cumulative incidence in unvaccinated group L over time
-y[[1]]$cum_incid[, "L", "X"]
+#y[[1]]$cum_incid[, "L", "X"]
 ```
 
 ## Graphical representations of results
