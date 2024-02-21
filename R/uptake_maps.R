@@ -6,6 +6,10 @@
 ##' @param n_vax scalar indicating number the number of stratum in the model
 ##' @param uptake proportion of the unvaccinated population who accept
 ##' vaccination
+##' @param idx list containing indices of all X,  V, W strata and n_vax
+##' through vaccine-protected strata until that protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##'  @param screening_or_diagnosis string indicating screening or diagnosis
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map_xvw <- function(n_group, n_vax, uptake, idx,
@@ -45,6 +49,10 @@ create_uptake_map_xvw <- function(n_group, n_vax, uptake, idx,
 ##' @param n_vax scalar indicating number the number of stratum in the model
 ##' @param uptake proportion of the unvaccinated population who accept
 ##' vaccination
+##' @param idx list containing indices of all X,  V, W strata and n_vax
+##' through vaccine-protected strata until that protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##'  @param screening_or_diagnosis string indicating screening or diagnosis
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map_xvwv <- function(n_group, n_vax, primary_uptake,
@@ -89,6 +97,10 @@ create_uptake_map_xvwv <- function(n_group, n_vax, primary_uptake,
 ##' @param n_vax scalar indicating number the number of stratum in the model
 ##' @param uptake proportion of the unvaccinated population who accept
 ##' vaccination
+##' @param idx list containing indices of all X,  V, W, R strata and n_vax
+##' through vaccine-protected strata until that protection has waned
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##'  @param screening_or_diagnosis string indicating screening or diagnosis
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map_xvwr <- function(n_group, n_vax, primary_uptake,
@@ -145,7 +157,8 @@ create_uptake_map_xvwr <- function(n_group, n_vax, primary_uptake,
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
 ##' through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##'  @param screening_or_diagnosis string indicating screening or diagnosis
 ##' @return an array of the uptakes of same dimensions
 
 create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,

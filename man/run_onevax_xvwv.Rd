@@ -16,6 +16,7 @@ run_onevax_xvwv(
   ved = 0,
   ves = 0,
   vbe = 0,
+  n_diag_rec = 1,
   uptake = 0,
   strategy = NULL,
   t_stop = 99
@@ -46,13 +47,17 @@ efficacy of the vaccine against symptoms (between 0-1)}
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
-giving pc of population vaccinated as part of strategy}
+giving pc of population vaccinated as part of strategy
+@param n_diag_rec integer for the number of diagnosis history substrata}
 
 \item{strategy}{single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
-\item{t_stop}{time at which vaccination should stop (years)}
+\item{t_stop}{time at which vaccination should stop (years)
+@param n_diag_rec integer for the number of diagnosis history substrata}
 }
 \description{
 run model with single vaccine for input parameter sets, either from

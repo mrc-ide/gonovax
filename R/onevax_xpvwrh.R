@@ -24,7 +24,7 @@
 ##' present (as a proportion)
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec n_diag_Rec - explanation to add later!
+##' @param n_diag_rec  number of diagnosis history strata
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
@@ -105,6 +105,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec  number of diagnosis history strata
 ##' @return A list parameters in the model input format
 vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               vea_revax = vea, vei_revax = vei, ved_revax = ved,
@@ -264,7 +265,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' a second dose when returning to the clinic due to screening or illness
 ##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
 ##' through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec
+##' @param n_diag_rec  number of diagnosis history strata
 ##' @return an array of the uptakes of same dimensions
 
 create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
@@ -337,9 +338,8 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
 ##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
 ##' @param n_erlang integer giving the number of transitions that need to be
-##' made
-##' @param n_diag_rec
-##' through vaccine-protected strata until that protection has waned
+##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec  number of diagnosis history strata
 ##' @return an array of the mapping
 
 create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang = 1,

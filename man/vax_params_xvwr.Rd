@@ -19,7 +19,8 @@ vax_params_xvwr(
   booster_uptake = primary_uptake,
   strategy = NULL,
   vbe = 0,
-  t_stop = 99
+  t_stop = 99,
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -58,7 +59,8 @@ vaccination as part of strategy}
 
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
-vaccination after primary vaccination protection has waned}
+vaccination after primary vaccination protection has waned
+@param n_diag_rec integer for the number of diagnosis history substrata}
 
 \item{strategy}{single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
@@ -66,7 +68,8 @@ vaccination after primary vaccination protection has waned}
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
-\item{t_stop}{time at which vaccination should stop (years)}
+\item{t_stop}{time at which vaccination should stop (years)
+@param n_diag_rec integer for the number of diagnosis history substrata}
 }
 \value{
 A list parameters in the model input format

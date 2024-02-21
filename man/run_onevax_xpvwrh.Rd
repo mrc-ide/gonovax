@@ -39,7 +39,8 @@ run_onevax_xpvwrh(
   strategy = NULL,
   t_stop = 99,
   hes = 0,
-  n_erlang = 1
+  n_erlang = 1,
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -122,14 +123,17 @@ vaccination after primary vaccination protection has waned.
 \item{strategy}{single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
-\item{t_stop}{time at which vaccination should stop (years)}
+\item{t_stop}{time at which vaccination should stop (years)
+@param n_diag_rec integer for the number of diagnosis history substrata}
 
 \item{hes}{Proportion of individuals in the population who are vaccine
 hesitant}
 
-\item{n_erlang}{integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned}
+\item{n_erlang}{integer giving the number of erlang vaccination transitions
+through vaccine-protected strata until that protection has waned
+@param n_diag_rec integer for the number of diagnosis history substrata}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list of transformed model outputs

@@ -16,6 +16,7 @@ run_onevax_xvw(
   ved = 0,
   ves = 0,
   vbe = coverage,
+  n_diag_rec = 1,
   uptake = 0,
   strategy = NULL,
   coverage = 0,
@@ -46,7 +47,10 @@ efficacy of the vaccine against symptoms (between 0-1)}
 
 \item{vbe}{scalar giving uptake of vaccination before
 entry into population (i.e. adolescent vaccination) defaults to same as
+ @param n_diag_rec integer for the number of diagnosis history substrata
 `coverage`}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
 \item{uptake}{scalar or numeric vector with same length as `gono_params`
 giving pc of population vaccinated as part of strategy}
@@ -56,7 +60,8 @@ giving pc of population vaccinated as part of strategy}
 
 \item{coverage}{scalar giving initial coverage of vaccination, default 0.}
 
-\item{t_stop}{time at which vaccination should stop (years)}
+\item{t_stop}{time at which vaccination should stop (years)
+@param n_diag_rec integer for the number of diagnosis history substrata}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from
