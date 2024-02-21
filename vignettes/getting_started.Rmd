@@ -66,6 +66,11 @@ The strategy can be one of:
 The proportion of those eligible that choose to be vaccinated, `uptake` is a
 scalar from 0 to 1:
 
+`y` is now a list of model runs of length `n_par`, each entry contains a list of
+model outputs. Each of these list entries `y[[i]]` is a list of model output
+arrays with dimensions: time, group (L, H), and vaccine status (X, V, W)
+where applicable
+
 ```{r}
 # generate vaccine effects parameters
 ve <- data.frame(vea = 0.1, # efficacy against acquisition
@@ -80,14 +85,6 @@ y <- run_onevax_xvwv(tt,
                      vea = ve$vea, ved = ve$ved, ves = ve$ves,
                      uptake = 1, strategy = "VoA")
 
-```
-
-`y` is now a list of model runs of length `n_par`, each entry contains a list of
-model outputs. Each of these list entries `y[[i]]` is a list of model output
-arrays with dimensions: time, group (L, H), and vaccine status (X, V, W)
-where applicable
-
-```{r}
 names(y[[1]])
 dim(y[[1]]$cum_incid)
 dimnames(y[[1]]$cum_incid)
