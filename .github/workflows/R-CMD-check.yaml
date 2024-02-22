@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - master
+      - diagnosishistory
 
 name: R-CMD-check
 
