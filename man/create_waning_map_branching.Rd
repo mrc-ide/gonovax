@@ -22,7 +22,7 @@ create_waning_map_branching(n_vax, i_v, i_w, z, n_erlang = 1, n_diag_rec = 1)
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
 
-\item{n_diag_rec}{number of diagnosis history strata}
+\item{n_diag_rec}{integer giving number of diagnosis history strata}
 }
 \value{
 an array of the mapping

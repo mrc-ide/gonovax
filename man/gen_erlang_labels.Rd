@@ -9,8 +9,9 @@ gen_erlang_labels(n_erlang = 1, n_diag_rec = 1)
 }
 \arguments{
 \item{n_erlang}{integer giving the number of transitions that need to be
-made through vaccine-protected strata until that protection has waned
-@param n_diag_rec integer for the number of diagnosis history substrata}
+made through vaccine-protected strata until that protection has waned}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 a character vector of length n_vax containing strata labels

@@ -21,13 +21,18 @@ create_uptake_map_xvwr(
 
 \item{n_vax}{scalar indicating number the number of stratum in the model}
 
-\item{idx}{list containing indices of all X,  V, W, R strata and n_vax
-through vaccine-protected strata until that protection has waned
- @param n_diag_rec integer for the number of diagnosis history substrata
- @param screening_or_diagnosis string indicating screening or diagnosis}
+\item{primary_uptake}{proportion of the unvaccinated population who accept
+primary vaccination}
 
-\item{uptake}{proportion of the unvaccinated population who accept
-vaccination}
+\item{booster_uptake}{proportion of the formerly fully vaccinated, waned
+population who accept a booster vaccination dose}
+
+\item{idx}{list containing indices of all X,  V, W, R strata and n_vax
+through vaccine-protected strata until that protection has waned}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{screening_or_diagnosis}{string indicating screening or diagnosis}
 }
 \value{
 an array of the uptakes with dimensions n_group x n_vax x n_vax

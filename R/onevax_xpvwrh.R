@@ -114,8 +114,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               dur_p = dur_v, dur_revax = dur_v, r1 = 0, r2 = 0,
                               r2_p = 0, booster_uptake = r1 * r2,
                               strategy = NULL, vbe = 0, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1,
-                              notification_param = 0) {
+                              n_erlang = 1, n_diag_rec = 1) {
 
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
@@ -339,7 +338,7 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
 ##' @param z Scalar denoting rate of waning
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec  number of diagnosis history strata
+##' @param n_diag_rec integer giving number of diagnosis history strata
 ##' @return an array of the mapping
 
 create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang = 1,
@@ -528,7 +527,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
 ##' in the model, which depends on the value given to n_erlang
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
 gen_erlang_labels <- function(n_erlang = 1, n_diag_rec = 1) {
@@ -598,7 +597,7 @@ set_protection <- function(i_v, idx, n_vax, ve_p, ve, ve_revax) {
 ##' @param branching boolean to denote if xpvwrh branching model in use
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of initial conditions to restart a model with n_vax
 ##' vaccination levels, and a populated hestitant stratum in the given
 ##' proportion 'hes'

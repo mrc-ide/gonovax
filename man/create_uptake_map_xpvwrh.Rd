@@ -47,11 +47,11 @@ a second dose when returning to the clinic due to screening or illness}
 population who accept a booster vaccination dose}
 
 \item{idx}{list containing indices of all X, P, V, W, R & H strata and n_vax
-through vaccine-protected strata until that protection has waned
- @param n_diag_rec integer for the number of diagnosis history substrata
- @param screening_or_diagnosis string indicating screening or diagnosis}
+through vaccine-protected strata until that protection has waned}
 
-\item{n_diag_rec}{number of diagnosis history strata}
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{screening_or_diagnosis}{string indicating screening or diagnosis}
 }
 \value{
 an array of the uptakes of same dimensions

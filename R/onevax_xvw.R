@@ -31,7 +31,7 @@ initial_params_xvw <- function(pars, coverage = 0) {
 ##' @param strategy single character string in "VoD", "VoD(H)",
 ##'  "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination
 ##' @param t_stop time at which vaccination should stop (years)
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list parameters in the model input format
 vax_params_xvw <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                            dur = 1e3, uptake = 0, strategy = NULL, vbe = 0,

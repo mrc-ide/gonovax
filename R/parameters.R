@@ -177,7 +177,7 @@ restart_params <- function(y, n_vax = NULL) {
 ##' @param demographic_params A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param init_params A list of starting conditions
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -255,7 +255,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 ##' @param i_v indices of strata being vaccinated
 ##' @param i_w Integer in (0, 5) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return an array of the mapping
 
 create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
@@ -286,7 +286,7 @@ create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 ##' @title Create mapping for movement between strata due to diagnosis waning
 ##' @param n_vax Integer in (0, 5) denoting total number of strata
 ##' @param z Scalar denoting rate of waning diagnosis
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return an array of the mapping
 
 create_diagnosis_waning_map <- function(n_vax, z, n_diag_rec = 1) {
@@ -407,6 +407,7 @@ check_gono_params <- function(pars) {
 ##' vaccinated
 ##' @param i_v vector of indices of stratum which are vaccinated and experience
 ##' protection
+##' @param screening_or_diagnosis string indicating screening or diagnosis
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
@@ -434,7 +435,9 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
 ##' @param demographic_params A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param init_params A list of starting conditions
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing

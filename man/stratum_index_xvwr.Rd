@@ -2,7 +2,7 @@
 % Please edit documentation in R/stratum_indexes.R
 \name{stratum_index_xvwr}
 \alias{stratum_index_xvwr}
-\title{Generate the indices of all xvw trial strata}
+\title{Generate the indices of all xvwr trial strata}
 \usage{
 stratum_index_xvwr(n_erlang = 1, n_diag_rec = 1, strategy = NULL)
 }
@@ -10,15 +10,13 @@ stratum_index_xvwr(n_erlang = 1, n_diag_rec = 1, strategy = NULL)
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
 
-\item{n_diag_rec}{integer giving the number of each X, V(erlang), and W
-stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
-and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
-Where '.I' corresponds to never-diagnosed individuals and '.II' is for
-individuals diagnosed at least once.}
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{strategy}{string of vaccination strategy being considered}
 }
 \value{
-A list of strata with their indices
+A list of strata with their indicies
 }
 \description{
-Generate the indices of all xvw trial strata
+Generate the indices of all xvwr trial strata
 }

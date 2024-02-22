@@ -25,8 +25,9 @@ consistent with the input}
 \item{hes}{proportion of population vaccine hesitant}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
-made
-@param n_diag_rec integer for the number of diagnosis history substrata}
+made}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
 \item{branching}{boolean to denote if xpvwrh branching model in use}
 }

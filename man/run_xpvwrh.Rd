@@ -24,8 +24,9 @@ run_xpvwrh(
 \item{vax_params}{= NULL}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
-made through vaccine-protected strata until that protection has waned
-@param n_diag_rec integer for the number of diagnosis history substrata}
+made through vaccine-protected strata until that protection has waned}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
 \item{transform}{= TRUE}
 }

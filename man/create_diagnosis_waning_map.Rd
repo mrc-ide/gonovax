@@ -9,8 +9,9 @@ create_diagnosis_waning_map(n_vax, z, n_diag_rec = 1)
 \arguments{
 \item{n_vax}{Integer in (0, 5) denoting total number of strata}
 
-\item{z}{Scalar denoting rate of waning diagnosis
-@param n_diag_rec integer for the number of diagnosis history substrata}
+\item{z}{Scalar denoting rate of waning diagnosis}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 an array of the mapping

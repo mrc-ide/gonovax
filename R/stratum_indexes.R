@@ -1,3 +1,11 @@
+##' @name stratum_index_xvw
+##' @title Generate the indices of all xvwv trial strata
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param strategy string of vaccination strategy being considered
+##' @return A list of strata with their indicies
+##' @export
 stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
   # will be in the following order, where roman numerals refer to n_diag_rec,
@@ -41,6 +49,15 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret
 }
 
+
+##' @name stratum_index_xvwv
+##' @title Generate the indices of all xvwv trial strata
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param strategy string of vaccination strategy being considered
+##' @return A list of strata with their indicies
+##' @export
 stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
@@ -88,15 +105,12 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
 
 ##' @name stratum_index_xvwr
-##' @title Generate the indices of all xvw trial strata
+##' @title Generate the indices of all xvwr trial strata
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
-##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
-##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
-##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
-##' individuals diagnosed at least once.
-##' @return A list of strata with their indices
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param strategy string of vaccination strategy being considered
+##' @return A list of strata with their indicies
 ##' @export
 
 stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
@@ -152,15 +166,12 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
 
 ##' @name stratum_index_xvwrh
-##' @title Generate the indices of all xvw trial strata
+##' @title Generate the indices of all xvwrh trial strata
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
-##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
-##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
-##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
-##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
-##' individuals diagnosed at least once.
-##' @return A list of strata with their indices
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param strategy string of vaccination strategy being considered
+##' @return A list of strata with their indicies
 ##' @export
 stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
@@ -217,7 +228,8 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 ##' @title Generate the indices of all xpvwrh strata
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param strategy string of vaccination strategy being considered
 ##' @return A list of strata with their indicies
 ##' @export
 

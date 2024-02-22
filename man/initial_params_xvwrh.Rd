@@ -14,6 +14,8 @@ elements.}
 initial proportion in each vaccine stratum}
 
 \item{hes}{proportion of population vaccine hesitant}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list of initial conditions

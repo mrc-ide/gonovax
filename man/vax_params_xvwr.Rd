@@ -68,8 +68,9 @@ vaccination after primary vaccination protection has waned
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
-\item{t_stop}{time at which vaccination should stop (years)
-@param n_diag_rec integer for the number of diagnosis history substrata}
+\item{t_stop}{time at which vaccination should stop (years)}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list parameters in the model input format

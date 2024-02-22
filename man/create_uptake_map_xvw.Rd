@@ -24,9 +24,11 @@ create_uptake_map_xvw(
 vaccination}
 
 \item{idx}{list containing indices of all X,  V, W strata and n_vax
-through vaccine-protected strata until that protection has waned
- @param n_diag_rec integer for the number of diagnosis history substrata
- @param screening_or_diagnosis string indicating screening or diagnosis}
+through vaccine-protected strata until that protection has waned}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{screening_or_diagnosis}{string indicating screening or diagnosis}
 }
 \value{
 an array of the uptakes with dimensions n_group x n_vax x n_vax

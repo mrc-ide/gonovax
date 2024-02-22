@@ -85,8 +85,7 @@ vaccination after primary vaccination protection has waned.
 \item{strategy}{single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}
 
-\item{t_stop}{time at which vaccination should stop (years)
-@param n_diag_rec integer for the number of diagnosis history substrata}
+\item{t_stop}{time at which vaccination should stop (years)}
 
 \item{hes}{Proportion of individuals in the population who are vaccine
 hesitant}

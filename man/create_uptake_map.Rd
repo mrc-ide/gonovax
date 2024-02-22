@@ -33,6 +33,8 @@ vaccinated}
 
 \item{i_v}{vector of indices of stratum which are vaccinated and experience
 protection}
+
+\item{screening_or_diagnosis}{string indicating screening or diagnosis}
 }
 \value{
 an array of the uptakes with dimensions n_group x n_vax x n_vax

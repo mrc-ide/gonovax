@@ -60,8 +60,7 @@ giving pc of population vaccinated as part of strategy}
 
 \item{coverage}{scalar giving initial coverage of vaccination, default 0.}
 
-\item{t_stop}{time at which vaccination should stop (years)
-@param n_diag_rec integer for the number of diagnosis history substrata}
+\item{t_stop}{time at which vaccination should stop (years)}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

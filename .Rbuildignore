@@ -24,3 +24,4 @@
 ^doc$
 ^_pkgdown\.yml$
 ^pkgdown$
+^Meta$

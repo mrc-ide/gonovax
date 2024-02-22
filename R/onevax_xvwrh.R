@@ -3,6 +3,7 @@
 ##' @title Initial conditions for the model
 ##' @inheritParams initial_params
 ##' @param hes proportion of population vaccine hesitant
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of initial conditions
 ##' @export
 initial_params_xvwrh <- function(pars, coverage = 0, hes = 0, n_diag_rec = 1) {

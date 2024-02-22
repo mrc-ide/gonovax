@@ -29,8 +29,7 @@ vax_params_xpvwrh(
   t_stop = 99,
   hes = 0,
   n_erlang = 1,
-  n_diag_rec = 1,
-  notification_param = 0
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -99,8 +98,7 @@ vaccination after primary vaccination protection has waned
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
-\item{t_stop}{time at which vaccination should stop (years)
-@param n_diag_rec integer for the number of diagnosis history substrata}
+\item{t_stop}{time at which vaccination should stop (years)}
 
 \item{hes}{proportion of population vaccine hesitant}
 

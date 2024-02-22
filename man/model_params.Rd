@@ -17,10 +17,11 @@ model_params(
 
 \item{demographic_params}{A dataframe of demographic parameters}
 
-\item{init_params}{A list of starting conditions
-@param n_diag_rec integer for the number of diagnosis history substrata}
+\item{init_params}{A list of starting conditions}
 
 \item{vax_params}{A vector of vaccination params}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list of inputs to the model many of which are fixed and
