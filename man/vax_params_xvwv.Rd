@@ -13,7 +13,8 @@ vax_params_xvwv(
   uptake = 0,
   strategy = NULL,
   vbe = 0,
-  t_stop = 99
+  t_stop = 99,
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ vax_params_xvwv(
 (between 0-1)}
 
 \item{t_stop}{time at which vaccination should stop (years)}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list parameters in the model input format

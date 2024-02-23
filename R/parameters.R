@@ -169,12 +169,15 @@ restart_params <- function(y, n_vax = NULL) {
   list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
 }
 
+
+
 ##' @name model_params
 ##' @title Parameters for the dualvax model
 ##' @param gono_params A dataframe of natural history parameters
 ##' @param demographic_params A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
 ##' @param init_params A list of starting conditions
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -183,16 +186,37 @@ restart_params <- function(y, n_vax = NULL) {
 model_params <- function(gono_params = NULL,
                          demographic_params = NULL,
                          init_params = NULL,
-                         vax_params = NULL) {
+                         vax_params = NULL,
+                         n_diag_rec = 1) {
+
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-  vax_params <- vax_params %||% vax_params0()
+
+  if (is.null(vax_params)) {
+    #also add in diag_rec if vax_params not supplied
+    vax_params <- vax_params0(n_diag_rec = n_diag_rec)
+    n_vax <- vax_params$n_vax
+    if (n_diag_rec == 1) {
+      i_diag <-  NULL
+    } else {
+      i_diag <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
+    }
+
+    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_diag,
+                                          seq_len(n_vax)[seq_len(n_vax)
+                                                         %% n_diag_rec != 1])
+
+  }
 
   cov <- c(1, rep(0, vax_params$n_vax - 1))
   init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
+
   c(ret, init_params, vax_params)
 }
+
+
+
 
 ##' @name create_vax_map
 ##' @title Create mapping for movement between strata due to vaccination
@@ -207,10 +231,12 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 
   # ensure vaccine input is of correct length
   n_group <- 2
+
   stopifnot(length(v) == n_group)
   stopifnot(all(v %in% c(0, 1)))
-  stopifnot(length(i_v) == length(i_u))
-  stopifnot(max(i_u, i_v) <= n_vax)
+  if (length(i_v) > 0) {
+    stopifnot(max(i_u, i_v) <= n_vax)
+  }
 
   # set up vaccination matrix
   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
@@ -229,23 +255,65 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 ##' @param i_v indices of strata being vaccinated
 ##' @param i_w Integer in (0, 5) denoting which stratum receives waned vaccinees
 ##' @param z Scalar denoting rate of waning
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return an array of the mapping
 
-create_waning_map <- function(n_vax, i_v, i_w, z) {
+create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 
   stopifnot(z > 0)
   stopifnot(length(z) %in% c(1, length(i_v)))
-  stopifnot(length(i_w) == 1)
+  stopifnot(length(i_w) == n_diag_rec)
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
 
-  w[i_w, i_v] <-  z
+  for (i in seq_along(i_v)) {
+    for (j in 1:n_diag_rec){
 
-  for (i in i_v) {
-    w[i, i] <- -w[i_w, i]
+      w[i_w[j], i_v[(i - 1) * n_diag_rec + j]] <-
+        ifelse(length(z) == 1,  z, z[i])
+
+      w[i_v[(i - 1) * n_diag_rec + j], i_v[(i - 1) * n_diag_rec + j]] <-
+        -w[i_w[j], i_v[(i - 1) * n_diag_rec + j]]
+    }
   }
+
   w
 }
+
+
+
+##' @name create_diagnosis_waning_map
+##' @title Create mapping for movement between strata due to diagnosis waning
+##' @param n_vax Integer in (0, 5) denoting total number of strata
+##' @param z Scalar denoting rate of waning diagnosis
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @return an array of the mapping
+
+create_diagnosis_waning_map <- function(n_vax, z, n_diag_rec = 1) {
+
+  stopifnot(z > 0)
+  stopifnot(n_vax %% n_diag_rec == 0)
+
+  # set up waning map
+  wd <- array(0, dim = c(n_vax, n_vax))
+
+  #different base number of vaccine statuses (e.g. if X, V, W, then ntype = 3)
+  ntype <- n_vax / n_diag_rec
+
+  if (n_diag_rec >= 2) {
+    for (k in 1:(ntype)) {
+      for (j in 1:(n_diag_rec - 1)) {
+        wd[(k - 1) * n_diag_rec + j, (k - 1) * n_diag_rec + j + 1] <- z
+        wd[(k - 1) * n_diag_rec + j + 1, (k - 1) * n_diag_rec + j + 1] <- -z
+      }
+
+    }
+  }
+
+  wd
+}
+
+
 
 ##' @name set_strategy
 ##' @title Translate each named vaccine strategy into a format interpretable by
@@ -266,22 +334,37 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
 
   if (is.null(strategy)) {
     vos <- vod <- novax
+
   } else if (strategy == "VoD") {
     vod <- vax_lh
     vos <- novax
+
   } else if (strategy == "VoA") {
     vod <- vos <- vax_lh
+
   } else if (strategy == "VoD(H)") {
     vod <- vax_h
     vos <- novax
+
   } else if (strategy == "VoA(H)") {
     vod <- vos <- vax_h
+
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- vax_lh
     vos <- vax_h
+
   } else if (strategy == "VoS") {
     vod <- novax
     vos <- vax_lh
+
+  } else if (strategy == "VaH") {
+    vod <- vax_lh
+    vos <- vax_lh
+
+  } else if (strategy == "VaHonly") {
+    vod <- novax
+    vos <- vax_lh
+
   } else {
     stop("strategy not recognised")
   }
@@ -324,15 +407,17 @@ check_gono_params <- function(pars) {
 ##' vaccinated
 ##' @param i_v vector of indices of stratum which are vaccinated and experience
 ##' protection
+##' @param screening_or_diagnosis string indicating screening or diagnosis
 ##' @return an array of the uptakes with dimensions n_group x n_vax x n_vax
 
 create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
-                              i_eligible, i_v) {
+                              i_eligible, i_v, screening_or_diagnosis) {
 
   # set up uptake matrix rows = groups, columns = vaccine strata
   u <- array(0, dim = c(n_group, n_vax, n_vax))
 
   u_vals <- c(primary_uptake, booster_uptake)
+
 
   for (i in seq_along(i_eligible)) {
 
@@ -342,4 +427,57 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
   }
 
   u
+}
+
+##' @name model_params_xpvwrh
+##' @title Parameters for the dualvax model
+##' @param gono_params A dataframe of natural history parameters
+##' @param demographic_params A dataframe of demographic parameters
+##' @param vax_params A vector of vaccination params
+##' @param init_params A list of starting conditions
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @return A list of inputs to the model many of which are fixed and
+##'   represent data. These correspond largely to `user()` calls
+##'   within the odin code, though some are also used in processing
+##'   just before the model is run.
+##' @export
+model_params_xpvwrh <- function(gono_params = NULL,
+                                demographic_params = NULL,
+                                init_params = NULL,
+                                vax_params = NULL,
+                                n_erlang = 1,
+                                n_diag_rec = 1) {
+
+  gono_params <- gono_params %||% gono_params(1)[[1]]
+  demographic_params <- demographic_params %||% demographic_params()
+  ret <- c(demographic_params, gono_params)
+
+  if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
+
+    stopifnot(unique(dim(vax_params$w)) ==
+                3 * n_diag_rec + 3 * n_diag_rec * n_erlang)
+
+  } else {
+
+    #also add in diag_rec if vax_params not supplied
+    vax_params <- vax_params0(n_diag_rec = n_diag_rec)
+    n_vax <- vax_params$n_vax
+    if (n_diag_rec == 1) {
+      i_diag <-  NULL
+    } else {
+      i_diag <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
+    }
+
+    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_diag,
+                                          seq_len(n_vax)
+                                          [seq_len(n_vax) %% n_diag_rec != 1])
+  }
+
+
+  cov <- c(1, rep(0, vax_params$n_vax - 1))
+  init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
+
+  c(ret, init_params, vax_params)
 }

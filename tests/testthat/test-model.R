@@ -73,7 +73,7 @@ test_that("no-one is treated when mu and eta = 0", {
 
 test_that("the foi is calculated correctly", {
   vei <- 0.123
-  vax_params <- vax_params_xvwv(uptake = 0.5, dur = 1,
+  vax_params <- vax_params_xvwv(uptake = 0.5, dur = 1, vei = 0.123,
                                 strategy = "VoA")
   params <- model_params(gono_params = gono_params(1)[[1]],
                          vax_params = vax_params)

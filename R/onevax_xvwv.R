@@ -4,7 +4,7 @@
 ##' @return A list parameters in the model input format
 vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                             dur = 1e3, uptake = 0, strategy = NULL,
-                            vbe = 0, t_stop = 99) {
+                            vbe = 0, t_stop = 99, n_diag_rec = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -14,40 +14,75 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
+
   # waned vaccinees move to own stratum, but are eligible for re-vaccination
-  # 1:x -> 2:v <-> 3:w
-  i_eligible <- c(1, 3)
-  i_v <- c(2, 2)
-  i_w <- n_vax <- 3
+  # unvaccinated 1:n_diag_rec (x)
+  # vaccinated from n_diag_rec+1 to 2*n_diag_rec (v)
+  # waned from  2*n_diag_rec+1 to 3*n_diag_rec (w)
+
+  # generate indices for all strata and
+  idx <- stratum_index_xvwv(1, n_diag_rec = n_diag_rec, strategy = strategy)
+
+  n_vax <- idx$n_vax
+
+  i_v <- idx$V
+  i_w <- idx$W
+
   n_group <- 2
 
+  # create diagnosis history mapping
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), idx$diagnosedfrom,
+                                       idx$diagnosedto, set_vbe = FALSE, idx)
+
   # compartments to which vaccine efficacy applies
-  ve <- c(0, 1, 0)
+  ve <- ifelse(seq_len(n_vax) %in% idx$V, 1, 0)
   ved <- min(ved, 1 - 1e-10) # ensure duration is not divided by 0
 
   # If uptake of VbE > 0 consider that all adolescents are offered vaccine
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
-  u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
-                         primary_uptake = uptake,
-                         booster_uptake = uptake,
-                         i_eligible = i_eligible, i_v = i_v)
+  u_s <- create_uptake_map_xvwv(n_group = n_group, n_vax = n_vax,
+                                primary_uptake = uptake,
+                                booster_uptake = uptake,
+                                idx, n_diag_rec = n_diag_rec,
+                                screening_or_diagnosis = "screening")
+
+  u_d <- create_uptake_map_xvwv(n_group = n_group, n_vax = n_vax,
+                                primary_uptake = uptake,
+                                booster_uptake = uptake,
+                                n_diag_rec = n_diag_rec,
+                                idx, screening_or_diagnosis = "diagnosis")
+
+  if (sum(p$vod) > 0) {
+    #vaccination on diagnosis occuring, so need to scale down diag_rec
+    diag_rec[, idx$X, ] <- (1 - uptake) * diag_rec[, idx$X, ]
+    diag_rec[, idx$W, ] <- (1 - uptake) * diag_rec[, idx$W, ]
+  }
+
+  willing <- rep(0, n_vax)
+  willing[1] <- 1
 
   list(n_vax   = n_vax,
-    willing = c(1, 0, 0),
-    u       = u,
-    u_vbe   = vbe,
-    vbe     = create_vax_map(n_vax, p$vbe, i_eligible, i_v),
-    vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-    vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
-    vea     = vea * ve,
-    vei     = vei * ve,
-    ved     = ved * ve,
-    ves     = ves * ve,
-    w       = create_waning_map(n_vax, i_v, i_w, 1 / dur),
-    vax_t   = c(0, t_stop),
-    vax_y   = c(1, 0)
+    willing = willing,
+    u_s = u_s,
+    u_d = u_d,
+    u_vbe = vbe,
+    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
+                             idx$vaccinatedto_vbe),
+    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod,
+                             idx$vaccinatedto_vod),
+    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos,
+                             idx$vaccinatedto_vos),
+    vea = vea * ve,
+    vei = vei * ve,
+    ved = ved * ve,
+    ves = ves * ve,
+    w = create_waning_map(n_vax, i_v, i_w, 1 / dur, n_diag_rec),
+    wd = create_diagnosis_waning_map(n_vax, 1, n_diag_rec),
+    vax_t = c(0, t_stop),
+    vax_y = c(1, 0),
+    diag_rec = diag_rec
   )
 }
 
@@ -68,34 +103,38 @@ vax_params_xvwv <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  giving duration of the vaccine (in years)
 ##' @param uptake  scalar or numeric vector with same length as `gono_params`
 ##'  giving pc of population vaccinated as part of strategy
+##'  @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @inheritParams run
 ##' @inheritParams vax_params_xvwv
 ##' @export
 run_onevax_xvwv <- function(tt, gono_params, init_params = NULL, dur = 1e3,
                             vea = 0, vei = 0, ved = 0, ves = 0, vbe = 0,
-                            uptake = 0, strategy = NULL,
+                            n_diag_rec = 1, uptake = 0, strategy = NULL,
                             t_stop = 99) {
-
 
   stopifnot(all(lengths(list(uptake, vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
 
   vax_params <- Map(vax_params_xvwv, uptake = uptake, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
+                    n_diag_rec = n_diag_rec,
                     MoreArgs = list(strategy = strategy, t_stop = t_stop,
                                     vbe = vbe))
 
   if (is.null(init_params)) {
+
     ret <- Map(run, gono_params = gono_params, vax_params = vax_params,
                MoreArgs = list(tt = tt))
+
   } else {
     ret <- Map(run, gono_params = gono_params, init_params = init_params,
                vax_params = vax_params,
                MoreArgs = list(tt = tt))
+
   }
 
   # name outputs
-  ret <- lapply(ret, name_outputs, c("X", "V", "W"))
+  ret <- lapply(ret, name_outputs, gen_labels(1, n_diag_rec))
 
   ret
 }

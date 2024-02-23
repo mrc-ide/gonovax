@@ -3,16 +3,20 @@
 ##' @title Initial conditions for the model
 ##' @inheritParams initial_params
 ##' @param hes proportion of population vaccine hesitant
+##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @return A list of initial conditions
 ##' @export
-initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
+initial_params_xvwrh <- function(pars, coverage = 0, hes = 0, n_diag_rec = 1) {
   assert_scalar_unit_interval(coverage)
-  n_vax <- 5
 
+  n_vax <- 5 * n_diag_rec
   willing <- 1 - hes
   x_init <- willing * (1 - coverage)
   v_init <- willing * coverage
-  cov <- c(x_init, v_init, 0, 0, hes)
+
+  cov <- c(x_init, rep(0, n_diag_rec - 1), v_init, rep(0, n_diag_rec - 1),
+           rep(0, n_diag_rec), rep(0, n_diag_rec), hes, rep(0, n_diag_rec - 1))
+
 
   stopifnot(length(cov) == n_vax)
   stopifnot(sum(cov) == 1)
@@ -23,7 +27,9 @@ initial_params_xvwrh <- function(pars, coverage = 0, hes = 0) {
   N0 <- pars$N0 * outer(pars$q, cov)
   # set initial asymptomatic prevalence in each group (X AND H)
   A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
-  A0[, n_vax] <- round(N0[, n_vax] * c(pars$prev_Asl, pars$prev_Ash))
+
+  indextemp <- 4 * n_diag_rec + 1
+  A0[, indextemp] <- round(N0[, n_vax] * c(pars$prev_Asl, pars$prev_Ash))
 
   # set initial uninfecteds
   U0 <- round(N0) - A0
@@ -42,7 +48,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              ved_revax = ved, ves_revax = ves,
                              dur = 1e3, dur_revax = dur, primary_uptake = 0,
                              booster_uptake = primary_uptake, strategy = NULL,
-                             vbe = 0, t_stop = 99, hes = 0) {
+                             vbe = 0, t_stop = 99, hes = 0,
+                             n_diag_rec = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -58,19 +65,31 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
+
   # waned vaccinees move to own stratum, but are eligible for re-vaccination
-  # re-vaccination is into a fourth stratum (r)
+  # unvaccinated 1:n_diag_rec (x)
+  # vaccinated from n_diag_rec+1 to 2*n_diag_rec (v)
+  # waned from  2*n_diag_rec+1 to 3*n_diag_rec (w)
+  # revaccinated from 3*n_diag_rec+1 to 4*n_diag_Rec (R)
+  # hesitant from 5*n_diag_rec+1 to 6*n_diag_rec (H)
   # a proportion of all 'n' exist only in the hesitant compartment
   # there is no movement between the willing (x,v,w,r) and hesitant (h)
-  # 1:x -> 2:v -> 3:w <-> 4:r
-  # 5:h
-  i_eligible <- c(1, 3)             #X and W are eligible for vaccination
-  i_w <- 3
-  i_v <- c(2, 4)                    #V(2) and R(4) are protected
+
+  # generate indices for all strata and
+  idx <- stratum_index_xvwrh(1, n_diag_rec = n_diag_rec, strategy = strategy)
+
+  n_vax <- idx$n_vax
+
+  i_v <- c(idx$V, idx$R)
+  i_w <- idx$W
+  i <- seq_len(idx$n_vax)
 
   #number of compartments
-  n_vax <- 5
   n_group <- 2
+
+  # create diagnosis history mapping
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), idx$diagnosedfrom,
+                                       idx$diagnosedto, set_vbe = FALSE, idx)
 
   # ensure duration is not divided by 0
   ved <- min(ved, 1 - 1e-10)
@@ -80,25 +99,48 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   p <- set_strategy(strategy, vbe > 0)
 
   # set up uptake matrix rows = groups, columns = vaccine strata
-  u <- create_uptake_map(n_group = n_group, n_vax = n_vax,
-                         primary_uptake = primary_uptake,
-                         booster_uptake = booster_uptake,
-                         i_eligible = i_eligible, i_v = i_v)
+  u_s <- create_uptake_map_xvwr(n_group = n_group, n_vax = n_vax,
+                                primary_uptake = primary_uptake,
+                                booster_uptake = booster_uptake,
+                                n_diag_rec = n_diag_rec,
+                                idx, screening_or_diagnosis = "screening")
+
+  u_d <- create_uptake_map_xvwr(n_group = n_group, n_vax = n_vax,
+                                primary_uptake = primary_uptake,
+                                booster_uptake = booster_uptake,
+                                n_diag_rec = n_diag_rec,
+                                idx, screening_or_diagnosis = "diagnosis")
+
+  if (sum(p$vod) > 0) {
+    #vaccination on diagnosis occuring, so need to scale down diag_rec
+    diag_rec[, idx$X, ] <- (1 - primary_uptake) * diag_rec[, idx$X, ]
+    diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
+  }
+
+
+  willing <- c((1 - hes), rep(0, n_vax - 1 - n_diag_rec), hes,
+               rep(0, n_diag_rec - 1))
 
   list(n_vax   = n_vax,
-    willing = c((1 - hes), 0, 0, 0, hes),
-    u       = u,
+    willing = willing,
+    u_s     = u_s,
+    u_d     = u_d,
     u_vbe   = vbe,
-    vbe     = create_vax_map(n_vax, p$vbe, c(1, 1), c(2, 2)),
-    vod     = create_vax_map(n_vax, p$vod, i_eligible, i_v),
-    vos     = create_vax_map(n_vax, p$vos, i_eligible, i_v),
+    vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
+                             idx$vaccinatedto_vbe),
+    vod     = create_vax_map(n_vax, p$vod, idx$vaccinatedfrom_vod,
+                             idx$vaccinatedto_vod),
+    vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos,
+                             idx$vaccinatedto_vos),
     vea     = c(0, vea, 0, vea_revax, 0),
     vei     = c(0, vei, 0, vei_revax, 0),
     ved     = c(0, ved, 0, ved_revax, 0),
     ves     = c(0, ves, 0, ves_revax, 0),
-    w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax)),
+    w       = create_waning_map(n_vax, i_v, i_w, 1 / dur, n_diag_rec),
+    wd      = create_diagnosis_waning_map(n_vax, 1, n_diag_rec),
     vax_t   = c(0, t_stop),
-    vax_y   = c(1, 0)
+    vax_y   = c(1, 0),
+    diag_rec = diag_rec
   )
 }
 
@@ -139,7 +181,8 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                              ved_revax = ved, ves_revax = ves,
                              vbe = 0, primary_uptake = 0,
                              booster_uptake = primary_uptake, strategy = NULL,
-                             t_stop = 99, hes = 0) {
+                             t_stop = 99, hes = 0,
+                             n_diag_rec = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, primary_uptake, vea, vei,
                              ved, ves, dur, vea_revax, vei_revax, ved_revax,
@@ -152,6 +195,7 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
                     dur_revax = dur_revax,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
+                    n_diag_rec = n_diag_rec,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 
@@ -167,73 +211,4 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   # name outputs
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret
-}
-
-##' @name restart_hes
-##' @title uses XVWRH model run in the absence of vaccination or hesitancy.
-##' Saves down the number of individuals in each compartment, and moves
-##' a given proportion (hes) of them from the X to the H strata to generate
-##' new initial conditions in the presence of hesitancy.
-##' @inheritParams restart_params
-##' @param hes proportion of population vaccine hesitant
-##' @param branching boolean to denote if xpvwrh branching model in use
-##' @return A list of initial conditions to restart a model with n_vax
-##' vaccination levels, and a populated hestitant stratum in the given
-##' proportion 'hes'
-##' @export
-
-restart_hes <- function(y, n_vax = 5, hes = 0, branching = FALSE) {
-
-  dim_y <- dim(y[["U"]])
-
-  if (round(rowSums(y$N[, , n_vax])[dim_y[1]], 5) > 0) {
-    stop("Provided model run already contains hesitancy > 0")
-  }
-
-  if (round(rowSums(y$N[, , 2])[dim_y[1]], 5) > 0) {
-    stop("Provided model run has vaccination, baseline run should have all V
-          = 0")
-  }
-
-  # branched xpvwrh models have 2 primary vaccination compartments to check
-  if (branching == TRUE) {
-    if (round(rowSums(y$N[, , 3])[dim_y[1]], 5) > 0) {
-      stop("Provided model run has vaccination, baseline run should have all V
-          = 0")
-    }
-  }
-
-  i_t <- dim_y[1]                     # number of timepoints
-  n_vax <- n_vax %||% dim_y[3]        # number of strata
-
-  n_vax_input <- dim_y[3]
-  i_vax <- seq_len(min(n_vax,  n_vax_input))
-
-  #create blank array, 2activity groups by number of strata
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
-
-  # set compartments new initial conditions based on final position of y
-  U0[, i_vax] <- y$U[i_t, , i_vax]
-  I0[, i_vax] <- y$I[i_t, , i_vax]
-  A0[, i_vax] <- y$A[i_t, , i_vax]
-  S0[, i_vax] <- y$S[i_t, , i_vax]
-  T0[, i_vax] <- y$T[i_t, , i_vax]
-
-  # move correct number from equilibrium X to H
-  U0[, n_vax] <- h <- U0[, 1] * hes
-  U0[, 1] <- U0[, 1] - h
-
-  I0[, n_vax] <- h <- I0[, 1] * hes
-  I0[, 1] <- I0[, 1] - h
-
-  A0[, n_vax] <- h <- A0[, 1] * hes
-  A0[, 1] <- A0[, 1] - h
-
-  S0[, n_vax] <- h <- S0[, 1] * hes
-  S0[, 1] <- S0[, 1] - h
-
-  T0[, n_vax] <- h <- T0[, 1] * hes
-  T0[, 1] <- T0[, 1] - h
-
-  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
 }

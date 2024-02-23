@@ -4,7 +4,7 @@
 \alias{initial_params_xvwrh}
 \title{Initial conditions for the model}
 \usage{
-initial_params_xvwrh(pars, coverage = 0, hes = 0)
+initial_params_xvwrh(pars, coverage = 0, hes = 0, n_diag_rec = 1)
 }
 \arguments{
 \item{pars}{A parameter list containing `N0`, `q`, `prev_Asl` and `prev_Ash`
@@ -14,6 +14,8 @@ elements.}
 initial proportion in each vaccine stratum}
 
 \item{hes}{proportion of population vaccine hesitant}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list of initial conditions

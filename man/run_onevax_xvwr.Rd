@@ -21,6 +21,7 @@ run_onevax_xvwr(
   ved_revax = ved,
   ves_revax = ves,
   vbe = 0,
+  n_diag_rec = 1,
   primary_uptake = 0,
   booster_uptake = primary_uptake,
   strategy = NULL,
@@ -71,6 +72,8 @@ primary}
 \item{vbe}{scalar indicating pc of population vaccinated before entry
 (between 0-1)}
 
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
 \item{primary_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking primary
 vaccination as part of strategy}
@@ -78,7 +81,8 @@ vaccination as part of strategy}
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
 vaccination after primary vaccination protection has waned.
- Defaults to supplied value of `primary_uptake`.}
+ Defaults to supplied value of `primary_uptake`.
+@param n_diag_rec integer for the number of diagnosis history substrata}
 
 \item{strategy}{single character string in "VoD", "VoD(H)",
 "VoA", "VoA(H)", "VoD(L)+VoA(H)". Defaults to NULL i.e. no vaccination}

@@ -25,7 +25,8 @@ run_onevax_xvwrh(
   booster_uptake = primary_uptake,
   strategy = NULL,
   t_stop = 99,
-  hes = 0
+  hes = 0,
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -88,6 +89,8 @@ vaccination after primary vaccination protection has waned.
 
 \item{hes}{Proportion of individuals in the population who are vaccine
 hesitant}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list of transformed model outputs

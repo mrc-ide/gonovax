@@ -98,6 +98,8 @@ test_that("run_onevax_xpvwrh works correctly", {
     # Number of infections in X and H equal for no vaccination and hes = 0.5
     expect_equal(y_h3[[i]]$cum_incid[, , 1], y_h3[[i]]$cum_incid[, , 6])
   }
+
+
   # if proportion hesitant is 0%, = outputs same as xvwr model
   # choose a difficult case where there are very few zero outputs.
   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
@@ -107,7 +109,7 @@ test_that("run_onevax_xpvwrh works correctly", {
                             primary_uptake = 0.5, booster_uptake = 0.3,
                             strategy = "VoD(L)+VoA(H)")
   # make output names match
-  y_xvwr <- lapply(y_xvwr, name_outputs, c("X", "V1", "W", "R1"))
+  y_xvwr <- lapply(y_xvwr, name_outputs, c("X.I", "V1.I", "W.I", "R1.I"))
 
 
   for (i in seq_along(y_h4)) {
@@ -183,7 +185,8 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   for (i in seq_along(r1)) {
     u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
-                                  booster_uptake[i], idx)
+                                  booster_uptake[i], idx,
+                                  screening_or_diagnosis = "diagnosis")
 
     acc_vax <- u * vod_map
 
@@ -678,8 +681,6 @@ test_that("run_onevax_xpvwrh works correctly", {
       expect_true(sum(y17[[i]]$N[j, , 4]) > 0)
     }
 
-    ######## difference in W
-    ######### isnt quite 1200
     # R, W are empty for all time
     expect_equal(rowSums(y17[[i]]$N[, , 5:6]), rep(0, 6))
   }
@@ -841,7 +842,8 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   for (i in seq_along(r1)) {
     u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
                                   booster_uptake[i],
-                                  idx = idx)
+                                  idx = idx,
+                                  screening_or_diagnosis = "diagnosis")
 
     # vaccination mapping multiplied by corresponding uptake % mapping
     acc_vax <- u * vod_map
