@@ -11,6 +11,11 @@ reflects the specific indices which are chosen for assigning uptakes. — create
 individuals can move from unvaccinated (X) to vaccinated (V) or partially
 vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
 partially vaccinated (P) to fully vaccianted (V). The former
+reflects the specific indices which are chosen for assigning uptakes.
+Creates uptake mapping for the branching XPVWRH model where
+individuals can move from unvaccinated (X) to vaccinated (V) or partially
+vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
+partially vaccinated (P) to fully vaccianted (V). The former
 reflects the specific indices which are chosen for assigning uptakes."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -29,7 +34,7 @@ reflects the specific indices which are chosen for assigning uptakes."><!-- math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -74,10 +79,35 @@ individuals can move from unvaccinated (X) to vaccinated (V) or partially
 vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
 partially vaccinated (P) to fully vaccianted (V). The former
 reflects the specific indices which are chosen for assigning uptakes.</p>
+<p>Creates uptake mapping for the branching XPVWRH model where
+individuals can move from unvaccinated (X) to vaccinated (V) or partially
+vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
+partially vaccinated (P) to fully vaccianted (V). The former
+reflects the specific indices which are chosen for assigning uptakes.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_uptake_map_xpvwrh</span><span class="op">(</span><span class="va">array</span>, <span class="va">r1</span>, <span class="va">r2</span>, <span class="va">r2_p</span>, <span class="va">booster_uptake</span>, <span class="va">idx</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_uptake_map_xpvwrh</span><span class="op">(</span></span>
+<span>  <span class="va">array</span>,</span>
+<span>  <span class="va">r1</span>,</span>
+<span>  <span class="va">r2</span>,</span>
+<span>  <span class="va">r2_p</span>,</span>
+<span>  <span class="va">booster_uptake</span>,</span>
+<span>  <span class="va">idx</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">screening_or_diagnosis</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">create_uptake_map_xpvwrh</span><span class="op">(</span></span>
+<span>  <span class="va">array</span>,</span>
+<span>  <span class="va">r1</span>,</span>
+<span>  <span class="va">r2</span>,</span>
+<span>  <span class="va">r2_p</span>,</span>
+<span>  <span class="va">booster_uptake</span>,</span>
+<span>  <span class="va">idx</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  <span class="va">screening_or_diagnosis</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -111,10 +141,21 @@ population who accept a booster vaccination dose</p></dd>
 <dd><p>list containing indices of all X, P, V, W, R &amp; H strata and n_vax
 through vaccine-protected strata until that protection has waned</p></dd>
 
+
+<dt>n_diag_rec</dt>
+<dd><p>integer for the number of diagnosis history substrata</p></dd>
+
+
+<dt>screening_or_diagnosis</dt>
+<dd><p>string indicating screening or diagnosis</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
+
+<p>an array of the uptakes of same dimensions</p>
+
 
 <p>an array of the uptakes of same dimensions</p>
     </div>

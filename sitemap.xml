@@ -37,10 +37,22 @@
     <loc>/reference/compare_basic.html</loc>
   </url>
   <url>
+    <loc>/reference/create_diagnosis_waning_map.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_uptake_map.html</loc>
   </url>
   <url>
     <loc>/reference/create_uptake_map_xpvwrh.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_uptake_map_xvw.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_uptake_map_xvwr.html</loc>
+  </url>
+  <url>
+    <loc>/reference/create_uptake_map_xvwv.html</loc>
   </url>
   <url>
     <loc>/reference/create_vax_map.html</loc>
@@ -71,6 +83,9 @@
   </url>
   <url>
     <loc>/reference/gen_erlang_labels.html</loc>
+  </url>
+  <url>
+    <loc>/reference/gen_labels.html</loc>
   </url>
   <url>
     <loc>/reference/gen_trial_labels.html</loc>
@@ -127,6 +142,9 @@
     <loc>/reference/model_params_trial.html</loc>
   </url>
   <url>
+    <loc>/reference/model_params_xpvwrh.html</loc>
+  </url>
+  <url>
     <loc>/reference/restart_hes.html</loc>
   </url>
   <url>
@@ -160,6 +178,9 @@
     <loc>/reference/run_trial.html</loc>
   </url>
   <url>
+    <loc>/reference/run_xpvwrh.html</loc>
+  </url>
+  <url>
     <loc>/reference/set_protection.html</loc>
   </url>
   <url>
@@ -169,7 +190,19 @@
     <loc>/reference/stratum_index_xpvwrh.html</loc>
   </url>
   <url>
+    <loc>/reference/stratum_index_xvw.html</loc>
+  </url>
+  <url>
     <loc>/reference/stratum_index_xvw_trial.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stratum_index_xvwr.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stratum_index_xvwrh.html</loc>
+  </url>
+  <url>
+    <loc>/reference/stratum_index_xvwv.html</loc>
   </url>
   <url>
     <loc>/reference/transform.html</loc>

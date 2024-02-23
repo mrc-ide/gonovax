@@ -41,7 +41,7 @@ a clinic in P."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/l
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -124,7 +124,8 @@ a clinic in P.</p>
 <span>  strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  t_stop <span class="op">=</span> <span class="fl">99</span>,</span>
 <span>  hes <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  n_erlang <span class="op">=</span> <span class="fl">1</span></span>
+<span>  n_erlang <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -267,9 +268,13 @@ hesitant</p></dd>
 
 
 <dt>n_erlang</dt>
-<dd><p>integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned</p></dd>
+<dd><p>integer giving the number of erlang vaccination transitions
+through vaccine-protected strata until that protection has waned
+@param n_diag_rec integer for the number of diagnosis history substrata</p></dd>
+
+
+<dt>n_diag_rec</dt>
+<dd><p>integer for the number of diagnosis history substrata</p></dd>
 
 </dl></div>
     <div id="value">

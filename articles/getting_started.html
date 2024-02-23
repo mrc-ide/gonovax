@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -75,7 +75,7 @@
                         <h4 data-toc-skip class="author">Lilith
 Whittles</h4>
             
-            <h4 data-toc-skip class="date">2023-10-04</h4>
+            <h4 data-toc-skip class="date">2024-02-23</h4>
       
       
       <div class="hidden name"><code>getting_started.Rmd</code></div>
@@ -156,6 +156,11 @@ plus group H on screening)</li>
 </ul>
 <p>The proportion of those eligible that choose to be vaccinated,
 <code>uptake</code> is a scalar from 0 to 1:</p>
+<p><code>y</code> is now a list of model runs of length
+<code>n_par</code>, each entry contains a list of model outputs. Each of
+these list entries <code>y[[i]]</code> is a list of model output arrays
+with dimensions: time, group (L, H), and vaccine status (X, V, W) where
+applicable</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate vaccine effects parameters</span></span>
 <span><span class="va">ve</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>vea <span class="op">=</span> <span class="fl">0.1</span>, <span class="co"># efficacy against acquisition</span></span>
@@ -168,20 +173,17 @@ plus group H on screening)</li>
 <span>                     gono_params <span class="op">=</span> <span class="va">gono_params</span>,</span>
 <span>                     init_params <span class="op">=</span> <span class="va">init_params</span>, </span>
 <span>                     vea <span class="op">=</span> <span class="va">ve</span><span class="op">$</span><span class="va">vea</span>, ved <span class="op">=</span> <span class="va">ve</span><span class="op">$</span><span class="va">ved</span>, ves <span class="op">=</span> <span class="va">ve</span><span class="op">$</span><span class="va">ves</span>,</span>
-<span>                     uptake <span class="op">=</span> <span class="fl">1</span>, strategy <span class="op">=</span> <span class="st">"VoA"</span><span class="op">)</span></span></code></pre></div>
-<p><code>y</code> is now a list of model runs of length
-<code>n_par</code>, each entry contains a list of model outputs. Each of
-these list entries <code>y[[i]]</code> is a list of model output arrays
-with dimensions: time, group (L, H), and vaccine status (X, V, W) where
-applicable</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "t"               "U"               "I"               "A"              </span></span>
-<span><span class="co">#&gt;  [5] "S"               "T"               "cum_incid"       "cum_diag_a"     </span></span>
-<span><span class="co">#&gt;  [9] "cum_diag_s"      "cum_treated"     "cum_screened"    "cum_offered"    </span></span>
-<span><span class="co">#&gt; [13] "cum_vaccinated"  "cum_vbe"         "cum_offered_vbe" "tot_treated"    </span></span>
-<span><span class="co">#&gt; [17] "tot_attended"    "beta"            "eta"             "lambda"         </span></span>
-<span><span class="co">#&gt; [21] "N"</span></span>
+<span>                     uptake <span class="op">=</span> <span class="fl">1</span>, strategy <span class="op">=</span> <span class="st">"VoA"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "t"                     "U"                     "I"                    </span></span>
+<span><span class="co">#&gt;  [4] "A"                     "S"                     "T"                    </span></span>
+<span><span class="co">#&gt;  [7] "cum_incid"             "cum_diag_a"            "cum_diag_s"           </span></span>
+<span><span class="co">#&gt; [10] "cum_treated"           "cum_screened"          "cum_offered"          </span></span>
+<span><span class="co">#&gt; [13] "cum_vaccinated"        "cum_vaccinated_screen" "cum_vbe"              </span></span>
+<span><span class="co">#&gt; [16] "cum_offered_vbe"       "cum_entrants"          "tot_treated"          </span></span>
+<span><span class="co">#&gt; [19] "tot_attended"          "beta"                  "eta"                  </span></span>
+<span><span class="co">#&gt; [22] "lambda"                "N"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 11  2  3</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">)</span></span>
@@ -192,10 +194,10 @@ applicable</p>
 <span><span class="co">#&gt; [1] "L" "H"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[3]]</span></span>
-<span><span class="co">#&gt; [1] "X" "V" "W"</span></span>
+<span><span class="co">#&gt; [1] "X.I"  "V1.I" "W.I"</span></span>
 <span></span>
 <span><span class="co"># cumulative incidence in unvaccinated group L over time</span></span>
-<span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">[</span>, <span class="st">"L"</span>, <span class="st">"X"</span><span class="op">]</span></span>
+<span><span class="va">y</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cum_incid</span><span class="op">[</span>, <span class="st">"L"</span>, <span class="st">"X.I"</span><span class="op">]</span></span>
 <span><span class="co">#&gt;  [1]     0.00 12019.16 17752.48 20517.99 21988.09 22851.44 23405.84 23790.58</span></span>
 <span><span class="co">#&gt;  [9] 24076.18 24301.00 24487.20</span></span></code></pre></div>
 </div>
@@ -205,50 +207,50 @@ applicable</p>
 <p>This can be aggregated over group (L, H) and strata (X, V, W) to give
 the total cumulative infections for each parameter set (rows) over time
 (columns).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">total_infected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span><span class="op">)</span></span>
 <span><span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tt</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">total_infected</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col</span>,</span>
 <span>        xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Cumulative infections"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <p>This can be aggregated over group (L, H) and strata (X, V, W) to give
 the yearly infections for each parameter set (rows) over time
 (columns).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annual_infected</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">annual_infected</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col</span>,</span>
 <span>        xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Annual infections"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
 <p>You can look at individual vaccine strata:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                             stratum <span class="op">=</span> <span class="st">"X"</span><span class="op">)</span></span>
-<span><span class="va">annual_infected_V</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                             stratum <span class="op">=</span> <span class="st">"V"</span><span class="op">)</span></span>
-<span><span class="va">col1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span></span>
-<span><span class="va">col2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">annual_infected_X</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col1</span>,</span>
-<span>        xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Annual infections"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matlines</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">annual_infected_V</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="va">col2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">col1</span>, <span class="va">col2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Unvaccinated"</span>, <span class="st">"Vaccinated"</span><span class="op">)</span>,</span>
-<span>       ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span> <span class="va">annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                              stratum <span class="op">=</span> <span class="st">"X.I"</span><span class="op">)</span></span>
+<span> <span class="va">annual_infected_V</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                              stratum <span class="op">=</span> <span class="st">"V1.I"</span><span class="op">)</span></span>
+<span> <span class="va">col1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span></span>
+<span> <span class="va">col2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/rgb.html" class="external-link">rgb</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">annual_infected_X</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col1</span>,</span>
+<span>         xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Annual infections"</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matlines</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">annual_infected_V</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="va">col2</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">col1</span>, <span class="va">col2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Unvaccinated"</span>, <span class="st">"Vaccinated"</span><span class="op">)</span>,</span>
+<span>        ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 <p>You can apply functions over the parameter sets to get summary
 statistics:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mean_ci</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">summary_annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                             stratum <span class="op">=</span> <span class="st">"X"</span>, f <span class="op">=</span> <span class="va">mean_ci</span><span class="op">)</span></span>
-<span><span class="va">summary_annual_infected_V</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                             stratum <span class="op">=</span> <span class="st">"V"</span>, f <span class="op">=</span> <span class="va">mean_ci</span><span class="op">)</span></span>
-<span><span class="va">col1</span> <span class="op">&lt;-</span> <span class="st">"red"</span></span>
-<span><span class="va">col2</span> <span class="op">&lt;-</span> <span class="st">"blue"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">summary_annual_infected_X</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col1</span>,</span>
-<span>        xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Annual infections"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matlines</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">summary_annual_infected_V</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">col2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">col1</span>, <span class="va">col2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Unvaccinated"</span>, <span class="st">"Vaccinated"</span><span class="op">)</span>,</span>
-<span>       ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="getting_started_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span> <span class="va">mean_ci</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span> <span class="va">summary_annual_infected_X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                              stratum <span class="op">=</span> <span class="st">"X.I"</span>, f <span class="op">=</span> <span class="va">mean_ci</span><span class="op">)</span></span>
+<span> <span class="va">summary_annual_infected_V</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">y</span>, what <span class="op">=</span> <span class="st">"cum_incid"</span>, as_incid <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                              stratum <span class="op">=</span> <span class="st">"V1.I"</span>, f <span class="op">=</span> <span class="va">mean_ci</span><span class="op">)</span></span>
+<span> <span class="va">col1</span> <span class="op">&lt;-</span> <span class="st">"red"</span></span>
+<span> <span class="va">col2</span> <span class="op">&lt;-</span> <span class="st">"blue"</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">summary_annual_infected_X</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="va">col1</span>,</span>
+<span>         xlab <span class="op">=</span> <span class="st">"Time"</span>, ylab <span class="op">=</span> <span class="st">"Annual infections"</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matlines</a></span><span class="op">(</span><span class="va">tt</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">summary_annual_infected_V</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">col2</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">col1</span>, <span class="va">col2</span><span class="op">)</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Unvaccinated"</span>, <span class="st">"Vaccinated"</span><span class="op">)</span>,</span>
+<span>        ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="getting_started_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 </div>
   </div>
 

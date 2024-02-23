@@ -20,7 +20,7 @@ in the model, which depends on the value given to n_erlang"><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -62,15 +62,18 @@ in the model, which depends on the value given to n_erlang</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gen_erlang_labels</span><span class="op">(</span>n_erlang <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gen_erlang_labels</span><span class="op">(</span>n_erlang <span class="op">=</span> <span class="fl">1</span>, n_diag_rec <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>n_erlang</dt>
 <dd><p>integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned</p></dd>
+made through vaccine-protected strata until that protection has waned</p></dd>
+
+
+<dt>n_diag_rec</dt>
+<dd><p>integer for the number of diagnosis history substrata</p></dd>
 
 </dl></div>
     <div id="value">

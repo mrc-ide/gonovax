@@ -23,7 +23,7 @@ for revaccination (R), and return to the R stratum"><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -82,6 +82,7 @@ for revaccination (R), and return to the R stratum</p>
 <span>  ved_revax <span class="op">=</span> <span class="va">ved</span>,</span>
 <span>  ves_revax <span class="op">=</span> <span class="va">ves</span>,</span>
 <span>  vbe <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  primary_uptake <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  booster_uptake <span class="op">=</span> <span class="va">primary_uptake</span>,</span>
 <span>  strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -162,6 +163,10 @@ primary</p></dd>
 (between 0-1)</p></dd>
 
 
+<dt>n_diag_rec</dt>
+<dd><p>integer for the number of diagnosis history substrata</p></dd>
+
+
 <dt>primary_uptake</dt>
 <dd><p>scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking primary
@@ -172,7 +177,8 @@ vaccination as part of strategy</p></dd>
 <dd><p>scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
 vaccination after primary vaccination protection has waned.
- Defaults to supplied value of `primary_uptake`.</p></dd>
+ Defaults to supplied value of `primary_uptake`.
+@param n_diag_rec integer for the number of diagnosis history substrata</p></dd>
 
 
 <dt>strategy</dt>

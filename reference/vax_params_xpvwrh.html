@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -81,7 +81,8 @@
 <span>  vbe <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  t_stop <span class="op">=</span> <span class="fl">99</span>,</span>
 <span>  hes <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  n_erlang <span class="op">=</span> <span class="va">n_erlang</span></span>
+<span>  n_erlang <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -180,7 +181,8 @@ a second dose when returning to the clinic due to screening or illness</p></dd>
 <dt>booster_uptake</dt>
 <dd><p>scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
-vaccination after primary vaccination protection has waned</p></dd>
+vaccination after primary vaccination protection has waned
+@param n_diag_rec integer for the number of diagnosis history substrata</p></dd>
 
 
 <dt>strategy</dt>
@@ -204,6 +206,10 @@ vaccination after primary vaccination protection has waned</p></dd>
 <dt>n_erlang</dt>
 <dd><p>integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned</p></dd>
+
+
+<dt>n_diag_rec</dt>
+<dd><p>number of diagnosis history strata</p></dd>
 
 </dl></div>
     <div id="value">

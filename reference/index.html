@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -79,19 +79,41 @@ given level of efficacy</p></td>
         </td>
         <td><p>Calculate the log likelihood of the data given the parameters</p></td>
       </tr><tr><td>
+          <p><code><a href="create_diagnosis_waning_map.html">create_diagnosis_waning_map()</a></code> </p>
+        </td>
+        <td><p>Create mapping for movement between strata due to diagnosis waning</p></td>
+      </tr><tr><td>
           <p><code><a href="create_uptake_map.html">create_uptake_map()</a></code> </p>
         </td>
         <td><p>Creates uptake mapping array with dimensions n_group x n_vax x n_vax
 and assigns the relevant primary uptake and booster uptake values defined
 by the user.</p></td>
       </tr><tr><td>
-          <p><code><a href="create_uptake_map_xpvwrh.html">create_uptake_map_xpvwrh()</a></code> </p>
+          <p><code><a href="create_uptake_map_xpvwrh.html">create_uptake_map_xpvwrh()</a></code> <code><a href="create_uptake_map_xpvwrh.html">create_uptake_map_xpvwrh()</a></code> </p>
         </td>
         <td><p>Creates uptake mapping for the branching XPVWRH model where
 individuals can move from unvaccinated (X) to vaccinated (V) or partially
 vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
 partially vaccinated (P) to fully vaccianted (V). The former
 reflects the specific indices which are chosen for assigning uptakes.</p></td>
+      </tr><tr><td>
+          <p><code><a href="create_uptake_map_xvw.html">create_uptake_map_xvw()</a></code> </p>
+        </td>
+        <td><p>Creates uptake mapping array with dimensions n_group x n_vax x n_vax
+and assigns the relevant primary uptake and booster uptake values defined
+by the user.</p></td>
+      </tr><tr><td>
+          <p><code><a href="create_uptake_map_xvwr.html">create_uptake_map_xvwr()</a></code> </p>
+        </td>
+        <td><p>Creates uptake mapping array with dimensions n_group x n_vax x n_vax
+and assigns the relevant primary uptake and booster uptake values defined
+by the user.</p></td>
+      </tr><tr><td>
+          <p><code><a href="create_uptake_map_xvwv.html">create_uptake_map_xvwv()</a></code> </p>
+        </td>
+        <td><p>Creates uptake mapping array with dimensions n_group x n_vax x n_vax
+and assigns the relevant primary uptake and booster uptake values defined
+by the user.</p></td>
       </tr><tr><td>
           <p><code><a href="create_vax_map.html">create_vax_map()</a></code> </p>
         </td>
@@ -143,6 +165,12 @@ has been run</p></td>
         </td>
         <td><p>generates the appropriate strata labels for the number of strata
 in the model, which depends on the value given to n_erlang</p></td>
+      </tr><tr><td>
+          <p><code><a href="gen_labels.html">gen_labels()</a></code> </p>
+        </td>
+        <td><p>generates the appropriate strata labels for the number of strata
+in the model, which depends on the value given to n_erlang and diagnosis
+history levels desired (n_diag_rec)</p></td>
       </tr><tr><td>
           <p><code><a href="gen_trial_labels.html">gen_trial_labels()</a></code> </p>
         </td>
@@ -216,9 +244,13 @@ This is an odin model.</p></td>
         </td>
         <td><p>Parameters for the vaccination trial model</p></td>
       </tr><tr><td>
+          <p><code><a href="model_params_xpvwrh.html">model_params_xpvwrh()</a></code> </p>
+        </td>
+        <td><p>Parameters for the dualvax model</p></td>
+      </tr><tr><td>
           <p><code><a href="restart_hes.html">restart_hes()</a></code> </p>
         </td>
-        <td><p>uses XVWRH model run in the absence of vaccination or hesitancy.
+        <td><p>uses XPVWRH model run in the absence of vaccination or hesitancy.
 Saves down the number of individuals in each compartment, and moves
 a given proportion (hes) of them from the X to the H strata to generate
 new initial conditions in the presence of hesitancy.</p></td>
@@ -283,6 +315,10 @@ for revaccination, and return to the V compartment</p></td>
         <td><p>Run odin model of gonorrhoea vaccine trial with or without
 vaccination</p></td>
       </tr><tr><td>
+          <p><code><a href="run_xpvwrh.html">run_xpvwrh()</a></code> </p>
+        </td>
+        <td><p>Run odin model of gonorrhoea with or without vaccination</p></td>
+      </tr><tr><td>
           <p><code><a href="set_protection.html">set_protection()</a></code> </p>
         </td>
         <td><p>generates vector which tells the model which strata are under
@@ -297,9 +333,25 @@ vaccine protection and what the value of protection for that strata is</p></td>
         </td>
         <td><p>Generate the indices of all xpvwrh strata</p></td>
       </tr><tr><td>
+          <p><code><a href="stratum_index_xvw.html">stratum_index_xvw()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xvwv trial strata</p></td>
+      </tr><tr><td>
           <p><code><a href="stratum_index_xvw_trial.html">stratum_index_xvw_trial()</a></code> </p>
         </td>
         <td><p>Generate the indices of all xvw trial strata</p></td>
+      </tr><tr><td>
+          <p><code><a href="stratum_index_xvwr.html">stratum_index_xvwr()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xvwr trial strata</p></td>
+      </tr><tr><td>
+          <p><code><a href="stratum_index_xvwrh.html">stratum_index_xvwrh()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xvwrh trial strata</p></td>
+      </tr><tr><td>
+          <p><code><a href="stratum_index_xvwv.html">stratum_index_xvwv()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xvwv trial strata</p></td>
       </tr><tr><td>
           <p><code><a href="transform.html">transform()</a></code> </p>
         </td>

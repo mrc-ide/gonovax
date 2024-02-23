@@ -23,7 +23,7 @@ for revaccination, and return to the V compartment"><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
       </span>
     </div>
 
@@ -77,6 +77,7 @@ for revaccination, and return to the V compartment</p>
 <span>  ved <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  ves <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  vbe <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_diag_rec <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  uptake <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  strategy <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  t_stop <span class="op">=</span> <span class="fl">99</span></span>
@@ -127,9 +128,14 @@ efficacy of the vaccine against symptoms (between 0-1)</p></dd>
 (between 0-1)</p></dd>
 
 
+<dt>n_diag_rec</dt>
+<dd><p>integer for the number of diagnosis history substrata</p></dd>
+
+
 <dt>uptake</dt>
 <dd><p>scalar or numeric vector with same length as `gono_params`
-giving pc of population vaccinated as part of strategy</p></dd>
+giving pc of population vaccinated as part of strategy
+@param n_diag_rec integer for the number of diagnosis history substrata</p></dd>
 
 
 <dt>strategy</dt>
