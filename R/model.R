@@ -46,13 +46,13 @@ run <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
 ##' @export run
 
 run_xpvwrh <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
-                       n_erlang = 1, n_diag_rec = 1, transform = TRUE) {
+                       n_erlang = 1, n_diag_rec = 1, years_history = 1, transform = TRUE) {
 
   pars <- model_params_xpvwrh(gono_params = gono_params,
                               init_params = init_params,
                               vax_params = vax_params,
                               n_erlang = n_erlang,
-                              n_diag_rec = n_diag_rec)
+                              n_diag_rec = n_diag_rec, years_history = years_history)
 
   mod <- model$new(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)

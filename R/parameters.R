@@ -448,7 +448,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
                                 init_params = NULL,
                                 vax_params = NULL,
                                 n_erlang = 1,
-                                n_diag_rec = 1) {
+                                n_diag_rec = 1, years_history = 1) {
 
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
@@ -462,7 +462,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
   } else {
 
     #also add in diag_rec if vax_params not supplied
-    vax_params <- vax_params0(n_diag_rec = n_diag_rec)
+    vax_params <- vax_params0(n_diag_rec = n_diag_rec, years_history = years_history)
     n_vax <- vax_params$n_vax
     if (n_diag_rec == 1) {
       i_diag <-  NULL

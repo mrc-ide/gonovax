@@ -114,7 +114,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               dur_p = dur_v, dur_revax = dur_v, r1 = 0, r2 = 0,
                               r2_p = 0, booster_uptake = r1 * r2,
                               strategy = NULL, vbe = 0, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1) {
+                              n_erlang = 1, n_diag_rec = 1, years_history = 1) {
 
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
@@ -237,7 +237,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     w = create_waning_map_branching(n_vax, i_v, i_w,
                                     n_erlang / c(dur_p, dur_v, dur_revax),
                                     n_erlang, n_diag_rec),
-    wd =  create_diagnosis_waning_map(n_vax, 1, n_diag_rec),
+    wd =  create_diagnosis_waning_map(n_vax, 1/years_history, n_diag_rec),
     vax_t = c(0, t_stop),
     vax_y = c(1, 0),
     diag_rec = diag_rec
@@ -480,7 +480,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                               ved_p = ved, ves_p = ves, vbe = 0, r1 = 0, r2 = 0,
                               r2_p = 0, booster_uptake = (r1 * r2),
                               strategy = NULL, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1) {
+                              n_erlang = 1, n_diag_rec = 1, years_history = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei, ved, ves,
                              vea_revax, vei_revax, ved_revax, vea_p, vei_p,
@@ -494,7 +494,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                     dur_revax = dur_revax, dur_p = dur_p,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
-                    n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                    n_erlang = n_erlang, n_diag_rec = n_diag_rec, years_history = years_history,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 
