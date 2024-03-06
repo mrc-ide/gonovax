@@ -27,6 +27,8 @@ gono_params <- function(n = NULL) {
   i  <- n %||% seq_len(n_pars)
   # limit to parameter sets available
   i <- i[(i > 0) & (i <= n_pars)]
+  
+  pars$kappa <- 1
 
   pars[i]
 }
@@ -47,6 +49,8 @@ transform0 <- function(pars) {
   pars$eta_l_t <- rep(pars$eta, 2)
   pars$eta_h_t <- pars$eta_l_t
   pars$beta <- pars$eta <- NULL
+  
+  pars$kappa <- 1
 
   pars
 }
@@ -81,6 +85,8 @@ transform <- function(pars, fix_par_t = TRUE) {
 
   pars$eta_l_t <- pars$eta_h * pars$omega * (1 + pars$phi_eta * pars$tt)
   pars$eta_h_t <- pars$eta_h * (1 + pars$phi_eta * pars$tt)
+  
+  pars$kappa <- 1
 
   pars$tt <- seq(0, t_max)
 
@@ -108,6 +114,8 @@ transform_fixed <- function(pars) {
   pars$eta_l_t <- rep(pars$eta_l, 2)
   pars$eta_h_t <- rep(pars$eta_h, 2)
   pars$beta <- pars$eta_l <- pars$eta_h <- NULL
+  
+  pars$kappa <- 1
 
   pars
 }
@@ -333,38 +341,69 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
   vax_h  <- c(0, 1)
 
   if (is.null(strategy)) {
-    vos <- vod <- novax
+    vos <- vod <- vopn <- novax
 
   } else if (strategy == "VoD") {
     vod <- vax_lh
     vos <- novax
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VoA") {
     vod <- vos <- vax_lh
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VoD(H)") {
     vod <- vax_h
     vos <- novax
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VoA(H)") {
     vod <- vos <- vax_h
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- vax_lh
     vos <- vax_h
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VoS") {
     vod <- novax
     vos <- vax_lh
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VaH") {
     vod <- vax_lh
     vos <- vax_lh
+    
+    vopn <- novax
+    
 
   } else if (strategy == "VaHonly") {
     vod <- novax
     vos <- vax_lh
-
+    
+    vopn <- novax
+  } else if (strategy == "VoN") {
+    vod <- vax_lh
+    vos <- novax
+    
+    vopn <- vax_lh
+  } else if (strategy == "VaH+VoN"){
+    vod <- vax_lh
+    vos <- vax_lh
+    vopn <- vax_lh
   } else {
     stop("strategy not recognised")
   }
@@ -375,7 +414,7 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
     vbe <- novax
   }
 
-  list(vod = vod, vos = vos, vbe = vbe)
+  list(vod = vod, vos = vos, vbe = vbe, vopn = vopn)
 }
 
 check_gono_params <- function(pars) {

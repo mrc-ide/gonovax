@@ -23,7 +23,6 @@ vax_params0 <- function(n_diag_rec = 1, years_history = 1) {
        vos = v,
        vod = v,
        vopn = v,
-       notification_param = 0,
        vea = rep(0, n_diag_rec),
        ved = rep(0, n_diag_rec),
        ves = rep(0, n_diag_rec),

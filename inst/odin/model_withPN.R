@@ -75,8 +75,8 @@ prop_Asubgroup[,] <- A[i,j] / sum(N[i, ])
 prop_ACsubgroup[,] <- A[i,j] / sum(C[i, ]) 
 
 
-omega_N[ , ] = if (i == j) epsilon + (1-epsilon)*Np[j] else (1-epsilon)*Np[j] 
-omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j] else (1-epsilon)*Cp[j] 
+omega_N[ , ] = if (i == j) epsilon + (1-epsilon)*Np[j]/sum(Np[]) else (1-epsilon)*Np[j]/sum(Np[]) 
+omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j]/sum(Cp[]) else (1-epsilon)*Cp[j]/sum(Cp[]) 
 
 D_S <- 1 / sigma + 1 / mu
 D_A[] <- 1 / sigma + 1 / (eta[i] + nu) 
@@ -94,11 +94,14 @@ P_S_Acont[ , ] = nu / (eta[j] + nu) * (lb_S - (1 - exp ( - (eta[j] + nu)*lb_S))/
 P_A_Acont[ , ] = nu / (eta[j] + nu) * (lb_A - (1 - exp ( - (eta[j] + nu)*lb_A))/(eta[j] + nu))
 
 
+
 P_S_Ucont[ , ] = (1 - beta) * exp( - (1/D_S) * lb_S) * ( (1 - exp( - lambda[j] * lb_S)) /lambda[j]) +
-  (1 - beta) * ( (1/D_S)*exp(-(lambda[j] + (1/D_S))*lb_S) - (lambda[j] + (1/D_S))*exp(- lambda[j]*lb_S) + lambda[j] )/(lambda[j] * (lambda[j] + (1/D_S))) +
+  (1 - beta) * ( (1/D_S)*exp(-(lambda[j] + (1/D_S))*lb_S) - (lambda[j] + (1/D_S))*exp(- (1/D_S)*lb_S) + lambda[j] )/(lambda[j] * (lambda[j] + (1/D_S))) +
   (lambda[j]*exp(-(lambda[j] + (1/D_S))*lb_S) - (lambda[j] + (1/D_S))*exp(- lambda[j]*lb_S) + (1/D_S) )/(lambda[j] * (lambda[j] + (1/D_S)))
-P_A_Ucont[ , ] = (1 - beta) * exp( - (1/D_S) * lb_S) * ( (1 - exp( - lambda[j] * lb_S)) /lambda[j]) +
-  (1 - beta) * ( (1/D_A[i])*exp(-(lambda[j] + (1/D_A[i]))*lb_A) - (lambda[j] + (1/D_A[i]))*exp(- lambda[j]*lb_A) + lambda[j] )/(lambda[j] * (lambda[j] + (1/D_A[i]))) +
+
+
+P_A_Ucont[ , ] = (1 - beta) * exp( - (1/D_S) * lb_A) * ( (1 - exp( - lambda[j] * lb_A)) /lambda[j]) +
+  (1 - beta) * ( (1/D_A[i])*exp(-(lambda[j] + (1/D_A[i]))*lb_A) - (lambda[j] + (1/D_A[i]))*exp(- (1/D_A[i])*lb_A) + lambda[j] )/(lambda[j] * (lambda[j] + (1/D_A[i]))) +
   (lambda[j]*exp(-(lambda[j] + (1/D_A[i]))*lb_A) - (lambda[j] + (1/D_A[i]))*exp(- lambda[j]*lb_A) + (1/D_A[i]) )/(lambda[j] * (lambda[j] + (1/D_A[i])))
 
 
@@ -141,7 +144,7 @@ n_vbe[, , ] <- n_obe[i, j, k] * u_vbe
 
 # on partner notification
 n_oopn[, , ] <- vopn[i,j,k] * phi[i, k] * vax_switch
-n_vopn[, , ] <- n_oopn[i,j,k] * u_s[i, j, k]
+n_vopn[, , ] <- n_oopn[i,j,k] * u_pn[i, j, k]
 
 
 # waning
@@ -169,13 +172,16 @@ deriv(cum_diag_a[, ])      <- n_AT[i, j]
 deriv(cum_diag_s[, ])      <- n_ST[i, j]
 deriv(cum_treated[, ])     <- n_TU[i, j]
 deriv(cum_screened[, ])    <- screened[i, j]
-deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] + n_obe[i, j, j]
-deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j]
+deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] + n_obe[i, j, j] + n_oopn[i,j,j]
+deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j] + n_vopn[i,j,j]
 deriv(cum_vaccinated_screen[, ])  <- n_vos[i, j, j]
 
 deriv(cum_vbe[, ])         <- n_vbe[i, j, j]
 deriv(cum_offered_vbe[, ]) <- n_obe[i, j, j]
 deriv(cum_entrants[, ]) <- entrants[i, j]
+
+deriv(cum_offered_pn[, ])     <- n_oopn[i,j,j]
+deriv(cum_vaccinated_pn[, ])  <- n_vopn[i,j,j]
 
 
 # aggregated time series for fitting mcmc
@@ -208,6 +214,11 @@ initial(cum_screened[, ])    <- 0
 initial(cum_offered[, ])     <- 0
 initial(cum_vaccinated[, ])  <- 0
 initial(cum_vaccinated_screen[, ])  <- 0
+
+initial(cum_offered_pn[, ])  <- 0
+initial(cum_vaccinated_pn[, ])  <- 0
+
+
 
 initial(cum_vbe[, ])         <- 0
 initial(cum_offered_vbe[, ]) <- 0
@@ -283,6 +294,9 @@ dim(cum_vaccinated)  <- c(n_group, n_vax)
 dim(cum_vaccinated_screen)  <- c(n_group, n_vax)
 
 
+dim(cum_offered_pn)     <- c(n_group, n_vax)
+dim(cum_vaccinated_pn)  <- c(n_group, n_vax)
+
 dim(cum_vbe)         <- c(n_group, n_vax)
 dim(cum_offered_vbe) <- c(n_group, n_vax)
 
@@ -329,6 +343,8 @@ vei[] <- user() # efficacy against infectiousness
 u_vbe    <- user() # uptake of VbE
 u_d[, , ]  <- user() # Uptake matrix for diagnosis
 u_s[, , ]  <- user() # Uptake matrix for screening
+u_pn[, , ]  <- user() # Uptake matrix for PN
+
 
 w[, ]    <- user() # Waning map
 vax_t[]  <- user()
@@ -365,6 +381,7 @@ dim(w)     <- c(n_vax, n_vax)
 
 dim(u_d)     <- c(n_group, n_vax, n_vax)
 dim(u_s)     <- c(n_group, n_vax, n_vax)
+dim(u_pn)     <- c(n_group, n_vax, n_vax)
 
 
 dim(vax_t) <- user()
@@ -402,4 +419,20 @@ dim(wdS)   <- c(n_group, n_vax, n_vax)
 dim(wdT)   <- c(n_group, n_vax, n_vax)
 
 output(N)   <- N
+
 output(lambda) <- lambda
+
+output(phi) <- phi
+
+
+output(P_S_inf) <- P_S_inf
+output(P_A_inf) <- P_A_inf
+output(P_S_Acont) <- P_S_Acont
+output(P_A_Acont) <- P_A_Acont
+output(P_S_Ucont) <- P_S_Ucont
+output(P_A_Ucont) <- P_A_Ucont
+
+output(prop_Usubgroup) <- prop_Usubgroup
+output(prop_Asubgroup) <- prop_Asubgroup
+output(prop_ACsubgroup) <- prop_ACsubgroup
+
