@@ -1,8 +1,8 @@
-linters: with_defaults(
+linters: linters_with_defaults(
     object_length_linter = NULL,
     object_name_linter = NULL,
     object_usage_linter = NULL,
-    todo_comment_linter = NULL,
-    cyclocomp_linter = NULL
+    cyclocomp_linter = NULL,
+    T_and_F_symbol_linter = NULL
     )
-exclusions: list("R/odin.R", "tests/testthat.R", "inst/odin/model_trial_stochastic.R")
+exclusions: list("R/odin.R", "tests/testthat.R")

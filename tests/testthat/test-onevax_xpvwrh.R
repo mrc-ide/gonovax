@@ -94,10 +94,10 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   for (i in seq_along(y_h3)) {
     expect_equal(y_h3[[i]]$N[, , 1], y_h3[[i]]$N[, , 6])
-
     # Number of infections in X and H equal for no vaccination and hes = 0.5
     expect_equal(y_h3[[i]]$cum_incid[, , 1], y_h3[[i]]$cum_incid[, , 6])
   }
+
   # if proportion hesitant is 0%, = outputs same as xvwr model
   # choose a difficult case where there are very few zero outputs.
   y_h4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hes = 0,
@@ -107,7 +107,7 @@ test_that("run_onevax_xpvwrh works correctly", {
                             primary_uptake = 0.5, booster_uptake = 0.3,
                             strategy = "VoD(L)+VoA(H)")
   # make output names match
-  y_xvwr <- lapply(y_xvwr, name_outputs, c("X", "V1", "W", "R1"))
+  y_xvwr <- lapply(y_xvwr, name_outputs, c("X.I", "V1.I", "W.I", "R1.I"))
 
 
   for (i in seq_along(y_h4)) {
@@ -183,7 +183,8 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   for (i in seq_along(r1)) {
     u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
-                                  booster_uptake[i], idx)
+                                  booster_uptake[i], idx,
+                                  screening_or_diagnosis = "diagnosis")
 
     acc_vax <- u * vod_map
 
@@ -401,10 +402,8 @@ test_that("run_onevax_xpvwrh works correctly", {
                                 n_erlang = n_erlang)
   i_p <- lapply(y_erlang, restart_hes, hes = 0.5, branching = TRUE)
   y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0,
-                                       dur_v = 1e3,
-                                       hes = 0.5, n_erlang = n_erlang)
-
-
+                                       dur_v = 1e3, hes = 0.5,
+                                       n_erlang = n_erlang)
 
   # final timepoint y8 run = 2 * first timepoint of y_hesres run (as hes = 0.5)
   # (for XVWR)
@@ -677,8 +676,9 @@ test_that("run_onevax_xpvwrh works correctly", {
   expect_true(unique(rowSums(y_p[[i]]$N[-1, , 3]) > 0))
 
   # test individuals still wane to W
-  ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.99999999999999
-               , t = 5)
+  ip <- lapply(pars, initial_params_xpvwrh, coverage_v = 0.99999999999999,
+               t = 5)
+
   y17 <- run_onevax_xpvwrh(tt, gp, init_params = ip, dur_v = 1e-90)
 
   # entire population starts in V then wanes to W and stays there
@@ -693,8 +693,6 @@ test_that("run_onevax_xpvwrh works correctly", {
       expect_true(sum(y17[[i]]$N[j, , 4]) > 0)
     }
 
-    ######## difference in W
-    ######### isnt quite 1200
     # R, W are empty for all time
     expect_equal(rowSums(y17[[i]]$N[, , 5:6]), rep(0, 6))
   }
@@ -728,16 +726,16 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   # everything defaults to the n_vax = xpvwrh format when n_erlang = 1 or
   # not supplied
   y <- run_onevax_xpvwrh(tt, gono_params = gono_params()[1], vea = 0,
-                         dur_v = 1e3, r1 = 0.5,
-                         r2 = 0.1, booster_uptake = 1,
+                         dur_v = 1e3, r1 = 0.5, r2 = 0.1, booster_uptake = 1,
+
                          strategy = "VoD(L)+VoA(H)")
   expect_true(dim(y[[1]]$N)[3] == 6)
 
   # expect error if n_erlang supplied to run function doesn't match initial
   # conditions
   expect_error(run_onevax_xpvwrh(tt, gono_params = gono_params()[1], vea = 0,
-                                 dur_v = 0.1, booster_uptake = 1
-                                 , strategy = "VoD(L)+VoA(H)",
+                                 dur_v = 0.1, booster_uptake = 1,
+                                 strategy = "VoD(L)+VoA(H)",
                                  init_params = list(n_erlang_2), n_erlang = 3))
 
   # all erlang compartments are protected
@@ -847,6 +845,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   expect_true(unique(vbe_map[, idx$V[1], idx$X] == c(-1, -1)))
   expect_equal(sum(vbe_map[, -c(idx$X, idx$V[1]), idx$X]), 0)
   expect_equal(sum(vbe_map[, , 2:9]), 0)
+
   # test uptake maps are generated as expected
   r1 <- c(0.25, 0.5)
   r2 <- c(0.5, 0.75)
@@ -856,7 +855,8 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   for (i in seq_along(r1)) {
     u <- create_uptake_map_xpvwrh(vod_map, r1[i], r2[i], r2_p[i],
                                   booster_uptake[i],
-                                  idx = idx)
+                                  idx = idx,
+                                  screening_or_diagnosis = "diagnosis")
 
     # vaccination mapping multiplied by corresponding uptake % mapping
     acc_vax <- u * vod_map
@@ -893,6 +893,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   ip_v <- lapply(pars, initial_params_xpvwrh,
                  coverage_v = 0.99999999999999,
                  n_erlang = 2, t = FALSE)
+ 
   y_v <- run_onevax_xpvwrh(tt, gp, init_params = ip_v, n_erlang = 2)
 
   # people in V1, V2, W
@@ -912,8 +913,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
 
   # entire population starts in P1 and wanes through P2 to X only
   # ( + no further vaccination)
-  ip_p <- lapply(pars, initial_params_xpvwrh,
-                 coverage_p = 0.99999999999999,
+  ip_p <- lapply(pars, initial_params_xpvwrh, coverage_p = 0.99999999999999,
                  n_erlang = 2, t = FALSE)
   y_p <- run_onevax_xpvwrh(tt, gp, init_params = ip_p, n_erlang = 2)
 
@@ -930,6 +930,31 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   # people also wane from R1 and R2
   n_erlang <- 2
   idx <- stratum_index_xpvwrh(n_erlang)
+
+  #run for ages with very short duration of primary vaccination,
+  # 100% uptake and very long duration of booster vacination to get
+  # people to converge in R1
+
+  tt <- seq(0, 100)
+  y_long <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 0.1,
+                              n_erlang = n_erlang,
+                              r1 = 1, r2 = 1, booster_uptake = 1,
+                              dur_revax = 1e10,
+                              strategy = "VoD(L)+VoA(H)")
+
+  i_p <- lapply(y_long, restart_hes, n_vax = idx$n_vax,
+                branching = TRUE)
+  tt <- seq(0, 5)
+
+  # run model with most people in W + R1
+  y_r <- run_onevax_xpvwrh(tt, gp, init_params = i_p, r1 = 0, r2 = 0,
+                           dur_v = 0.1, dur_revax = 10, n_erlang = n_erlang)
+
+  # when lots of people start revaccinated and (almost) none start
+  # primarily vaccinated, people flow from R1 -> R2
+
+  expect_true(sum(rowSums(y_r[[1]]$N[, , idx$R[1]])) >
+                sum(rowSums(y_r[[1]]$N[, , idx$R[2]])))
 
   # check protection being assigned correctly
 
@@ -982,6 +1007,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   expect_true(all(w[idx$X,    idx$P[3]] ==  n_erlang / dur_p))
 
   #people wane from V1 -> V2 -> V3 -> W at the same, expected rate
+
   expect_true(all(w[idx$V[1], idx$V[1]] == -n_erlang / dur_v))
   expect_true(all(w[idx$V[2], idx$V[1]] ==  n_erlang / dur_v))
   expect_true(all(w[idx$V[2], idx$V[2]] == -n_erlang / dur_v))

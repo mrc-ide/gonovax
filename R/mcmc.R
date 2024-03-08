@@ -55,7 +55,7 @@ mcmc <- function(pars, n_steps, compare = NULL, progress = FALSE,
       }
       samples[[i]] <- mcmc_single_chain(pars, n_steps, compare, progress)
     }
-  mcmc_combine(samples = samples)
+    mcmc_combine(samples = samples)
   }
 }
 
@@ -233,7 +233,7 @@ mcmc_progress <- function(n, show, force = FALSE) {
 gonovax_mcmc <- function(pars, probabilities, chain = NULL,
                          iteration = NULL) {
 
-    ret <- list(chain = chain,
+  ret <- list(chain = chain,
               iteration = iteration %||% seq.int(0, length.out = nrow(pars)),
               pars = pars,
               probabilities = probabilities)

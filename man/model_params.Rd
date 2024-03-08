@@ -8,7 +8,8 @@ model_params(
   gono_params = NULL,
   demographic_params = NULL,
   init_params = NULL,
-  vax_params = NULL
+  vax_params = NULL,
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ model_params(
 \item{init_params}{A list of starting conditions}
 
 \item{vax_params}{A vector of vaccination params}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 A list of inputs to the model many of which are fixed and

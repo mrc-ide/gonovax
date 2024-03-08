@@ -56,8 +56,8 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
 ##' @return A list of parameters in the model input format
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                           dur = 1e3, n_erlang = 1, stochastic = FALSE,
-                           n_diag_rec = 1) {
+                                 dur = 1e3, n_erlang = 1, stochastic = FALSE,
+                                 n_diag_rec = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -72,16 +72,16 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # the final waned compartment with no protection
 
   #X + W + n_erlang = total number of strata
-   n_vax <- idx$n_vax
+  n_vax <- idx$n_vax
 
   # waned vaccinees move to own stratum, and are not eligible for re-vaccination
   # generate i_v and i_w
 
   # strata that individuals wane from, i.e all 'V' strata
-   i_v <- idx$V
+  i_v <- idx$V
 
   # strata that individuals wane to
-   i_w <- idx$V + n_diag_rec
+  i_w <- idx$V + n_diag_rec
 
   # diagnosed individuals move to the next diagnosis-history stratum (if
   # n_diag_rec > 1). These history strata are the same in their characteristics
@@ -98,7 +98,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # create diagnosis history mapping
   diag_rec <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
-                           set_vbe = FALSE, idx)
+                                       set_vbe = FALSE, idx)
 
   # compartments to which vaccine efficacy applies
   ve <- c(rep(0, n_diag_rec), rep(1, n_erlang * n_diag_rec), rep(0, n_diag_rec))
@@ -116,13 +116,13 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
   list(n_vax = n_vax,
-       vea   = vea * ve,
-       vei   = vei * ve,
-       ved   = ved * ve,
-       ves   = ves * ve,
-       w     = w,
-       D     = D,
-       diag_rec = diag_rec
+    vea   = vea * ve,
+    vei   = vei * ve,
+    ved   = ved * ve,
+    ves   = ves * ve,
+    w     = w,
+    D     = D,
+    diag_rec = diag_rec
   )
 }
 
@@ -166,11 +166,11 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
 run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
-                           dur = 1e3,
-                           vea = 0, vei = 0, ved = 0, ves = 0,
-                           p_v = 0.5, n_erlang = 1,
-                           stochastic = FALSE,
-                           N = 6e05, n_diag_rec = 1) {
+                                 dur = 1e3,
+                                 vea = 0, vei = 0, ved = 0, ves = 0,
+                                 p_v = 0.5, n_erlang = 1,
+                                 stochastic = FALSE,
+                                 N = 6e05, n_diag_rec = 1) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
@@ -224,11 +224,11 @@ stratum_index_xvw_trial <- function(n_erlang, n_diag_rec = 1) {
 
   ret <- list(X = seq_len(n_diag_rec))
 
-    ret$V <- max(ret$X) + seq_len(n_erlang * n_diag_rec)
-    ret$W <- max(ret$V) + seq_len(n_diag_rec)
-    ret$n_vax <- max(ret$W)
-    ret$n_erlang <- n_erlang
-    ret$n_diag_rec <- n_diag_rec
+  ret$V <- max(ret$X) + seq_len(n_erlang * n_diag_rec)
+  ret$W <- max(ret$V) + seq_len(n_diag_rec)
+  ret$n_vax <- max(ret$W)
+  ret$n_erlang <- n_erlang
+  ret$n_diag_rec <- n_diag_rec
 
   ret
 }

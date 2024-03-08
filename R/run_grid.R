@@ -48,8 +48,9 @@ run_grid  <- function(gono_params, init_params, cost_params,
   ret <- furrr::future_pmap(.l = list(y = res, baseline = baseline),
                             .f = compare_baseline,
                             cost_params = cost_params,
-                            uptake_first_dose =
-                              uptake_total / uptake_second_dose,
+                            uptake_first_dose = uptake_total /
+                              uptake_second_dose,
+
                             uptake_second_dose = uptake_second_dose,
                             disc_rate = disc_rate)
 
@@ -245,7 +246,6 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   vacsnap <- list()
   # fully vaccine protected, snapshot of N in: V(3) and R(5)
   vacsnap$vacprotec_full <- t(aggregate(y, "N", stratum = idx$full))
-
   # partially vaccine protected, snapshot of N in: P(2)
   vacsnap$vacprotec_part <- t(aggregate(y, "N", stratum = idx$P))
   # vaccine protected total, snapshot of N in: P(2), V(3), R(5)

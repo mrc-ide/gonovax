@@ -4,7 +4,14 @@
 \alias{run}
 \title{Run odin model of gonorrhoea with or without vaccination}
 \usage{
-run(tt, gono_params, init_params = NULL, vax_params = NULL, transform = TRUE)
+run(
+  tt,
+  gono_params,
+  init_params = NULL,
+  vax_params = NULL,
+  n_diag_rec = 1,
+  transform = TRUE
+)
 }
 \arguments{
 \item{tt}{a numeric vector of times at which the model state is output}
@@ -14,6 +21,8 @@ run(tt, gono_params, init_params = NULL, vax_params = NULL, transform = TRUE)
 \item{init_params}{= NULL}
 
 \item{vax_params}{= NULL}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
 \item{transform}{= TRUE}
 }

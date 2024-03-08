@@ -73,7 +73,7 @@ test_that("no-one is treated when mu and eta = 0", {
 
 test_that("the foi is calculated correctly", {
   vei <- 0.123
-  vax_params <- vax_params_xvwv(uptake = 0.5, dur = 1,
+  vax_params <- vax_params_xvwv(uptake = 0.5, dur = 1, vei = 0.123,
                                 strategy = "VoA")
   params <- model_params(gono_params = gono_params(1)[[1]],
                          vax_params = vax_params)
@@ -115,7 +115,7 @@ test_that("Bex model runs with no vaccination", {
   y0 <- mod0$transform_variables(y0)
 
   params1 <- model_params(gono_params = gono_params(1)[[1]],
-                           vax_params = vax_params_xvwv(vbe = 0))
+                          vax_params = vax_params_xvwv(vbe = 0))
   mod1 <- model$new(user = params1, unused_user_action = "ignore")
   y1 <- mod1$run(t = tt)
   y1 <- mod1$transform_variables(y1)
@@ -136,7 +136,7 @@ test_that("Bex model runs with vbe", {
   tt <- seq.int(0, 2) / 365
   # with perfect efficacy
   params <- model_params(gono_params = gono_params(1)[[1]],
-                            vax_params = vax_params_xvwv(vbe = 1, vea = 1))
+                         vax_params = vax_params_xvwv(vbe = 1, vea = 1))
   mod <- model$new(user = params, unused_user_action = "ignore")
   y <- mod$run(t = tt)
   y <- mod$transform_variables(y)
@@ -147,7 +147,7 @@ test_that("Bex model runs with vbe", {
                        0, 4.93136498677018, 9.862446259333,
                        0, 3.82796084566103e-05, 0.000153112453356132,
                        0, 6.75495729408945e-06, 2.70176968895868e-05),
-               dim = c(3, 2, 3)))
+                     dim = c(3, 2, 3)))
   # check some people are being vaccinated
   expect_true(all(y$U[-1, , 2] > 0))
   # check no compartments are leaking

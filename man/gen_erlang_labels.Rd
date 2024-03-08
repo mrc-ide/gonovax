@@ -5,12 +5,13 @@
 \title{generates the appropriate strata labels for the number of strata
 in the model, which depends on the value given to n_erlang}
 \usage{
-gen_erlang_labels(n_erlang = 1)
+gen_erlang_labels(n_erlang = 1, n_diag_rec = 1)
 }
 \arguments{
 \item{n_erlang}{integer giving the number of transitions that need to be
- made
-through vaccine-protected strata until that protection has waned}
+made through vaccine-protected strata until that protection has waned}
+
+\item{n_diag_rec}{integer for the number of diagnosis history substrata}
 }
 \value{
 a character vector of length n_vax containing strata labels

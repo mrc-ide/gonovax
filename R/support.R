@@ -293,6 +293,10 @@ dbetabinom <- function(x, size, prob, rho, log = FALSE) {
   out
 }
 
+
+
+
+
 name_outputs <- function(res, strata_names) {
 
   group_names <- c("L", "H")
@@ -309,6 +313,7 @@ name_outputs <- function(res, strata_names) {
 
   res
 }
+
 
 ##' @name adjust_baseline
 ##' @title adjust model run in absence of vaccination so diagnoses are
@@ -338,4 +343,27 @@ adjust_baseline_one <- function(baseline, y) {
   adjusted_states <- lapply(baseline[idx_state],
                             function(state) c(state[, , 1]) * prop_N)
   replace(baseline, idx_state, adjusted_states)
+
+##' @name gen_labels
+##' @title generates the appropriate strata labels for the number of strata
+##' in the model, which depends on the value given to n_erlang and diagnosis
+##' history levels desired (n_diag_rec)
+##' @param n_erlang integer giving the number of transitions that need to be
+##'  made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer giving the number of levels of diagnosis history
+##' for each X, V(*n_erlang), and W stratum
+##' @return a character vector of length n_vax containing strata labels
+##' @export
+gen_labels <- function(n_erlang = 1, n_diag_rec = 1) {
+
+
+  diag_hist <- paste0(".", as.roman(seq_len(n_diag_rec)))
+
+  output <- c(paste0("X", diag_hist),
+              paste0("V", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
+              paste0("W", diag_hist))
+
+  output
+
+
 }

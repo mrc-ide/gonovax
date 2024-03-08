@@ -21,7 +21,7 @@ gono_params_trial <- function(n = NULL) {
 
   pars[i]
 
-  }
+}
 
 
 
@@ -56,7 +56,7 @@ check_gono_params_trial <- function(pars) {
 
 demographic_params_trial <- function(N = 6e5) {
   list(N0 = N,
-       q = c(0, 1)
+    q = c(0, 1)
   )
 }
 
@@ -121,11 +121,11 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1,
 ##' @export
 
 model_params_trial <- function(gono_params_trial = NULL,
-                        demographic_params_trial = NULL,
-                        initial_params_trial = NULL,
-                        vax_params = NULL, p_v = 0,
-                        n_erlang = 1, N = 6e5,
-                        n_diag_rec = 1) {
+                               demographic_params_trial = NULL,
+                               initial_params_trial = NULL,
+                               vax_params = NULL, p_v = 0,
+                               n_erlang = 1, N = 6e5,
+                               n_diag_rec = 1) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <-
     demographic_params_trial  %||% demographic_params_trial(N = N)
@@ -139,16 +139,17 @@ model_params_trial <- function(gono_params_trial = NULL,
   } else {
 
     #also add in diag_rec if vax_params not supplied
-      vax_params <- vax_params0(n_diag_rec = n_diag_rec)
-      n_vax <- vax_params$n_vax
-      i_eligible <-  if (n_diag_rec == 1) {
-                i_eligible <- 0
-                } else {
-                i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
-                }
+    vax_params <- vax_params0(n_diag_rec = n_diag_rec)
+    n_vax <- vax_params$n_vax
+    i_eligible <-  if (n_diag_rec == 1) {
+      i_eligible <- 0
+    } else {
+      i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
+    }
 
-        vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
-                              seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1])
+    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
+                                          seq_len(n_vax)[seq_len(n_vax) %%
+                                                           n_diag_rec != 1])
   }
 
   #passing initial parameters
@@ -158,7 +159,7 @@ model_params_trial <- function(gono_params_trial = NULL,
     initial_params <-
       initial_params_trial %||% initial_params_trial(ret, vax_params$n_vax, cov,
                                                      n_diag_rec = n_diag_rec)
-                              #if no vaccination then no need for V and W strata
+    #if no vaccination then no need for V and W strata
 
   } else {                                  #p_v greater than 0 = vaccinated arm
     initial_params <- initial_params_xvw_trial(pars = ret, p_v = p_v,
@@ -180,7 +181,7 @@ model_params_trial <- function(gono_params_trial = NULL,
 
 create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
 
-   stopifnot(z >= 0)
+  stopifnot(z >= 0)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))

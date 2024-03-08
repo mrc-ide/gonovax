@@ -1,6 +1,15 @@
-# gonovax 0.4.12
+# gonovax 0.4.14
 * extracting diagnoses and vaccination by stratum type now possible with n_erlang > 1, and symptomatic and
 asymptomatic diagnoses by vaccine-protected vs non-vaccine-protected can be extracted against (adjusted) baseline
+
+# gonovax 0.4.13
+* model updated to include diagnosis history (i.e. the number of times individuals have been diagnosed in last Y years)
+at n_diag_rec = 1, the model is the same as previous versions
+tested to work for n_diag_rec > 1 with xpvwrh 
+tested to work with n_diag_rec = 1 for all other strategies
+
+# gonovax 0.4.12
+* model_trial_stochastic updated so that total number of individuals exiting each state drawn first, then the specific transitions made drawn after
 
 # gonovax 0.4.11
 * deterministic version of the xvw_trial model can now have parallel strata that account for diagnosis history

@@ -195,6 +195,8 @@ test_that("compare baseline xpvwrh works as expected", {
 
   N <- t(aggregate(y, "N"))[1, 1]
   expect_equal(z$vacprotec_total_prop * N, z$vacprotec_total)
+  
+  
 
   ## total number of people vaccinated is the same if they receive one dose or 2
 
@@ -467,8 +469,7 @@ test_that("compare baseline xpvwrh works as expected", {
   z <- compare_baseline_xpvwrh(y_0.25_cov, bl_0.25_cov,
                                uptake_first_dose = 0,
                                uptake_second_dose = 0,
-                               cp, 0,
-                               vea = vea, vea_p = vea_p)
+                               cp, 0, vea = vea, vea_p = vea_p)
 
   level_calc <- ((z$vacprotec_full * vea) + (z$vacprotec_part * vea_p)) / N
 
@@ -508,8 +509,7 @@ test_that("compare baseline xpvwrh works as expected", {
                          strategy = "VoD")
   z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
                                uptake_second_dose = 1,
-                               cp, 0,
-                               vea = 1, vea_p = 1)
+                               cp, 0, vea = 1, vea_p = 1)
 
   expect_equal(z$inc_vaccinated - z$inc_primary - z$inc_vbe, z$inc_revaccinated)
 

@@ -10,7 +10,8 @@ initial_params_xpvwrh(
   coverage_v = 0,
   hes = 0,
   t = FALSE,
-  n_erlang = 1
+  n_erlang = 1,
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ run_onevax_xpvwrh() to generate initial conditions for tests}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
+
+\item{n_diag_rec}{number of diagnosis history strata}
 }
 \value{
 A list of initial conditions

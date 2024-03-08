@@ -278,6 +278,7 @@ test_that("extract_flows_trial works", {
                                                     stratum = idx$X,
                                                     stochastic = TRUE,
                                                     as_incid = TRUE)))
+
   expect_equal(z$diag_s_VW_all_diaghist, t(aggregate(y3s, "cum_diag_s",
                                                      stratum = c(idx$V, idx$W),
                                                      stochastic = TRUE,
