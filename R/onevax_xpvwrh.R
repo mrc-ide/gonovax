@@ -613,7 +613,8 @@ restart_hes <- function(y, n_vax = 6, hes = 0, n_erlang = 1, n_diag_rec = 1,
   i_vax <- seq_len(n_vax_input)
 
   for (d  in 1:n_diag_rec) {
-    if (round(rowSums(y$N[, , n_vax_input - n_diag_rec + d])[dim_y[1]], 5) > 0) {
+    if (round(rowSums(y$N[, , n_vax_input - n_diag_rec + d])[dim_y[1]],
+              5) > 0) {
       stop("Provided model run already contains hesitancy > 0")
     }
 
