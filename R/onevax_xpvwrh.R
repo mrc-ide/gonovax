@@ -200,7 +200,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                   idx$vaccinatedto_vopn, set_vbe = FALSE, idx)
   
   
-  print(vopn)
+  #print(vopn)
   
 
   vbe_map <- create_vax_map_branching(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
@@ -226,7 +226,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                   n_diag_rec = n_diag_rec,
                                   screening_or_diagnosis = "screening")
   
-  print(u_pn)
+  #print(u_pn)
 
   w <- create_waning_map_branching(n_vax, i_v, i_w,
                                    n_erlang / c(dur_p, dur_v, dur_revax),
