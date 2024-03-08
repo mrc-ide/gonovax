@@ -195,8 +195,8 @@ test_that("compare baseline xpvwrh works as expected", {
 
   N <- t(aggregate(y, "N"))[1, 1]
   expect_equal(z$vacprotec_total_prop * N, z$vacprotec_total)
-  
-  
+
+
 
   ## total number of people vaccinated is the same if they receive one dose or 2
 

@@ -893,7 +893,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
   ip_v <- lapply(pars, initial_params_xpvwrh,
                  coverage_v = 0.99999999999999,
                  n_erlang = 2, t = FALSE)
- 
+
   y_v <- run_onevax_xpvwrh(tt, gp, init_params = ip_v, n_erlang = 2)
 
   # people in V1, V2, W
