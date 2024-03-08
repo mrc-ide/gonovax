@@ -32,7 +32,7 @@ Start by reading in your table of parameters:
 We need to transform the table of parameters to the format the model requires
 using the `transform_fixed` function. First we only use 100 parameter sets:
 ```{r}
-n_par <- 100
+n_par <- 1
 
 # transform the parameter table
 gono_params <- lapply(seq_len(n_par),

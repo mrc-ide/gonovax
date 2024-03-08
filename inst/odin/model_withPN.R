@@ -71,8 +71,9 @@ screened[, ] <- eta[i] * U[i, j]
 Cp[] <- sum(C[i, ])*p[i]
 
 prop_Usubgroup[,] <- U[i,j] / sum(N[i, ]) 
-prop_Asubgroup[,] <- A[i,j] / sum(N[i, ]) 
-prop_ACsubgroup[,] <- A[i,j] / sum(C[i, ]) 
+prop_Asubgroup[,] <- (A[i,j] +  (1 - (1 - ves[j]) * psi)*I[i,j])/ sum(N[i, ]) 
+prop_ACsubgroup[,] <- (A[i,j] +  (1 - (1 - ves[j]) * psi)*I[i,j]) / sum(C[i, ]) 
+
 
 
 omega_N[ , ] = if (i == j) epsilon + (1-epsilon)*Np[j]/sum(Np[]) else (1-epsilon)*Np[j]/sum(Np[]) 
@@ -81,7 +82,7 @@ omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j]/sum(Cp[]) else (1-epsilon
 D_S <- 1 / sigma + 1 / mu
 D_A[] <- 1 / sigma + 1 / (eta[i] + nu) 
 
-lb_S <- 1/52
+lb_S <- 2/52
 lb_A <- 3/12
 
 
@@ -122,9 +123,60 @@ phi_group[,,,] = mu*S[i,j]*K_S[i,j,k,l] + eta[k]*A[i,j]*K_A[i,j,k,l]
 phi[,] = sum(phi_group[,,i,j])
 
 
+
+## Quantities required to calculate notifications to infected individuals (not directly used)
+
+prop_Ssubgroup[,] <- (S[i,j] + ((1 - ves[j]) * psi)*I[i,j] )/ sum(N[i, ]) 
+prop_SCsubgroup[,] <- (S[i,j] + ((1 - ves[j]) * psi)*I[i,j] )/ sum(C[i, ]) 
+
+Q_S_Sinf[,] = (1/D_S)*(1 - exp( - ((1/D_S) + mu)*lb_S))/((1/D_S) + mu)
+Q_A_Sinf[,] = (1/D_A[i])*(1 - exp( - ((1/D_A[i]) + mu)*lb_A))/((1/D_A[i]) + mu)
+
+Q_S_Ainf[,] = (1/D_S)*(1 - exp( - ((1/D_S) + nu + eta[j])*lb_S))/((1/D_S) + nu + eta[j])
+Q_A_Ainf[,] = (1/D_A[i])*(1 - exp( - ((1/D_A[i]) + nu + eta[j])*lb_A))/((1/D_A[i]) + nu + eta[j])
+
+Q_S_Scont[ , ] = (1 - exp(-mu*lb_S))/mu
+Q_A_Scont[ , ] = (1 - exp(-mu*lb_A))/mu
+  
+Q_S_Acont[ , ] = (1 - exp(-(nu + eta[j])*lb_S))/(nu + eta[j])
+Q_A_Acont[ , ] = (1 - exp(-(nu + eta[j])*lb_A))/(nu + eta[j])
+  
+#Q_S_Ucont[ , ] = (1 - P_S_Ucont[i,j])*lb_S
+#Q_A_Ucont[ , ] = (1 - P_A_Ucont[i,j])*lb_A
+
+Q_S_Ucont[ , ] = lb_S - P_S_Ucont[i,j]
+Q_A_Ucont[ , ] = lb_A - P_A_Ucont[i,j]
+
+
+
+L_S_Sinf[,,,] = omega_C[i,k] * prop_SCsubgroup[k,l] * Q_S_Sinf[i,k]
+L_A_Sinf[,,,] = omega_C[i,k] * prop_SCsubgroup[k,l] * Q_A_Sinf[i,k]
+L_S_Ainf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * Q_S_Ainf[i,k]
+L_A_Ainf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * Q_A_Ainf[i,k]
+  
+L_S_Scont[,,,] = omega_N[i,k] * prop_Ssubgroup[k,l] * Q_S_Scont[i,k]
+L_A_Scont[,,,] = omega_N[i,k] * prop_Ssubgroup[k,l] * Q_A_Scont[i,k]
+L_S_Acont[,,,] = omega_N[i,k] * prop_Asubgroup[k,l] * Q_S_Acont[i,k]
+L_A_Acont[,,,] = omega_N[i,k] * prop_Asubgroup[k,l] * Q_A_Acont[i,k]
+L_S_Ucont[,,,] = omega_N[i,k] * prop_Usubgroup[k,l] * Q_S_Ucont[i,k]
+L_A_Ucont[,,,] = omega_N[i,k] * prop_Usubgroup[k,l] * Q_A_Ucont[i,k]
+
+
+L_S[,,,] = kappa*(L_S_Sinf[i,j,k,l] + L_S_Ainf[i,j,k,l] + L_S_Scont[i,j,k,l] + L_S_Acont[i,j,k,l] + L_S_Ucont[i,j,k,l])
+L_A[,,,] = kappa*(L_A_Sinf[i,j,k,l] + L_A_Ainf[i,j,k,l] + L_A_Scont[i,j,k,l] + L_A_Acont[i,j,k,l] + L_A_Ucont[i,j,k,l])
+
+xi_group[,,,] = mu*S[i,j]*L_S[i,j,k,l] + eta[k]*A[i,j]*L_A[i,j,k,l]
+
+xi[,] = sum(xi_group[,,i,j])
+
+
+notifiedandattended[,] = phi[i,j] + xi[i,j]
+
+
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history
 n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
+
 
 
 # vaccination
@@ -284,6 +336,40 @@ dim(K_A) <- c(n_group, n_vax, n_group, n_vax)
 dim(phi_group) <- c(n_group, n_vax, n_group, n_vax)
 dim(phi) <- c(n_group, n_vax)
 
+dim(prop_Ssubgroup) <- c(n_group, n_vax)
+dim(prop_SCsubgroup) <- c(n_group, n_vax)
+
+dim(Q_S_Sinf) <- c(n_group, n_group)
+dim(Q_A_Sinf) <- c(n_group, n_group)
+dim(Q_S_Ainf) <- c(n_group, n_group)
+dim(Q_A_Ainf) <- c(n_group, n_group)
+dim(Q_S_Scont) <- c(n_group, n_group)
+dim(Q_A_Scont) <- c(n_group, n_group)
+dim(Q_S_Acont) <- c(n_group, n_group)
+dim(Q_A_Acont) <- c(n_group, n_group)
+dim(Q_S_Ucont) <- c(n_group, n_group)
+dim(Q_A_Ucont) <- c(n_group, n_group)
+
+dim(L_S_Sinf) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_A_Sinf) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_S_Ainf) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_A_Ainf) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_S_Scont) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_A_Scont) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_S_Acont) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_A_Acont) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_S_Ucont) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_A_Ucont) <- c(n_group, n_vax, n_group, n_vax)
+
+dim(L_S) <- c(n_group, n_vax, n_group, n_vax)
+dim(L_A) <- c(n_group, n_vax, n_group, n_vax)
+
+dim(xi_group) <- c(n_group, n_vax, n_group, n_vax)
+dim(xi) <- c(n_group, n_vax)
+
+dim(notifiedandattended) <- c(n_group, n_vax)
+
+
 dim(cum_incid)       <- c(n_group, n_vax)
 dim(cum_diag_a)      <- c(n_group, n_vax)
 dim(cum_diag_s)      <- c(n_group, n_vax)
@@ -435,4 +521,21 @@ output(P_A_Ucont) <- P_A_Ucont
 output(prop_Usubgroup) <- prop_Usubgroup
 output(prop_Asubgroup) <- prop_Asubgroup
 output(prop_ACsubgroup) <- prop_ACsubgroup
+
+
+
+output(Q_S_Sinf) <- Q_S_Sinf
+output(Q_A_Sinf) <- Q_A_Sinf
+output(Q_S_Ainf) <- Q_S_Ainf
+output(Q_A_Ainf) <- Q_A_Ainf
+
+output(Q_S_Scont) <- Q_S_Scont
+output(Q_A_Scont) <- Q_A_Scont
+output(Q_S_Acont) <- Q_S_Acont
+output(Q_A_Acont) <- Q_A_Acont
+output(Q_S_Ucont) <- Q_S_Ucont
+output(Q_A_Ucont) <- Q_A_Ucont
+
+
+output(notifiedandattended) <- notifiedandattended
 
