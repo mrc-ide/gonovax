@@ -400,7 +400,8 @@ test_that("run_onevax_xpvwrh works correctly", {
   n_erlang <- 2
   y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3,
                                 n_erlang = n_erlang)
-  i_p <- lapply(y_erlang, restart_hes, hes = 0.5, branching = TRUE)
+  i_p <- lapply(X = y_erlang, restart_hes, hes = 0.5, n_erlang = n_erlang,
+                        branching = TRUE)
   y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0,
                                        dur_v = 1e3, hes = 0.5,
                                        n_erlang = n_erlang)
