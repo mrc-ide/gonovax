@@ -13,7 +13,6 @@ made through vaccine-protected strata until that protection has waned}
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
 \item{strategy}{string of vaccination strategy being considered}
-
 }
 \value{
 A list of strata with their indicies

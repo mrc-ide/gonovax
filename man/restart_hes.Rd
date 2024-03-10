@@ -19,6 +19,9 @@ restart_hes(
 \arguments{
 \item{y}{a transformed model run output}
 
+\item{n_vax}{an integer indicating the number of vaccine compartments,
+consistent with the input}
+
 \item{hes}{proportion of population vaccine hesitant}
 
 \item{n_erlang}{integer giving the number of transitions that need to be

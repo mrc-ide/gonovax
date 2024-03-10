@@ -344,6 +344,8 @@ adjust_baseline_one <- function(baseline, y) {
                             function(state) c(state[, , 1]) * prop_N)
   replace(baseline, idx_state, adjusted_states)
 
+}
+
 ##' @name gen_labels
 ##' @title generates the appropriate strata labels for the number of strata
 ##' in the model, which depends on the value given to n_erlang and diagnosis
