@@ -241,6 +241,7 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret <- c(flows, ret)
   idx <- stratum_index_xpvwrh(n_erlang)
   idx$full <- c(idx$V, idx$R)
+  idx$vaccinated <- c(idx$P, idx$V, idx$R)
 
   ## extract number under vaccine protection
   vacsnap <- list()
