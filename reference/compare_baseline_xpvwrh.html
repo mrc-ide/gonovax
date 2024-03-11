@@ -23,7 +23,7 @@ given level of efficacy"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.13</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.14</span>
       </span>
     </div>
 
@@ -82,12 +82,12 @@ given level of efficacy</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>y</dt>
-<dd><p>list of model runs, e.g. created by `run_onevax_xvwv`, each list
+<dd><p>list of model runs, e.g. created by `run_onevax_xpvwrh`, each list
 entry refers to a different parameter set</p></dd>
 
 
 <dt>baseline</dt>
-<dd><p>list of baseline runs e.g. created by `run_onevax_xvwv`.
+<dd><p>list of baseline runs e.g. created by `run_onevax_xpvwrh`.
 Should be same length as `y`</p></dd>
 
 
@@ -236,7 +236,31 @@ some form of vaccine protection at a given timepoint
 `level_vacprotec` = the level of vaccine protection in the population at a
 given timepoint. Given as the sum of the products of the number of partially
 and fully vaccinated individuals and the one dose and two dose vaccine
-efficacies respectively.</p>
+efficacies respectively.
+`inc_diag_a_xwh` = annual number of asymptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_diag_s_xwh` = annual number of symptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_diag_t_xwh` = annual number of total diagnoses in non-vaccine
+protected strata compared to an adjusted baseline
+`inc_diag_a_pvr` = annual number of asymptomatic diagnoses in vaccine
+protected strata compared to an adjusted baseline
+`inc_diag_s_pvr` = annual number of symptomatic diagnoses in vaccine
+ protected strata compared to an adjusted baseline
+`inc_diag_t_pvr` = annual number of total diagnoses in vaccine protected
+strata compared to an adjusted baseline
+`inc_cum_diag_a_xwh` = cumulative number of asymptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_cum_diag_s_xwh` = cumulative number of symptomatic diagnoses in non-
+vaccine protected strata compared to an adjusted baseline
+`inc_cum_diag_t_xwh` = cumulative number of total diagnoses in non-vaccine
+protected strata compared to an adjusted baseline
+`inc_cum_diag_a_pvr` = cumulative number of asymptomatic diagnoses in
+vaccine protected strata compared to an adjusted baseline
+`inc_cum_diag_s_pvr` = cumulative number of symptomatic diagnoses in vaccine
+ protected strata compared to an adjusted baseline
+`inc_cum_diag_t_pvr` = cumulative number of total diagnoses in vaccine
+protected strata compared to an adjusted baseline</p>
     </div>
 
   </div>
