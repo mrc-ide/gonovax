@@ -243,6 +243,7 @@ stratum_index_xvw_trial <- function(n_erlang, n_diag_rec = 1) {
 ##' for each X, V(*n_erlang), and W stratum
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
+##' @importFrom utils as.roman
 gen_trial_labels <- function(n_erlang = 1, n_diag_rec = 1) {
 
 

@@ -132,6 +132,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              idx$vaccinatedto_vod),
     vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos,
                              idx$vaccinatedto_vos),
+
     vea     = c(0, vea, 0, vea_revax, 0),
     vei     = c(0, vei, 0, vei_revax, 0),
     ved     = c(0, ved, 0, ved_revax, 0),
