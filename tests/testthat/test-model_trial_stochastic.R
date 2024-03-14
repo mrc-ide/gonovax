@@ -303,7 +303,7 @@ test_that("VEd behaves as expected ", {
                              vea = 0, vei = 0, ved = 1, ves = 0,
                              dur = 1e99, stochastic = TRUE)
 
-  Yexpect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
+  expect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
 
 })
 
