@@ -42,7 +42,7 @@ gono_params <- lapply(seq_len(n_par),
 
 We then run the model to equilibrium without vaccination, and save the final states for each parameter set so we can restart with vaccination:
 ```{r}
-tt <- c(0, 49,50)
+tt <- c(0, 50)
 
 # run the model
 #y0 <- run_onevax_xvwv(tt, gono_params)
@@ -50,74 +50,13 @@ tt <- c(0, 49,50)
 #
 
 
-n_diag_rec = 1
+n_diag_rec = 2
 
 y0 <- run_onevax_xpvwrh(tt, gono_params, n_diag_rec = n_diag_rec, PN = "yes")
 
 
 # get final (equilibrium) model state to use as starting point of run with vaccination
 init_params <- lapply(y0, restart_params)
-```
-
-
-```{r}
-
-
-
-tempN2a = numeric(length = 1)
-tempN2b = numeric(length = 1)
-tempN2c = numeric(length = 1)
-
-tempN2d = numeric(length = 1)
-
-
-
-for (i in 1:100){
-
-temp1 = sum(y0[[i]]$cum_diag_a[3,,]) - sum(y0[[i]]$cum_diag_a[2,,])
-temp2 = sum(y0[[i]]$cum_diag_s[3,,]) - sum(y0[[i]]$cum_diag_s[2,,]) 
-
-temp3 = sum(y0[[i]]$cum_diag_a[3,,2:n_diag_rec]) - sum(y0[[i]]$cum_diag_a[2,,2:n_diag_rec])
-temp4 = sum(y0[[i]]$cum_diag_s[3,,2:n_diag_rec]) - sum(y0[[i]]$cum_diag_s[2,,2:n_diag_rec]) 
-
-
-temp5 = sum(y0[[i]]$N[3,,])
-temp6 = sum(y0[[i]]$N[3,,2:n_diag_rec])
-
-
-temp11 = sum(y0[[i]]$cum_diag_a[3,,2]) - sum(y0[[i]]$cum_diag_a[2,,2])
-temp12 = sum(y0[[i]]$cum_diag_s[3,,2]) - sum(y0[[i]]$cum_diag_s[2,,2]) 
-
-temp7 = sum(y0[[i]]$cum_diag_a[3,,1]) - sum(y0[[i]]$cum_diag_a[2,,1])
-temp8 = sum(y0[[i]]$cum_diag_s[3,,1]) - sum(y0[[i]]$cum_diag_s[2,,1]) 
-
-#temp1 = y0[[i]]$cum_diag_a[2,1,1] + y0[[i]]$cum_diag_a[2,2,1] + y0[[i]]$cum_diag_a[2,1,2] + y0[[i]]$cum_diag_a[2,2,2]
-#temp2 = y0[[i]]$cum_diag_s[2,1,1] + y0[[i]]$cum_diag_s[2,2,1] + y0[[i]]$cum_diag_s[2,1,2] + y0[[i]]$cum_diag_s[2,2,2]
-
-#temp3 = y0[[i]]$cum_diag_a[2,1,2] + y0[[i]]$cum_diag_a[2,2,2]
-#temp4 = y0[[i]]$cum_diag_s[2,1,2] + y0[[i]]$cum_diag_s[2,2,2]
-
-
-temp9 = sum(y0[[i]]$N[3,,2])
-temp10 = sum(y0[[i]]$N[3,,3])
-
-
-#print( (temp3+temp4)/(temp1+temp2))
-
-tempN2a[i] =  (temp11+temp12)/(temp7+temp8)
-tempN2b[i] = ( (temp3+temp4)/(temp6))
-tempN2c[i] = ( (temp3+temp4)/(temp1+temp2))
-
-tempN2d[i] = temp7+temp8
-
-#tempN3d[i] = ( temp10/temp9)
-
-}
-
-
-p = plot(x = tempN2, y = tempN3, xlab = "Storing up to 1st diagnosis", ylab = "Storing up to 2nd diagnosis")
-
-
 ```
 
 ## Running the model with vaccination
@@ -138,7 +77,8 @@ scalar from 0 to 1:
 ```{r}
 
 
-n_diag_rec = 1
+n_dia
+g_rec = 2
  
 # generate vaccine effects parameters
 ve <- data.frame(vea = 0.4, # efficacy against acquisition

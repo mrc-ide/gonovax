@@ -538,6 +538,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
     ret <- Map(run_xpvwrh_withPN, gono_params = gono_params, vax_params = vax_params,
                init_params = init_params, n_erlang = n_erlang,
                n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
+  } else{
+    stop("PN needs to be yes or no")
   }
   
 

@@ -93,7 +93,7 @@ run_xpvwrh_withPN <- function(tt, gono_params, init_params = NULL, vax_params = 
                               n_diag_rec = n_diag_rec, years_history = years_history)
   
   
-  print("hello")
+  #print("hello")
   
   mod <- model_withPN$new(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)

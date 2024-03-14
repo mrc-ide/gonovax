@@ -12110,7 +12110,7 @@ void model_withPN_rhs(model_withPN_internal* internal, double t, double * state,
       for (int j = 1; j <= internal->dim_L_A_Scont_2; ++j) {
         for (int k = 1; k <= internal->dim_L_A_Scont_3; ++k) {
           for (int l = 1; l <= internal->dim_L_A_Scont_4; ++l) {
-            internal->L_A_Scont[i - 1 + internal->dim_L_A_Scont_1 * (j - 1) + internal->dim_L_A_Scont_12 * (k - 1) + internal->dim_L_A_Scont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Scont[internal->dim_Q_A_Scont_1 * (k - 1) + i - 1];
+            internal->L_A_Scont[i - 1 + internal->dim_L_A_Scont_1 * (j - 1) + internal->dim_L_A_Scont_12 * (k - 1) + internal->dim_L_A_Scont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Scont[internal->dim_Q_A_Scont_1 * (k - 1) + i - 1];
           }
         }
       }
@@ -12119,7 +12119,7 @@ void model_withPN_rhs(model_withPN_internal* internal, double t, double * state,
       for (int j = 1; j <= internal->dim_L_S_Scont_2; ++j) {
         for (int k = 1; k <= internal->dim_L_S_Scont_3; ++k) {
           for (int l = 1; l <= internal->dim_L_S_Scont_4; ++l) {
-            internal->L_S_Scont[i - 1 + internal->dim_L_S_Scont_1 * (j - 1) + internal->dim_L_S_Scont_12 * (k - 1) + internal->dim_L_S_Scont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Scont[internal->dim_Q_S_Scont_1 * (k - 1) + i - 1];
+            internal->L_S_Scont[i - 1 + internal->dim_L_S_Scont_1 * (j - 1) + internal->dim_L_S_Scont_12 * (k - 1) + internal->dim_L_S_Scont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Scont[internal->dim_Q_S_Scont_1 * (k - 1) + i - 1];
           }
         }
       }
@@ -12153,7 +12153,7 @@ void model_withPN_rhs(model_withPN_internal* internal, double t, double * state,
       for (int j = 1; j <= internal->dim_L_A_Acont_2; ++j) {
         for (int k = 1; k <= internal->dim_L_A_Acont_3; ++k) {
           for (int l = 1; l <= internal->dim_L_A_Acont_4; ++l) {
-            internal->L_A_Acont[i - 1 + internal->dim_L_A_Acont_1 * (j - 1) + internal->dim_L_A_Acont_12 * (k - 1) + internal->dim_L_A_Acont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Acont[internal->dim_Q_A_Acont_1 * (k - 1) + i - 1];
+            internal->L_A_Acont[i - 1 + internal->dim_L_A_Acont_1 * (j - 1) + internal->dim_L_A_Acont_12 * (k - 1) + internal->dim_L_A_Acont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Acont[internal->dim_Q_A_Acont_1 * (k - 1) + i - 1];
           }
         }
       }
@@ -12162,7 +12162,7 @@ void model_withPN_rhs(model_withPN_internal* internal, double t, double * state,
       for (int j = 1; j <= internal->dim_L_S_Acont_2; ++j) {
         for (int k = 1; k <= internal->dim_L_S_Acont_3; ++k) {
           for (int l = 1; l <= internal->dim_L_S_Acont_4; ++l) {
-            internal->L_S_Acont[i - 1 + internal->dim_L_S_Acont_1 * (j - 1) + internal->dim_L_S_Acont_12 * (k - 1) + internal->dim_L_S_Acont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Acont[internal->dim_Q_S_Acont_1 * (k - 1) + i - 1];
+            internal->L_S_Acont[i - 1 + internal->dim_L_S_Acont_1 * (j - 1) + internal->dim_L_S_Acont_12 * (k - 1) + internal->dim_L_S_Acont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Acont[internal->dim_Q_S_Acont_1 * (k - 1) + i - 1];
           }
         }
       }
@@ -12230,7 +12230,7 @@ void model_withPN_rhs(model_withPN_internal* internal, double t, double * state,
       for (int j = 1; j <= internal->dim_L_A_Ucont_2; ++j) {
         for (int k = 1; k <= internal->dim_L_A_Ucont_3; ++k) {
           for (int l = 1; l <= internal->dim_L_A_Ucont_4; ++l) {
-            internal->L_A_Ucont[i - 1 + internal->dim_L_A_Ucont_1 * (j - 1) + internal->dim_L_A_Ucont_12 * (k - 1) + internal->dim_L_A_Ucont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Ucont[internal->dim_Q_A_Ucont_1 * (k - 1) + i - 1];
+            internal->L_A_Ucont[i - 1 + internal->dim_L_A_Ucont_1 * (j - 1) + internal->dim_L_A_Ucont_12 * (k - 1) + internal->dim_L_A_Ucont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Ucont[internal->dim_Q_A_Ucont_1 * (k - 1) + i - 1];
           }
         }
       }
@@ -12239,7 +12239,7 @@ void model_withPN_rhs(model_withPN_internal* internal, double t, double * state,
       for (int j = 1; j <= internal->dim_L_S_Ucont_2; ++j) {
         for (int k = 1; k <= internal->dim_L_S_Ucont_3; ++k) {
           for (int l = 1; l <= internal->dim_L_S_Ucont_4; ++l) {
-            internal->L_S_Ucont[i - 1 + internal->dim_L_S_Ucont_1 * (j - 1) + internal->dim_L_S_Ucont_12 * (k - 1) + internal->dim_L_S_Ucont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Ucont[internal->dim_Q_S_Ucont_1 * (k - 1) + i - 1];
+            internal->L_S_Ucont[i - 1 + internal->dim_L_S_Ucont_1 * (j - 1) + internal->dim_L_S_Ucont_12 * (k - 1) + internal->dim_L_S_Ucont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Ucont[internal->dim_Q_S_Ucont_1 * (k - 1) + i - 1];
           }
         }
       }
@@ -12390,7 +12390,7 @@ void model_withPN_output_dde(size_t n_eq, double t, double * state, size_t n_out
     for (int j = 1; j <= internal->dim_L_A_Scont_2; ++j) {
       for (int k = 1; k <= internal->dim_L_A_Scont_3; ++k) {
         for (int l = 1; l <= internal->dim_L_A_Scont_4; ++l) {
-          internal->L_A_Scont[i - 1 + internal->dim_L_A_Scont_1 * (j - 1) + internal->dim_L_A_Scont_12 * (k - 1) + internal->dim_L_A_Scont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Scont[internal->dim_Q_A_Scont_1 * (k - 1) + i - 1];
+          internal->L_A_Scont[i - 1 + internal->dim_L_A_Scont_1 * (j - 1) + internal->dim_L_A_Scont_12 * (k - 1) + internal->dim_L_A_Scont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Scont[internal->dim_Q_A_Scont_1 * (k - 1) + i - 1];
         }
       }
     }
@@ -12399,7 +12399,7 @@ void model_withPN_output_dde(size_t n_eq, double t, double * state, size_t n_out
     for (int j = 1; j <= internal->dim_L_S_Scont_2; ++j) {
       for (int k = 1; k <= internal->dim_L_S_Scont_3; ++k) {
         for (int l = 1; l <= internal->dim_L_S_Scont_4; ++l) {
-          internal->L_S_Scont[i - 1 + internal->dim_L_S_Scont_1 * (j - 1) + internal->dim_L_S_Scont_12 * (k - 1) + internal->dim_L_S_Scont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Scont[internal->dim_Q_S_Scont_1 * (k - 1) + i - 1];
+          internal->L_S_Scont[i - 1 + internal->dim_L_S_Scont_1 * (j - 1) + internal->dim_L_S_Scont_12 * (k - 1) + internal->dim_L_S_Scont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Ssubgroup[internal->dim_prop_Ssubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Scont[internal->dim_Q_S_Scont_1 * (k - 1) + i - 1];
         }
       }
     }
@@ -12478,7 +12478,7 @@ void model_withPN_output_dde(size_t n_eq, double t, double * state, size_t n_out
     for (int j = 1; j <= internal->dim_L_A_Acont_2; ++j) {
       for (int k = 1; k <= internal->dim_L_A_Acont_3; ++k) {
         for (int l = 1; l <= internal->dim_L_A_Acont_4; ++l) {
-          internal->L_A_Acont[i - 1 + internal->dim_L_A_Acont_1 * (j - 1) + internal->dim_L_A_Acont_12 * (k - 1) + internal->dim_L_A_Acont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Acont[internal->dim_Q_A_Acont_1 * (k - 1) + i - 1];
+          internal->L_A_Acont[i - 1 + internal->dim_L_A_Acont_1 * (j - 1) + internal->dim_L_A_Acont_12 * (k - 1) + internal->dim_L_A_Acont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Acont[internal->dim_Q_A_Acont_1 * (k - 1) + i - 1];
         }
       }
     }
@@ -12487,7 +12487,7 @@ void model_withPN_output_dde(size_t n_eq, double t, double * state, size_t n_out
     for (int j = 1; j <= internal->dim_L_S_Acont_2; ++j) {
       for (int k = 1; k <= internal->dim_L_S_Acont_3; ++k) {
         for (int l = 1; l <= internal->dim_L_S_Acont_4; ++l) {
-          internal->L_S_Acont[i - 1 + internal->dim_L_S_Acont_1 * (j - 1) + internal->dim_L_S_Acont_12 * (k - 1) + internal->dim_L_S_Acont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Acont[internal->dim_Q_S_Acont_1 * (k - 1) + i - 1];
+          internal->L_S_Acont[i - 1 + internal->dim_L_S_Acont_1 * (j - 1) + internal->dim_L_S_Acont_12 * (k - 1) + internal->dim_L_S_Acont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Asubgroup[internal->dim_prop_Asubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Acont[internal->dim_Q_S_Acont_1 * (k - 1) + i - 1];
         }
       }
     }
@@ -12615,7 +12615,7 @@ void model_withPN_output_dde(size_t n_eq, double t, double * state, size_t n_out
     for (int j = 1; j <= internal->dim_L_A_Ucont_2; ++j) {
       for (int k = 1; k <= internal->dim_L_A_Ucont_3; ++k) {
         for (int l = 1; l <= internal->dim_L_A_Ucont_4; ++l) {
-          internal->L_A_Ucont[i - 1 + internal->dim_L_A_Ucont_1 * (j - 1) + internal->dim_L_A_Ucont_12 * (k - 1) + internal->dim_L_A_Ucont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Ucont[internal->dim_Q_A_Ucont_1 * (k - 1) + i - 1];
+          internal->L_A_Ucont[i - 1 + internal->dim_L_A_Ucont_1 * (j - 1) + internal->dim_L_A_Ucont_12 * (k - 1) + internal->dim_L_A_Ucont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_A_Ucont[internal->dim_Q_A_Ucont_1 * (k - 1) + i - 1];
         }
       }
     }
@@ -12624,7 +12624,7 @@ void model_withPN_output_dde(size_t n_eq, double t, double * state, size_t n_out
     for (int j = 1; j <= internal->dim_L_S_Ucont_2; ++j) {
       for (int k = 1; k <= internal->dim_L_S_Ucont_3; ++k) {
         for (int l = 1; l <= internal->dim_L_S_Ucont_4; ++l) {
-          internal->L_S_Ucont[i - 1 + internal->dim_L_S_Ucont_1 * (j - 1) + internal->dim_L_S_Ucont_12 * (k - 1) + internal->dim_L_S_Ucont_123 * (l - 1)] = internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Ucont[internal->dim_Q_S_Ucont_1 * (k - 1) + i - 1];
+          internal->L_S_Ucont[i - 1 + internal->dim_L_S_Ucont_1 * (j - 1) + internal->dim_L_S_Ucont_12 * (k - 1) + internal->dim_L_S_Ucont_123 * (l - 1)] = internal->p[i - 1] * internal->omega_N[internal->dim_omega_N_1 * (k - 1) + i - 1] * internal->prop_Usubgroup[internal->dim_prop_Usubgroup_1 * (l - 1) + k - 1] * internal->Q_S_Ucont[internal->dim_Q_S_Ucont_1 * (k - 1) + i - 1];
         }
       }
     }

@@ -154,13 +154,12 @@ L_A_Sinf[,,,] = omega_C[i,k] * prop_SCsubgroup[k,l] * Q_A_Sinf[i,k]
 L_S_Ainf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * Q_S_Ainf[i,k]
 L_A_Ainf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * Q_A_Ainf[i,k]
   
-L_S_Scont[,,,] = omega_N[i,k] * prop_Ssubgroup[k,l] * Q_S_Scont[i,k]
-L_A_Scont[,,,] = omega_N[i,k] * prop_Ssubgroup[k,l] * Q_A_Scont[i,k]
-L_S_Acont[,,,] = omega_N[i,k] * prop_Asubgroup[k,l] * Q_S_Acont[i,k]
-L_A_Acont[,,,] = omega_N[i,k] * prop_Asubgroup[k,l] * Q_A_Acont[i,k]
-L_S_Ucont[,,,] = omega_N[i,k] * prop_Usubgroup[k,l] * Q_S_Ucont[i,k]
-L_A_Ucont[,,,] = omega_N[i,k] * prop_Usubgroup[k,l] * Q_A_Ucont[i,k]
-
+L_S_Scont[,,,] = p[i]*omega_N[i,k] * prop_Ssubgroup[k,l] * Q_S_Scont[i,k]
+L_A_Scont[,,,] = p[i]*omega_N[i,k] * prop_Ssubgroup[k,l] * Q_A_Scont[i,k]
+L_S_Acont[,,,] = p[i]*omega_N[i,k] * prop_Asubgroup[k,l] * Q_S_Acont[i,k]
+L_A_Acont[,,,] = p[i]*omega_N[i,k] * prop_Asubgroup[k,l] * Q_A_Acont[i,k]
+L_S_Ucont[,,,] = p[i]*omega_N[i,k] * prop_Usubgroup[k,l] * Q_S_Ucont[i,k]
+L_A_Ucont[,,,] = p[i]*omega_N[i,k] * prop_Usubgroup[k,l] * Q_A_Ucont[i,k]
 
 L_S[,,,] = kappa*(L_S_Sinf[i,j,k,l] + L_S_Ainf[i,j,k,l] + L_S_Scont[i,j,k,l] + L_S_Acont[i,j,k,l] + L_S_Ucont[i,j,k,l])
 L_A[,,,] = kappa*(L_A_Sinf[i,j,k,l] + L_A_Ainf[i,j,k,l] + L_A_Scont[i,j,k,l] + L_A_Acont[i,j,k,l] + L_A_Ucont[i,j,k,l])

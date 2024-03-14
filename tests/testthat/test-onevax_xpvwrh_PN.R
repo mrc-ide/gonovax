@@ -1023,3 +1023,179 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
 
 
 })
+
+
+
+test_that("Error if PN not yes/no or missing", {
+  tt <- seq(0, 5)
+  gp <- gono_params(1:2)
+  expect_error(run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, PN = "maybe")[[1]])
+  
+})
+
+test_that("No additional vaccinations with VoN if PN = no, but yes if PN = yes", {
+  
+  r1 <- c(0.25, 0.5)
+  r2 <- c(0.5, 0.75)
+  r2_p <- c(0.4, 0.8)
+  booster_uptake <- c(0.3, 0.75)
+  
+  tt <- seq(0, 5)
+  gp <- gono_params(1:2)
+  y1 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
+                           r1 = r1, r2 = r2, r2_p = r2_p,
+                           booster_uptake = booster_uptake, PN = "no")
+  
+  y2 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoN",
+                          r1 = r1, r2 = r2, r2_p = r2_p,
+                          booster_uptake = booster_uptake, PN = "no")
+  
+  expect_equal(y1[[1]]$U, y2[[1]]$U)
+  expect_equal(y1[[1]]$I, y2[[1]]$I)
+  expect_equal(y1[[1]]$A, y2[[1]]$A)
+  expect_equal(y1[[1]]$S, y2[[1]]$S)
+  expect_equal(y1[[1]]$T, y2[[1]]$T)
+  expect_equal(y1[[1]]$cum_vaccinated, y2[[1]]$cum_vaccinated)
+  
+  
+  y3 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
+                          r1 = r1, r2 = r2, r2_p = r2_p,
+                          booster_uptake = booster_uptake, PN = "yes")
+  
+  y4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoN",
+                          r1 = r1, r2 = r2, r2_p = r2_p,
+                          booster_uptake = booster_uptake, PN = "yes")
+  
+  expect_true(sum(y3[[1]]$cum_vaccinated) < sum(y4[[1]]$cum_vaccinated))
+  
+  
+  ## Having yes or no doesn't change anything if there is no VoN
+  
+  expect_equal(y1[[1]]$U, y3[[1]]$U)
+  expect_equal(y1[[1]]$I, y3[[1]]$I)
+  expect_equal(y1[[1]]$A, y3[[1]]$A)
+  expect_equal(y1[[1]]$S, y3[[1]]$S)
+  expect_equal(y1[[1]]$T, y3[[1]]$T)
+  expect_equal(y1[[1]]$cum_vaccinated, y3[[1]]$cum_vaccinated)
+  
+})
+
+test_that("Expected behaviour of PN quantities", {
+  
+ # r1 <- c(0.25, 0.5)
+  #r2 <- c(0.5, 0.75)
+  #r2_p <- c(0.4, 0.8)
+  #booster_uptake <- c(0.3, 0.75)
+  
+  
+  
+  r1 <- 0.25
+  r2 <- 0.5
+  r2_p <- 0.4
+  booster_uptake <- 0.75
+  hes <- 0.1
+  
+  tt <- seq(0, 5)
+  gp <- gono_params(1:100)
+
+  y4 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoN",
+                          r1 = r1, r2 = r2, r2_p = r2_p, hes = hes,
+                          booster_uptake = booster_uptake, PN = "yes")
+  
+  for (i in 1:100){
+    
+
+    expect_true(all(y4[[i]]$P_A_Acont > 0))
+    expect_true(all(y4[[i]]$P_A_Ucont > 0))
+    expect_true(all(y4[[i]]$P_A_inf > 0))
+    expect_true(all(y4[[i]]$P_S_inf > 0))
+    expect_true(all(y4[[i]]$P_S_Acont > 0))
+    expect_true(all(y4[[i]]$P_S_Ucont > 0))
+    
+    expect_true(all(y4[[i]]$Q_A_Acont > 0))
+    expect_true(all(y4[[i]]$Q_A_Scont > 0))
+    expect_true(all(y4[[i]]$Q_A_Ucont > 0))
+    expect_true(all(y4[[i]]$Q_A_Sinf > 0))
+    expect_true(all(y4[[i]]$Q_A_Ainf > 0))
+    
+    expect_true(all(y4[[i]]$Q_S_Sinf > 0))
+    expect_true(all(y4[[i]]$Q_S_Ainf > 0))
+    expect_true(all(y4[[i]]$Q_S_Acont > 0))
+    expect_true(all(y4[[i]]$Q_S_Ucont > 0))
+    expect_true(all(y4[[i]]$Q_S_Scont > 0))
+    
+    expect_true(all(y4[[i]]$phi >= 0))
+    
+    expect_true(all(y4[[i]]$notifiedandattended >= 0))
+    
+    expect_true(all(y4[[i]]$phi <= y4[[i]]$U))
+    
+    
+  
+    expect_true(all(y4[[i]]$Q_A_Ainf + y4[[i]]$P_A_inf < 1))
+    expect_true(all(y4[[i]]$Q_S_Ainf + y4[[i]]$P_S_inf < 1))
+    
+    expect_true(all(y4[[i]]$Q_A_Sinf < 1))
+    expect_true(all(y4[[i]]$Q_S_Sinf < 1))
+    
+    expect_true(all(y4[[i]]$Q_A_Ucont + y4[[i]]$P_A_Ucont <= 3/12))
+    expect_true(all(y4[[i]]$Q_S_Ucont + y4[[i]]$P_S_Ucont <= 2/52))
+    expect_true(all(y4[[i]]$Q_A_Acont + y4[[i]]$P_A_Acont <= 3/12))
+    expect_true(all(y4[[i]]$Q_S_Acont + y4[[i]]$P_S_Acont <= 2/52))
+    
+  }
+  
+
+  
+})
+
+
+test_that("Check impact of mixing", {
+  
+  
+  r1 <- 0.25
+  r2 <- 0.5
+  r2_p <- 0.4
+  booster_uptake <- 0.75
+  hes <- 0.1
+  
+  tt <- seq(0, 5)
+  gp <- gono_params(1:100)
+  gp0 <- gp
+  gp1 <- gp
+  
+  for (i in 1:100){
+    gp1[[i]]$epsilon <- 1
+  }
+  
+  
+  tt <- c(0,50)
+  y0init <- run_onevax_xpvwrh(tt, gp0, PN = "yes")
+  init_params0 <- lapply(y0init, restart_params)
+
+  
+  y1init <- run_onevax_xpvwrh(tt, gp0, PN = "yes")
+  init_params1 <- lapply(y1init, restart_params)
+  
+  
+
+  
+  tt <- seq(0, 5)
+  
+  y0 <- run_onevax_xpvwrh(tt, gp0, init_params = init_params0, vea = 0.5, dur_v = 1, strategy = "VoN",
+                          r1 = r1, r2 = r2, r2_p = r2_p, hes = hes,
+                          booster_uptake = booster_uptake, PN = "yes")
+  
+  y1 <- run_onevax_xpvwrh(tt, gp1, init_params = init_params1, vea = 0.5, dur_v = 1, strategy = "VoN",
+                          r1 = r1, r2 = r2, r2_p = r2_p, hes = hes,
+                          booster_uptake = booster_uptake, PN = "yes")
+  
+  for (i in 1:100){
+    print(i)
+    expect_true(all(y0[[i]]$notifiedandattended[-1,1,] >= y1[[i]]$notifiedandattended[-1,1,]))
+    expect_true(all(y0[[i]]$notifiedandattended[-1,2,] <= y1[[i]]$notifiedandattended[-1,2,]))
+  }
+  
+  
+  
+})
