@@ -126,13 +126,41 @@ test_that("vaccine effects work as expected", {
   expect_true(all(y1$S[-1, , 3] > 1e-6))
   expect_true(all(y1$A[-1, , ] > 1e-6))
 
-  ## check perfect protection against duration works
-  y2 <- run_onevax_xvw(tt, gp, ved = 1, dur = 1,
-                       uptake = 1, strategy = "VoA")[[1]]
+  ## check protection against duration works
+  # for perfect ved (= 1), the maximum rate of movement A->U is the rate of
+  # care seeking (mu)
+  # if same number of people start in A as in S and parameters
+  # lambda and eta = 0 (i.e other routes into A & S and out of A respectively)
+  # the rate of movement of people A -> U and S -> T should be the same
 
-  expect_true(all(y2$A[, , 2] < 1e-6))
-  expect_true(all(y2$A[-1, , 3] > 1e-6))
-  expect_true(all(y2$S[-1, , ] > 0))
+  # replace lambda, eta = 0
+  elements_to_replace <- c("eta_l_t", "eta_h_t", "beta_t")
+  for(i in 1:2){
+  for (element in elements_to_replace) {
+    gp[[i]][[element]] <- rep(0, times = length(gp[[1]][[element]]))
+  }
+  }
+
+  # set starting conditions
+  pars <- c(demographic_params(), gp)
+  n_vax <- 3
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
+  #half of population in A0 and half in S0
+  #everyone begins vaccinated
+  N0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+  A0 <- pars$N0 * outer(pars$q, c(0, 0.5, 0))
+  S0 <- pars$N0 * outer(pars$q, c(0, 0.5, 0))
+
+  init_params <- list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+  init_params_list <- list(init_params, init_params)
+
+  y2 <- run_onevax_xvw(tt, gono_params = gp, init_params = init_params_list,
+                       ved = 1, dur = 1e99)
+
+  for(i in 1:2){
+  expect_equal(y2[[i]]$A[, , 2], y2[[i]]$S[, , 2]) # 2 = V stratum
+  }
 
 })
 
@@ -149,3 +177,4 @@ test_that("can set initial coverage", {
   expect_error(run_onevax_xvw(tt, gp, ves = 1, dur = 1e3, coverage = c(0.1, 0)),
                "'coverage' must be a scalar")
 })
+
