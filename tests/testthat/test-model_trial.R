@@ -243,13 +243,13 @@ test_that("VEd behaves as expected ", {
 
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
-  
+
   # VEd = 1 rate of natural clearance (nu) is equal to the rate of care seeking
   # (mu)
   # if same number of people start in A as in S and parameters
   # lambda and eta = 0 (i.e other routes into A & S and out of A respectively)
   # the rate of movement of people A -> U and S -> T in 'V' should be the same
-  
+
   # replace lambda, eta = 0
   elements_to_replace <- c("eta", "lambda")
   for (element in elements_to_replace) {
@@ -270,9 +270,9 @@ test_that("VEd behaves as expected ", {
   init_params <- list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
 
   y2 <- run_onevax_xvw_trial(tt = tt, gono_params = gp,
-                       initial_params_trial = list(init_params),
-                       vea = 0, vei = 0, ved = 1, ves = 0,
-                       dur = 1e99)
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 1, ves = 0,
+                             dur = 1e99)
 
   expect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
 

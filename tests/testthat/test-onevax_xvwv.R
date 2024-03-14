@@ -97,7 +97,7 @@ test_that("vaccine effects work as expected", {
 
   # replace lambda, eta = 0
   elements_to_replace <- c("eta_l_t", "eta_h_t", "beta_t")
-  for(i in 1:2){
+  for (i in 1:2){
     for (element in elements_to_replace) {
       gp[[i]][[element]] <- rep(0, times = length(gp[[1]][[element]]))
     }
@@ -118,9 +118,9 @@ test_that("vaccine effects work as expected", {
   init_params_list <- list(init_params, init_params)
 
   y2 <- run_onevax_xvwv(tt, gono_params = gp, init_params = init_params_list,
-                       ved = 1, dur = 1e99)
+                        ved = 1, dur = 1e99)
 
-  for(i in 1:2){
+  for (i in 1:2){
     expect_equal(y2[[i]]$A[, , 2], y2[[i]]$S[, , 2]) # 2 = V stratum
   }
 

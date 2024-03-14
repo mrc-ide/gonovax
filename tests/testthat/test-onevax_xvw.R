@@ -135,10 +135,10 @@ test_that("vaccine effects work as expected", {
 
   # replace lambda, eta = 0
   elements_to_replace <- c("eta_l_t", "eta_h_t", "beta_t")
-  for(i in 1:2){
-  for (element in elements_to_replace) {
-    gp[[i]][[element]] <- rep(0, times = length(gp[[1]][[element]]))
-  }
+  for (i in 1:2) {
+    for (element in elements_to_replace) {
+      gp[[i]][[element]] <- rep(0, times = length(gp[[1]][[element]]))
+    }
   }
 
   # set starting conditions
@@ -158,8 +158,8 @@ test_that("vaccine effects work as expected", {
   y2 <- run_onevax_xvw(tt, gono_params = gp, init_params = init_params_list,
                        ved = 1, dur = 1e99)
 
-  for(i in 1:2){
-  expect_equal(y2[[i]]$A[, , 2], y2[[i]]$S[, , 2]) # 2 = V stratum
+  for (i in 1:2){
+    expect_equal(y2[[i]]$A[, , 2], y2[[i]]$S[, , 2]) # 2 = V stratum
   }
 
 })
@@ -177,4 +177,3 @@ test_that("can set initial coverage", {
   expect_error(run_onevax_xvw(tt, gp, ves = 1, dur = 1e3, coverage = c(0.1, 0)),
                "'coverage' must be a scalar")
 })
-
