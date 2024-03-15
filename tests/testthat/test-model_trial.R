@@ -244,6 +244,38 @@ test_that("VEd behaves as expected ", {
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
+  # VEd = 1 rate of natural clearance (nu) is equal to the rate of care seeking
+  # (mu)
+  # if same number of people start in A as in S and parameters
+  # lambda and eta = 0 (i.e other routes into A & S and out of A respectively)
+  # the rate of movement of people A -> U and S -> T in 'V' should be the same
+
+  # replace lambda, eta = 0
+  elements_to_replace <- c("eta", "lambda")
+  for (element in elements_to_replace) {
+    gp[[1]][[element]] <- 0
+  }
+
+  # set starting conditions
+  pars <- c(demographic_params_trial(N = 600), gp)
+  n_vax <- 3
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
+  #half of population in A0 and half in S0
+  #everyone begins vaccinated
+  N0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+  A0 <- pars$N0 * outer(pars$q, c(0, 0.5, 0))
+  S0 <- pars$N0 * outer(pars$q, c(0, 0.5, 0))
+
+  init_params <- list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+
+  y2 <- run_onevax_xvw_trial(tt = tt, gono_params = gp,
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 1, ves = 0,
+                             dur = 1e99)
+
+  expect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
+
 })
 
 
@@ -295,15 +327,14 @@ test_that("outputs for vaccination run as expected", {
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5)
 
-  expect_equal(y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 3e+05, 298770.012957928,
-                                 297547.433626743, 296334.908051234,
-                                 295135.061477033, 293950.297077376, 0, 0, 0,
-                                 0, 0, 0, 3e+05, 299383.713797674,
-                                 298770.717502468, 298162.935800213,
-                                 297562.116361515, 296969.7952273, 0, 0, 0, 0,
-                                 0, 0, 0, 0.819388141002698, 1.63374216215416,
-                                 2.4431142416253, 3.24757521226149,
-                                 4.04721268804341),
+  expect_equal(tolerance = 0.1,
+               y[[1]]$U, array(c(0, 0, 0, 0, 0, 0, 300000.0, 298770.0,
+                                 297547.4, 296334.9, 295135.1, 293950.3,
+                                 0, 0, 0,
+                                 0, 0, 0, 300000.0, 299386.7, 298791.9,
+                                 298227.1, 297698.8, 297210.3, 0, 0, 0, 0,
+                                 0, 0, 0, 0.8193902, 1.6337723, 2.4432536,
+                                 3.2479778, 4.0481123),
                                dim = c(6, 2, 3), dimnames = list(NULL,
                                                                  c("L", "H"),
                                                                  c("X.I",

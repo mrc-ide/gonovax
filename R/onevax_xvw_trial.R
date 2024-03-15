@@ -187,6 +187,8 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
     init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
                              p_v = p_v, n_erlang = n_erlang,
                              n_diag_rec = n_diag_rec)
+  } else {
+    init_params_trial <- initial_params_trial
   }
 
   ret <- Map(run_trial, gono_params = gono_params,

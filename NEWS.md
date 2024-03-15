@@ -1,3 +1,6 @@
+# gonovax 0.4.15
+* the maximum effective rate of natural clearance in the presence of ved is now capped at the value for the rate of care seeking
+
 # gonovax 0.4.14
 * extracting diagnoses and vaccination by stratum type now possible with n_erlang > 1, and symptomatic and
 asymptomatic diagnoses by vaccine-protected vs non-vaccine-protected can be extracted against (adjusted) baseline
