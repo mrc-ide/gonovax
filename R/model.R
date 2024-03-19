@@ -11,7 +11,7 @@ NULL
 ##' @param tt a numeric vector of times at which the model state is output
 ##' @param transform = TRUE
 ##' @export run
-##' @inheritParams model
+##' @inheritParams model_params
 
 run <- function(tt, gono_params, demographic_params = NULL, init_params = NULL,
                 vax_params = NULL, n_diag_rec = 1, transform = TRUE) {
@@ -39,7 +39,7 @@ run <- function(tt, gono_params, demographic_params = NULL, init_params = NULL,
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @param transform = TRUE
 ##' @export run
-##' @inheritParams model
+##' @inheritParams model_params_xpvwrh
 
 run_xpvwrh <- function(tt, gono_params, demographic_params = NULL,
                        init_params = NULL, vax_params = NULL,
