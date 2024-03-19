@@ -7,6 +7,7 @@
 run(
   tt,
   gono_params,
+  demographic_params = NULL,
   init_params = NULL,
   vax_params = NULL,
   n_diag_rec = 1,
@@ -16,11 +17,13 @@ run(
 \arguments{
 \item{tt}{a numeric vector of times at which the model state is output}
 
-\item{gono_params}{a data frame of parameters}
+\item{gono_params}{A dataframe of natural history parameters}
 
-\item{init_params}{= NULL}
+\item{demographic_params}{A dataframe of demographic parameters}
 
-\item{vax_params}{= NULL}
+\item{init_params}{A list of starting conditions}
+
+\item{vax_params}{A vector of vaccination params}
 
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
 

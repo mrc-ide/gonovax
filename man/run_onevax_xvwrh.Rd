@@ -34,7 +34,7 @@ run_onevax_xvwrh(
 
 \item{gono_params}{list of gono params}
 
-\item{init_params}{= NULL}
+\item{init_params}{A list of starting conditions}
 
 \item{dur}{scalar or numeric vector with same length as `gono_params`
 giving duration of the vaccine (in years)}

@@ -48,7 +48,7 @@ run_onevax_xpvwrh(
 
 \item{gono_params}{list of gono params}
 
-\item{init_params}{= NULL}
+\item{init_params}{A list of starting conditions}
 
 \item{dur_v}{duration of time spent in V stratum after completing a round of
 primary vaccination (fully vaccinated, accepting first and second dose)}

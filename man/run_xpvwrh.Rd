@@ -7,6 +7,7 @@
 run_xpvwrh(
   tt,
   gono_params,
+  demographic_params = NULL,
   init_params = NULL,
   vax_params = NULL,
   n_erlang = 1,
@@ -17,11 +18,13 @@ run_xpvwrh(
 \arguments{
 \item{tt}{a numeric vector of times at which the model state is output}
 
-\item{gono_params}{a data frame of parameters}
+\item{gono_params}{A dataframe of natural history parameters}
 
-\item{init_params}{= NULL}
+\item{demographic_params}{A dataframe of demographic parameters}
 
-\item{vax_params}{= NULL}
+\item{init_params}{A list of starting conditions}
+
+\item{vax_params}{A vector of vaccination params}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
 made through vaccine-protected strata until that protection has waned}
