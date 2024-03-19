@@ -56,7 +56,7 @@ lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
 
 n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
-n_AU[, ]     <- 1/(ved[j]*(1/mu - 1/nu) + 1/nu) * A[i,j]
+n_AU[, ]     <- 1 / (ved[j] * (1 / mu - 1 / nu) + 1 / nu) * A[i,j]
 n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta[i] * U[i, j]
