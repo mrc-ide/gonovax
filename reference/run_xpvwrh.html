@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.16</span>
       </span>
     </div>
 
@@ -60,6 +60,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_xpvwrh</span><span class="op">(</span></span>
 <span>  <span class="va">tt</span>,</span>
 <span>  <span class="va">gono_params</span>,</span>
+<span>  demographic_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  init_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vax_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_erlang <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -75,15 +76,19 @@
 
 
 <dt>gono_params</dt>
-<dd><p>a data frame of parameters</p></dd>
+<dd><p>A dataframe of natural history parameters</p></dd>
+
+
+<dt>demographic_params</dt>
+<dd><p>A dataframe of demographic parameters</p></dd>
 
 
 <dt>init_params</dt>
-<dd><p>= NULL</p></dd>
+<dd><p>A list of starting conditions</p></dd>
 
 
 <dt>vax_params</dt>
-<dd><p>= NULL</p></dd>
+<dd><p>A vector of vaccination params</p></dd>
 
 
 <dt>n_erlang</dt>
