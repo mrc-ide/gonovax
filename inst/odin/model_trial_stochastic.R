@@ -17,7 +17,7 @@ update(time) <- (step + 1) * dt
 
 # individual probabilities of transitioning between infection states
 r_AT[, ] <- eta
-r_AU[, ] <- (ved[j] * (mu - nu) + nu)
+r_AU[, ] <- 1/(ved[j]*(1/mu - 1/nu) + 1/nu)
 
 # probability of individuals leaving compartments
 p_U_ext[, ] <- 1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt)
