@@ -1,3 +1,6 @@
+# gonovax 0.4.16
+* Expose demographic_params in run function to facilitate adaptation to non-UK contexts
+
 # gonovax 0.4.15
 * the maximum effective rate of natural clearance in the presence of ved is now capped at the value for the rate of care seeking
 
