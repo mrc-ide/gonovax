@@ -90,7 +90,7 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  || strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$W[-1])
       ret$vaccinatedto_vos <- c(ret$V1[-1], ret$V1[-1])
     } else {
@@ -151,7 +151,7 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  || strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$W[-1])
       ret$vaccinatedto_vos <- c(ret$V1[-1], ret$R1[-1])
     } else {
@@ -217,7 +217,7 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  || strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$W[-1])
       ret$vaccinatedto_vos <- c(ret$V1[-1], ret$R1[-1])
     } else {
@@ -284,7 +284,7 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  || strategy == "VaH+VoN")) {
 
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$X[-1],
                                   ret$P[- (seq_len(n_erlang * n_diag_rec) %%
