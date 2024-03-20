@@ -276,6 +276,20 @@ test_that("VEd behaves as expected ", {
 
   expect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
 
+  # if ved = 0.5, the effective rate of clearance is about double the rate of
+  # natural clearance
+  y_0 <- run_onevax_xvw_trial(tt = tt, gono_params = gp,
+                              initial_params_trial = list(init_params),
+                              vea = 0, vei = 0, ved = 0, ves = 0,
+                              dur = 1e99)
+  y_0.5 <- run_onevax_xvw_trial(tt = tt, gono_params = gp,
+                                initial_params_trial = list(init_params),
+                                vea = 0, vei = 0, ved = 0.5, ves = 0,
+                                dur = 1e99)
+
+  expect_equal(tolerance = 1, 2 * abs(round(diff(y_0[[1]]$A[, 2, 2]), 0)),
+               abs(round(diff(y_0.5[[1]]$A[, 2, 2]), 0)))
+
 })
 
 
@@ -635,3 +649,63 @@ test_that("for n_diag_rec > 1, the number treated = the number recorded
             diff(rowSums(y[[1]]$N[, 2, 2:3]))
 
           })
+
+test_that("n_AU conditional statement works as expected", {
+
+  #when mu = 0, defaults to nu
+  #and when ved = 0, and mu not = 0, mu's cancel out, and rate is nu
+  #so in both cases movement A->U should be the same
+  tt <- seq.int(0, 5) / 365
+
+  gp_mu_og <- gono_params_trial(1)[1]
+  gp_mu_zero <- gono_params_trial(1)[1]
+
+  # replace parameters with zero
+  elements_to_replace <- c("eta", "lambda", "mu")
+  for (element in elements_to_replace) {
+    gp_mu_zero[[1]][[element]] <- 0
+  }
+  elements_to_replace <- c("eta", "lambda")
+  for (element in elements_to_replace) {
+    gp_mu_og[[1]][[element]] <- 0
+  }
+
+  # set starting conditions
+  pars <- c(demographic_params_trial(N = 600), gp_mu_og)
+  n_vax <- 3
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
+  #all of population in A0 because we are only interested in movement out of A
+  N0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+  A0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+
+  init_params <- list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+
+  y1 <- run_onevax_xvw_trial(tt = tt, gono_params = gp_mu_zero,
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur = 1e99)
+
+  y2 <- run_onevax_xvw_trial(tt = tt, gono_params = gp_mu_og,
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur = 1e99)
+
+  expect_equal(y1, y2)
+
+  #adding in ved when mu = 0, makes no difference
+  y3 <- run_onevax_xvw_trial(tt = tt, gono_params = gp_mu_zero,
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 0.5, ves = 0,
+                             dur = 1e99)
+  expect_equal(y3, y2)
+
+  #adding in ved when mu is not 0, does make a difference
+  y4 <- run_onevax_xvw_trial(tt = tt, gono_params = gp_mu_og,
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 0.5, ves = 0,
+                             dur = 1e99)
+
+  expect_error(expect_equal(y3, y4))
+
+})
