@@ -1,3 +1,6 @@
+# gonovax 0.4.17
+* ved acts on duration of asymptomatic infection rather than the rate of asymptomatic natural clearance
+
 # gonovax 0.4.16
 * Expose demographic_params in run function to facilitate adaptation to non-UK contexts
 
