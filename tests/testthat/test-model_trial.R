@@ -652,7 +652,7 @@ test_that("for n_diag_rec > 1, the number treated = the number recorded
 
 test_that("can set n_AU conditional statement works as expected", {
 
-#when mu = 0, defaults to nu
+  #when mu = 0, defaults to nu
   #and when ved = 0, and mu not = 0, mu's cancel out, and rate is nu
   #so in both cases movement A->U should be the same
   tt <- seq.int(0, 5) / 365
@@ -687,9 +687,9 @@ test_that("can set n_AU conditional statement works as expected", {
                              dur = 1e99)
 
   y2 <- run_onevax_xvw_trial(tt = tt, gono_params = gp_mu_og,
-                            initial_params_trial = list(init_params),
-                            vea = 0, vei = 0, ved = 0, ves = 0,
-                            dur = 1e99)
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur = 1e99)
 
   expect_equal(y1, y2)
 

@@ -200,7 +200,8 @@ test_that("can set n_AU conditional statement works as expected", {
   for (i in 1:2) {
     for (element in elements_to_replace) {
       gp_mu_zero[[i]][[element]] <- rep(0,
-                                      times = length(gp_mu_zero[[1]][[element]]))
+                                        times =
+                                          length(gp_mu_zero[[1]][[element]]))
     }
   }
 
@@ -217,14 +218,14 @@ test_that("can set n_AU conditional statement works as expected", {
   init_params_list <- list(init_params, init_params)
 
   y1 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_zero,
-                             init_params = init_params_list,
-                             vea = 0, vei = 0, ved = 0, ves = 0,
-                             dur = 1e99)
+                       init_params = init_params_list,
+                       vea = 0, vei = 0, ved = 0, ves = 0,
+                       dur = 1e99)
 
   y2 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_og,
-                             init_params = init_params_list,
-                             vea = 0, vei = 0, ved = 0, ves = 0,
-                             dur = 1e99)
+                       init_params = init_params_list,
+                       vea = 0, vei = 0, ved = 0, ves = 0,
+                       dur = 1e99)
 
   for (i in 1:2){
     expect_equal(y1[[i]], y2[[i]])
@@ -232,18 +233,18 @@ test_that("can set n_AU conditional statement works as expected", {
 
   #adding in ved when mu = 0, makes no difference
   y3 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_zero,
-                             init_params = init_params_list,
-                             vea = 0, vei = 0, ved = 0.5, ves = 0,
-                             dur = 1e99)
+                       init_params = init_params_list,
+                       vea = 0, vei = 0, ved = 0.5, ves = 0,
+                       dur = 1e99)
   for (i in 1:2){
     expect_equal(y3[[i]], y2[[i]])
   }
 
   #adding in ved when mu is not 0, does make a difference
   y4 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_og,
-                             init_params = init_params_list,
-                             vea = 0, vei = 0, ved = 0.5, ves = 0,
-                             dur = 1e99)
+                       init_params = init_params_list,
+                       vea = 0, vei = 0, ved = 0.5, ves = 0,
+                       dur = 1e99)
 
   for (i in 1:2){
     expect_error(expect_equal(y3[[i]], y4[[i]]))
