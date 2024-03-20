@@ -31,7 +31,7 @@ N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 #number transitioning between infection states
 n_UI[, ]     <- lambda * (1 - vea[j]) * U[i, j]  # force of infection constant
 n_AT[, ]     <- eta * A[i, j]                 # in trial model
-n_AU[, ] <- if (mu == 0) 0 else
+n_AU[, ] <- if (mu == 0) nu * A[i, j] else
   nu * mu / (ved[j] * nu + (1 - ved[j]) * mu) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
