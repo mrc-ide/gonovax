@@ -61,8 +61,8 @@ n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
 n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
-n_AU[, ] <- if (mu == 0 && nu == 0) 0 else
-  nu * mu / (ved[j] * nu + (1 - ved[j]) * mu) * A[i, j]
+n_AU[, ] <- if (mu == 0) 0 else
+  (nu * mu) / ((ved[j] * nu + (1 - ved[j]) * mu)) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta[i] * U[i, j]

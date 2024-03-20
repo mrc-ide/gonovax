@@ -17,7 +17,7 @@ update(time) <- (step + 1) * dt
 
 # individual probabilities of transitioning between infection states
 r_AT[, ] <- eta
-r_AU[, ] <- if (mu == 0 && nu == 0) 0 else
+r_AU[, ] <- if (mu == 0) 0 else
   nu * mu / (ved[j] * nu + (1 - ved[j]) * mu)
 
 # probability of individuals leaving compartments
