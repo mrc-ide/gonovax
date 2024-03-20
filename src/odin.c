@@ -4161,7 +4161,7 @@ void model_trial_rhs(model_trial_internal* internal, double t, double * state, d
   }
   for (int i = 1; i <= internal->dim_n_AU_1; ++i) {
     for (int j = 1; j <= internal->dim_n_AU_2; ++j) {
-      internal->n_AU[i - 1 + internal->dim_n_AU_1 * (j - 1)] = (internal->mu == 0 && internal->nu == 0 ? 0 : internal->nu * internal->mu / (double) (internal->ved[j - 1] * internal->nu + (1 - internal->ved[j - 1]) * internal->mu) * A[internal->dim_A_1 * (j - 1) + i - 1]);
+      internal->n_AU[i - 1 + internal->dim_n_AU_1 * (j - 1)] = (internal->mu == 0 ? 0 : internal->nu * internal->mu / (double) (internal->ved[j - 1] * internal->nu + (1 - internal->ved[j - 1]) * internal->mu) * A[internal->dim_A_1 * (j - 1) + i - 1]);
     }
   }
   for (int i = 1; i <= internal->dim_n_ST_1; ++i) {
