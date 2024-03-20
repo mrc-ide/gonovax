@@ -276,6 +276,20 @@ test_that("VEd behaves as expected ", {
 
   expect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
 
+  # if ved = 0.5, the effective rate of clearance is about double the rate of
+  # natural clearance
+  y_0 <- run_onevax_xvw_trial(tt = tt, gono_params = gp,
+                              initial_params_trial = list(init_params),
+                              vea = 0, vei = 0, ved = 0, ves = 0,
+                              dur = 1e99)
+  y_0.5 <- run_onevax_xvw_trial(tt = tt, gono_params = gp,
+                                initial_params_trial = list(init_params),
+                                vea = 0, vei = 0, ved = 0.5, ves = 0,
+                                dur = 1e99)
+
+  expect_equal(tolerance = 1, 2 * abs(round(diff(y_0[[1]]$A[, 2, 2]), 0)),
+               abs(round(diff(y_0.5[[1]]$A[, 2, 2]), 0)))
+
 })
 
 
