@@ -177,3 +177,76 @@ test_that("can set initial coverage", {
   expect_error(run_onevax_xvw(tt, gp, ves = 1, dur = 1e3, coverage = c(0.1, 0)),
                "'coverage' must be a scalar")
 })
+
+test_that("can set n_AU conditional statement works as expected", {
+  #when mu = 0, defaults to nu
+  #and when ved = 0, and mu not = 0, mu's cancel out, and rate is nu
+  #so in both cases movement A->U should be the same
+
+  tt <- seq(0, 5)
+  gp_mu_og <- gono_params(1:2)
+  gp_mu_zero <- gono_params(1:2)
+
+  # replace parameters with zero
+  elements_to_replace <- c("eta_l_t", "eta_h_t", "beta_t")
+  for (i in 1:2) {
+    for (element in elements_to_replace) {
+      gp_mu_og[[i]][[element]] <- rep(0,
+                                      times = length(gp_mu_og[[1]][[element]]))
+    }
+  }
+
+  elements_to_replace <- c("eta_l_t", "eta_h_t", "beta_t", "mu")
+  for (i in 1:2) {
+    for (element in elements_to_replace) {
+      gp_mu_zero[[i]][[element]] <- rep(0,
+                                      times = length(gp_mu_zero[[1]][[element]]))
+    }
+  }
+
+  # set starting conditions
+  pars <- c(demographic_params(), gp)
+  n_vax <- 3
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
+  #all of population in A0 because we are only interested in movement out of A
+  N0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+  A0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+
+  init_params <- list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+  init_params_list <- list(init_params, init_params)
+
+  y1 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_zero,
+                             init_params = init_params_list,
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur = 1e99)
+
+  y2 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_og,
+                             init_params = init_params_list,
+                             vea = 0, vei = 0, ved = 0, ves = 0,
+                             dur = 1e99)
+
+  for (i in 1:2){
+    expect_equal(y1[[i]], y2[[i]])
+  }
+
+  #adding in ved when mu = 0, makes no difference
+  y3 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_zero,
+                             init_params = init_params_list,
+                             vea = 0, vei = 0, ved = 0.5, ves = 0,
+                             dur = 1e99)
+  for (i in 1:2){
+    expect_equal(y3[[i]], y2[[i]])
+  }
+
+  #adding in ved when mu is not 0, does make a difference
+  y4 <- run_onevax_xvw(tt = tt, gono_params = gp_mu_og,
+                             init_params = init_params_list,
+                             vea = 0, vei = 0, ved = 0.5, ves = 0,
+                             dur = 1e99)
+
+  for (i in 1:2){
+    expect_error(expect_equal(y3[[i]], y4[[i]]))
+  }
+
+})
