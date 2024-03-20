@@ -178,7 +178,7 @@ test_that("can set initial coverage", {
                "'coverage' must be a scalar")
 })
 
-test_that("can set n_AU conditional statement works as expected", {
+test_that("n_AU conditional statement works as expected", {
   #when mu = 0, defaults to nu
   #and when ved = 0, and mu not = 0, mu's cancel out, and rate is nu
   #so in both cases movement A->U should be the same
@@ -206,7 +206,7 @@ test_that("can set n_AU conditional statement works as expected", {
   }
 
   # set starting conditions
-  pars <- c(demographic_params(), gp)
+  pars <- c(demographic_params(), gp_mu_og)
   n_vax <- 3
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
 

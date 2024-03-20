@@ -650,7 +650,7 @@ test_that("for n_diag_rec > 1, the number treated = the number recorded
 
           })
 
-test_that("can set n_AU conditional statement works as expected", {
+test_that("n_AU conditional statement works as expected", {
 
   #when mu = 0, defaults to nu
   #and when ved = 0, and mu not = 0, mu's cancel out, and rate is nu
@@ -671,7 +671,7 @@ test_that("can set n_AU conditional statement works as expected", {
   }
 
   # set starting conditions
-  pars <- c(demographic_params_trial(N = 600), gp)
+  pars <- c(demographic_params_trial(N = 600), gp_mu_og)
   n_vax <- 3
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
 
