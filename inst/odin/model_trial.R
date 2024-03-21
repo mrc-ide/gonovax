@@ -12,7 +12,7 @@ n_vax   <- user(1)
 ## Core equations for transitions between compartments:
 
 deriv(U[, ]) <-  - n_UI[i, j] +
-  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) - sum(n_diag_rec[i, j, ])
+  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
 
 deriv(I[, ]) <- n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
 
@@ -23,7 +23,7 @@ deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
 
 deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
-  sum(wT[i, j, ])
+  sum(wT[i, j, ]) - sum(n_diag_rec[i, j, ])
 
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
