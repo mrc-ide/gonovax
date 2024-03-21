@@ -4257,7 +4257,7 @@ void model_trial_rhs(model_trial_internal* internal, double t, double * state, d
   for (int i = 1; i <= internal->dim_n_diag_rec_1; ++i) {
     for (int j = 1; j <= internal->dim_n_diag_rec_2; ++j) {
       for (int k = 1; k <= internal->dim_n_diag_rec_3; ++k) {
-        internal->n_diag_rec[i - 1 + internal->dim_n_diag_rec_1 * (j - 1) + internal->dim_n_diag_rec_12 * (k - 1)] = internal->diag_rec[internal->dim_diag_rec_12 * (k - 1) + internal->dim_diag_rec_1 * (j - 1) + i - 1] * internal->n_TU[internal->dim_n_TU_1 * (k - 1) + i - 1];
+        internal->n_diag_rec[i - 1 + internal->dim_n_diag_rec_1 * (j - 1) + internal->dim_n_diag_rec_12 * (k - 1)] = internal->diag_rec[internal->dim_diag_rec_12 * (k - 1) + internal->dim_diag_rec_1 * (j - 1) + i - 1] * (internal->n_ST[internal->dim_n_ST_1 * (k - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (k - 1) + i - 1]);
       }
     }
   }
