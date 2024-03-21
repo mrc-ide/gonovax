@@ -588,8 +588,7 @@ test_that("for n_diag_rec > 1, total N summed over X or V+W is
 
           })
 
-test_that("for n_diag_rec > 1, the number treated = the number recorded
-          as diagnosed", {
+test_that("for n_diag_rec > 1, the number diagnosed = the number recorded", {
 
             gp <- gono_params_trial(1)[1]
             n_erlang <- 1
@@ -604,13 +603,16 @@ test_that("for n_diag_rec > 1, the number treated = the number recorded
                                       stochastic = FALSE,
                                       n_diag_rec = n_diag_rec, N = N)
 
-            # number treated in '.I' becomes the number in '.II'
-            expect_true(all(round(y[[1]]$cum_treated[, 2, 1], 3) ==
-                              round(y[[1]]$N[, 2, 2], 3)))
-            expect_true(all(round(y[[1]]$cum_treated[, 2, 3], 3) ==
-                              round(y[[1]]$N[, 2, 4], 3)))
-            expect_true(all(round(y[[1]]$cum_treated[, 2, 5], 3) ==
-                              round(y[[1]]$N[, 2, 6], 3)))
+            # number diagnosed in '.I' becomes the number in '.II'
+            expect_true(all(round(y[[1]]$cum_diag_a[, 2, 1] +
+                                    y[[1]]$cum_diag_s[, 2, 1]) ==
+                              round(y[[1]]$N[, 2, 2])))
+            expect_true(all(round(y[[1]]$cum_diag_a[, 2, 3] +
+                                    y[[1]]$cum_diag_s[, 2, 3]) ==
+                              round(y[[1]]$N[, 2, 4])))
+            expect_true(all(round(y[[1]]$cum_diag_a[, 2, 5] +
+                                    y[[1]]$cum_diag_s[, 2, 5]) ==
+                              round(y[[1]]$N[, 2, 6])))
 
             n_diag_rec <- 3
 
@@ -620,18 +622,16 @@ test_that("for n_diag_rec > 1, the number treated = the number recorded
                                       stochastic = FALSE,
                                       n_diag_rec = n_diag_rec, N = N)
 
-            # number treated each year in '.I' becomes the N gained in '.II' AND
+            # number diagnosed each year in '.I' becomes the N gained in '.II' AND
             # '.III' diagnosis history strata for that year
             # (because some people could get diagnosed twice in one year)
             # and number treated in '.II' becomes the number in '.III' diagnosis
             # history
-
-            expect_true(all(round(diff(y[[1]]$cum_treated[, 2, 1]), 3) ==
-                              round(diff(rowSums(y[[1]]$N[, 2, 2:3])), 3)))
-            expect_true(all(round(diff(y[[1]]$cum_treated[, 2, 2]), 3) ==
-                              round(diff(y[[1]]$N[, 2, 3]), 3)))
-
-            diff(y[[1]]$cum_treated[, 2, 1])
-            diff(rowSums(y[[1]]$N[, 2, 2:3]))
+            expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 1] +
+                                         y[[1]]$cum_diag_s[, 2, 1])) ==
+                              round(diff(rowSums(y[[1]]$N[, 2, 2:3])))))
+            expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 2] +
+                                         y[[1]]$cum_diag_s[, 2, 2])) ==
+                              round(diff(y[[1]]$N[, 2, 3]))))
 
           })
