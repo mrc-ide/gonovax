@@ -455,7 +455,7 @@ test_that("dbetabinom", {
   expect_equal(f(672, 50454, 3, 2, log = TRUE), -16.99016, tolerance = 1e-5)
 })
 
-test_that("adjust_baseline is workign as expected", {
+test_that("adjust_baseline is working as expected", {
 
   tt <- seq(0, 2)
   gp <- gono_params(1)
