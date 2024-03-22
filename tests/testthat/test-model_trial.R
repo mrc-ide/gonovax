@@ -622,7 +622,7 @@ test_that("for n_diag_rec > 1, the number diagnosed = the number recorded", {
                                       stochastic = FALSE,
                                       n_diag_rec = n_diag_rec, N = N)
 
-            # number diagnosed each year in '.I' becomes the N gained in '.II' AND
+            # number diagnosed each year in '.I' becomes the N gained in '.II' &
             # '.III' diagnosis history strata for that year
             # (because some people could get diagnosed twice in one year)
             # and number treated in '.II' becomes the number in '.III' diagnosis
@@ -633,5 +633,12 @@ test_that("for n_diag_rec > 1, the number diagnosed = the number recorded", {
             expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 2] +
                                          y[[1]]$cum_diag_s[, 2, 2])) ==
                               round(diff(y[[1]]$N[, 2, 3]))))
+
+            #as movement into next diagnosis history stratum occurs upon those
+            #entering T, expect T in .I to be empty for all time
+            #(recorded move to T in .II and so on so we don't expect these to be
+            #empty)
+
+            expect_true(all(y[[1]]$T[, , c(1, 4, 7)] == 0))
 
           })
