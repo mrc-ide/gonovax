@@ -864,3 +864,66 @@ test_that("for n_diag_rec > 1, when lambda = 0,
             expect_true(all(rowSums(y[[1]]$N[, 1, ]) == 0))
 
           })
+
+
+test_that("no asymptomatic diagnoses recorded when asymp_recorded = FALSE", {
+
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 5)
+  n_diag_rec <- 2
+  N <- 6e+05
+
+  #no waning for simplicity
+  y_symp_only <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                                      vea = 0, vei = 0, ved = 0, ves = 0,
+                                      n_erlang = n_erlang,
+                                      stochastic = TRUE,
+                                      n_diag_rec = n_diag_rec, N = N,
+                                      asymp_recorded = FALSE)
+
+  y_symp_asymp <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                                       vea = 0, vei = 0, ved = 0, ves = 0,
+                                       n_erlang = n_erlang,
+                                       stochastic = TRUE,
+                                       n_diag_rec = n_diag_rec, N = N) 
+  #(asymp_recorded defaults to TRUE)
+
+  #when asymptomatic diagnoses not recorded, fewer individuals move to the
+  #next diagnoses history stratum (.II) so stratum X.I & V.I will have larger
+  #N for asymp_recorded = FALSE
+  expect_true(all(y_symp_only[[1]]$N[-1, 2, c(1, 3)] >
+                    y_symp_asymp[[1]]$N[-1, 2, c(1, 3)]))
+
+  #asymptomatic individuals move to treatment but are not recorded in the trial
+  #i.e number diagnosed in .I is not the same as the number gained in .II
+  #when asymp_recorded = FALSE
+  expect_true(all(round(y_symp_only[[1]]$cum_diag_a[-1, 2, 1] +
+                          y_symp_only[[1]]$cum_diag_s[-1, 2, 1]) !=
+                    round(y_symp_only[[1]]$N[-1, 2, 2])))
+  expect_true(all(round(y_symp_only[[1]]$cum_diag_a[-1, 2, 3] +
+                          y_symp_only[[1]]$cum_diag_s[-1, 2, 3]) !=
+                    round(y_symp_only[[1]]$N[-1, 2, 4])))
+
+  #T.I is no longer empty when asymp_recorded  = FALSE
+  expect_true(all(y_symp_asymp[[1]]$T[-1, 2, c(1, 3)] == 0))
+  expect_true(all(y_symp_only[[1]]$T[-1, 2, c(1, 3)] != 0))
+
+  #number asymptomatic diagnoses = number entering T.I
+  #(no recovery to U so we can keep track of entrance into T)
+  gp[[1]][["rho"]] <- 0
+  y_symp_only_ze_rho <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                                             vea = 0, vei = 0, ved = 0, ves = 0,
+                                             n_erlang = n_erlang,
+                                             stochastic = TRUE,
+                                             n_diag_rec = n_diag_rec, N = N,
+                                             asymp_recorded = FALSE)
+
+  expect_true(all(round(diff(y_symp_only_ze_rho[[1]]$cum_diag_a[ , 2, 1])) ==
+                    round(diff(y_symp_only_ze_rho[[1]]$T[ , 2, 1]))))
+
+  #number symptomatic diagnoses = number entering .II
+  expect_true(all(round(y_symp_only_ze_rho[[1]]$cum_diag_s[, 2, 1]) 
+                  == round(y_symp_only_ze_rho[[1]]$N[, 2, 2])))
+
+})
