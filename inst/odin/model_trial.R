@@ -38,7 +38,7 @@ screened[, ] <- eta * U[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history
-n_diag_rec[, , ] <- diag_rec[i, j, k] * (n_ST[i, k] + n_AT[i , k])
+n_diag_rec[, , ] <- diag_rec[i, j, k] * (n_ST[i, k] + n_AT[i, k])
 
 # vaccination -> no vaccination 'strategies' needed
 
