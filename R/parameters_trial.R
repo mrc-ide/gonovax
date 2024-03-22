@@ -114,7 +114,7 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1,
 ##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
 ##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
 ##' individuals diagnosed at least once.
-##' @param asymp_recorded logical indicating if the trial screens for and 
+##' @param asymp_recorded logical indicating if the trial screens for and
 ##' records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
 ##' undergoing treatment do not move diagnosis history stratum
 ##' @return A list of inputs to the model many of which are fixed and
@@ -154,14 +154,14 @@ model_params_trial <- function(gono_params_trial = NULL,
     #diagnosis history
 
     #asymptomatic
-    if(asymp_recorded == TRUE){
-    vax_params$diag_rec_a <- create_vax_map(n_vax, c(1, 1), i_eligible,
-                                          seq_len(n_vax)[seq_len(n_vax) %%
-                                                           n_diag_rec != 1])
-    } else if (asymp_recorded == FALSE){
+    if (asymp_recorded == TRUE) {
+      vax_params$diag_rec_a <- create_vax_map(n_vax, c(1, 1), i_eligible,
+                                              seq_len(n_vax)[seq_len(n_vax) %%
+                                                               n_diag_rec != 1])
+    } else if (asymp_recorded == FALSE) {
       vax_params$diag_rec_a <- create_vax_map(n_vax, c(0, 0), i_eligible,
                                               seq_len(n_vax)[seq_len(n_vax) %%
-                                                            n_diag_rec != 1])
+                                                               n_diag_rec != 1])
     }
 
     #symptomatic

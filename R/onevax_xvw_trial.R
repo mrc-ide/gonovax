@@ -47,7 +47,7 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
 ##' @param stochastic logical indicating if the parameters are for the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
-##' @param asymp_recorded logical indicating if the trial screens for and 
+##' @param asymp_recorded logical indicating if the trial screens for and
 ##' records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
 ##' undergoing treatment do not move diagnosis history stratum
 ##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
@@ -101,18 +101,18 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   # create diagnosis history mapping
   #symptomatic diagnoses always recorded
   diag_rec_s <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
-                                       set_vbe = FALSE, idx)
-  
-  #asymptomatic diagnoses may or may not be recorded
-  if(asymp_recorded == TRUE){
-  diag_rec_a <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
                                          set_vbe = FALSE, idx)
-  } else if (asymp_recorded == FALSE){
-  #if trial lacks screening, MSM will continue to be screened in SHSs but will
-  #not be recorded as having had an asymptomatic diagnosis in the trial
-  #therefore do not move diagnosis history stratum
-  diag_rec_a <- create_vax_map_branching(idx$n_vax, c(0, 0), i_eligible, i_p,
-                                           set_vbe = FALSE, idx)   
+
+  #asymptomatic diagnoses may or may not be recorded
+  if (asymp_recorded == TRUE) {
+    diag_rec_a <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
+                                           set_vbe = FALSE, idx)
+  } else if (asymp_recorded == FALSE) {
+    #if trial lacks screening, MSM will continue to be screened in SHSs but will
+    #not be recorded as having had an asymptomatic diagnosis in the trial
+    #therefore do not move diagnosis history stratum
+    diag_rec_a <- create_vax_map_branching(idx$n_vax, c(0, 0), i_eligible, i_p,
+                                           set_vbe = FALSE, idx)
   }
 
   # compartments to which vaccine efficacy applies
@@ -169,7 +169,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param stochastic logical indicating if the run should be made with the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
-##' @param asymp_recorded logical indicating if the trial screens for and 
+##' @param asymp_recorded logical indicating if the trial screens for and
 ##' records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
 ##' undergoing treatment do not move diagnosis history stratum
 ##' @param N integer to assign the total number of individuals in the trial
