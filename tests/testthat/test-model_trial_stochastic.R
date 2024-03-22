@@ -784,52 +784,61 @@ test_that("for n_diag_rec > 1, total N summed over X or V+W is
 
           })
 
-test_that("for n_diag_rec > 1, the number treated = the number recorded
-          as diagnosed", {
+test_that("for n_diag_rec > 1,  the number diagnosed = the number recorded", {
 
-            gp <- gono_params_trial(1)[1]
-            n_erlang <- 1
-            tt <- seq.int(0, 5)
-            set.seed(1)
-            n_diag_rec <- 2
-            N <- 6e+05
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 5)
+  set.seed(1)
+  n_diag_rec <- 2
+  N <- 6e+05
 
-            #no waning for simplicity
-            y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
-                                      vea = 0, vei = 0, ved = 0, ves = 0,
-                                      n_erlang = n_erlang,
-                                      stochastic = TRUE,
-                                      n_diag_rec = n_diag_rec, N = N)
+  #no waning for simplicity
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
 
-            # number treated in '.I' becomes the number in '.II'
-            expect_true(all(y[[1]]$cum_treated[, 2, 1] == y[[1]]$N[, 2, 2]))
-            expect_true(all(y[[1]]$cum_treated[, 2, 3] == y[[1]]$N[, 2, 4]))
-            expect_true(all(y[[1]]$cum_treated[, 2, 5] == y[[1]]$N[, 2, 6]))
+  # number diagnosed in '.I' becomes the number in '.II'
+  expect_true(all(round(y[[1]]$cum_diag_a[, 2, 1] +
+                          y[[1]]$cum_diag_s[, 2, 1]) ==
+                    round(y[[1]]$N[, 2, 2])))
+  expect_true(all(round(y[[1]]$cum_diag_a[, 2, 3] +
+                          y[[1]]$cum_diag_s[, 2, 3]) ==
+                    round(y[[1]]$N[, 2, 4])))
+  expect_true(all(round(y[[1]]$cum_diag_a[, 2, 5] +
+                          y[[1]]$cum_diag_s[, 2, 5]) ==
+                    round(y[[1]]$N[, 2, 6])))
 
-            n_diag_rec <- 3
+  n_diag_rec <- 3
 
-            y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
-                                      vea = 0, vei = 0, ved = 0, ves = 0,
-                                      n_erlang = n_erlang,
-                                      stochastic = TRUE,
-                                      n_diag_rec = n_diag_rec, N = N)
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
 
-            # number treated each year in '.I' becomes the N gained in '.II'
-            # AND
-            # '.III' diagnosis history strata for that year
-            # (because some people could get diagnosed twice in one year)
-            # and number treated in '.II' becomes the number in '.III'
-            # diagnosis history
+  # number diagnosed each year in '.I' becomes the N gained in '.II' &
+  # '.III' diagnosis history strata for that year
+  # (because some people could get diagnosed twice in one year)
+  # and number treated in '.II' becomes the number in '.III' diagnosis
+  # history
+  expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 1] +
+                               y[[1]]$cum_diag_s[, 2, 1])) ==
+                    round(diff(rowSums(y[[1]]$N[, 2, 2:3])))))
+  expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 2] +
+                               y[[1]]$cum_diag_s[, 2, 2])) ==
+                    round(diff(y[[1]]$N[, 2, 3]))))
 
-            expect_true(all(diff(y[[1]]$cum_treated[, 2, 1]) ==
-                              diff(rowSums(y[[1]]$N[, 2, 2:3]))))
-            expect_true(all(diff(y[[1]]$cum_treated[, 2, 2]) ==
-                              diff(y[[1]]$N[, 2, 3])))
+  #as movement into next diagnosis history stratum occurs upon those
+  #entering T, expect T in .I to be empty for all time
+  #(recorded move to T in .II and so on so we don't expect these to be
+  #empty)
 
-            diff(y[[1]]$cum_treated[, 2, 1])
-            diff(rowSums(y[[1]]$N[, 2, 2:3]))
+  expect_true(all(y[[1]]$T[, , c(1, 4, 7)] == 0))
 
-          })
+})
 
 test_that("for n_diag_rec > 1, when lambda = 0,
           diagnosis history strata > '.I' are empty", {

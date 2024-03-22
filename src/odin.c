@@ -5812,13 +5812,6 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
       internal->n_AUT[i - 1 + internal->dim_n_AUT_1 * (j - 1)] = Rf_rbinom(round(internal->n_A_ext[internal->dim_n_A_ext_1 * (j - 1) + i - 1]), internal->Rel_A[internal->dim_Rel_A_1 * (j - 1) + i - 1]);
     }
   }
-  for (int i = 1; i <= internal->dim_n_diag_rec_1; ++i) {
-    for (int j = 1; j <= internal->dim_n_diag_rec_2; ++j) {
-      for (int k = 1; k <= internal->dim_n_diag_rec_3; ++k) {
-        internal->n_diag_rec[i - 1 + internal->dim_n_diag_rec_1 * (j - 1) + internal->dim_n_diag_rec_12 * (k - 1)] = internal->diag_rec[internal->dim_diag_rec_12 * (k - 1) + internal->dim_diag_rec_1 * (j - 1) + i - 1] * internal->n_TU[internal->dim_n_TU_1 * (k - 1) + i - 1];
-      }
-    }
-  }
   for (int i = 1; i <= internal->dim_n_IA_1; ++i) {
     for (int j = 1; j <= internal->dim_n_IA_2; ++j) {
       internal->n_IA[i - 1 + internal->dim_n_IA_1 * (j - 1)] = Rf_rbinom(round(internal->n_IAS[internal->dim_n_IAS_1 * (j - 1) + i - 1]), 1 - (1 - internal->ves[j - 1]) * internal->psi);
@@ -5907,6 +5900,13 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
       internal->n_AU[i - 1 + internal->dim_n_AU_1 * (j - 1)] = internal->n_AUT[internal->dim_n_AUT_1 * (j - 1) + i - 1] - internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1];
     }
   }
+  for (int i = 1; i <= internal->dim_n_diag_rec_1; ++i) {
+    for (int j = 1; j <= internal->dim_n_diag_rec_2; ++j) {
+      for (int k = 1; k <= internal->dim_n_diag_rec_3; ++k) {
+        internal->n_diag_rec[i - 1 + internal->dim_n_diag_rec_1 * (j - 1) + internal->dim_n_diag_rec_12 * (k - 1)] = internal->diag_rec[internal->dim_diag_rec_12 * (k - 1) + internal->dim_diag_rec_1 * (j - 1) + i - 1] * (internal->n_ST[internal->dim_n_ST_1 * (k - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (k - 1) + i - 1]);
+      }
+    }
+  }
   for (int i = 1; i <= internal->dim_cum_diag_a_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_diag_a_2; ++j) {
       state_next[internal->offset_variable_cum_diag_a + i - 1 + internal->dim_cum_diag_a_1 * (j - 1)] = cum_diag_a[internal->dim_cum_diag_a_1 * (j - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1];
@@ -5922,11 +5922,6 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
       state_next[internal->offset_variable_S + i - 1 + internal->dim_S_1 * (j - 1)] = S[internal->dim_S_1 * (j - 1) + i - 1] + internal->n_IS[internal->dim_n_IS_1 * (j - 1) + i - 1] - internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] + odin_sum3(internal->wS, i - 1, i, j - 1, j, 0, internal->dim_wS_3, internal->dim_wS_1, internal->dim_wS_12);
     }
   }
-  for (int i = 1; i <= internal->dim_T_1; ++i) {
-    for (int j = 1; j <= internal->dim_T_2; ++j) {
-      state_next[internal->offset_variable_T + i - 1 + internal->dim_T_1 * (j - 1)] = T[internal->dim_T_1 * (j - 1) + i - 1] + internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1] + odin_sum3(internal->wT, i - 1, i, j - 1, j, 0, internal->dim_wT_3, internal->dim_wT_1, internal->dim_wT_12);
-    }
-  }
   for (int i = 1; i <= internal->dim_wA_1; ++i) {
     for (int j = 1; j <= internal->dim_wA_2; ++j) {
       for (int k = 1; k <= internal->dim_wA_3; ++k) {
@@ -5939,9 +5934,14 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
       state_next[internal->offset_variable_A + i - 1 + internal->dim_A_1 * (j - 1)] = A[internal->dim_A_1 * (j - 1) + i - 1] + internal->n_IA[internal->dim_n_IA_1 * (j - 1) + i - 1] - internal->n_AUT[internal->dim_n_AUT_1 * (j - 1) + i - 1] + odin_sum3(internal->wA, i - 1, i, j - 1, j, 0, internal->dim_wA_3, internal->dim_wA_1, internal->dim_wA_12);
     }
   }
+  for (int i = 1; i <= internal->dim_T_1; ++i) {
+    for (int j = 1; j <= internal->dim_T_2; ++j) {
+      state_next[internal->offset_variable_T + i - 1 + internal->dim_T_1 * (j - 1)] = T[internal->dim_T_1 * (j - 1) + i - 1] + internal->n_ST[internal->dim_n_ST_1 * (j - 1) + i - 1] + internal->n_AT[internal->dim_n_AT_1 * (j - 1) + i - 1] - internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1] + odin_sum3(internal->wT, i - 1, i, j - 1, j, 0, internal->dim_wT_3, internal->dim_wT_1, internal->dim_wT_12) - odin_sum3(internal->n_diag_rec, i - 1, i, j - 1, j, 0, internal->dim_n_diag_rec_3, internal->dim_n_diag_rec_1, internal->dim_n_diag_rec_12);
+    }
+  }
   for (int i = 1; i <= internal->dim_U_1; ++i) {
     for (int j = 1; j <= internal->dim_U_2; ++j) {
-      state_next[1 + i - 1 + internal->dim_U_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] - internal->n_UI[internal->dim_n_UI_1 * (j - 1) + i - 1] + internal->n_AU[internal->dim_n_AU_1 * (j - 1) + i - 1] + internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1] + odin_sum3(internal->wU, i - 1, i, j - 1, j, 0, internal->dim_wU_3, internal->dim_wU_1, internal->dim_wU_12) - odin_sum3(internal->n_diag_rec, i - 1, i, j - 1, j, 0, internal->dim_n_diag_rec_3, internal->dim_n_diag_rec_1, internal->dim_n_diag_rec_12);
+      state_next[1 + i - 1 + internal->dim_U_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] - internal->n_UI[internal->dim_n_UI_1 * (j - 1) + i - 1] + internal->n_AU[internal->dim_n_AU_1 * (j - 1) + i - 1] + internal->n_TU[internal->dim_n_TU_1 * (j - 1) + i - 1] + odin_sum3(internal->wU, i - 1, i, j - 1, j, 0, internal->dim_wU_3, internal->dim_wU_1, internal->dim_wU_12);
     }
   }
   output[1] = odin_sum1(cum_treated, 0, internal->dim_cum_treated) + odin_sum1(cum_screened, 0, internal->dim_cum_screened);
