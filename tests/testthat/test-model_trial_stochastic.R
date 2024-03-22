@@ -886,7 +886,7 @@ test_that("no asymptomatic diagnoses recorded when asymp_recorded = FALSE", {
                                        vea = 0, vei = 0, ved = 0, ves = 0,
                                        n_erlang = n_erlang,
                                        stochastic = TRUE,
-                                       n_diag_rec = n_diag_rec, N = N) 
+                                       n_diag_rec = n_diag_rec, N = N)
   #(asymp_recorded defaults to TRUE)
 
   #when asymptomatic diagnoses not recorded, fewer individuals move to the
@@ -919,11 +919,11 @@ test_that("no asymptomatic diagnoses recorded when asymp_recorded = FALSE", {
                                              n_diag_rec = n_diag_rec, N = N,
                                              asymp_recorded = FALSE)
 
-  expect_true(all(round(diff(y_symp_only_ze_rho[[1]]$cum_diag_a[ , 2, 1])) ==
-                    round(diff(y_symp_only_ze_rho[[1]]$T[ , 2, 1]))))
+  expect_true(all(round(diff(y_symp_only_ze_rho[[1]]$cum_diag_a[, 2, 1])) ==
+                    round(diff(y_symp_only_ze_rho[[1]]$T[, 2, 1]))))
 
   #number symptomatic diagnoses = number entering .II
-  expect_true(all(round(y_symp_only_ze_rho[[1]]$cum_diag_s[, 2, 1]) 
+  expect_true(all(round(y_symp_only_ze_rho[[1]]$cum_diag_s[, 2, 1])
                   == round(y_symp_only_ze_rho[[1]]$N[, 2, 2])))
 
 })
