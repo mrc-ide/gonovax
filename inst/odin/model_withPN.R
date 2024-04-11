@@ -79,6 +79,21 @@ prop_ACsubgroup[,] <- (A[i,j] +  (1 - (1 - ves[j]) * psi)*I[i,j]) / sum(C[i, ])
 omega_N[ , ] = if (i == j) epsilon + (1-epsilon)*Np[j]/sum(Np[]) else (1-epsilon)*Np[j]/sum(Np[]) 
 omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j]/sum(Cp[]) else (1-epsilon)*Cp[j]/sum(Cp[]) 
 
+
+#added in for simplified version
+Up[] <- sum(U[i, ])*p[i]
+omega_U[ , ] <- if (i == j) epsilon + (1-epsilon)*Up[j]/sum(Up[]) else (1-epsilon)*Up[j]/sum(Up[])
+notifiedprev <- 0.38
+prop_UUsubgroup[,] <- U[i,j]/sum(U[i,])
+prop_CCsubgroup[,] <- C[i,j]/sum(C[i,])
+T_group[] <- sum(T[i,])
+
+omega_U_withT[,] <- omega_U[i,j]*T_group[i]
+omega_C_withT[,] <- omega_C[i,j]*T_group[i]
+
+
+
+
 D_S <- 1 / sigma + 1 / mu
 D_A[] <- 1 / sigma + 1 / (eta[i] + nu) 
 
@@ -120,8 +135,11 @@ K_A[,,,] = kappa*(K_A_inf[i,j,k,l] + K_A_Acont[i,j,k,l] + K_A_Ucont[i,j,k,l])
 phi_group[,,,] = mu*S[i,j]*K_S[i,j,k,l] + eta[k]*A[i,j]*K_A[i,j,k,l]
 
 
-phi[,] = sum(phi_group[,,i,j])
+#old long way
+#phi[,] = sum(phi_group[,,i,j])
 
+#new simplified way
+phi[,] = (1-notifiedprev)*kappa*rho *sum(omega_U_withT[,j])*prop_UUsubgroup[i,j]
 
 
 ## Quantities required to calculate notifications to infected individuals (not directly used)
@@ -166,7 +184,12 @@ L_A[,,,] = kappa*(L_A_Sinf[i,j,k,l] + L_A_Ainf[i,j,k,l] + L_A_Scont[i,j,k,l] + L
 
 xi_group[,,,] = mu*S[i,j]*L_S[i,j,k,l] + eta[k]*A[i,j]*L_A[i,j,k,l]
 
-xi[,] = sum(xi_group[,,i,j])
+
+#old long way
+#xi[,] = sum(xi_group[,,i,j])
+
+#new simplified way
+xi[,] = notifiedprev*kappa*rho*sum(omega_C_withT[,j])*prop_CCsubgroup[i,j]
 
 
 notifiedandattended[,] = phi[i,j] + xi[i,j]
@@ -337,6 +360,17 @@ dim(phi) <- c(n_group, n_vax)
 
 dim(prop_Ssubgroup) <- c(n_group, n_vax)
 dim(prop_SCsubgroup) <- c(n_group, n_vax)
+
+
+dim(prop_UUsubgroup) <- c(n_group, n_vax)
+dim(prop_CCsubgroup) <- c(n_group, n_vax)
+dim(T_group) <- n_group
+dim(omega_U) <- c(n_group, n_group)
+dim(omega_U_withT) <- c(n_group, n_group)
+dim(omega_C_withT) <- c(n_group, n_group)
+
+dim(Up) <- n_group
+
 
 dim(Q_S_Sinf) <- c(n_group, n_group)
 dim(Q_A_Sinf) <- c(n_group, n_group)
