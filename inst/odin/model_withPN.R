@@ -91,7 +91,8 @@ T_group[] <- sum(T[i,])
 omega_U_withT[,] <- omega_U[i,j]*T_group[i]
 omega_C_withT[,] <- omega_C[i,j]*T_group[i]
 
-
+Tempcheck[] <- sum(omega_U_withT[,i])
+Tempcheck2[] <- sum(omega_C_withT[,i])
 
 
 D_S <- 1 / sigma + 1 / mu
@@ -139,7 +140,7 @@ phi_group[,,,] = mu*S[i,j]*K_S[i,j,k,l] + eta[k]*A[i,j]*K_A[i,j,k,l]
 #phi[,] = sum(phi_group[,,i,j])
 
 #new simplified way
-phi[,] = (1-notifiedprev)*kappa*rho *sum(omega_U_withT[,j])*prop_UUsubgroup[i,j]
+phi[,] = (1-notifiedprev)*kappa*rho *Tempcheck[i]*prop_UUsubgroup[i,j]
 
 
 ## Quantities required to calculate notifications to infected individuals (not directly used)
@@ -189,7 +190,7 @@ xi_group[,,,] = mu*S[i,j]*L_S[i,j,k,l] + eta[k]*A[i,j]*L_A[i,j,k,l]
 #xi[,] = sum(xi_group[,,i,j])
 
 #new simplified way
-xi[,] = notifiedprev*kappa*rho*sum(omega_C_withT[,j])*prop_CCsubgroup[i,j]
+xi[,] = notifiedprev*kappa*rho*Tempcheck2[i]*prop_CCsubgroup[i,j]
 
 
 notifiedandattended[,] = phi[i,j] + xi[i,j]
@@ -370,6 +371,10 @@ dim(omega_U_withT) <- c(n_group, n_group)
 dim(omega_C_withT) <- c(n_group, n_group)
 
 dim(Up) <- n_group
+
+dim(Tempcheck) <- n_group
+dim(Tempcheck2) <- n_group
+
 
 
 dim(Q_S_Sinf) <- c(n_group, n_group)
@@ -572,3 +577,7 @@ output(Q_A_Ucont) <- Q_A_Ucont
 
 output(notifiedandattended) <- notifiedandattended
 
+output(omega_U) <- omega_U
+output(omega_U_withT) <- omega_U_withT
+output(prop_UUsubgroup) <- prop_UUsubgroup
+output(Tempcheck) <- Tempcheck

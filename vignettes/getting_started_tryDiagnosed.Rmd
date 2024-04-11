@@ -214,8 +214,8 @@ tempD[i] = tempB #sum(tempB[2, 1:3])
 #print(tempD[i])
   
   
-tempX = yPN[[i]]$phi[1,1,1] + yPN[[1]]$phi[1,2,1]
-tempY = yPN[[i]]$notifiedandattended[1,1,1] + yPN[[1]]$notifiedandattended[1,2,1]
+tempX = yPN[[i]]$phi[1,1,1] + yPN[[i]]$phi[1,2,1]
+tempY = yPN[[i]]$notifiedandattended[1,1,1] + yPN[[i]]$notifiedandattended[1,2,1]
 
 #print(tempX)
 #print(tempY)
@@ -223,13 +223,13 @@ print(1 - tempX/tempY)
 
 tempZZ[i] = 1 - tempX/tempY
 
-gono_params[[i]]$kappa = 0.17*tempC[i]/tempD[i]
+gono_params[[i]]$kappa = 0.365*tempX/tempY
 }
 
 
 yPN2 <- run_onevax_xpvwrh(tt,
                      gono_params = gono_params,
-                     init_params = init_params, 
+                     init_params = init_params,
                      vea = ve$vea, ved = ve$ved, ves = ve$ves, strategy = "VoN", n_erlang = 1, n_diag_rec = n_diag_rec, r1 = 0.41, r2 = 0.6, PN = "yes")
 
 tempC2 = numeric(length = 1)
