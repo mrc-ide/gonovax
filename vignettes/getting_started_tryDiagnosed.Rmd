@@ -223,7 +223,10 @@ print(1 - tempX/tempY)
 
 tempZZ[i] = 1 - tempX/tempY
 
-gono_params[[i]]$kappa = 0.365*tempX/tempY
+
+tempZ <- sum(yPN[[i]]$cum_diag_a[3,,]) +  sum(yPN[[i]]$cum_diag_s[3,,]) - (sum(yPN[[i]]$cum_diag_a[2,,]) +  sum(yPN[[i]]$cum_diag_s[2,,]))
+
+gono_params[[i]]$kappa = 0.365*tempZ/tempY
 }
 
 

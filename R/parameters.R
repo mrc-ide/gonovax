@@ -322,6 +322,42 @@ create_diagnosis_waning_map <- function(n_vax, z, n_diag_rec = 1) {
 }
 
 
+##' @name create_diagnosis_waning_map_time
+##' @title Create mapping for movement between strata due to diagnosis waning
+##' @param n_vax Integer in (0, 5) denoting total number of strata
+##' @param z Scalar denoting rate of waning diagnosis
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @return an array of the mapping
+
+create_diagnosis_waning_map_time <- function(n_vax, z, n_diag_rec = 1) {
+  
+  stopifnot(z > 0)
+  stopifnot(n_vax %% n_diag_rec == 0)
+  
+  # set up waning map
+  wd <- array(0, dim = c(n_vax, n_vax))
+  
+  #different base number of vaccine statuses (e.g. if X, V, W, then ntype = 3)
+  ntype <- n_vax / n_diag_rec
+  
+  if (n_diag_rec >= 2) {
+    for (k in 1:(ntype)) {
+      for (j in 2:(n_diag_rec-1)) {
+        wd[(k - 1) * n_diag_rec + j+1, (k - 1) * n_diag_rec + j] <- z
+        wd[(k - 1) * n_diag_rec + j, (k - 1) * n_diag_rec + j] <- -z
+      }
+      
+      
+      wd[(k - 1) * n_diag_rec + 1, (k - 1) * n_diag_rec + n_diag_rec] <- z
+      wd[(k - 1) * n_diag_rec + n_diag_rec, (k - 1) * n_diag_rec + n_diag_rec] <- -z
+      
+    }
+  }
+  
+  wd
+}
+
+
 
 ##' @name set_strategy
 ##' @title Translate each named vaccine strategy into a format interpretable by

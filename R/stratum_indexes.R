@@ -20,11 +20,27 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$V1 <- ret$V[1:n_diag_rec]
 
   # strata people are diagnosed from
-  ret$diagnosedfrom <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]
-
+  #ret$diagnosedfrom <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]
+  
+  #new way - by time
+  ret$diagnosedfrom <- seq_len(n_vax)
+  
+  
   # strata people are diagnosed to
-  ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
+  #ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
 
+  #new way - by time
+  
+  if (n_diag_rec == 1){
+    ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
+  } else if (n_diag_rec == 2){
+    ret$diagnosedto <- rep(seq_len(n_vax)[seq_len(n_vax)%%n_diag_rec == 0], each = n_diag_rec)
+  } else{
+    ret$diagnosedto <- rep(seq_len(n_vax)[seq_len(n_vax)%%n_diag_rec == 2], each = n_diag_rec)
+  }
+  
+  
+  
   # strata people are vaccinated (before entry) from and to
   ret$vaccinatedfrom_vbe <- ret$X
   ret$vaccinatedto_vbe <- ret$V1
