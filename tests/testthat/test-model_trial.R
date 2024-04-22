@@ -716,7 +716,7 @@ test_that("no asymptomatic diagnoses recorded when asymp_recorded = FALSE", {
   #number symptomatic diagnoses = number entering .II
   expect_true(all(round(y_symp_only_ze_rho[[1]]$cum_diag_s[, 2, 1])
                   == round(y_symp_only_ze_rho[[1]]$N[, 2, 2])))
-          })
+})
 
 test_that("n_AU conditional statement works as expected", {
 
