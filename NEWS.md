@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 # gonovax 0.4.18
 * diagnoses history in a trial is recorded at the point of receiving treatment and whether a trial records asymptomatic infections or not can be switched on or off
 
+=======
+>>>>>>> origin/master
 # gonovax 0.4.17
 * ved acts on duration of asymptomatic infection rather than the rate of asymptomatic natural clearance
 
