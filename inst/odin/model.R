@@ -59,8 +59,6 @@ lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
 
 n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
-n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
-n_AT[, ]     <- eta[i] * A[i, j]
 n_AU[, ] <- if (mu == 0) nu * A[i, j] else
   (nu * mu) / ((ved[j] * nu + (1 - ved[j]) * mu)) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]

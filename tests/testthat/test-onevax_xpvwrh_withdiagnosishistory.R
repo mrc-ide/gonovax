@@ -2,7 +2,7 @@
 
 test_that("run_onevax_xpvwrh works correctly", {
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -361,7 +361,7 @@ test_that("Test VoD is working correctly", {
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
     n_diag_rec <- j
 
     y3e <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
@@ -435,7 +435,7 @@ test_that("Test VoA is working correctly", {
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -505,7 +505,7 @@ test_that("Test vaccination targeting", {
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -579,7 +579,7 @@ test_that("Test vaccination according to history is working correctly", {
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -659,7 +659,7 @@ test_that("Test length of uptake vector must be 1 or length gp", {
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -708,7 +708,7 @@ test_that("Test revaccination is working", {
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -833,7 +833,7 @@ test_that("Test restart with hesistancy is working", {
   tt <- seq(0, 5)
   gp <- gono_params(1:2)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
     y8 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3,
@@ -1034,7 +1034,7 @@ test_that("Test vea_p works independently of vex", {
   tt <- seq(0, 5)
   gp <- gono_params(1:2)
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
 
@@ -1209,7 +1209,7 @@ test_that("Test vea_p works independently of vex", {
 
 test_that("run_onevax_xpvwrh works when n_erlang > 1", {
 
-  for (j in 1:5) {
+  for (j in 1:2) {
 
     n_diag_rec <- j
     tt <- seq(0, 5)

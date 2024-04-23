@@ -12,7 +12,7 @@ n_vax   <- user(1)
 ## Core equations for transitions between compartments:
 
 deriv(U[, ]) <-  - n_UI[i, j] +
-  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) - sum(n_diag_rec[i, j, ])
+  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
 
 deriv(I[, ]) <- n_UI[i, j] - sigma * I[i, j] + sum(wI[i, j, ])
 
@@ -23,7 +23,7 @@ deriv(S[, ]) <- (1 - ves[j]) * psi * sigma * I[i, j] -
   n_ST[i, j]  + sum(wS[i, j, ])
 
 deriv(T[, ]) <- n_ST[i, j] + n_AT[i, j]  - n_TU[i, j] +
-  sum(wT[i, j, ])
+  sum(wT[i, j, ]) - sum(n_diag_rec[i, j, ])
 
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
@@ -39,8 +39,8 @@ screened[, ] <- eta * U[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history
-
-n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
+n_diag_rec[, , ] <- (diag_rec_s[i, j, k] * n_ST[i, k]) +
+  (diag_rec_a[i, j, k] * n_AT[i, k])
 
 # vaccination -> no vaccination 'strategies' needed
 
@@ -105,7 +105,8 @@ dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
-dim(diag_rec)   <- c(n_group, n_vax, n_vax)
+dim(diag_rec_a)   <- c(n_group, n_vax, n_vax)
+dim(diag_rec_s)   <- c(n_group, n_vax, n_vax)
 
 dim(cum_incid)      <- c(n_group, n_vax)
 dim(cum_diag_a)     <- c(n_group, n_vax)
@@ -131,7 +132,8 @@ ves[] <- user() # efficacy against symptoms
 
 #mapping
 w[, ]    <- user()
-diag_rec[, , ] <- user()
+diag_rec_a[, , ] <- user()
+diag_rec_s[, , ] <- user()
 
 ## par dimensions
 
