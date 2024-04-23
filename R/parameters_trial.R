@@ -154,8 +154,9 @@ model_params_trial <- function(gono_params_trial = NULL,
     i_vaccinees <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1]
     #diagnosis history
     #symptomatic
-    vax_params$diag_rec_s <- create_vax_map(n_vax, c(1, 1), i_eligible, i_vaccinees)
-   
+    vax_params$diag_rec_s <- create_vax_map(n_vax, c(1, 1), i_eligible,
+                                            i_vaccinees)
+
     #asymptomatic
     if (asymp_recorded) {
       vax_params$diag_rec_a <- vac_params$diag_rec_s
