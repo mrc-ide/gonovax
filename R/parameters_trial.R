@@ -161,7 +161,8 @@ model_params_trial <- function(gono_params_trial = NULL,
     if (asymp_recorded) {
       vax_params$diag_rec_a <- vac_params$diag_rec_s
     } else {
-      vax_params$diag_rec_a <- create_vax_map(n_vax, c(0, 0), i_eligible, i_vaccinees)
+      vax_params$diag_rec_a <- create_vax_map(n_vax, c(0, 0), i_eligible,
+                                              i_vaccinees)
     }
 
 
