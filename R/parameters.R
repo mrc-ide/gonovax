@@ -29,6 +29,8 @@ gono_params <- function(n = NULL) {
   i <- i[(i > 0) & (i <= n_pars)]
   
   pars$kappa <- 1
+  
+  pars$notifiedprev <- 0.38 # default value for notified prevalence
 
   pars[i]
 }
@@ -51,6 +53,7 @@ transform0 <- function(pars) {
   pars$beta <- pars$eta <- NULL
   
   pars$kappa <- 1
+  pars$notifiedprev <- 0.38
 
   pars
 }

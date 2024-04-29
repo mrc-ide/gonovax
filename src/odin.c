@@ -8761,7 +8761,6 @@ SEXP model_withPN_create(SEXP user) {
   internal->lb_A = 3 / (double) 12;
   internal->lb_S = 2 / (double) 52;
   internal->n_group = 2;
-  internal->notifiedprev = 0.38;
   internal->dim_Cp = internal->n_group;
   internal->dim_D_A = internal->n_group;
   internal->dim_eta = internal->n_group;
@@ -8924,6 +8923,7 @@ SEXP model_withPN_create(SEXP user) {
   internal->I0 = NULL;
   internal->kappa = NA_REAL;
   internal->mu = NA_REAL;
+  internal->notifiedprev = NA_REAL;
   internal->nu = NA_REAL;
   internal->p = NULL;
   internal->psi = NA_REAL;
@@ -10802,6 +10802,7 @@ SEXP model_withPN_set_user(SEXP internal_p, SEXP user) {
   internal->kappa = user_get_scalar_double(user, "kappa", internal->kappa, NA_REAL, NA_REAL);
   internal->mu = user_get_scalar_double(user, "mu", internal->mu, NA_REAL, NA_REAL);
   internal->n_vax = user_get_scalar_int(user, "n_vax", internal->n_vax, NA_REAL, NA_REAL);
+  internal->notifiedprev = user_get_scalar_double(user, "notifiedprev", internal->notifiedprev, NA_REAL, NA_REAL);
   internal->nu = user_get_scalar_double(user, "nu", internal->nu, NA_REAL, NA_REAL);
   internal->psi = user_get_scalar_double(user, "psi", internal->psi, NA_REAL, NA_REAL);
   internal->rho = user_get_scalar_double(user, "rho", internal->rho, NA_REAL, NA_REAL);

@@ -517,10 +517,11 @@ model_withPN_ <- R6::R6Class(
       output_dde = "model_withPN_output_dde"),
     dll = "gonovax",
     user = c("A0", "beta_t", "diag_rec", "enr", "epsilon", "eta_h_t",
-             "eta_l_t", "exr", "I0", "kappa", "mu", "nu", "p", "psi", "q",
-             "rho", "S0", "sigma", "T0", "tt", "u_d", "u_pn", "u_s", "u_vbe",
-             "U0", "vax_t", "vax_y", "vbe", "vea", "ved", "vei", "ves",
-             "vod", "vopn", "vos", "w", "wd", "willing", "n_vax"),
+             "eta_l_t", "exr", "I0", "kappa", "mu", "notifiedprev", "nu",
+             "p", "psi", "q", "rho", "S0", "sigma", "T0", "tt", "u_d",
+             "u_pn", "u_s", "u_vbe", "U0", "vax_t", "vax_y", "vbe", "vea",
+             "ved", "vei", "ves", "vod", "vopn", "vos", "w", "wd", "willing",
+             "n_vax"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
