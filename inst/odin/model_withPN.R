@@ -69,138 +69,26 @@ screened[, ] <- eta[i] * U[i, j]
 #Calculations required for partner notification
 
 Cp[] <- sum(C[i, ])*p[i]
-
-prop_Usubgroup[,] <- U[i,j] / sum(N[i, ]) 
-prop_Asubgroup[,] <- (A[i,j] +  (1 - (1 - ves[j]) * psi)*I[i,j])/ sum(N[i, ]) 
-prop_ACsubgroup[,] <- (A[i,j] +  (1 - (1 - ves[j]) * psi)*I[i,j]) / sum(C[i, ]) 
-
-
-
-omega_N[ , ] = if (i == j) epsilon + (1-epsilon)*Np[j]/sum(Np[]) else (1-epsilon)*Np[j]/sum(Np[]) 
-omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j]/sum(Cp[]) else (1-epsilon)*Cp[j]/sum(Cp[]) 
-
-
-#added in for simplified version
 Up[] <- sum(U[i, ])*p[i]
+
+omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j]/sum(Cp[]) else (1-epsilon)*Cp[j]/sum(Cp[]) 
 omega_U[ , ] <- if (i == j) epsilon + (1-epsilon)*Up[j]/sum(Up[]) else (1-epsilon)*Up[j]/sum(Up[])
 prop_UUsubgroup[,] <- U[i,j]/sum(U[i,])
 prop_CCsubgroup[,] <- C[i,j]/sum(C[i,])
-T_group[] <- sum(T[i,])
 
-#omega_U_withT[,] <- omega_U[i,j]*T_group[i]
-#omega_C_withT[,] <- omega_C[i,j]*T_group[i]
+omega_U_withdiag[,] <- omega_U[i,j]*(mu*sum(S[i,]) + eta[i]*sum(A[i,]))
+omega_C_withdiag[,] <- omega_C[i,j]*(mu*sum(S[i,]) + eta[i]*sum(A[i,]))
 
-omega_U_withDiagnoses[,] <- omega_U[i,j]*(mu*sum(S[i,]) + eta[i]*sum(A[i,]))
-omega_C_withDiagnoses[,] <- omega_C[i,j]*(mu*sum(S[i,]) + eta[i]*sum(A[i,]))
-
-#Tempcheck[] <- sum(omega_U_withT[,i])
-#Tempcheck2[] <- sum(omega_C_withT[,i])
-
-Tempcheck[] <- sum(omega_U_withDiagnoses[,i])
-Tempcheck2[] <- sum(omega_C_withDiagnoses[,i])
-
-Tempcheck3[] <- (mu*sum(S[i,]) + eta[i]*sum(A[i,]))
-Tempcheck4[] <- rho*sum(T[i,])
-
-
-D_S <- 1 / sigma + 1 / mu
-D_A[] <- 1 / sigma + 1 / (eta[i] + nu) 
-
-lb_S <- 2/52
-lb_A <- 3/12
-
-
-
-#Probabilities only in terms of riskgroups
-P_S_inf[ , ] = nu / (eta[j] + nu) * ( (1 / D_S) * exp( - ( (1 / D_S) + nu + eta[j] )*lb_S  ) - ( (1 / D_S) + nu + eta[j] ) * exp( - (1 / D_S)*lb_S) + eta[j] + nu ) / ((1 / D_S) + nu + eta[j] )
-P_A_inf[ , ] = nu / (eta[j] + nu) * ( (1 / D_A[i]) * exp( - ( (1 / D_A[i]) + nu + eta[j] )*lb_A  ) - ( (1 / D_A[i]) + nu + eta[j] ) * exp( - (1 / D_A[i])*lb_A) + eta[j] + nu ) / ((1 / D_A[i]) + nu + eta[j] )
-
-P_S_Acont[ , ] = nu / (eta[j] + nu) * (lb_S - (1 - exp ( - (eta[j] + nu)*lb_S))/(eta[j] + nu))
-P_A_Acont[ , ] = nu / (eta[j] + nu) * (lb_A - (1 - exp ( - (eta[j] + nu)*lb_A))/(eta[j] + nu))
-
-
-
-P_S_Ucont[ , ] = (1 - beta) * exp( - (1/D_S) * lb_S) * ( (1 - exp( - lambda[j] * lb_S)) /lambda[j]) +
-  (1 - beta) * ( (1/D_S)*exp(-(lambda[j] + (1/D_S))*lb_S) - (lambda[j] + (1/D_S))*exp(- (1/D_S)*lb_S) + lambda[j] )/(lambda[j] * (lambda[j] + (1/D_S))) +
-  (lambda[j]*exp(-(lambda[j] + (1/D_S))*lb_S) - (lambda[j] + (1/D_S))*exp(- lambda[j]*lb_S) + (1/D_S) )/(lambda[j] * (lambda[j] + (1/D_S)))
-
-
-P_A_Ucont[ , ] = (1 - beta) * exp( - (1/D_S) * lb_A) * ( (1 - exp( - lambda[j] * lb_A)) /lambda[j]) +
-  (1 - beta) * ( (1/D_A[i])*exp(-(lambda[j] + (1/D_A[i]))*lb_A) - (lambda[j] + (1/D_A[i]))*exp(- (1/D_A[i])*lb_A) + lambda[j] )/(lambda[j] * (lambda[j] + (1/D_A[i]))) +
-  (lambda[j]*exp(-(lambda[j] + (1/D_A[i]))*lb_A) - (lambda[j] + (1/D_A[i]))*exp(- lambda[j]*lb_A) + (1/D_A[i]) )/(lambda[j] * (lambda[j] + (1/D_A[i])))
-
-
-#Kvalues in terms of risk groups and vaccination groups
-K_S_inf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * P_S_inf[i,k]
-K_A_inf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * P_A_inf[i,k]
-K_S_Acont[,,,] = p[i]*omega_N[i,k]*prop_Asubgroup[k,l]*P_S_Acont[i,k]
-K_A_Acont[,,,] = p[i]*omega_N[i,k]*prop_Asubgroup[k,l]*P_A_Acont[i,k]
-K_S_Ucont[,,,] = p[i]*omega_N[i,k]*prop_Usubgroup[k,l]*P_S_Ucont[i,k]
-K_A_Ucont[,,,] = p[i]*omega_N[i,k]*prop_Usubgroup[k,l]*P_A_Ucont[i,k]
-
-K_S[,,,] = kappa*(K_S_inf[i,j,k,l] + K_S_Acont[i,j,k,l] + K_S_Ucont[i,j,k,l])
-K_A[,,,] = kappa*(K_A_inf[i,j,k,l] + K_A_Acont[i,j,k,l] + K_A_Ucont[i,j,k,l])
-
-phi_group[,,,] = mu*S[i,j]*K_S[i,j,k,l] + eta[k]*A[i,j]*K_A[i,j,k,l]
-
-
-#old long way
-#phi[,] = sum(phi_group[,,i,j])
+omega_U_withdiag_rg[] <- sum(omega_U_withdiag[,i])
+omega_C_withdiag_rg[] <- sum(omega_C_withdiag[,i])
 
 #new simplified way
-#phi[,] = (1-notifiedprev)*kappa*rho *Tempcheck[i]*prop_UUsubgroup[i,j]
-phi[,] = (1-notifiedprev)*kappa*Tempcheck[i]*prop_UUsubgroup[i,j]
 
+#notifications to uninfected
+phi[,] = (1-notifiedprev)*kappa*omega_U_withdiag_rg[i]*prop_UUsubgroup[i,j]
 
-## Quantities required to calculate notifications to infected individuals (not directly used)
-
-prop_Ssubgroup[,] <- (S[i,j] + ((1 - ves[j]) * psi)*I[i,j] )/ sum(N[i, ]) 
-prop_SCsubgroup[,] <- (S[i,j] + ((1 - ves[j]) * psi)*I[i,j] )/ sum(C[i, ]) 
-
-Q_S_Sinf[,] = (1/D_S)*(1 - exp( - ((1/D_S) + mu)*lb_S))/((1/D_S) + mu)
-Q_A_Sinf[,] = (1/D_A[i])*(1 - exp( - ((1/D_A[i]) + mu)*lb_A))/((1/D_A[i]) + mu)
-
-Q_S_Ainf[,] = (1/D_S)*(1 - exp( - ((1/D_S) + nu + eta[j])*lb_S))/((1/D_S) + nu + eta[j])
-Q_A_Ainf[,] = (1/D_A[i])*(1 - exp( - ((1/D_A[i]) + nu + eta[j])*lb_A))/((1/D_A[i]) + nu + eta[j])
-
-Q_S_Scont[ , ] = (1 - exp(-mu*lb_S))/mu
-Q_A_Scont[ , ] = (1 - exp(-mu*lb_A))/mu
-  
-Q_S_Acont[ , ] = (1 - exp(-(nu + eta[j])*lb_S))/(nu + eta[j])
-Q_A_Acont[ , ] = (1 - exp(-(nu + eta[j])*lb_A))/(nu + eta[j])
-  
-#Q_S_Ucont[ , ] = (1 - P_S_Ucont[i,j])*lb_S
-#Q_A_Ucont[ , ] = (1 - P_A_Ucont[i,j])*lb_A
-
-Q_S_Ucont[ , ] = lb_S - P_S_Ucont[i,j]
-Q_A_Ucont[ , ] = lb_A - P_A_Ucont[i,j]
-
-
-
-L_S_Sinf[,,,] = omega_C[i,k] * prop_SCsubgroup[k,l] * Q_S_Sinf[i,k]
-L_A_Sinf[,,,] = omega_C[i,k] * prop_SCsubgroup[k,l] * Q_A_Sinf[i,k]
-L_S_Ainf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * Q_S_Ainf[i,k]
-L_A_Ainf[,,,] = omega_C[i,k] * prop_ACsubgroup[k,l] * Q_A_Ainf[i,k]
-  
-L_S_Scont[,,,] = p[i]*omega_N[i,k] * prop_Ssubgroup[k,l] * Q_S_Scont[i,k]
-L_A_Scont[,,,] = p[i]*omega_N[i,k] * prop_Ssubgroup[k,l] * Q_A_Scont[i,k]
-L_S_Acont[,,,] = p[i]*omega_N[i,k] * prop_Asubgroup[k,l] * Q_S_Acont[i,k]
-L_A_Acont[,,,] = p[i]*omega_N[i,k] * prop_Asubgroup[k,l] * Q_A_Acont[i,k]
-L_S_Ucont[,,,] = p[i]*omega_N[i,k] * prop_Usubgroup[k,l] * Q_S_Ucont[i,k]
-L_A_Ucont[,,,] = p[i]*omega_N[i,k] * prop_Usubgroup[k,l] * Q_A_Ucont[i,k]
-
-L_S[,,,] = kappa*(L_S_Sinf[i,j,k,l] + L_S_Ainf[i,j,k,l] + L_S_Scont[i,j,k,l] + L_S_Acont[i,j,k,l] + L_S_Ucont[i,j,k,l])
-L_A[,,,] = kappa*(L_A_Sinf[i,j,k,l] + L_A_Ainf[i,j,k,l] + L_A_Scont[i,j,k,l] + L_A_Acont[i,j,k,l] + L_A_Ucont[i,j,k,l])
-
-xi_group[,,,] = mu*S[i,j]*L_S[i,j,k,l] + eta[k]*A[i,j]*L_A[i,j,k,l]
-
-
-#old long way
-#xi[,] = sum(xi_group[,,i,j])
-
-#new simplified way
-#xi[,] = notifiedprev*kappa*rho*Tempcheck2[i]*prop_CCsubgroup[i,j]
-xi[,] = notifiedprev*kappa*Tempcheck2[i]*prop_CCsubgroup[i,j]
+#notifcations to infected
+xi[,] = notifiedprev*kappa*omega_C_withdiag_rg[i]*prop_CCsubgroup[i,j]
 
 
 notifiedandattended[,] = phi[i,j] + xi[i,j]
@@ -340,83 +228,18 @@ dim(n_ST)     <- c(n_group, n_vax)
 dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 
-
+#quantities added for PN
+dim(Up) <- n_group
 dim(Cp)     <- n_group
-dim(omega_N) <- c(n_group, n_group)
+dim(omega_U) <- c(n_group, n_group)
 dim(omega_C) <- c(n_group, n_group)
-dim(prop_Usubgroup) <- c(n_group, n_vax)
-dim(prop_Asubgroup) <- c(n_group, n_vax)
-dim(prop_ACsubgroup) <- c(n_group, n_vax)
-
-dim(D_A) <- n_group
-dim(P_S_inf) <- c(n_group, n_group)
-dim(P_A_inf) <- c(n_group, n_group)
-dim(P_S_Acont) <- c(n_group, n_group)
-dim(P_A_Acont) <- c(n_group, n_group)
-dim(P_S_Ucont) <- c(n_group, n_group)
-dim(P_A_Ucont) <- c(n_group, n_group)
-
-dim(K_S_inf) <- c(n_group, n_vax, n_group, n_vax)
-dim(K_A_inf) <- c(n_group, n_vax, n_group, n_vax)
-dim(K_S_Acont) <- c(n_group, n_vax, n_group, n_vax)
-dim(K_A_Acont) <- c(n_group, n_vax, n_group, n_vax)
-dim(K_S_Ucont) <- c(n_group, n_vax, n_group, n_vax)
-dim(K_A_Ucont) <- c(n_group, n_vax, n_group, n_vax)
-
-dim(K_S) <- c(n_group, n_vax, n_group, n_vax)
-dim(K_A) <- c(n_group, n_vax, n_group, n_vax)
-
-dim(phi_group) <- c(n_group, n_vax, n_group, n_vax)
-dim(phi) <- c(n_group, n_vax)
-
-dim(prop_Ssubgroup) <- c(n_group, n_vax)
-dim(prop_SCsubgroup) <- c(n_group, n_vax)
-
-
+dim(omega_U_withdiag) <- c(n_group, n_group)
+dim(omega_C_withdiag) <- c(n_group, n_group)
+dim(omega_U_withdiag_rg) <- n_group
+dim(omega_C_withdiag_rg) <- n_group
 dim(prop_UUsubgroup) <- c(n_group, n_vax)
 dim(prop_CCsubgroup) <- c(n_group, n_vax)
-dim(T_group) <- n_group
-dim(omega_U) <- c(n_group, n_group)
-#dim(omega_U_withT) <- c(n_group, n_group)
-#dim(omega_C_withT) <- c(n_group, n_group)
-dim(omega_U_withDiagnoses) <- c(n_group, n_group)
-dim(omega_C_withDiagnoses) <- c(n_group, n_group)
-
-
-dim(Up) <- n_group
-
-dim(Tempcheck) <- n_group
-dim(Tempcheck2) <- n_group
-
-dim(Tempcheck3) <- n_group
-dim(Tempcheck4) <- n_group
-
-dim(Q_S_Sinf) <- c(n_group, n_group)
-dim(Q_A_Sinf) <- c(n_group, n_group)
-dim(Q_S_Ainf) <- c(n_group, n_group)
-dim(Q_A_Ainf) <- c(n_group, n_group)
-dim(Q_S_Scont) <- c(n_group, n_group)
-dim(Q_A_Scont) <- c(n_group, n_group)
-dim(Q_S_Acont) <- c(n_group, n_group)
-dim(Q_A_Acont) <- c(n_group, n_group)
-dim(Q_S_Ucont) <- c(n_group, n_group)
-dim(Q_A_Ucont) <- c(n_group, n_group)
-
-dim(L_S_Sinf) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_A_Sinf) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_S_Ainf) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_A_Ainf) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_S_Scont) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_A_Scont) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_S_Acont) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_A_Acont) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_S_Ucont) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_A_Ucont) <- c(n_group, n_vax, n_group, n_vax)
-
-dim(L_S) <- c(n_group, n_vax, n_group, n_vax)
-dim(L_A) <- c(n_group, n_vax, n_group, n_vax)
-
-dim(xi_group) <- c(n_group, n_vax, n_group, n_vax)
+dim(phi) <- c(n_group, n_vax)
 dim(xi) <- c(n_group, n_vax)
 
 dim(notifiedandattended) <- c(n_group, n_vax)
@@ -532,13 +355,11 @@ dim(n_vod) <- c(n_group, n_vax, n_vax)
 dim(n_vopn) <- c(n_group, n_vax, n_vax)
 
 
-
 dim(n_obe) <- c(n_group, n_vax, n_vax)
 dim(n_oos) <- c(n_group, n_vax, n_vax)
 dim(n_ood) <- c(n_group, n_vax, n_vax)
 
 dim(n_oopn) <- c(n_group, n_vax, n_vax)
-
 
 
 dim(wU)   <- c(n_group, n_vax, n_vax)
@@ -557,45 +378,10 @@ dim(wdS)   <- c(n_group, n_vax, n_vax)
 dim(wdT)   <- c(n_group, n_vax, n_vax)
 
 output(N)   <- N
-
 output(lambda) <- lambda
-
 output(phi) <- phi
-
-
-output(P_S_inf) <- P_S_inf
-output(P_A_inf) <- P_A_inf
-output(P_S_Acont) <- P_S_Acont
-output(P_A_Acont) <- P_A_Acont
-output(P_S_Ucont) <- P_S_Ucont
-output(P_A_Ucont) <- P_A_Ucont
-
-output(prop_Usubgroup) <- prop_Usubgroup
-output(prop_Asubgroup) <- prop_Asubgroup
-output(prop_ACsubgroup) <- prop_ACsubgroup
-
-
-
-output(Q_S_Sinf) <- Q_S_Sinf
-output(Q_A_Sinf) <- Q_A_Sinf
-output(Q_S_Ainf) <- Q_S_Ainf
-output(Q_A_Ainf) <- Q_A_Ainf
-
-output(Q_S_Scont) <- Q_S_Scont
-output(Q_A_Scont) <- Q_A_Scont
-output(Q_S_Acont) <- Q_S_Acont
-output(Q_A_Acont) <- Q_A_Acont
-output(Q_S_Ucont) <- Q_S_Ucont
-output(Q_A_Ucont) <- Q_A_Ucont
-
-
 output(notifiedandattended) <- notifiedandattended
 
-output(omega_U) <- omega_U
-output(omega_U_withDiagnoses) <- omega_U_withDiagnoses
-output(prop_UUsubgroup) <- prop_UUsubgroup
-output(Tempcheck) <- Tempcheck
-output(Tempcheck3) <- Tempcheck3
-output(Tempcheck4) <- Tempcheck4
+
 
 
