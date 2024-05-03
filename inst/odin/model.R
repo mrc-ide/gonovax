@@ -29,7 +29,7 @@ eta[2] <- eta_h
 deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
   n_AU[i, j] + n_TU[i, j] - sum(n_diag_rec[i, j, ])  + sum(wU[i, j, ]) -
   sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ]) -
-  sum(n_vopn[i,j,])  + sum(wdU[i, j, ])
+  sum(n_vopn[i, j, ])  + sum(wdU[i, j, ])
 
 deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ]) +
   sum(wdI[i, j, ])
@@ -68,30 +68,36 @@ screened[, ] <- eta[i] * U[i, j]
 
 #Calculations required for partner notification
 
-Cp[] <- sum(C[i, ])*p[i]
-Up[] <- sum(U[i, ])*p[i]
+Cp[] <- sum(C[i, ]) * p[i]
+Up[] <- sum(U[i, ]) * p[i]
 
-omega_C[ , ] = if (i == j) epsilon + (1-epsilon)*Cp[j]/sum(Cp[]) else (1-epsilon)*Cp[j]/sum(Cp[]) 
-omega_U[ , ] <- if (i == j) epsilon + (1-epsilon)*Up[j]/sum(Up[]) else (1-epsilon)*Up[j]/sum(Up[])
-prop_UUsubgroup[,] <- U[i,j]/sum(U[i,])
-prop_CCsubgroup[,] <- C[i,j]/sum(C[i,])
+omega_C[, ] <- if (i == j) epsilon + (1 - epsilon) * Cp[j] / sum(Cp[]) else
+  (1 - epsilon) * Cp[j] / sum(Cp[])
+omega_U[, ] <- if (i == j) epsilon + (1 - epsilon) * Up[j] / sum(Up[]) else
+  (1 - epsilon) * Up[j] / sum(Up[])
+prop_UUsubgroup[, ] <- U[i, j] / sum(U[i, ])
+prop_CCsubgroup[, ] <- C[i, j] / sum(C[i, ])
 
-omega_U_withdiag[,] <- omega_U[i,j]*(mu*sum(S[i,]) + eta[i]*sum(A[i,]))
-omega_C_withdiag[,] <- omega_C[i,j]*(mu*sum(S[i,]) + eta[i]*sum(A[i,]))
+omega_U_withdiag[, ] <- omega_U[i, j] * (mu * sum(S[i, ]) + eta[i] *
+                                           sum(A[i, ]))
+omega_C_withdiag[, ] <- omega_C[i, j] * (mu * sum(S[i, ]) + eta[i] *
+                                           sum(A[i, ]))
 
-omega_U_withdiag_rg[] <- sum(omega_U_withdiag[,i])
-omega_C_withdiag_rg[] <- sum(omega_C_withdiag[,i])
+omega_U_withdiag_rg[] <- sum(omega_U_withdiag[, i])
+omega_C_withdiag_rg[] <- sum(omega_C_withdiag[, i])
 
 #new simplified way
 
 #notifications to uninfected
-phi[,] = (1-notifiedprev)*kappa*omega_U_withdiag_rg[i]*prop_UUsubgroup[i,j]
+phi[, ] <- (1 - notifiedprev) * kappa * omega_U_withdiag_rg[i] *
+  prop_UUsubgroup[i, j]
 
 #notifcations to infected
-xi[,] = notifiedprev*kappa*omega_C_withdiag_rg[i]*prop_CCsubgroup[i,j]
+xi[, ] <- notifiedprev * kappa * omega_C_withdiag_rg[i] * prop_CCsubgroup[i, j]
 
 
-notifiedandattended[,] = if(phi[i,j] + xi[i,j] > 0) phi[i,j] + xi[i,j] else 0
+notifiedandattended[, ] <- if (phi[i, j] + xi[i, j] > 0)
+  phi[i, j] + xi[i, j] else 0
 
 
 # mechanism to record number of times infected by moving diagnosed
@@ -116,8 +122,8 @@ n_obe[, , ] <- vbe[i, j, k] * entrants[i, k]
 n_vbe[, , ] <- n_obe[i, j, k] * u_vbe
 
 # on partner notification
-n_oopn[, , ] <- vopn[i,j,k] * phi[i, k] * vax_switch
-n_vopn[, , ] <- n_oopn[i,j,k] * u_pn[i, j, k]
+n_oopn[, , ] <- vopn[i, j, k] * phi[i, k] * vax_switch
+n_vopn[, , ] <- n_oopn[i, j, k] * u_pn[i, j, k]
 
 
 # waning
@@ -145,16 +151,18 @@ deriv(cum_diag_a[, ])      <- n_AT[i, j]
 deriv(cum_diag_s[, ])      <- n_ST[i, j]
 deriv(cum_treated[, ])     <- n_TU[i, j]
 deriv(cum_screened[, ])    <- screened[i, j]
-deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] + n_obe[i, j, j] + n_oopn[i,j,j]
-deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] + n_vbe[i, j, j] + n_vopn[i,j,j]
+deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] +
+  n_obe[i, j, j] + n_oopn[i, j, j]
+deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] +
+  n_vbe[i, j, j] + n_vopn[i, j, j]
 deriv(cum_vaccinated_screen[, ])  <- n_vos[i, j, j]
 
 deriv(cum_vbe[, ])         <- n_vbe[i, j, j]
 deriv(cum_offered_vbe[, ]) <- n_obe[i, j, j]
 deriv(cum_entrants[, ]) <- entrants[i, j]
 
-deriv(cum_offered_pn[, ])     <- n_oopn[i,j,j]
-deriv(cum_vaccinated_pn[, ])  <- n_vopn[i,j,j]
+deriv(cum_offered_pn[, ])     <- n_oopn[i, j, j]
+deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
 
 
 # aggregated time series for fitting mcmc
@@ -285,7 +293,7 @@ nu        <- user() # Rate of natural recovery from asymptomatic infection
 mu        <- user() # Rate of treatment seeking
 rho       <- user() # Rate of recovery after treatment
 
-kappa     <- user() # proportion of eligible contacts for notification actually notified
+kappa     <- user() # proportion of eligible PN contacts actually notified
 notifiedprev <- user() # prevalence among PN individuals
 
 ## vaccination parameters
@@ -381,7 +389,3 @@ output(N)   <- N
 output(lambda) <- lambda
 output(phi) <- phi
 output(notifiedandattended) <- notifiedandattended
-
-
-
-

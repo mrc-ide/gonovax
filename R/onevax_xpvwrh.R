@@ -195,13 +195,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   vos <- create_vax_map_branching(n_vax, p$vos, idx$vaccinatedfrom_vos,
                                   idx$vaccinatedto_vos, set_vbe = FALSE, idx)
-  
+
   vopn <- create_vax_map_branching(n_vax, p$vopn, idx$vaccinatedfrom_vopn,
-                                  idx$vaccinatedto_vopn, set_vbe = FALSE, idx)
-  
-  
-  #print(vopn)
-  
+                                   idx$vaccinatedto_vopn, set_vbe = FALSE, idx)
+
 
   vbe_map <- create_vax_map_branching(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
                                       idx$vaccinatedto_vbe, set_vbe = TRUE, idx)
@@ -220,12 +217,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   u_d <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, idx,
                                   n_diag_rec = n_diag_rec,
                                   screening_or_diagnosis = "diagnosis")
-  
+
   u_pn <- create_uptake_map_xpvwrh(vopn, r1, r2, r2_p, booster_uptake, idx,
-                                  n_diag_rec = n_diag_rec,
-                                  screening_or_diagnosis = "screening")
-  
-  #print(u_pn)
+                                   n_diag_rec = n_diag_rec,
+                                   screening_or_diagnosis = "screening")
 
   w <- create_waning_map_branching(n_vax, i_v, i_w,
                                    n_erlang / c(dur_p, dur_v, dur_revax),
@@ -252,7 +247,7 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     w = create_waning_map_branching(n_vax, i_v, i_w,
                                     n_erlang / c(dur_p, dur_v, dur_revax),
                                     n_erlang, n_diag_rec),
-    wd =  create_diagnosis_waning_map(n_vax, 1/years_history, n_diag_rec),
+    wd =  create_diagnosis_waning_map(n_vax, 1 / years_history, n_diag_rec),
     vax_t = c(0, t_stop),
     vax_y = c(1, 0),
     diag_rec = diag_rec
@@ -510,7 +505,8 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                     dur_revax = dur_revax, dur_p = dur_p,
                     vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
-                    n_erlang = n_erlang, n_diag_rec = n_diag_rec, years_history = years_history,
+                    n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                    years_history = years_history,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
 
@@ -530,21 +526,6 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
   ret <- Map(run_xpvwrh, gono_params = gono_params, vax_params = vax_params,
              init_params = init_params, n_erlang = n_erlang,
              n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
-  
-# 
-#   if (PN == "no"){
-#     
-#     ret <- Map(run_xpvwrh, gono_params = gono_params, vax_params = vax_params,
-#                init_params = init_params, n_erlang = n_erlang,
-#                n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
-#   } else if (PN == "yes"){
-#     ret <- Map(run_xpvwrh_withPN, gono_params = gono_params, vax_params = vax_params,
-#                init_params = init_params, n_erlang = n_erlang,
-#                n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
-#   } else{
-#     stop("PN needs to be yes or no")
-#   }
-  
 
   # name outputs
   ret <- lapply(ret, name_outputs, gen_erlang_labels(n_erlang, n_diag_rec))

@@ -27,9 +27,9 @@ gono_params <- function(n = NULL) {
   i  <- n %||% seq_len(n_pars)
   # limit to parameter sets available
   i <- i[(i > 0) & (i <= n_pars)]
-  
+
   pars$kappa <- 1
-  
+
   pars$notifiedprev <- 0.38 # default value for notified prevalence
 
   pars[i]
@@ -51,7 +51,7 @@ transform0 <- function(pars) {
   pars$eta_l_t <- rep(pars$eta, 2)
   pars$eta_h_t <- pars$eta_l_t
   pars$beta <- pars$eta <- NULL
-  
+
   pars$kappa <- 1
   pars$notifiedprev <- 0.38
 
@@ -88,8 +88,9 @@ transform <- function(pars, fix_par_t = TRUE) {
 
   pars$eta_l_t <- pars$eta_h * pars$omega * (1 + pars$phi_eta * pars$tt)
   pars$eta_h_t <- pars$eta_h * (1 + pars$phi_eta * pars$tt)
-  
+
   pars$kappa <- 1
+  pars$notifiedprev <- 0.38
 
   pars$tt <- seq(0, t_max)
 
@@ -117,7 +118,7 @@ transform_fixed <- function(pars) {
   pars$eta_l_t <- rep(pars$eta_l, 2)
   pars$eta_h_t <- rep(pars$eta_h, 2)
   pars$beta <- pars$eta_l <- pars$eta_h <- NULL
-  
+
   pars$kappa <- 1
   pars$notifiedprev <- 0.38
 
@@ -325,44 +326,6 @@ create_diagnosis_waning_map <- function(n_vax, z, n_diag_rec = 1) {
   wd
 }
 
-
-##' @name create_diagnosis_waning_map_time
-##' @title Create mapping for movement between strata due to diagnosis waning
-##' @param n_vax Integer in (0, 5) denoting total number of strata
-##' @param z Scalar denoting rate of waning diagnosis
-##' @param n_diag_rec integer for the number of diagnosis history substrata
-##' @return an array of the mapping
-
-create_diagnosis_waning_map_time <- function(n_vax, z, n_diag_rec = 1) {
-  
-  stopifnot(z > 0)
-  stopifnot(n_vax %% n_diag_rec == 0)
-  
-  # set up waning map
-  wd <- array(0, dim = c(n_vax, n_vax))
-  
-  #different base number of vaccine statuses (e.g. if X, V, W, then ntype = 3)
-  ntype <- n_vax / n_diag_rec
-  
-  if (n_diag_rec >= 2) {
-    for (k in 1:(ntype)) {
-      for (j in 2:(n_diag_rec-1)) {
-        wd[(k - 1) * n_diag_rec + j+1, (k - 1) * n_diag_rec + j] <- z
-        wd[(k - 1) * n_diag_rec + j, (k - 1) * n_diag_rec + j] <- -z
-      }
-      
-      
-      wd[(k - 1) * n_diag_rec + 1, (k - 1) * n_diag_rec + n_diag_rec] <- z
-      wd[(k - 1) * n_diag_rec + n_diag_rec, (k - 1) * n_diag_rec + n_diag_rec] <- -z
-      
-    }
-  }
-  
-  wd
-}
-
-
-
 ##' @name set_strategy
 ##' @title Translate each named vaccine strategy into a format interpretable by
 ##' `create_vax_map`
@@ -386,64 +349,51 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
   } else if (strategy == "VoD") {
     vod <- vax_lh
     vos <- novax
-    
     vopn <- novax
-    
 
   } else if (strategy == "VoA") {
     vod <- vos <- vax_lh
-    
     vopn <- novax
-    
 
   } else if (strategy == "VoD(H)") {
     vod <- vax_h
     vos <- novax
-    
     vopn <- novax
-    
 
   } else if (strategy == "VoA(H)") {
     vod <- vos <- vax_h
-    
     vopn <- novax
-    
 
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- vax_lh
     vos <- vax_h
-    
     vopn <- novax
-    
 
   } else if (strategy == "VoS") {
     vod <- novax
     vos <- vax_lh
-    
     vopn <- novax
-    
 
   } else if (strategy == "VaH") {
     vod <- vax_lh
     vos <- vax_lh
-    
     vopn <- novax
-    
 
   } else if (strategy == "VaHonly") {
     vod <- novax
     vos <- vax_lh
-    
     vopn <- novax
+
   } else if (strategy == "VoN") {
     vod <- vax_lh
     vos <- novax
-    
     vopn <- vax_lh
-  } else if (strategy == "VaH+VoN"){
+
+  } else if (strategy == "VaH+VoN") {
     vod <- vax_lh
     vos <- vax_lh
     vopn <- vax_lh
+
   } else {
     stop("strategy not recognised")
   }
@@ -541,7 +491,8 @@ model_params_xpvwrh <- function(gono_params = NULL,
   } else {
 
     #also add in diag_rec if vax_params not supplied
-    vax_params <- vax_params0(n_diag_rec = n_diag_rec, years_history = years_history)
+    vax_params <- vax_params0(n_diag_rec = n_diag_rec,
+                              years_history = years_history)
     n_vax <- vax_params$n_vax
     if (n_diag_rec == 1) {
       i_diag <-  NULL

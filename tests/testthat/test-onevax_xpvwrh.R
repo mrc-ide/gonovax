@@ -118,48 +118,50 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
 
   }
-  
-  
-  
-  
+
   # set to 0 uptake to make sure things calculated correctly
   y_pn1 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0, hes = 0,
                              r2 = 1, r1 = 0, booster_uptake = 0.3,
                              strategy = "VoN")
-  
+
   for (i in seq_along(y_pn1)){
-    
 
-    
-    # the number of offers at PN is equal to the number of diagnoses * prevalence
-    expect_equal( rowSums(y_pn1[[i]]$cum_offered_pn), gp[[i]]$kappa*(1-gp[[i]]$notifiedprev)*rowSums(y_pn1[[i]]$cum_diag_a + y_pn1[[i]]$cum_diag_s) ) 
-    
+    # the number of offers at PN is equal to the # of diagnoses * prevalence
+    # * PNs per diagnosis
+    expect_equal(rowSums(y_pn1[[i]]$cum_offered_pn),
+                 gp[[i]]$kappa * (1 - gp[[i]]$notifiedprev) *
+                   rowSums(y_pn1[[i]]$cum_diag_a + y_pn1[[i]]$cum_diag_s))
+
     # prevalence among PN = 0.38
-    expect_equal( rowSums(y_pn1[[i]]$phi)/rowSums(y_pn1[[i]]$notifiedandattended), rep((1-gp[[i]]$notifiedprev), length(tt)))
-
+    expect_equal(rowSums(y_pn1[[i]]$phi) /
+                   rowSums(y_pn1[[i]]$notifiedandattended),
+                 rep((1 - gp[[i]]$notifiedprev), length(tt)))
   }
 
   y_pn2 <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 1, vbe = 0, hes = 0,
                              r2 = 1, r1 = 0.5, booster_uptake = 0.3,
                              strategy = "VoN")
-  
+
   for (i in seq_along(y_pn2)){
-    
-    # the number of vaccinations PN is fewer than the number of diagnoses * prevalence * uptake
-    expect_true( all(rowSums(y_pn2[[i]]$cum_vaccinated_pn) <= gp[[i]]$kappa* 0.5*(1-gp[[i]]$notifiedprev)*rowSums(y_pn2[[i]]$cum_diag_a + y_pn2[[i]]$cum_diag_s)) ) 
-    
-    
+
+    # the number of vaccinations PN is fewer than the number of diagnoses *
+    # * prevalence * uptake
+    expect_true(all(rowSums(y_pn2[[i]]$cum_vaccinated_pn) <=
+                      gp[[i]]$kappa * 0.5 * (1 - gp[[i]]$notifiedprev) *
+                        rowSums(y_pn2[[i]]$cum_diag_a +
+                                  y_pn2[[i]]$cum_diag_s)))
   }
-  
-  
+
   #complete assortativity and no infections among low risk pop
-  
+
   i_pn <- lapply(y_pn1, restart_hes, n_vax = 6,
-                branching = TRUE)
-  
+                 branching = TRUE)
+
   gp2 <- gp
-  gp2 <- lapply(gp2, function(x) { x$epsilon <- 1; return(x) })
-  
+  gp2 <- lapply(gp2, function(x) {
+                                  x$epsilon <- 1
+                                  return(x) })
+
   # Set I0, S0, A0, and T0 for i_pn
   vars_to_set <- c("I0", "S0", "A0", "T0")
   i_pn <- lapply(i_pn, function(x) {
@@ -169,19 +171,17 @@ test_that("run_onevax_xpvwrh works correctly", {
     return(x)
   })
 
-  y_pn3 <- run_onevax_xpvwrh(tt, gp2, init_params = i_pn ,vea = 0.5, dur_v = 1, vbe = 0, hes = 0,
-                             r2 = 1, r1 = 0.5, booster_uptake = 0.3,
+  y_pn3 <- run_onevax_xpvwrh(tt, gp2, init_params = i_pn, vea = 0.5,
+                             dur_v = 1, vbe = 0, hes = 0, r2 = 1, r1 = 0.5,
+                             booster_uptake = 0.3,
                              strategy = "VoN")
-  
+
   for (i in seq_along(y_pn3)){
-    
-    expect_true(all(y_pn3[[i]]$cum_offered_pn[,1,] == 0))
-    expect_true(all(y_pn3[[i]]$cum_vaccinated_pn[,1,] == 0))
-    expect_true(all(y_pn3[[i]]$cum_vaccinated[,1,] == 0))
-    
-    
+    expect_true(all(y_pn3[[i]]$cum_offered_pn[, 1, ] == 0))
+    expect_true(all(y_pn3[[i]]$cum_vaccinated_pn[, 1, ] == 0))
+    expect_true(all(y_pn3[[i]]$cum_vaccinated[, 1, ] == 0))
   }
-  
+
 
   # Test the vaccination maps are being generated as expected
 
