@@ -2,6 +2,7 @@
 ##' @title create vaccination parameters for use in novax model (null)
 ##' @return A list parameters in the model input format
 ##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
+##' @param years_history number of years that diagnosis history is recorded for
 ##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
 ##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
 ##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for

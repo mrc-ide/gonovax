@@ -29,7 +29,8 @@ vax_params_xpvwrh(
   t_stop = 99,
   hes = 0,
   n_erlang = 1,
-  n_diag_rec = 1
+  n_diag_rec = 1,
+  years_history = 1
 )
 }
 \arguments{
@@ -106,6 +107,8 @@ vaccination after primary vaccination protection has waned
 made through vaccine-protected strata until that protection has waned}
 
 \item{n_diag_rec}{number of diagnosis history strata}
+
+\item{years_history}{number of years that diagnosis history is recorded for}
 }
 \value{
 A list parameters in the model input format

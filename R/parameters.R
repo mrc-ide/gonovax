@@ -467,6 +467,7 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param years_history number of years that diagnosis history is recorded for
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing

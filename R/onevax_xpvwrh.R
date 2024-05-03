@@ -106,6 +106,7 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec  number of diagnosis history strata
+##' @param years_history number of years that diagnosis history is recorded for
 ##' @return A list parameters in the model input format
 vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               vea_revax = vea, vei_revax = vei, ved_revax = ved,
@@ -478,7 +479,9 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE, idx) {
 ##'   Defaults to supplied value of r1 * r2
 ##' @param n_erlang integer giving the number of erlang vaccination transitions
 ##'  through vaccine-protected strata until that protection has waned
-##'  @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param years_history number of years that diagnosis history is recorded for
+##'  
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
@@ -490,8 +493,7 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                               ved_p = ved, ves_p = ves, vbe = 0, r1 = 0, r2 = 0,
                               r2_p = 0, booster_uptake = (r1 * r2),
                               strategy = NULL, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1, years_history = 1,
-                              PN = "no") {
+                              n_erlang = 1, n_diag_rec = 1, years_history = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei, ved, ves,
                              vea_revax, vei_revax, ved_revax, vea_p, vei_p,

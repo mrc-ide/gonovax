@@ -11,6 +11,7 @@ run_xpvwrh(
   vax_params = NULL,
   n_erlang = 1,
   n_diag_rec = 1,
+  years_history = 1,
   transform = TRUE
 )
 }
@@ -27,6 +28,8 @@ run_xpvwrh(
 made through vaccine-protected strata until that protection has waned}
 
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{years_history}{number of years that diagnosis history is recorded for}
 
 \item{transform}{= TRUE}
 }

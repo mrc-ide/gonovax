@@ -42,6 +42,7 @@ run <- function(tt, gono_params, init_params = NULL, vax_params = NULL,
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param years_history number of years that diagnosis history is recorded for
 ##' @param transform = TRUE
 ##' @export run
 

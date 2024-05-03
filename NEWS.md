@@ -1,3 +1,22 @@
+# gonovax 0.4.18
+* partner notification and vaccination on notification added into population-level model
+
+# gonovax 0.4.18
+* diagnoses history in a trial is recorded at the point of receiving treatment and whether a trial records asymptomatic infections or not can be switched on or off
+
+# gonovax 0.4.17
+* ved acts on duration of asymptomatic infection rather than the rate of asymptomatic natural clearance
+
+# gonovax 0.4.16
+* Expose demographic_params in run function to facilitate adaptation to non-UK contexts
+
+# gonovax 0.4.15
+* the maximum effective rate of natural clearance in the presence of ved is now capped at the value for the rate of care seeking
+
+# gonovax 0.4.14
+* extracting diagnoses and vaccination by stratum type now possible with n_erlang > 1, and symptomatic and
+asymptomatic diagnoses by vaccine-protected vs non-vaccine-protected can be extracted against (adjusted) baseline
+
 # gonovax 0.4.13
 * model updated to include diagnosis history (i.e. the number of times individuals have been diagnosed in last Y years)
 at n_diag_rec = 1, the model is the same as previous versions
