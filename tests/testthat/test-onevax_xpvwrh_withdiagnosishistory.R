@@ -191,7 +191,7 @@ test_that("run_onevax_xpvwrh works correctly", {
     gp2 <- gp
     gp2 <- lapply(gp2, function(x) {
                                     x$epsilon <- 1
-                                    return(x) })
+                                    x })
 
     # Set I0, S0, A0, and T0 for i_pn
     vars_to_set <- c("I0", "S0", "A0", "T0")
@@ -199,7 +199,7 @@ test_that("run_onevax_xpvwrh works correctly", {
       for (var in vars_to_set) {
         x[[var]][1, ] <- 0
       }
-      return(x)
+      x
     })
 
     y_pn3 <- run_onevax_xpvwrh(tt, gp2, init_params = i_pn, vea = 0.5,

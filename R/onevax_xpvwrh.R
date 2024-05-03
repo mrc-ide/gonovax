@@ -481,7 +481,6 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE, idx) {
 ##'  through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @param years_history number of years that diagnosis history is recorded for
-##'  
 ##' @inheritParams run_onevax_xvwv
 ##' @return A list of transformed model outputs
 ##' @export
