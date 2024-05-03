@@ -221,7 +221,6 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                   n_diag_rec = n_diag_rec,
                                   screening_or_diagnosis = "diagnosis")
   
-  
   u_pn <- create_uptake_map_xpvwrh(vopn, r1, r2, r2_p, booster_uptake, idx,
                                   n_diag_rec = n_diag_rec,
                                   screening_or_diagnosis = "screening")
@@ -528,19 +527,23 @@ run_onevax_xpvwrh <- function(tt, gono_params, init_params = NULL,
                 3 * n_diag_rec + (3 * n_diag_rec * n_erlang))
   }
 
-
-  if (PN == "no"){
-    
-    ret <- Map(run_xpvwrh, gono_params = gono_params, vax_params = vax_params,
-               init_params = init_params, n_erlang = n_erlang,
-               n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
-  } else if (PN == "yes"){
-    ret <- Map(run_xpvwrh_withPN, gono_params = gono_params, vax_params = vax_params,
-               init_params = init_params, n_erlang = n_erlang,
-               n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
-  } else{
-    stop("PN needs to be yes or no")
-  }
+  ret <- Map(run_xpvwrh, gono_params = gono_params, vax_params = vax_params,
+             init_params = init_params, n_erlang = n_erlang,
+             n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
+  
+# 
+#   if (PN == "no"){
+#     
+#     ret <- Map(run_xpvwrh, gono_params = gono_params, vax_params = vax_params,
+#                init_params = init_params, n_erlang = n_erlang,
+#                n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
+#   } else if (PN == "yes"){
+#     ret <- Map(run_xpvwrh_withPN, gono_params = gono_params, vax_params = vax_params,
+#                init_params = init_params, n_erlang = n_erlang,
+#                n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
+#   } else{
+#     stop("PN needs to be yes or no")
+#   }
   
 
   # name outputs

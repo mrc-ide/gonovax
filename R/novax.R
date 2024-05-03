@@ -19,6 +19,7 @@ vax_params0 <- function(n_diag_rec = 1, years_history = 1) {
        u_vbe = 0,
        u_d = v,
        u_s = v,
+       u_pn = v,
        vbe = v,
        vos = v,
        vod = v,

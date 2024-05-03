@@ -20,10 +20,11 @@ model_ <- R6::R6Class(
       output_dde = "model_output_dde"),
     dll = "gonovax",
     user = c("A0", "beta_t", "diag_rec", "enr", "epsilon", "eta_h_t",
-             "eta_l_t", "exr", "I0", "mu", "nu", "p", "psi", "q", "rho",
-             "S0", "sigma", "T0", "tt", "u_d", "u_s", "u_vbe", "U0", "vax_t",
-             "vax_y", "vbe", "vea", "ved", "vei", "ves", "vod", "vos", "w",
-             "wd", "willing", "n_vax"),
+             "eta_l_t", "exr", "I0", "kappa", "mu", "notifiedprev", "nu",
+             "p", "psi", "q", "rho", "S0", "sigma", "T0", "tt", "u_d",
+             "u_pn", "u_s", "u_vbe", "U0", "vax_t", "vax_y", "vbe", "vea",
+             "ved", "vei", "ves", "vod", "vopn", "vos", "w", "wd", "willing",
+             "n_vax"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
@@ -496,7 +497,7 @@ model_withouthistory <- function(..., user = list(...), use_dde = FALSE,
 }
 class(model_withouthistory) <- "odin_generator"
 attr(model_withouthistory, "generator") <- model_withouthistory_
-model_withPN_ <- R6::R6Class(
+model_withoutPN_ <- R6::R6Class(
   "odin_model",
   cloneable = FALSE,
 
@@ -511,17 +512,16 @@ model_withPN_ <- R6::R6Class(
     ynames = NULL,
     interpolate_t = NULL,
     cfuns = list(
-      rhs_dde = "model_withPN_rhs_dde",
-      rhs_desolve = "model_withPN_rhs_desolve",
-      initmod_desolve = "model_withPN_initmod_desolve",
-      output_dde = "model_withPN_output_dde"),
+      rhs_dde = "model_withoutPN_rhs_dde",
+      rhs_desolve = "model_withoutPN_rhs_desolve",
+      initmod_desolve = "model_withoutPN_initmod_desolve",
+      output_dde = "model_withoutPN_output_dde"),
     dll = "gonovax",
     user = c("A0", "beta_t", "diag_rec", "enr", "epsilon", "eta_h_t",
-             "eta_l_t", "exr", "I0", "kappa", "mu", "notifiedprev", "nu",
-             "p", "psi", "q", "rho", "S0", "sigma", "T0", "tt", "u_d",
-             "u_pn", "u_s", "u_vbe", "U0", "vax_t", "vax_y", "vbe", "vea",
-             "ved", "vei", "ves", "vod", "vopn", "vos", "w", "wd", "willing",
-             "n_vax"),
+             "eta_l_t", "exr", "I0", "mu", "nu", "p", "psi", "q", "rho",
+             "S0", "sigma", "T0", "tt", "u_d", "u_s", "u_vbe", "U0", "vax_t",
+             "vax_y", "vbe", "vea", "ved", "vei", "ves", "vod", "vos", "w",
+             "wd", "willing", "n_vax"),
 
     ## This is never called, but is used to ensure that R finds our
     ## symbols that we will use from the package; without this they
@@ -529,21 +529,21 @@ model_withPN_ <- R6::R6Class(
     ## FFI registration system.
     registration = function() {
       if (FALSE) {
-        .C("model_withPN_rhs_dde", package = "gonovax")
-        .C("model_withPN_rhs_desolve", package = "gonovax")
-        .C("model_withPN_initmod_desolve", package = "gonovax")
-        .C("model_withPN_output_dde", package = "gonovax")
+        .C("model_withoutPN_rhs_dde", package = "gonovax")
+        .C("model_withoutPN_rhs_desolve", package = "gonovax")
+        .C("model_withoutPN_initmod_desolve", package = "gonovax")
+        .C("model_withoutPN_output_dde", package = "gonovax")
       }
     },
 
     ## This only does something in delay models
     set_initial = function(t, y, use_dde) {
-      .Call("model_withPN_set_initial", private$ptr, t, y, use_dde,
+      .Call("model_withoutPN_set_initial", private$ptr, t, y, use_dde,
             PACKAGE= "gonovax")
     },
 
     update_metadata = function() {
-      meta <- .Call("model_withPN_metadata", private$ptr,
+      meta <- .Call("model_withoutPN_metadata", private$ptr,
                     PACKAGE = "gonovax")
       private$variable_order <- meta$variable_order
       private$output_order <- meta$output_order
@@ -558,14 +558,14 @@ model_withPN_ <- R6::R6Class(
     initialize = function(..., user = list(...), use_dde = FALSE,
                           unused_user_action = NULL) {
       private$odin <- asNamespace("odin")
-      private$ptr <- .Call("model_withPN_create", user, PACKAGE = "gonovax")
+      private$ptr <- .Call("model_withoutPN_create", user, PACKAGE = "gonovax")
       self$set_user(user = user, unused_user_action = unused_user_action)
       private$use_dde <- use_dde
       private$update_metadata()
     },
 
     ir = function() {
-      path_ir <- system.file("odin/model_withPN.json", mustWork = TRUE,
+      path_ir <- system.file("odin/model_withoutPN.json", mustWork = TRUE,
                              package = "gonovax")
       json <- readLines(path_ir)
       class(json) <- "json"
@@ -576,7 +576,7 @@ model_withPN_ <- R6::R6Class(
     ## nice, but that's not super straightforward to do.
     set_user = function(..., user = list(...), unused_user_action = NULL) {
       private$odin$support_check_user(user, private$user, unused_user_action)
-      .Call("model_withPN_set_user", private$ptr, user, PACKAGE = "gonovax")
+      .Call("model_withoutPN_set_user", private$ptr, user, PACKAGE = "gonovax")
       private$update_metadata()
     },
 
@@ -586,11 +586,11 @@ model_withPN_ <- R6::R6Class(
     ## closer to the js version which requires that we always pass the
     ## time in.
     initial = function(t) {
-      .Call("model_withPN_initial_conditions", private$ptr, t, PACKAGE = "gonovax")
+      .Call("model_withoutPN_initial_conditions", private$ptr, t, PACKAGE = "gonovax")
     },
 
     rhs = function(t, y) {
-      .Call("model_withPN_rhs_r", private$ptr, t, y, PACKAGE = "gonovax")
+      .Call("model_withoutPN_rhs_r", private$ptr, t, y, PACKAGE = "gonovax")
     },
 
     deriv = function(t, y) {
@@ -598,7 +598,7 @@ model_withPN_ <- R6::R6Class(
     },
 
     contents = function() {
-      .Call("model_withPN_contents", private$ptr, PACKAGE = "gonovax")
+      .Call("model_withoutPN_contents", private$ptr, PACKAGE = "gonovax")
     },
 
     transform_variables = function(y) {
@@ -616,11 +616,11 @@ model_withPN_ <- R6::R6Class(
   ))
 
 
-model_withPN <- function(..., user = list(...), use_dde = FALSE,
+model_withoutPN <- function(..., user = list(...), use_dde = FALSE,
                      unused_user_action = NULL) {
-  asNamespace("odin")$deprecated_constructor_call("model_withPN")
-  model_withPN_$new(user = user, use_dde = use_dde,
+  asNamespace("odin")$deprecated_constructor_call("model_withoutPN")
+  model_withoutPN_$new(user = user, use_dde = use_dde,
                 unused_user_action = unused_user_action)
 }
-class(model_withPN) <- "odin_generator"
-attr(model_withPN, "generator") <- model_withPN_
+class(model_withoutPN) <- "odin_generator"
+attr(model_withoutPN, "generator") <- model_withoutPN_

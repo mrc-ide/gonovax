@@ -119,6 +119,7 @@ transform_fixed <- function(pars) {
   pars$beta <- pars$eta_l <- pars$eta_h <- NULL
   
   pars$kappa <- 1
+  pars$notifiedprev <- 0.38
 
   pars
 }
