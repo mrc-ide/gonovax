@@ -71,10 +71,8 @@ screened[, ] <- eta[i] * U[i, j]
 Cp[] <- sum(C[i, ]) * p[i]
 Up[] <- sum(U[i, ]) * p[i]
 
-omega_C[, ] <- if (i == j) epsilon + (1 - epsilon) * Cp[j] / sum(Cp[]) else
-  (1 - epsilon) * Cp[j] / sum(Cp[])
-omega_U[, ] <- if (i == j) epsilon + (1 - epsilon) * Up[j] / sum(Up[]) else
-  (1 - epsilon) * Up[j] / sum(Up[])
+omega_C[, ] <- (1 - epsilon) * Cp[j] / sum(Cp[]) + (if (i == j) epsilon else 0)
+omega_U[, ] <- (1 - epsilon) * Up[j] / sum(Up[]) + (if (i == j) epsilon else 0)
 prop_UUsubgroup[, ] <- U[i, j] / sum(U[i, ])
 prop_CCsubgroup[, ] <- C[i, j] / sum(C[i, ])
 
