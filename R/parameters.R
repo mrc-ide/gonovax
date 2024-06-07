@@ -265,7 +265,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 
   stopifnot(z > 0)
-  stopifnot(length(z) %in% c(1, length(i_v)))
+  stopifnot(length(z) == length(i_v)/n_diag_rec)
   stopifnot(length(i_w) == n_diag_rec)
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
