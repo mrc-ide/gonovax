@@ -86,9 +86,6 @@ transform <- function(pars, fix_par_t = TRUE) {
   pars$eta_l_t <- pars$eta_h * pars$omega * (1 + pars$phi_eta * pars$tt)
   pars$eta_h_t <- pars$eta_h * (1 + pars$phi_eta * pars$tt)
 
-  pars$kappa <- 1
-  pars$notifiedprev <- 0.38
-
   pars$tt <- seq(0, t_max)
 
   pars
