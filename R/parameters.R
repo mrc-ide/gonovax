@@ -52,9 +52,6 @@ transform0 <- function(pars) {
   pars$eta_h_t <- pars$eta_l_t
   pars$beta <- pars$eta <- NULL
 
-  pars$kappa <- 1
-  pars$notifiedprev <- 0.38
-
   pars
 }
 
