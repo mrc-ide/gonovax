@@ -1,4 +1,4 @@
-# gonovax 0.4.18
+# gonovax 0.4.19
 * partner notification and vaccination on notification added into population-level model
 
 # gonovax 0.4.18
