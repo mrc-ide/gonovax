@@ -12,46 +12,48 @@
 # linearly through the strata, now there is a branching after X
 
 ##' Create initial conditions for the model
-##' @name initial_params_xpvwrh
+##' @name initial_params_repeated_xpvwr
 ##' @title Initial conditions for the model
 ##' @inheritParams initial_params
-##' @param hes proportion of population vaccine hesitant
+##' @param hesgroups number of different vaccine hesitancy groups 
+##' (with different vaccine sentiments)
 ##' @param t number of years, only use when using function outside of
 ##' run_onevax_xpvwrh() to generate initial conditions for tests
-##' @param coverage_p partial (one-dose) vaccine coverage of the population
-##' already present (as a proportion)
-##' @param coverage_v two-dose vaccine coverage of the population already
-##' present (as a proportion)
+##' @param coverage_x now ARRAY of 'coverage' of non-vaccination
+##' @param coverage_p now ARRAY of partial (one-dose) vaccine coverage of 
+##' the population already present (as a proportion)
+##' @param coverage_v now ARRAY of two-dose vaccine coverage of 
+##' the population already present (as a proportion)
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec  number of diagnosis history strata
 ##' @return A list of initial conditions
 ##' @export
-initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
-                                  t = FALSE, n_erlang = 1, n_diag_rec = 1) {
+initial_params_repeated_xpvwr <- function(pars, coverage_p = 0, coverage_v = 0, 
+                                          hesgroups = 1, t = FALSE,
+                                          n_erlang = 1, n_diag_rec = 1) {
 
-  idx <- stratum_index_xpvwrh(n_erlang, n_diag_rec)
+  idx <- stratum_index_repeated_xpvwr(n_erlang, n_diag_rec)
 
-
-  if (coverage_p + coverage_v + hes > 1) {
-    stop("sum of coverages and/or hesitancy must not exceed 1")
-  } else if (coverage_p + coverage_v == 1) {
-    stop("You cannot have 100% coverage for initial conditions")
+  
+  if (sum(coverage_p + coverage_v) >= 1) {
+    stop("sum of coverages must not exceed or equal 1")
   } else {
 
-    assert_scalar_unit_interval(coverage_p)
-    assert_scalar_unit_interval(coverage_v)
     n_vax <- idx$n_vax
-    willing <- 1 - hes
-    x_init <- willing * (1 - coverage_p - coverage_v)
-    p_init <- willing * coverage_p
-    v_init <- willing * coverage_v
+    x_init <- (coverage_x - coverage_p - coverage_v)
+    p_init <- coverage_p
+    v_init <- coverage_v
 
     ## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
-    cov <- c(x_init, rep(0, n_diag_rec - 1), p_init,
-             rep(0, n_diag_rec * n_erlang - 1), v_init,
-             rep(0, n_diag_rec * n_erlang - 1), rep(0, n_diag_rec),
-             rep(0, n_diag_rec * n_erlang), hes, rep(0, n_diag_rec - 1))
+    
+    
+    cov <- c( c(rbind(x_init, matrix(0, nrow = n_diag_rec - 1, ncol = length(x_init)))),
+              c(rbind(p_init, matrix(0, nrow = n_diag_rec - 1, ncol = length(p_init)))),
+              c(rbind(v_init, matrix(0, nrow = n_diag_rec - 1, ncol = length(v_init)))),
+              rep(0, n_diag_rec * hesgroups),
+              rep(0, n_diag_rec * n_erlang * hesgroups)
+              )
 
     stopifnot(length(cov) == n_vax)
     stopifnot(sum(cov) == 1)
@@ -59,12 +61,11 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
     U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
     # separate into 1:low and 2:high activity groups and by coverage
     N0 <- pars$N0 * outer(pars$q, cov)
-    # set initial asymptomatic prevalence in each group (X AND H)
-    A0[, 1] <- round(N0[, 1] * c(pars$prev_Asl, pars$prev_Ash))
-
-    indextemp <- 2 * n_diag_rec + 3 * n_diag_rec * n_erlang + 1
-    A0[, indextemp] <-
-      round(N0[, indextemp] * c(pars$prev_Asl, pars$prev_Ash))
+    
+    # set initial asymptomatic prevalence in each X group 
+    
+    A0[, 2*seq_len(hes_groups) - 1] <- round(N0[, 2*seq_len(hes_groups) - 1] * c(pars$prev_Asl, pars$prev_Ash))
+    
 
     # set initial uninfecteds
     U0 <- round(N0) - A0
@@ -81,14 +82,15 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
 
 
 
-##' @name vax_params_xpvwrh
+##' @name vax_params_repeated_xpvwr
 ##' @title create vaccination parameters for use in onevax_xpvwrh model
 ##' @inheritParams vax_params_xvwr
-##' @param hes proportion of population vaccine hesitant
-##' @param r1 proportion of population offered vaccine only accepting the first
-##' dose, becoming partially vaccinated
-##' @param r2 proportion of the population who accepted the first dose of the
-##' vaccine who go on to accept the second dose, becoming fully vaccinated
+##' @param hesgroups proportion of population vaccine hesitant
+##' @param r1 array of proportion of population offered vaccine only
+##' accepting the first dose, becoming partially vaccinated
+##' @param r2 array of proportion of the population who accepted the first dose 
+##' of the vaccine who go on to accept the second dose,
+##' becoming fully vaccinated
 ##' @param dur_v duration of time spent in V stratum after completing a round of
 ##' primary vaccination (fully vaccinated, accepting first and second dose)
 ##' @param dur_p duration of time spent in the P stratum, partially vaccinated
@@ -101,20 +103,22 @@ initial_params_xpvwrh <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
 ##'  duration (between 0-1)
 ##' @param ves_p scalar indicating efficacy of partial vaccination against
 ##'  symptoms (between 0-1)
-##' @param r2_p proportion of partially vaccinated individuals who receive
-##' a second dose when returning to the clinic due to screening or illness
+##' @param r2_p vector of proportion of partially vaccinated individuals who 
+##' receive a second dose when returning to the clinic due to screening 
+##' or illness
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec  number of diagnosis history strata
 ##' @param years_history number of years that diagnosis history is recorded for
 ##' @return A list parameters in the model input format
-vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
+vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               vea_revax = vea, vei_revax = vei, ved_revax = ved,
                               ves_revax = ves, vea_p = vea, vei_p = vei,
                               ved_p = ved, ves_p = ves, dur_v = 1e3,
                               dur_p = dur_v, dur_revax = dur_v, r1 = 0, r2 = 0,
                               r2_p = 0, booster_uptake = r1 * r2,
-                              strategy = NULL, vbe = 0, t_stop = 99, hes = 0,
+                              strategy = NULL, vbe = 0, t_stop = 99,
+                              hesgroups = 1,
                               n_erlang = 1, n_diag_rec = 1, years_history = 1) {
 
   assert_scalar_unit_interval(vea_p)
@@ -132,10 +136,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   assert_scalar_positive(dur_v)
   assert_scalar_positive(dur_p)
   assert_scalar_positive(dur_revax)
-  assert_scalar_unit_interval(r1)
-  assert_scalar_unit_interval(r2)
-  assert_scalar_unit_interval(r2_p)
-  assert_scalar_unit_interval(booster_uptake)
+ # assert_scalar_unit_interval(r1)
+#  assert_scalar_unit_interval(r2)
+ # assert_scalar_unit_interval(r2_p)
+  #assert_scalar_unit_interval(booster_uptake)
   assert_scalar_unit_interval(vbe)
   assert_scalar_positive(t_stop)
 
@@ -150,8 +154,8 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
   # generate indices of strata and calculate total # strata
-  idx <- stratum_index_xpvwrh(n_erlang, n_diag_rec, strategy)
-
+  idx <- stratum_index_repeated_xpvwr(n_erlang, n_diag_rec, strategy)
+  
   # 1:X -> 3:V -> 4:W <-> 5:R
   # and
   # 1:X <-> 2:P
@@ -172,6 +176,24 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   diag_rec <- create_vax_map_branching(idx$n_vax, c(1, 1), idx$diagnosedfrom,
                                        idx$diagnosedto, set_vbe = FALSE, idx)
 
+  
+  # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
+  # will be in the following order, where roman numerals refer to n_diag_rec,
+  # and arabic numerals refer to erlang, and lower case letters refer to 
+  # hesitancy group
+  # X.I.a, X.II.a, X.I.b, X.II.b, 
+  # P1.I.a, P1.II.a, P1.I.b, P1.II.b,
+  # P2.I.a, P2.II.a, P2.I.b, P2.II.b, 
+  # P3.I.a, P3.II.a, P3.I.b, P3.II.b,
+  # V1.I.a, V1.II.a, V1.I.b, V1.II.b, 
+  # V2.I.a, V2.II.a, V2.I.b, V2.II.b,
+  # V3.I.a, V3.II.a, V3.I.b, V3.II.b,
+  # W.I.a, W.II.a, W.I.b, W.II.b,
+  # R1.I.a, R1.II.a, R1.I.b, R1.II.b,
+  # R2.I.a, R2.II.a, R1.I.b, R1.II.b,
+  # R3.I.a, R3.II.a, R3.I.b, R3.II.b
+  
+  
 
   # strata individuals wane from
   # i.e All strata under protection P, V and R
@@ -180,8 +202,8 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # strata individuals wane to
 
-  i_w <- c(idx$P[-(1:n_diag_rec)], idx$X, idx$V[-(1:n_diag_rec)], idx$W,
-           idx$R[-(1:n_diag_rec)], idx$W)
+  i_w <- c(idx$P[-(seq_len(n_diag_rec * hesgroups))], idx$X, idx$V[-(seq_len(n_diag_rec * hesgroups))], idx$W,
+           idx$R[-(seq_len(n_diag_rec * hesgroups))], idx$W)
 
 
   # ensure duration is not divided by 0
@@ -207,19 +229,24 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   if (sum(abs(vod)) > 0) {
     #vaccination on diagnosis occuring, so need to scale down diag_rec
 
+    
+    
+    ## trystan note - this will work when n_diag_rec = 1 and n_erlang = 1, but
+    ## will probably break if either > 1
+    
     diag_rec[, idx$X, ] <- (1 - r1) * diag_rec[, idx$X, ]
     diag_rec[, idx$P, ] <- (1 - r2_p) * diag_rec[, idx$P, ]
     diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
   }
 
-  u_s <- create_uptake_map_xpvwrh(vos, r1, r2, r2_p, booster_uptake, idx,
+  u_s <- create_uptake_map_repeated_xpvwr(vos, r1, r2, r2_p, booster_uptake, idx,
                                   n_diag_rec = n_diag_rec,
                                   screening_or_diagnosis = "screening")
-  u_d <- create_uptake_map_xpvwrh(vod, r1, r2, r2_p, booster_uptake, idx,
+  u_d <- create_uptake_map_repeated_xpvwr(vod, r1, r2, r2_p, booster_uptake, idx,
                                   n_diag_rec = n_diag_rec,
                                   screening_or_diagnosis = "diagnosis")
 
-  u_pn <- create_uptake_map_xpvwrh(vopn, r1, r2, r2_p, booster_uptake, idx,
+  u_pn <- create_uptake_map_repeated_xpvwr(vopn, r1, r2, r2_p, booster_uptake, idx,
                                    n_diag_rec = n_diag_rec,
                                    screening_or_diagnosis = "screening")
 
@@ -227,9 +254,10 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                    n_erlang / c(dur_p, dur_v, dur_revax),
                                    n_erlang, n_diag_rec)
 
-
-  willing <- c((1 - hes), rep(0, n_vax - 1 - n_diag_rec), hes,
-               rep(0, n_diag_rec - 1))
+  
+  willing = c(rep(c(1, rep(0, n_diag_rec - 1)), hesgroups), 
+              rep(0, n_vax - n_diag_rec*hes_groups))
+  
 
   list(n_vax   = n_vax,
     willing = willing,
@@ -257,7 +285,6 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
 
 
-
 ##' @name create_waning_map_branching
 ##' @title Create mapping for movement between strata due to vaccine waning
 ##' where waning from the partially vaccinated stratum (P) moves individuals
@@ -274,12 +301,12 @@ vax_params_xpvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @return an array of the mapping
 
 create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang = 1,
-                                        n_diag_rec = 1) {
+                                        n_diag_rec = 1, hesgroups = 1) {
 
   stopifnot(z > 0)
 
   #creates vector containing rates
-  z_erlang <- rep(z, each = n_erlang * n_diag_rec)
+  z_erlang <- rep(z, each = n_erlang * n_diag_rec * hesgroups)
 
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
