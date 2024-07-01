@@ -322,13 +322,13 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
-##' @param hes_groups integer for the number of hesitancy groups
+##' @param hesgroups integer for the number of hesitancy groups
 ##' @param strategy string of vaccination strategy being considered
 ##' @return A list of strata with their indicies
 ##' @export
 
 stratum_index_repeated_xpvwr <- function(n_erlang = 1, n_diag_rec = 1, 
-                                        hes_groups = 1, strategy = NULL) {
+                                        hesgroups = 1, strategy = NULL) {
   # for an n_erlang of 3, and n_diag_rec of 2, the list of indexes returned
   # will be in the following order, where roman numerals refer to n_diag_rec,
   # and arabic numerals refer to erlang, and lower case letters refer to 
@@ -345,19 +345,22 @@ stratum_index_repeated_xpvwr <- function(n_erlang = 1, n_diag_rec = 1,
   # R2.I.a, R2.II.a, R1.I.b, R1.II.b,
   # R3.I.a, R3.II.a, R3.I.b, R3.II.b
 
-  ret <- list(X = 1:(n_diag_rec * hes_groups))
+
+  print(n_diag_rec * hesgroups)
   
-  ret$P <- max(ret$X) + seq_len(n_erlang * n_diag_rec * hes_groups)
-  ret$V <- max(ret$P) + seq_len(n_erlang * n_diag_rec * hes_groups)
-  ret$W <- max(ret$V) + seq_len(n_diag_rec * hes_groups)
-  ret$R <- max(ret$W) + seq_len(n_erlang * n_diag_rec * hes_groups)
+  ret <- list(X = 1:(n_diag_rec * hesgroups))
+  
+  ret$P <- max(ret$X) + seq_len(n_erlang * n_diag_rec * hesgroups)
+  ret$V <- max(ret$P) + seq_len(n_erlang * n_diag_rec * hesgroups)
+  ret$W <- max(ret$V) + seq_len(n_diag_rec * hesgroups)
+  ret$R <- max(ret$W) + seq_len(n_erlang * n_diag_rec * hesgroups)
   ret$n_vax <- max(ret$R)
   
   n_vax <- ret$n_vax
   
-  ret$P1 <- ret$P[seq_len(n_diag_rec * hes_groups)]
-  ret$V1 <- ret$V[seq_len(n_diag_rec * hes_groups)]
-  ret$R1 <- ret$R[seq_len(n_diag_rec * hes_groups)]
+  ret$P1 <- ret$P[seq_len(n_diag_rec * hesgroups)]
+  ret$V1 <- ret$V[seq_len(n_diag_rec * hesgroups)]
+  ret$R1 <- ret$R[seq_len(n_diag_rec * hesgroups)]
   
   # strata people are diagnosed from
   ret$diagnosedfrom <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 0]

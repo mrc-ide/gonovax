@@ -245,7 +245,7 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
 ##' @return an array of the uptakes of same dimensions
 
 create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake,
-                                     idx, n_diag_rec = 1,
+                                     idx, n_diag_rec = 1, hesgroups = 1,
                                      screening_or_diagnosis) {
   
   
