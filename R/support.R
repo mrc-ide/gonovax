@@ -43,20 +43,55 @@ extract_flows_xpvwrh <- function(y) {
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
+  strata <- dimnames(y[[1]]$N)[[3]] # extract strata names
+  n_erlang <- sum((grepl("V", strata))) # count erlang
+
+  idx <- stratum_index_xpvwrh(n_erlang)
+
   ## extract vaccinations and revaccinations separately
   # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
   cumulative_flows$cum_primary_total <-
-    t(aggregate(y, "cum_vaccinated", stratum = 1))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$X))
 
   # partial to full = everyone vaccinated from P(2)
   # in earlier models this will be V, we expect this to be 0
   cumulative_flows$cum_part_to_full <-
-    t(aggregate(y, "cum_vaccinated", stratum = 2))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$P))
 
   # revaccinated = everyone vaccinated from W(4), note does not include
   # vaccination of individuals in X who have waned from P
   cumulative_flows$cum_revaccinated <-
-    t(aggregate(y, "cum_vaccinated", stratum = 4))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$W))
+
+  ######################
+  #X = 1, P = 2, V = 3, W = 4, R = 5, H = 6, (for n_erlang = 1)
+  # extract asymptomatic and symptomatic diagnoses in vaccinated (P,V,R)
+  # and unvaccinated strata separately (X,W)
+
+  #asymptomatic, unvax
+  cumulative_flows$cum_diag_a_xwh <-
+    t(aggregate(y, "cum_diag_a", stratum = c(idx$X, idx$W, idx$H)))
+
+  #symptomatic, unvax
+  cumulative_flows$cum_diag_s_xwh <-
+    t(aggregate(y, "cum_diag_s", stratum = c(idx$X, idx$W, idx$H)))
+
+  #asymptomatic, all-vax
+  cumulative_flows$cum_diag_a_pvr <-
+    t(aggregate(y, "cum_diag_a", stratum = c(idx$P, idx$V, idx$R)))
+
+  #symptomatic, all-vax
+  cumulative_flows$cum_diag_s_pvr <-
+    t(aggregate(y, "cum_diag_s", stratum = c(idx$P, idx$V, idx$R)))
+
+  #total, unvax (cumulative treated will be a bit different to the sum of a & s)
+  # unvax
+  cumulative_flows$cum_diag_t_xwh <-
+    cumulative_flows$cum_diag_a_xwh + cumulative_flows$cum_diag_s_xwh
+
+  # all-vax
+  cumulative_flows$cum_diag_t_pvr <-
+    cumulative_flows$cum_diag_a_pvr + cumulative_flows$cum_diag_s_pvr
 
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
@@ -279,6 +314,38 @@ name_outputs <- function(res, strata_names) {
   res
 }
 
+
+##' @name adjust_baseline
+##' @title adjust model run in absence of vaccination so diagnoses are
+##' spread across vaccine protected and non-vaccine protected strata as if
+##' the rate of movement was the same as in an equivalent model run in the
+##' presence of vaccination
+##' @param baseline A model run in the absence of vaccine uptake
+##' @param y A model run in the presence of vaccine uptake
+##' @return An adjusted baseline in which 'a' and 's' diagnoses in the baseline
+##' are divided across vaccine protected and non-vaccine protected strata
+##' allowing comparison of model runs with of baselines by vaccine-status
+##' @export
+adjust_baseline <- function(baseline, y) {
+  Map(adjust_baseline_one, baseline, y)
+}
+
+adjust_baseline_one <- function(baseline, y) {
+  # create an array in the same dimensions as y$N, where each entry is the
+  # modelled proportion in each stratum for each risk group at time t
+  # i.e. summing across strata will give 1: apply(prop_N, c(1, 2), sum)
+  prop_N <-  y$N / array(apply(y$N, c(1, 2), sum), dim(y$N))
+
+  # identify states that are compartments [time, group, strata]
+  idx_state <- which(lengths(lapply(baseline, dim)) == 3)
+  # distribute individuals in the baseline across strata in the same proportion
+  # as in the model run
+  adjusted_states <- lapply(baseline[idx_state],
+                            function(state) c(state[, , 1]) * prop_N)
+  replace(baseline, idx_state, adjusted_states)
+
+}
+
 ##' @name gen_labels
 ##' @title generates the appropriate strata labels for the number of strata
 ##' in the model, which depends on the value given to n_erlang and diagnosis
@@ -299,5 +366,6 @@ gen_labels <- function(n_erlang = 1, n_diag_rec = 1) {
               paste0("W", diag_hist))
 
   output
+
 
 }

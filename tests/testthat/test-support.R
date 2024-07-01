@@ -41,6 +41,79 @@ test_that("extract_flows_xpvwrh works", {
   expect_equal(z$revaccinated[2, ],
                sapply(y, function(x) diff(rowSums(x$cum_vaccinated[-1, , 4]))))
 
+  # asymptomatic and symptomatic diagnoses are calculated for vaccine protected
+  # and non-vaccine protected strata correctly when adjusted baseline supplied
+  # (extract_flows_xpvwrh() is within compare_baseline_xpvwrh() and baseline
+  # comparison occurs within the latter after the former called )
+
+  tt <- seq(0, 2)
+  y  <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4, r1 = 1,
+                          r2 = 1, strategy = "VoD")
+  y0 <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 0, dur_v = 4, r1 = 0,
+                          r2 = 0, strategy = "VoD")
+
+  baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y))
+  cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
+             unit_cost_manage_symptomatic = c(98, 99),
+             unit_cost_manage_asymptomatic = c(93, 94),
+             unit_cost_screen_uninfected = c(70, 71))
+
+  z <- compare_baseline_xpvwrh(y, baseline, 1, 1, cp, 0, 1, 1)
+
+  # inc_diag_a = inc_diag_a_xwh + inc_diag_a_pvr (same for s)
+  expect_equal(z$inc_diag_a_xwh + z$inc_diag_a_pvr, z$inc_diag_a)
+  expect_equal(z$inc_diag_s_xwh + z$inc_diag_s_pvr, z$inc_diag_s)
+
+  # adjusting baseline hasn't broken asymp and symp diagoses totals, expect
+  # sum of diagnoses to be similar to inc_treated
+  # (won't be exact as diagnoses occurs before treatment in a timepoint)
+  expect_equal(z$inc_diag_a + z$inc_diag_s, z$inc_treated, tolerance = 0.05)
+
+  # for vaccine uptake > 1 and efficacy > 1, inc_diag_a_pvr and
+  # inc_diag_s_pvr -'ve
+  expect_true(all(z$inc_diag_a_pvr < 0))
+  expect_true(all(z$inc_diag_s_pvr < 0))
+
+  # sense check: adjusted baseline should give same resutls as vaccine with
+  # 0 uptake
+  # if vaccination uptake = 0 in vaccine run, inc_diag_a_pvr, inc_diag_s_pvr = 0
+  # because no one is entering vaccine strata in the model run
+  # and inc_diag_a_xwh, inc_diag_s_xwh = 0
+  # because there is no difference in diagnoses between the adjusted baseline
+  # and the model run with no uptake
+
+  baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y0))
+  z <- compare_baseline_xpvwrh(y0, baseline, 1, 1, cp, 0, 1, 1)
+
+  expect_true(all(round(z$inc_diag_a_xwh, 10) == 0))
+  expect_true(all(round(z$inc_diag_s_xwh, 10) == 0))
+  expect_true(all(round(z$inc_diag_a_pvr, 10) == 0))
+  expect_true(all(round(z$inc_diag_s_pvr, 10) == 0))
+
+  #extract_flows_xpvwrh() works with n_erlang > 1. Doesn't throw error
+  #2. If people overall take longer to wane (with n_erlang > 1)
+  # fewer diagnoses overall as more people protected at a given time
+
+  y_erlang <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4,
+                                r1 = 1, r2 = 1, strategy = "VoD", n_erlang = 3)
+  y0_erlang <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 0, dur_v = 4,
+                                 r1 = 0, r2 = 0, strategy = "VoD", n_erlang = 3)
+  baseline_erlang <- extract_flows_xpvwrh(adjust_baseline(y0_erlang, y_erlang))
+  z_erlang <- compare_baseline_xpvwrh(y_erlang, baseline_erlang,
+                                      1, 1, cp, 0, 1, 1)
+
+  y <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 1, dur_v = 4,
+                         r1 = 1, r2 = 1, strategy = "VoD", n_erlang = 1)
+  y0 <- run_onevax_xpvwrh(tt, gono_params(1:2), vea = 0, dur_v = 4,
+                          r1 = 0, r2 = 0, strategy = "VoD", n_erlang = 1)
+
+  baseline <- extract_flows_xpvwrh(adjust_baseline(y0, y))
+  z <- compare_baseline_xpvwrh(y, baseline, 1, 1, cp, 0, 1, 1)
+
+  #overall
+  expect_true(all(z_erlang$inc_diag_a < z$inc_diag_a))
+  expect_true(all(z_erlang$inc_diag_s < z$inc_diag_s))
+
 })
 
 test_that("extract_flows works", {
@@ -380,4 +453,45 @@ test_that("dbetabinom", {
   expect_equal(f(672, 50454, 3, 2), 4.18089e-08, tolerance = 1e-13)
   ## compare to extraDistr::dbbinom(15, 63, 2, 5, log = TRUE) ~ -16.99016
   expect_equal(f(672, 50454, 3, 2, log = TRUE), -16.99016, tolerance = 1e-5)
+})
+
+test_that("adjust_baseline is working as expected", {
+
+  tt <- seq(0, 2)
+  gp <- gono_params(1)
+
+  # partially effective vaccine that everyone accepts when offered, all move to
+  # V
+  y <- run_onevax_xpvwrh(tt, gp, vea = 0.5, dur_v = 4, r1 = 1,
+                         r2 = 0.5, strategy = "VoD")
+
+  # no vaccine uptake = nobody in P, V, W, or R
+  y0 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 4, r1 = 0,
+                          r2 = 0, strategy = "VoD")
+
+  y0_adj <- adjust_baseline(y0, y)
+
+  #expect y0 to have absence of people in P, V, W and R but y0_adjust to have
+  #people in P, V, W, and R (for asymp and symp diagnoses)
+
+  idx <- stratum_index_xpvwrh(n_erlang = 1)
+  #a
+  expect_true(all(y0[[1]]$cum_diag_a[, , c(idx$P, idx$V, idx$W, idx$R)] == 0))
+  expect_true(all(y0_adj[[1]]$cum_diag_a[-1, , c(idx$P,
+                                                 idx$V, idx$W, idx$R)] != 0))
+  #s
+  expect_true(all(y0[[1]]$cum_diag_s[, , c(idx$P, idx$V, idx$W, idx$R)] == 0))
+  expect_true(all(y0_adj[[1]]$cum_diag_s[-1, , c(idx$P,
+                                                 idx$V, idx$W, idx$R)] != 0))
+
+  #expect the overall number of diagnoses in y0 and y0_adj to be the same
+  #for each time point
+  #(they should simply be spread across strata)
+  expect_equal(rowSums(y0[[1]]$cum_diag_a[, , c(idx$X)]),
+               rowSums(y0_adj[[1]]$cum_diag_a[, , c(idx$X, idx$P,
+                                                    idx$V, idx$W, idx$R)]))
+  expect_equal(rowSums(y0[[1]]$cum_diag_s[, , c(idx$X)]),
+               rowSums(y0_adj[[1]]$cum_diag_s[, , c(idx$X, idx$P,
+                                                    idx$V, idx$W, idx$R)]))
+
 })

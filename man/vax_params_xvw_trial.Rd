@@ -13,7 +13,8 @@ vax_params_xvw_trial(
   dur = 1000,
   n_erlang = 1,
   stochastic = FALSE,
-  n_diag_rec = 1
+  n_diag_rec = 1,
+  asymp_recorded = TRUE
 )
 }
 \arguments{
@@ -32,18 +33,21 @@ vax_params_xvw_trial(
 \item{dur}{scalar indicating duration of the vaccine (in years)}
 
 \item{n_erlang}{integer giving the number of transitions that need to be
-made}
+made through vaccine-protected strata until that protection has waned}
 
 \item{stochastic}{logical indicating if the parameters are for the
 default deterministic trial model in continuous time or stochastic trial
-model in discrete time
-through vaccine-protected strata until that protection has waned}
+model in discrete time}
 
 \item{n_diag_rec}{integer giving the number of each X, V(erlang), and W
 stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
 and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
 Where '.I' corresponds to never-diagnosed individuals and '.II' is for
 individuals diagnosed at least once.}
+
+\item{asymp_recorded}{logical indicating if the trial screens for and 
+records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
+undergoing treatment do not move diagnosis history stratum}
 }
 \value{
 A list of parameters in the model input format
