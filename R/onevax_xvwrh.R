@@ -218,4 +218,3 @@ run_onevax_xvwrh <- function(tt, gono_params, init_params = NULL,
   ret <- lapply(ret, name_outputs, c("X", "V", "W", "R", "H"))
   ret
 }
-
