@@ -3786,7 +3786,7 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
   }
   for (int i = 1; i <= internal->dim_omega_U_1; ++i) {
     for (int j = 1; j <= internal->dim_omega_U_2; ++j) {
-      internal->omega_U[i - 1 + internal->dim_omega_U_1 * (j - 1)] = (i == j ? internal->epsilon + (1 - internal->epsilon) * internal->Up[j - 1] / (double) odin_sum1(internal->Up, 0, internal->dim_Up) : (1 - internal->epsilon) * internal->Up[j - 1] / (double) odin_sum1(internal->Up, 0, internal->dim_Up));
+      internal->omega_U[i - 1 + internal->dim_omega_U_1 * (j - 1)] = (1 - internal->epsilon) * internal->Up[j - 1] / (double) odin_sum1(internal->Up, 0, internal->dim_Up) + ((i == j ? internal->epsilon : 0));
     }
   }
   for (int i = 1; i <= internal->dim_prop_UUsubgroup_1; ++i) {
@@ -4073,7 +4073,7 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
     }
     for (int i = 1; i <= internal->dim_omega_C_1; ++i) {
       for (int j = 1; j <= internal->dim_omega_C_2; ++j) {
-        internal->omega_C[i - 1 + internal->dim_omega_C_1 * (j - 1)] = (i == j ? internal->epsilon + (1 - internal->epsilon) * internal->Cp[j - 1] / (double) odin_sum1(internal->Cp, 0, internal->dim_Cp) : (1 - internal->epsilon) * internal->Cp[j - 1] / (double) odin_sum1(internal->Cp, 0, internal->dim_Cp));
+        internal->omega_C[i - 1 + internal->dim_omega_C_1 * (j - 1)] = (1 - internal->epsilon) * internal->Cp[j - 1] / (double) odin_sum1(internal->Cp, 0, internal->dim_Cp) + ((i == j ? internal->epsilon : 0));
       }
     }
     output[2] = beta;
@@ -4133,7 +4133,7 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
   }
   for (int i = 1; i <= internal->dim_omega_U_1; ++i) {
     for (int j = 1; j <= internal->dim_omega_U_2; ++j) {
-      internal->omega_U[i - 1 + internal->dim_omega_U_1 * (j - 1)] = (i == j ? internal->epsilon + (1 - internal->epsilon) * internal->Up[j - 1] / (double) odin_sum1(internal->Up, 0, internal->dim_Up) : (1 - internal->epsilon) * internal->Up[j - 1] / (double) odin_sum1(internal->Up, 0, internal->dim_Up));
+      internal->omega_U[i - 1 + internal->dim_omega_U_1 * (j - 1)] = (1 - internal->epsilon) * internal->Up[j - 1] / (double) odin_sum1(internal->Up, 0, internal->dim_Up) + ((i == j ? internal->epsilon : 0));
     }
   }
   for (int i = 1; i <= internal->dim_prop_UUsubgroup_1; ++i) {
@@ -4175,7 +4175,7 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
   }
   for (int i = 1; i <= internal->dim_omega_C_1; ++i) {
     for (int j = 1; j <= internal->dim_omega_C_2; ++j) {
-      internal->omega_C[i - 1 + internal->dim_omega_C_1 * (j - 1)] = (i == j ? internal->epsilon + (1 - internal->epsilon) * internal->Cp[j - 1] / (double) odin_sum1(internal->Cp, 0, internal->dim_Cp) : (1 - internal->epsilon) * internal->Cp[j - 1] / (double) odin_sum1(internal->Cp, 0, internal->dim_Cp));
+      internal->omega_C[i - 1 + internal->dim_omega_C_1 * (j - 1)] = (1 - internal->epsilon) * internal->Cp[j - 1] / (double) odin_sum1(internal->Cp, 0, internal->dim_Cp) + ((i == j ? internal->epsilon : 0));
     }
   }
   output[2] = beta;
