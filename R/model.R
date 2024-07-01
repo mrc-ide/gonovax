@@ -10,9 +10,9 @@ NULL
 ##' @title Run odin model of gonorrhoea with or without vaccination
 ##' @param tt a numeric vector of times at which the model state is output
 ##' @param gono_params a data frame of parameters
-##' @param demographic_params = NULL
-##' @param init_params = NULL
-##' @param vax_params = NULL
+##' @param demographic_params A dataframe of demographic parameters
+##' @param init_params A list of starting conditions
+##' @param vax_params A vector of vaccination params
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
 ##' @param transform = TRUE
 ##' @export run
@@ -40,9 +40,9 @@ run <- function(tt, gono_params, demographic_params = NULL,
 ##' @title Run odin model of gonorrhoea with or without vaccination
 ##' @param tt a numeric vector of times at which the model state is output
 ##' @param gono_params a data frame of parameters
-##' @param demographic_params = NULL
-##' @param init_params = NULL
-##' @param vax_params = NULL
+##' @param demographic_params A dataframe of demographic parameters
+##' @param init_params A list of starting conditions
+##' @param vax_params A vector of vaccination params
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##'  made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer for the number of diagnosis history substrata

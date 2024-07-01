@@ -19,11 +19,11 @@ run(
 
 \item{gono_params}{a data frame of parameters}
 
-\item{demographic_params}{= NULL}
+\item{demographic_params}{A dataframe of demographic parameters}
 
-\item{init_params}{= NULL}
+\item{init_params}{A list of starting conditions}
 
-\item{vax_params}{= NULL}
+\item{vax_params}{A vector of vaccination params}
 
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
