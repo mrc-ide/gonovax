@@ -22,8 +22,8 @@ run <- function(tt, gono_params, demographic_params = NULL,
                 n_diag_rec = 1, transform = TRUE) {
 
   pars <- model_params(gono_params = gono_params,
-                       init_params = init_params,
                        demographic_params = demographic_params,
+                       init_params = init_params,
                        vax_params = vax_params,
                        n_diag_rec = n_diag_rec)
   mod <- model$new(user = pars, unused_user_action = FALSE)
