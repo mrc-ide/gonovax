@@ -243,7 +243,7 @@ test_that("run_onevax_xvwrh works correctly", {
 
   y8 <- run_onevax_xvwrh(tt, gp, vea = 0, dur = 1e3)
 
-  i_p <- lapply(y8, restart_hes, hes = 0.5)
+  i_p <- lapply(y8, restart_hes, n_vax = 5, hes = 0.5)
   y_hesres <- run_onevax_xvwrh(tt, gp, init_params = i_p, vea = 0, dur = 1e3,
                                hes = 0.5)
 

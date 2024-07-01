@@ -19,8 +19,7 @@ run_onevax_xvw_trial(
   n_erlang = 1,
   stochastic = FALSE,
   N = 6e+05,
-  n_diag_rec = 1,
-  asymp_recorded = TRUE
+  n_diag_rec = 1
 )
 }
 \arguments{
@@ -65,10 +64,6 @@ stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
 and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
 Where '.I' corresponds to never-diagnosed individuals and '.II' is for
 individuals diagnosed at least once.}
-
-\item{asymp_recorded}{logical indicating if the trial screens for and 
-records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
-undergoing treatment do not move diagnosis history stratum}
 }
 \description{
 Run model with single vaccine for input parameter sets, either from

@@ -43,13 +43,11 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
 ##' (between 0-1)
 ##' @param dur scalar indicating duration of the vaccine (in years)
 ##' @param n_erlang integer giving the number of transitions that need to be
-##'  made through vaccine-protected strata until that protection has waned
+##'  made
 ##' @param stochastic logical indicating if the parameters are for the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
-##' @param asymp_recorded logical indicating if the trial screens for and
-##' records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
-##' undergoing treatment do not move diagnosis history stratum
+##' through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
 ##' stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
 ##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
@@ -59,7 +57,7 @@ initial_params_xvw_trial <- function(pars, p_v = 0.5, n_erlang = 1,
 
 vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                  dur = 1e3, n_erlang = 1, stochastic = FALSE,
-                                 n_diag_rec = 1, asymp_recorded = TRUE) {
+                                 n_diag_rec = 1) {
 
   assert_scalar_unit_interval(vea)
   assert_scalar_unit_interval(vei)
@@ -99,20 +97,8 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
   i_p <- i[i %% n_diag_rec != 1]
 
   # create diagnosis history mapping
-  #symptomatic diagnoses always recorded
-  diag_rec_s <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
-                                         set_vbe = FALSE, idx)
-
-  #asymptomatic diagnoses may or may not be recorded
-  if (asymp_recorded) {
-    diag_rec_a <- diag_rec_s
-  } else {
-    #if trial lacks screening, MSM will continue to be screened in SHSs but will
-    #not be recorded as having had an asymptomatic diagnosis in the trial
-    #therefore do not move diagnosis history stratum
-    diag_rec_a <- create_vax_map_branching(idx$n_vax, c(0, 0), i_eligible, i_p,
-                                           set_vbe = FALSE, idx)
-  }
+  diag_rec <- create_vax_map_branching(idx$n_vax, c(0, 1), i_eligible, i_p,
+                                       set_vbe = FALSE, idx)
 
   # compartments to which vaccine efficacy applies
   ve <- c(rep(0, n_diag_rec), rep(1, n_erlang * n_diag_rec), rep(0, n_diag_rec))
@@ -136,8 +122,7 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     ves   = ves * ve,
     w     = w,
     D     = D,
-    diag_rec_a = diag_rec_a,
-    diag_rec_s = diag_rec_s
+    diag_rec = diag_rec
   )
 }
 
@@ -168,9 +153,6 @@ vax_params_xvw_trial <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param stochastic logical indicating if the run should be made with the
 ##' default deterministic trial model in continuous time or stochastic trial
 ##' model in discrete time
-##' @param asymp_recorded logical indicating if the trial screens for and
-##' records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
-##' undergoing treatment do not move diagnosis history stratum
 ##' @param N integer to assign the total number of individuals in the trial
 ##' (split equally across the two arms)
 ##' @param n_diag_rec integer giving the number of each X, V(erlang), and W
@@ -188,8 +170,7 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
                                  vea = 0, vei = 0, ved = 0, ves = 0,
                                  p_v = 0.5, n_erlang = 1,
                                  stochastic = FALSE,
-                                 N = 6e05, n_diag_rec = 1,
-                                 asymp_recorded = TRUE) {
+                                 N = 6e05, n_diag_rec = 1) {
 
   stopifnot(all(lengths(list(vea, vei, ved, ves, dur)) %in%
                   c(1, length(gono_params))))
@@ -198,16 +179,14 @@ run_onevax_xvw_trial <- function(tt, gono_params, initial_params_trial = NULL,
   vax_params <- Map(vax_params_xvw_trial, dur = dur,
                     vea = vea, vei = vei, ved = ved, ves = ves,
                     n_erlang = n_erlang, stochastic = stochastic,
-                    n_diag_rec = n_diag_rec, asymp_recorded = asymp_recorded)
+                    n_diag_rec = n_diag_rec)
 
   if (is.null(initial_params_trial)) {
     pars <- lapply(gono_params, model_params_trial, N = N,
-                   n_diag_rec = n_diag_rec, asymp_recorded = asymp_recorded)
+                   n_diag_rec = n_diag_rec)
     init_params_trial <- Map(initial_params_xvw_trial, pars = pars,
                              p_v = p_v, n_erlang = n_erlang,
                              n_diag_rec = n_diag_rec)
-  } else {
-    init_params_trial <- initial_params_trial
   }
 
   ret <- Map(run_trial, gono_params = gono_params,
@@ -264,7 +243,6 @@ stratum_index_xvw_trial <- function(n_erlang, n_diag_rec = 1) {
 ##' for each X, V(*n_erlang), and W stratum
 ##' @return a character vector of length n_vax containing strata labels
 ##' @export
-##' @importFrom utils as.roman
 gen_trial_labels <- function(n_erlang = 1, n_diag_rec = 1) {
 
 

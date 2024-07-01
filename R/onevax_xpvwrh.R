@@ -620,13 +620,8 @@ restart_hes <- function(y, n_vax = 6, hes = 0, n_erlang = 1, n_diag_rec = 1,
 
   dim_y <- dim(y[["U"]])
 
-  i_t <- dim_y[1] # number of timepoints
-  n_vax_input <- dim_y[3] # number is strata
-  i_vax <- seq_len(n_vax_input)
-
   for (d  in 1:n_diag_rec) {
-    if (round(rowSums(y$N[, , n_vax_input - n_diag_rec + d])[dim_y[1]],
-              5) > 0) {
+    if (round(rowSums(y$N[, , n_vax - n_diag_rec + d])[dim_y[1]], 5) > 0) {
       stop("Provided model run already contains hesitancy > 0")
     }
 
@@ -645,8 +640,12 @@ restart_hes <- function(y, n_vax = 6, hes = 0, n_erlang = 1, n_diag_rec = 1,
     }
   }
 
+  i_t <- dim_y[1] # number of timepoints
+  n_vax_input <- dim_y[3] # number is strata
+  i_vax <- seq_len(n_vax_input)
+
   #create blank array, 2activity groups by number of strata
-  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax_input))
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
 
   # set compartments new initial conditions based on final position of y
   U0[, i_vax] <- y$U[i_t, , i_vax]
@@ -658,19 +657,19 @@ restart_hes <- function(y, n_vax = 6, hes = 0, n_erlang = 1, n_diag_rec = 1,
   # move correct number from equilibrium X to H
 
   for (d in 1:n_diag_rec) {
-    U0[, n_vax_input - n_diag_rec + d] <- h <- U0[, d] * hes
+    U0[, n_vax - n_diag_rec + d] <- h <- U0[, d] * hes
     U0[, d] <- U0[, d] - h
 
-    I0[, n_vax_input - n_diag_rec + d] <- h <- I0[, d] * hes
+    I0[, n_vax - n_diag_rec + d] <- h <- I0[, d] * hes
     I0[, d] <- I0[, d] - h
 
-    A0[, n_vax_input - n_diag_rec + d] <- h <- A0[, d] * hes
+    A0[, n_vax - n_diag_rec + d] <- h <- A0[, d] * hes
     A0[, d] <- A0[, d] - h
 
-    S0[, n_vax_input - n_diag_rec + d] <- h <- S0[, d] * hes
+    S0[, n_vax - n_diag_rec + d] <- h <- S0[, d] * hes
     S0[, d] <- S0[,  d] - h
 
-    T0[, n_vax_input - n_diag_rec + d] <- h <- T0[, d] * hes
+    T0[, n_vax - n_diag_rec + d] <- h <- T0[, d] * hes
     T0[,  d] <- T0[,  d] - h
   }
 
