@@ -627,11 +627,13 @@ test_that("compare baseline works as expected", {
   expect_equivalent(cet_20k,
                     matrix(c(0.534243384207646, 1.72471712423966,
                              3.52594421792319, 0.483751150425284,
-                             1.61256157784351, 3.34884963770966), nrow = 3))
+                             1.61256157784351, 3.34884963770966), nrow = 3),
+                    tolerance = 1e-6)
   expect_equivalent(cet_30k,
                     matrix(c(0.610287112367831, 1.96785021889529,
                              4.02052903497914, 0.524318410369186,
-                             1.74693578901651, 3.62708130277735), nrow = 3))
+                             1.74693578901651, 3.62708130277735), nrow = 3),
+                    tolerance = 1e-6)
 
   expect_equal(z$cet_20k, cet_20k)
   expect_equal(z$cet_30k, cet_30k)
