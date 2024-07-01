@@ -7,6 +7,7 @@
 run(
   tt,
   gono_params,
+  demographic_params = NULL,
   init_params = NULL,
   vax_params = NULL,
   n_diag_rec = 1,
@@ -17,6 +18,8 @@ run(
 \item{tt}{a numeric vector of times at which the model state is output}
 
 \item{gono_params}{a data frame of parameters}
+
+\item{demographic_params}{= NULL}
 
 \item{init_params}{= NULL}
 
