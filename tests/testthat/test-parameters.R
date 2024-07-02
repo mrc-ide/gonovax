@@ -25,15 +25,15 @@ test_that("can select specific parameter sets", {
   p <- read_csv(gonovax_file("extdata/gono_params.csv"))
   gp <- lapply(seq_len(nrow(p)), function(i) transform0(p[i, ]))
   # check that null argument returns all params
-  expect_equal(gono_params(), gp)
+  expect_equivalent(gono_params(), gp)
   # check that can extract a single parameter
-  expect_equal(gono_params(1)[[1]], transform0(p[1, ]))
+  expect_equivalent(gono_params(1)[[1]], transform0(p[1, ]))
   # check that can extract multiple parameters
-  expect_equal(gono_params(2:3), gp[2:3])
+  expect_equivalent(gono_params(2:3), gp[2:3])
   # check that negative parameters will not be returned
-  expect_equal(gono_params(c(-1, 1)), gp[1])
+  expect_equivalent(gono_params(c(-1, 1)), gp[1])
   # check that cannot extend beyond parameter set
-  expect_equal(gono_params(c(1, nrow(p) + 1)), gp[1])
+  expect_equivalent(gono_params(c(1, nrow(p) + 1)), gp[1])
 })
 
 test_that("vax_map works correctly", {
@@ -202,21 +202,38 @@ test_that("set_strategy works as expected", {
 
   # and different strategies vod and vos maps as expected
   expect_equal(set_strategy(),
-               list(vod = c(0, 0), vos = c(0, 0), vbe = c(0, 0)))
+               list(vod = c(0, 0), vos = c(0, 0), vbe = c(0, 0),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy(include_vbe =  TRUE),
-               list(vod = c(0, 0), vos = c(0, 0), vbe = c(1, 1)))
+               list(vod = c(0, 0), vos = c(0, 0), vbe = c(1, 1),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy("VoD"),
-               list(vod = c(1, 1), vos = c(0, 0), vbe = c(0, 0)))
+               list(vod = c(1, 1), vos = c(0, 0), vbe = c(0, 0),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy("VoD(H)"),
-               list(vod = c(0, 1), vos = c(0, 0), vbe = c(0, 0)))
+               list(vod = c(0, 1), vos = c(0, 0), vbe = c(0, 0),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy("VoA"),
-               list(vod = c(1, 1), vos = c(1, 1), vbe = c(0, 0)))
+               list(vod = c(1, 1), vos = c(1, 1), vbe = c(0, 0),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy("VoA(H)"),
-               list(vod = c(0, 1), vos = c(0, 1), vbe = c(0, 0)))
+               list(vod = c(0, 1), vos = c(0, 1), vbe = c(0, 0),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy("VoD(L)+VoA(H)"),
-               list(vod = c(1, 1), vos = c(0, 1), vbe = c(0, 0)))
+               list(vod = c(1, 1), vos = c(0, 1), vbe = c(0, 0),
+                    vopn = c(0, 0)))
   expect_equal(set_strategy("VoS"),
-               list(vod = c(0, 0), vos = c(1, 1), vbe = c(0, 0)))
+               list(vod = c(0, 0), vos = c(1, 1), vbe = c(0, 0),
+                    vopn = c(0, 0)))
+  expect_equal(set_strategy("VoN"),
+               list(vod = c(1, 1), vos = c(0, 0), vbe = c(0, 0),
+                    vopn = c(1, 1)))
+  expect_equal(set_strategy("VaH"),
+               list(vod = c(1, 1), vos = c(1, 1), vbe = c(0, 0),
+                    vopn = c(0, 0)))
+  expect_equal(set_strategy("VaH+VoN"),
+               list(vod = c(1, 1), vos = c(1, 1), vbe = c(0, 0),
+                    vopn = c(1, 1)))
 
   expect_error(set_strategy("hello"), "strategy not recognised")
 

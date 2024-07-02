@@ -114,9 +114,6 @@ initial_params_trial <- function(pars, n_vax = 1, p_v = 1,
 ##' and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
 ##' Where '.I' corresponds to never-diagnosed individuals and '.II' is for
 ##' individuals diagnosed at least once.
-##' @param asymp_recorded logical indicating if the trial screens for and
-##' records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
-##' undergoing treatment do not move diagnosis history stratum
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -128,8 +125,7 @@ model_params_trial <- function(gono_params_trial = NULL,
                                initial_params_trial = NULL,
                                vax_params = NULL, p_v = 0,
                                n_erlang = 1, N = 6e5,
-                               n_diag_rec = 1,
-                               asymp_recorded = TRUE) {
+                               n_diag_rec = 1) {
   gono_params_trial <- gono_params_trial %||% gono_params_trial(1)[[1]]
   demographic_params_trial <-
     demographic_params_trial  %||% demographic_params_trial(N = N)
@@ -151,22 +147,9 @@ model_params_trial <- function(gono_params_trial = NULL,
       i_eligible <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
     }
 
-    i_vaccinees <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 1]
-    #diagnosis history
-    #symptomatic
-    vax_params$diag_rec_s <- create_vax_map(n_vax, c(1, 1), i_eligible,
-                                            i_vaccinees)
-
-    #asymptomatic
-    if (asymp_recorded) {
-      vax_params$diag_rec_a <- vax_params$diag_rec_s
-    } else {
-      vax_params$diag_rec_a <- create_vax_map(n_vax, c(0, 0), i_eligible,
-                                              i_vaccinees)
-    }
-
-
-
+    vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_eligible,
+                                          seq_len(n_vax)[seq_len(n_vax) %%
+                                                           n_diag_rec != 1])
   }
 
   #passing initial parameters
@@ -208,7 +191,10 @@ create_waning_map_trial <- function(n_vax, i_v, i_w, z) {
   }
 
   for (i in i_v) {
-    idx <- which(i_v == i)
+    idx <- i_v %>% {
+      which(. == i)
+    }
+
     w[i, i] <- -w[i_w[idx], i]
   }
 

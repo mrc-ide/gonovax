@@ -12,13 +12,14 @@ run_xpvwrh(
   vax_params = NULL,
   n_erlang = 1,
   n_diag_rec = 1,
+  years_history = 1,
   transform = TRUE
 )
 }
 \arguments{
 \item{tt}{a numeric vector of times at which the model state is output}
 
-\item{gono_params}{A dataframe of natural history parameters}
+\item{gono_params}{a data frame of parameters}
 
 \item{demographic_params}{A dataframe of demographic parameters}
 
@@ -30,6 +31,8 @@ run_xpvwrh(
 made through vaccine-protected strata until that protection has waned}
 
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{years_history}{number of years that diagnosis history is recorded for}
 
 \item{transform}{= TRUE}
 }

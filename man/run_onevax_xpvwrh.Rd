@@ -40,7 +40,8 @@ run_onevax_xpvwrh(
   t_stop = 99,
   hes = 0,
   n_erlang = 1,
-  n_diag_rec = 1
+  n_diag_rec = 1,
+  years_history = 1
 )
 }
 \arguments{
@@ -129,10 +130,11 @@ vaccination after primary vaccination protection has waned.
 hesitant}
 
 \item{n_erlang}{integer giving the number of erlang vaccination transitions
-through vaccine-protected strata until that protection has waned
-@param n_diag_rec integer for the number of diagnosis history substrata}
+through vaccine-protected strata until that protection has waned}
 
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
+
+\item{years_history}{number of years that diagnosis history is recorded for}
 }
 \value{
 A list of transformed model outputs

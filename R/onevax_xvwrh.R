@@ -111,6 +111,8 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                 n_diag_rec = n_diag_rec,
                                 idx, screening_or_diagnosis = "diagnosis")
 
+  u_pn <- u_s
+
   if (sum(p$vod) > 0) {
     #vaccination on diagnosis occuring, so need to scale down diag_rec
     diag_rec[, idx$X, ] <- (1 - primary_uptake) * diag_rec[, idx$X, ]
@@ -125,6 +127,7 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     willing = willing,
     u_s     = u_s,
     u_d     = u_d,
+    u_pn    = u_pn,
     u_vbe   = vbe,
     vbe     = create_vax_map(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
                              idx$vaccinatedto_vbe),
@@ -132,12 +135,14 @@ vax_params_xvwrh <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                              idx$vaccinatedto_vod),
     vos     = create_vax_map(n_vax, p$vos, idx$vaccinatedfrom_vos,
                              idx$vaccinatedto_vos),
-
+    vopn     = create_vax_map(n_vax, p$vopn, idx$vaccinatedfrom_vopn,
+                              idx$vaccinatedto_vopn),
     vea     = c(0, vea, 0, vea_revax, 0),
     vei     = c(0, vei, 0, vei_revax, 0),
     ved     = c(0, ved, 0, ved_revax, 0),
     ves     = c(0, ves, 0, ves_revax, 0),
-    w       = create_waning_map(n_vax, i_v, i_w, 1 / dur, n_diag_rec),
+    w       = create_waning_map(n_vax, i_v, i_w, 1 / c(dur, dur_revax),
+                                n_diag_rec),
     wd      = create_diagnosis_waning_map(n_vax, 1, n_diag_rec),
     vax_t   = c(0, t_stop),
     vax_y   = c(1, 0),

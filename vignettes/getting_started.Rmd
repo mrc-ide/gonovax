@@ -24,9 +24,10 @@ First we will run the model without vaccination.
 
 Start by reading in your table of parameters:
 ```{r}
- library("gonovax")
- parameter_table <- read.csv(system.file("extdata/gono_params_t.csv",package='gonovax'))
- head(parameter_table)
+library("gonovax")
+parameter_table <- read.csv(system.file("extdata/gono_params_t.csv",
+                                        package = "gonovax"))
+head(parameter_table)
 ```
 
 We need to transform the table of parameters to the format the model requires
@@ -47,7 +48,7 @@ tt <- c(0, 50)
 # run the model
 y0 <- run_onevax_xvwv(tt, gono_params)
 
-# get final (equilibrium) model state to use as starting point of run with vaccination
+# get final (equilibrium) model state for starting point of run with vaccination
 init_params <- lapply(y0, restart_params)
 ```
 
@@ -81,7 +82,7 @@ ve <- data.frame(vea = 0.1, # efficacy against acquisition
 tt <- seq(0, 10)
 y <- run_onevax_xvwv(tt,
                      gono_params = gono_params,
-                     init_params = init_params, 
+                     init_params = init_params,
                      vea = ve$vea, ved = ve$ved, ves = ve$ves,
                      uptake = 1, strategy = "VoA")
 
@@ -117,32 +118,32 @@ matplot(tt[-1], t(annual_infected), lty = 1, type = "l", col = col,
 You can look at individual vaccine strata:
 
 ```{r}
- annual_infected_X <- aggregate(y, what = "cum_incid", as_incid = TRUE,
-                              stratum = "X.I")
- annual_infected_V <- aggregate(y, what = "cum_incid", as_incid = TRUE,
-                              stratum = "V1.I")
- col1 <- rgb(0.5, 0, 0, 0.3)
- col2 <- rgb(0, 0, 0.5, 0.3)
- matplot(tt[-1], t(annual_infected_X), lty = 1, type = "l", col = col1,
-         xlab = "Time", ylab = "Annual infections")
- matlines(tt[-1], t(annual_infected_V), lty = 1, col = col2)
- legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
-        ncol = 2)
+annual_infected_X <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                               stratum = "X.I")
+annual_infected_V <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                               stratum = "V1.I")
+col1 <- rgb(0.5, 0, 0, 0.3)
+col2 <- rgb(0, 0, 0.5, 0.3)
+matplot(tt[-1], t(annual_infected_X), lty = 1, type = "l", col = col1,
+        xlab = "Time", ylab = "Annual infections")
+matlines(tt[-1], t(annual_infected_V), lty = 1, col = col2)
+legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
+       ncol = 2)
 ```
 
 You can apply functions over the parameter sets to get summary statistics:
 
 ```{r}
- mean_ci <- function(x) c(mean = mean(x), quantile(x, c(0.025, 0.975)))
- summary_annual_infected_X <- aggregate(y, what = "cum_incid", as_incid = TRUE,
-                              stratum = "X.I", f = mean_ci)
- summary_annual_infected_V <- aggregate(y, what = "cum_incid", as_incid = TRUE,
-                              stratum = "V1.I", f = mean_ci)
- col1 <- "red"
- col2 <- "blue"
- matplot(tt[-1], t(summary_annual_infected_X), lty = c(1, 2, 2), type = "l", col = col1,
-         xlab = "Time", ylab = "Annual infections")
- matlines(tt[-1], t(summary_annual_infected_V), lty = c(1, 2, 2), col = col2)
- legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
-        ncol = 2)
+mean_ci <- function(x) c(mean = mean(x), quantile(x, c(0.025, 0.975)))
+summary_annual_infected_X <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                                       stratum = "X.I", f = mean_ci)
+summary_annual_infected_V <- aggregate(y, what = "cum_incid", as_incid = TRUE,
+                                       stratum = "V1.I", f = mean_ci)
+col1 <- "red"
+col2 <- "blue"
+matplot(tt[-1], t(summary_annual_infected_X), lty = c(1, 2, 2), type = "l",
+        col = col1, xlab = "Time", ylab = "Annual infections")
+matlines(tt[-1], t(summary_annual_infected_V), lty = c(1, 2, 2), col = col2)
+legend("top", fill = c(col1, col2), legend = c("Unvaccinated", "Vaccinated"),
+       ncol = 2)
 ```

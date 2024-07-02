@@ -28,6 +28,10 @@ gono_params <- function(n = NULL) {
   # limit to parameter sets available
   i <- i[(i > 0) & (i <= n_pars)]
 
+  pars$kappa <- 1
+
+  pars$notifiedprev <- 0.38 # default value for notified prevalence
+
   pars[i]
 }
 
@@ -261,7 +265,7 @@ create_vax_map <- function(n_vax, v, i_u, i_v) {
 create_waning_map <- function(n_vax, i_v, i_w, z, n_diag_rec = 1) {
 
   stopifnot(z > 0)
-  stopifnot(length(z) %in% c(1, length(i_v)))
+  stopifnot(length(z) == length(i_v) / n_diag_rec)
   stopifnot(length(i_w) == n_diag_rec)
   # set up waning map
   w <- array(0, dim = c(n_vax, n_vax))
@@ -313,8 +317,6 @@ create_diagnosis_waning_map <- function(n_vax, z, n_diag_rec = 1) {
   wd
 }
 
-
-
 ##' @name set_strategy
 ##' @title Translate each named vaccine strategy into a format interpretable by
 ##' `create_vax_map`
@@ -333,37 +335,55 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
   vax_h  <- c(0, 1)
 
   if (is.null(strategy)) {
-    vos <- vod <- novax
+    vos <- vod <- vopn <- novax
 
   } else if (strategy == "VoD") {
     vod <- vax_lh
     vos <- novax
+    vopn <- novax
 
   } else if (strategy == "VoA") {
     vod <- vos <- vax_lh
+    vopn <- novax
 
   } else if (strategy == "VoD(H)") {
     vod <- vax_h
     vos <- novax
+    vopn <- novax
 
   } else if (strategy == "VoA(H)") {
     vod <- vos <- vax_h
+    vopn <- novax
 
   } else if (strategy == "VoD(L)+VoA(H)") {
     vod <- vax_lh
     vos <- vax_h
+    vopn <- novax
 
   } else if (strategy == "VoS") {
     vod <- novax
     vos <- vax_lh
+    vopn <- novax
 
   } else if (strategy == "VaH") {
     vod <- vax_lh
     vos <- vax_lh
+    vopn <- novax
 
   } else if (strategy == "VaHonly") {
     vod <- novax
     vos <- vax_lh
+    vopn <- novax
+
+  } else if (strategy == "VoN") {
+    vod <- vax_lh
+    vos <- novax
+    vopn <- vax_lh
+
+  } else if (strategy == "VaH+VoN") {
+    vod <- vax_lh
+    vos <- vax_lh
+    vopn <- vax_lh
 
   } else {
     stop("strategy not recognised")
@@ -375,7 +395,7 @@ set_strategy <- function(strategy = NULL, include_vbe = FALSE) {
     vbe <- novax
   }
 
-  list(vod = vod, vos = vos, vbe = vbe)
+  list(vod = vod, vos = vos, vbe = vbe, vopn = vopn)
 }
 
 check_gono_params <- function(pars) {
@@ -438,6 +458,7 @@ create_uptake_map <- function(n_group, n_vax, primary_uptake, booster_uptake,
 ##' @param n_erlang integer giving the number of transitions that need to be
 ##' made through vaccine-protected strata until that protection has waned
 ##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param years_history number of years that diagnosis history is recorded for
 ##' @return A list of inputs to the model many of which are fixed and
 ##'   represent data. These correspond largely to `user()` calls
 ##'   within the odin code, though some are also used in processing
@@ -448,7 +469,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
                                 init_params = NULL,
                                 vax_params = NULL,
                                 n_erlang = 1,
-                                n_diag_rec = 1) {
+                                n_diag_rec = 1, years_history = 1) {
 
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
@@ -462,7 +483,8 @@ model_params_xpvwrh <- function(gono_params = NULL,
   } else {
 
     #also add in diag_rec if vax_params not supplied
-    vax_params <- vax_params0(n_diag_rec = n_diag_rec)
+    vax_params <- vax_params0(n_diag_rec = n_diag_rec,
+                              years_history = years_history)
     n_vax <- vax_params$n_vax
     if (n_diag_rec == 1) {
       i_diag <-  NULL

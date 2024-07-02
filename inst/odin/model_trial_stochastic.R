@@ -17,8 +17,7 @@ update(time) <- (step + 1) * dt
 
 # individual probabilities of transitioning between infection states
 r_AT[, ] <- eta
-r_AU[, ] <- if (mu == 0) nu else
-  ((nu * mu) / (ved[j] * nu + (1 - ved[j]) * mu))
+r_AU[, ] <- nu / (1 - ved[j])
 
 # probability of individuals leaving compartments
 p_U_ext[, ] <- 1 - exp(-(lambda * (1 - vea[j]) - D[j]) * dt)
@@ -68,8 +67,8 @@ n_Tw[, ] <- n_T_ext[i, j] - n_TU[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history
-n_diag_rec[, , ] <- (diag_rec_s[i, j, k] * n_ST[i, k]) +
-  (diag_rec_a[i, j, k] * n_AT[i, k])
+
+n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
 #waning
 wU[, , ] <- w[j, k] * n_Uw[i, k]
@@ -80,7 +79,7 @@ wT[, , ] <- w[j, k] * n_Tw[i, k]
 
 ## Core equations for transitions between compartments:
 update(U[, ]) <- U[i, j] - n_UI[i, j] +
-  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ])
+  n_AU[i, j] + n_TU[i, j]  + sum(wU[i, j, ]) - sum(n_diag_rec[i, j, ])
 
 update(I[, ]) <- I[i, j] + n_UI[i, j] - n_IAS[i, j] + sum(wI[i, j, ])
 
@@ -89,7 +88,7 @@ update(A[, ]) <- A[i, j] + n_IA[i, j] - n_AUT[i, j] + sum(wA[i, j, ])
 update(S[, ]) <- S[i, j] + n_IS[i, j] - n_ST[i, j]  + sum(wS[i, j, ])
 
 update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
-  sum(wT[i, j, ]) - sum(n_diag_rec[i, j, ])
+  sum(wT[i, j, ])
 
 ## Update population size
 N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
@@ -192,8 +191,7 @@ dim(cum_treated)    <- c(n_group, n_vax)
 dim(cum_screened)   <- c(n_group, n_vax)
 
 dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
-dim(diag_rec_a)   <- c(n_group, n_vax, n_vax)
-dim(diag_rec_s)   <- c(n_group, n_vax, n_vax)
+dim(diag_rec)   <- c(n_group, n_vax, n_vax)
 
 ## Parameters
 eta       <- user()
@@ -213,8 +211,7 @@ ves[] <- user() # efficacy against symptoms
 w[, ]    <- user()
 D[] <- user()
 
-diag_rec_a[, , ] <- user()
-diag_rec_s[, , ] <- user()
+diag_rec[, , ] <- user()
 
 ## par dimensions
 dim(vea)  <- n_vax

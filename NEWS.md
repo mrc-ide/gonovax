@@ -1,3 +1,5 @@
+# gonovax 0.4.19
+* partner notification and vaccination on notification added into population-level model
 
 # gonovax 0.4.18
 * diagnoses history in a trial is recorded at the point of receiving treatment and whether a trial records asymptomatic infections or not can be switched on or off
@@ -24,7 +26,7 @@ tested to work with n_diag_rec = 1 for all other strategies
 # gonovax 0.4.12
 * model_trial_stochastic updated so that total number of individuals exiting each state drawn first, then the specific transitions made drawn after
 
-# gonovax 0.4.11
+#gonovax 0.4.11
 * deterministic version of the xvw_trial model can now have parallel strata that account for diagnosis history
 
 # gonovax 0.4.10

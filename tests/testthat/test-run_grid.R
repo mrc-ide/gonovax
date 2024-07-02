@@ -37,7 +37,8 @@ test_that("compare baseline xpvwrh works as expected", {
                          r1 = r1, r2 = r2, strategy = "VoD")
   yy <- extract_flows_xpvwrh(y)
 
-  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0, vea = 0.5, vea_p = 0.5)
+  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0,
+                               vea = 0.5, vea_p = 0.5)
 
   flownames <- names(yy)
   incnames <- paste0("inc_", flownames)
@@ -113,10 +114,11 @@ test_that("compare baseline xpvwrh works as expected", {
                              4.99544894499636, 0.690487829848825,
                              2.29553458279502, 4.74762990475995),
                            nrow = 3))
-  expect_equal(cet_30k,
-               matrix(c(0.871045465836508, 2.80048568207085, 5.69605378633193,
-                        0.748390761083548, 2.4868096465653, 5.14203978621594),
-                      nrow = 3))
+  expect_equivalent(cet_30k,
+                    matrix(c(0.871045465836508, 2.80048568207085,
+                             5.69605378633193, 0.748390761083548,
+                             2.4868096465653, 5.14203978621594),
+                           nrow = 3))
 
   expect_equal(z$cet_20k, cet_20k)
   expect_equal(z$cet_30k, cet_30k)
@@ -195,8 +197,6 @@ test_that("compare baseline xpvwrh works as expected", {
 
   N <- t(aggregate(y, "N"))[1, 1]
   expect_equal(z$vacprotec_total_prop * N, z$vacprotec_total)
-
-
 
   ## total number of people vaccinated is the same if they receive one dose or 2
 
@@ -528,9 +528,9 @@ test_that("compare baseline xpvwrh works as expected", {
   # cumulative doses of different types calculated correctly
   # sum of vbe, primary and revaccination doses = all doses
 
-  y <- run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1,
-                         r1 = 1, r2 = 1, booster_uptake = 0.5,
-                         strategy = "VoD")
+  y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
+                        primary_uptake = 1, booster_uptake = 0.5,
+                        strategy = "VoD")
   z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
                                uptake_second_dose = 1,
                                cp, 0,
@@ -629,11 +629,11 @@ test_that("compare baseline works as expected", {
                              3.52594421792319, 0.483751150425284,
                              1.61256157784351, 3.34884963770966), nrow = 3),
                     tolerance = 1e-6)
-  expect_equal(cet_30k,
-               matrix(c(0.610287112367831, 1.96785021889529,
-                        4.02052903497914, 0.524318410369186,
-                        1.74693578901651, 3.62708130277735), nrow = 3),
-               tolerance = 1e-6)
+  expect_equivalent(cet_30k,
+                    matrix(c(0.610287112367831, 1.96785021889529,
+                             4.02052903497914, 0.524318410369186,
+                             1.74693578901651, 3.62708130277735), nrow = 3),
+                    tolerance = 1e-6)
 
   expect_equal(z$cet_20k, cet_20k)
   expect_equal(z$cet_30k, cet_30k)
@@ -802,16 +802,16 @@ test_that("run_grid works as expected", {
                  eff = c(0, 1), dur = c(1, 2), vbe = 0.5,
                  uptake_total = 1,
                  full_output = TRUE)
-  expect_equal(zz$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
-  expect_equal(zz$results$eff0.00_dur02$inc_treated,
-               zz$results$eff0.00_dur01$inc_treated,
-               tolerance = 0.1)
+  expect_equivalent(zz$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
+  expect_equivalent(zz$results$eff0.00_dur02$inc_treated,
+                    zz$results$eff0.00_dur01$inc_treated,
+                    tolerance = 0.1)
   expect_true(all(unlist(zz$results$inc_treated$eff0.10_dur01) > -0.1))
-  expect_equal(zz$results$eff0.00_dur01$inc_cum_treated,  matrix(0, 2, 2),
-               tolerance = 0.1)
-  expect_equal(zz$results$eff0.00_dur02$inc_cum_treated,  matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz$results$eff0.00_dur01$inc_cum_treated,  matrix(0, 2, 2),
+                    tolerance = 0.1)
+  expect_equivalent(zz$results$eff0.00_dur02$inc_cum_treated,  matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_true(all(abs(unlist(zz$results$vaccinated) - 1200 * 10 * 0.5) < 1e-5))
   expect_equal(length(zz$full_results), nrow(zz$inputs$grid))
 
@@ -821,14 +821,14 @@ test_that("run_grid works as expected", {
                   strategy = "VoD",
                   eff = c(0, 1), dur = c(1, 2), vbe = 0.5,
                   uptake_total = 1)
-  expect_equal(zz2$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz2$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_equal(zz2$results$eff0.00_dur02$inc_treated,
                zz2$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
   expect_true(all(unlist(zz2$results$inc_treated) > -0.1))
-  expect_equal(zz2$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz2$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_equal(zz2$results$eff0.00_dur02$inc_cum_treated,
                zz2$results$eff0.00_dur01$inc_cum_treated,
                tolerance = 0.1)
@@ -839,14 +839,14 @@ test_that("run_grid works as expected", {
                   strategy = "VoA",
                   eff = c(0, 1), dur = c(1, 2), vbe = 0.5,
                   uptake_total = 1, full_output = TRUE)
-  expect_equal(zz3$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz3$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_equal(zz3$results$eff0.00_dur02$inc_treated,
                zz3$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
   expect_true(all(unlist(zz3$results$inc_treated) > -0.1))
-  expect_equal(zz3$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz3$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_equal(zz3$results$eff0.00_dur02$inc_cum_treated,
                zz3$results$eff0.00_dur01$inc_cum_treated,
                tolerance = 0.1)
@@ -857,14 +857,14 @@ test_that("run_grid works as expected", {
                   strategy = "VoD(L)+VoA(H)",
                   eff = c(0, 1), dur = c(1, 99), vbe = 0.5,
                   uptake_total = 1, full_output = TRUE)
-  expect_equal(zz5$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz5$results$eff0.00_dur01$inc_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_equal(zz5$results$eff0.00_dur99$inc_treated,
                zz5$results$eff0.00_dur01$inc_treated,
                tolerance = 0.1)
   expect_true(all(unlist(zz5$results$inc_treated) > -0.1))
-  expect_equal(zz5$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
-               tolerance = 0.1)
+  expect_equivalent(zz5$results$eff0.00_dur01$inc_cum_treated, matrix(0, 2, 2),
+                    tolerance = 0.1)
   expect_equal(zz5$results$eff0.00_dur99$inc_cum_treated,
                zz5$results$eff0.00_dur01$inc_cum_treated,
                tolerance = 0.1)

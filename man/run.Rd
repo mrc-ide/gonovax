@@ -17,7 +17,7 @@ run(
 \arguments{
 \item{tt}{a numeric vector of times at which the model state is output}
 
-\item{gono_params}{A dataframe of natural history parameters}
+\item{gono_params}{a data frame of parameters}
 
 \item{demographic_params}{A dataframe of demographic parameters}
 

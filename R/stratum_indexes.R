@@ -31,7 +31,8 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly" ||
+                                 strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- ret$X[-1]
       ret$vaccinatedto_vos <- ret$V1[-1]
     } else {
@@ -45,6 +46,9 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vod <- ret$V
   ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] <-
     ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] + 1
+
+  ret$vaccinatedfrom_vopn <- ret$X
+  ret$vaccinatedto_vopn <- ret$V
 
   ret
 }
@@ -85,7 +89,8 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  ||
+                                 strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$W[-1])
       ret$vaccinatedto_vos <- c(ret$V1[-1], ret$V1[-1])
     } else {
@@ -99,6 +104,9 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vod <- c(ret$V, ret$V)
   ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] <-
     ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] + 1
+
+  ret$vaccinatedfrom_vopn <- c(ret$X, ret$W)
+  ret$vaccinatedto_vopn <- c(ret$V, ret$V)
 
   ret
 }
@@ -142,7 +150,8 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  ||
+                                 strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$W[-1])
       ret$vaccinatedto_vos <- c(ret$V1[-1], ret$R1[-1])
     } else {
@@ -156,6 +165,9 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vod <- c(ret$V, ret$R)
   ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] <-
     ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] + 1
+
+  ret$vaccinatedfrom_vopn <- c(ret$X, ret$W)
+  ret$vaccinatedto_vopn <- c(ret$V, ret$R)
 
   ret
 }
@@ -205,7 +217,8 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  ||
+                                 strategy == "VaH+VoN")) {
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$W[-1])
       ret$vaccinatedto_vos <- c(ret$V1[-1], ret$R1[-1])
     } else {
@@ -219,6 +232,9 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vod <- c(ret$V, ret$R)
   ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] <-
     ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] + 1
+
+  ret$vaccinatedfrom_vopn <- c(ret$X, ret$W)
+  ret$vaccinatedto_vopn <- c(ret$V, ret$R)
 
   ret
 }
@@ -269,7 +285,8 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
-    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly")) {
+    if (!is.null(strategy) && (strategy == "VaH" || strategy ==  "VaHonly"  ||
+                                 strategy == "VaH+VoN")) {
 
       ret$vaccinatedfrom_vos <- c(ret$X[-1], ret$X[-1],
                                   ret$P[- (seq_len(n_erlang * n_diag_rec) %%
@@ -290,6 +307,9 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
   ret$vaccinatedto_vod <- c(ret$P1, ret$V1, rep(ret$V1, n_erlang), ret$R)
   ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] <-
     ret$vaccinatedto_vod[ret$vaccinatedto_vod %% n_diag_rec != 0] + 1
+
+  ret$vaccinatedfrom_vopn <- c(ret$X, ret$X, ret$P, ret$W)
+  ret$vaccinatedto_vopn <- c(ret$P1, ret$V1, rep(ret$V1, n_erlang), ret$R)
 
   ret
 }
