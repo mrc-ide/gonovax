@@ -75,14 +75,14 @@ test_that("run_onevax_xpvwrh works correctly", {
     expect_equivalent(y_h[[i]]$N[1, , 6], init_pop * 0.3)
     expect_true(all(y_h[[i]]$N[1, , 2:5] == 0))
   }
-
+  
   # incidence in hesitant population increasing
   for (i in seq_along(y_h)) {
     expect_true(all(y_h[[i]]$cum_incid[-1, , 6] > 0))
   }
-
+  
   y_h2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 0, hes = 0.3)
-
+  
   for (i in seq_along(y_h2)) {
     # yearly population entrants enter X and H strata
     # in accordance with assigned proportion of hesitancy 'hes'

@@ -39,6 +39,7 @@ initial_params_repeated_xpvwr <- function(pars, coverage_x = 1, coverage_p = 0, 
   stopifnot(length(coverage_p) == hesgroups)
   stopifnot(length(coverage_v) == hesgroups)
   
+  #print(sum(coverage_p + coverage_v))
   
   if (sum(coverage_p + coverage_v) >= 1) {
     stop("sum of coverages must not exceed or equal 1")
@@ -120,7 +121,7 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                               ves_revax = ves, vea_p = vea, vei_p = vei,
                               ved_p = ved, ves_p = ves, dur_v = 1e3,
                               dur_p = dur_v, dur_revax = dur_v, r1 = 0, r2 = 0,
-                              r2_p = 0, booster_uptake = r1 * r2,
+                              r2_p = 0, booster_uptake = mapply(function(x, y) x * y, r1, r2, SIMPLIFY = FALSE),
                               strategy = NULL, vbe = 0, t_stop = 99,
                               hesgroups = 1,
                               n_erlang = 1, n_diag_rec = 1, years_history = 1) {
@@ -415,19 +416,20 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE, idx) {
 ##'  duration (between 0-1)
 ##' @param ves_p scalar indicating efficacy of partial vaccination against
 ##'  symptoms (between 0-1)
-##' @param r1 scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population offered vaccine only
-##'   accepting the first dose, becoming partially vaccinated
-##' @param r2 scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of the population who accepted the first
-##'   dose of the vaccine who go on to accept the second dose, becoming fully
-##'   vaccinated
-##' @param r2_p scalar or numeric vector with same length as 'gono_params'
-##' giving proportion of partially vaccinated individuals who later receive
-##' a second dose when returning to the clinic due to screening or illness
-##' @param booster_uptake scalar or numeric vector with same length as
-##'  'gono_params' giving proportion of population undertaking booster
-##'  vaccination after primary vaccination protection has waned.
+##' @param r1 list of length 1 or of length 'gono_params' with each entry 
+##'   itself a list of proportions of length hesgroups only accepting the first
+##'   dose, becoming partially vaccinated
+##' @param r2 list of length 1 or of length 'gono_params' with each entry 
+##'   itself a list of proportions of length hesgroups of the population who 
+##'   accepted the first dose of the vaccine who go on to accept the second 
+##'   dose, becoming fully vaccinated
+##' @param r2_p list of length 1 or of length 'gono_params' with each entry 
+##'   itself a list of proportions of partially vaccinated individuals who 
+##'   later receive a second dose when returning to the clinic due to screening 
+##'   or illness
+##' @param booster_uptake list of length 1 or of length 'gono_params' with each 
+##'   entry itself a list of proportions of length hesgroups undertaking booster
+##'   vaccination after primary vaccination protection has waned.
 ##'   Defaults to supplied value of r1 * r2
 ##' @param n_erlang integer giving the number of erlang vaccination transitions
 ##'  through vaccine-protected strata until that protection has waned
@@ -442,10 +444,13 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
                               vea_revax = vea, vei_revax = vei, ved_revax = ved,
                               ves_revax = ves, vea_p = vea, vei_p = vei,
                               ved_p = ved, ves_p = ves, vbe = 0, r1 = 0, r2 = 0,
-                              r2_p = 0, booster_uptake = (r1 * r2),
+                              r2_p = 0, booster_uptake = mapply(function(x, y) x * y, r1, r2, SIMPLIFY = FALSE),
                               strategy = NULL, t_stop = 99, hes = 0,
                               n_erlang = 1, n_diag_rec = 1, years_history = 1,
                               hesgroups = 1) {
+  
+  
+  print("hello")
 
   stopifnot(all(lengths(list(vea, vei, ved, ves,
                              vea_revax, vei_revax, ved_revax, vea_p, vei_p,
@@ -453,9 +458,17 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
                              dur_revax)) %in% c(1, length(gono_params))))
   
   
-  stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p)) == hesgroups))
+  #stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p)) == hesgroups))
   
-  print("hello")
+  stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p)) %in% c(1, length(gono_params))))
+  
+  print("hello A")
+  print(lengths(list(booster_uptake, r1, r2, r2_p)))
+  
+  stopifnot(all(sapply(list(r1, r2, booster_uptake, r2_p), function(x) all(lengths(x) == hesgroups))))
+  
+  print("hello B")
+  print(sapply(list(r1, r2, booster_uptake, r2_p), function(x) lengths(x)))
   
 
   
