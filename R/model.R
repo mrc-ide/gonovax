@@ -92,6 +92,10 @@ run_repeated_xpvwr <- function(tt, gono_params, init_params = NULL, vax_params =
                               years_history = years_history,
                               hesgroups = hesgroups)
   
+  print("hello 6")
+  
+  #print(pars$w)
+  
   mod <- model$new(user = pars, unused_user_action = FALSE)
   y <- mod$run(tt)
   

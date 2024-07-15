@@ -538,6 +538,8 @@ model_params_repeated_xpvwr <- function(gono_params = NULL,
     
   } else {
     
+    print("hello here")
+    
     #also add in diag_rec if vax_params not supplied
     vax_params <- vax_params0_repeat(n_diag_rec = n_diag_rec,
                               years_history = years_history,

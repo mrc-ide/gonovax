@@ -259,7 +259,7 @@ create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake
     # note, these indices are specific to the branching pattern of xpvwrh
     ## individuals in X accept vaccination of the 1st dose at an uptake of r1
     
-    k <- (j - 1) * hesgroups + i 
+    k <- (j - 1) * n_diag_rec + i 
       
     
     if (screening_or_diagnosis == "screening") {
@@ -283,6 +283,12 @@ create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake
     ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
     ## vaccinated is given by r1 * r2
     ## idx$V[1] gives index of the top of the V erlang stack
+    
+    print("temp")
+    print(temp)
+    print("idx$Vtemp")
+    print(idx$V[temp])
+    
     array[, idx$V[temp], k] <- array[, idx$V[temp], k] * (r1[j] * r2[j])
     
     ## individuals entering P (partially vaccinated) do not then accept
@@ -296,13 +302,13 @@ create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake
     ## individuals with only the 1st dose can later accept vaccination with the
     ## 2nd dose at an uptake of r2_p
     ## idx$P gives indices for all P erlang strata, r2_p applies to all equally
-    array[, , idx$P[k]] <- array[, , idx$P[k]] * r2_p[j]
+    array[, , idx$P[temp]] <- array[, , idx$P[temp]] * r2_p[j]
     
     ## individuals who were fully vaccinated and whose immunity has waned (W)
     ## can accept vaccination with a single booster dose at an uptake of
     ## booster_uptake
     ## idx$W gives the the index for (W)
-    array[, , idx$W[k]] <- array[, , idx$W[k]] * booster_uptake[j]
+    array[, , idx$W[temp]] <- array[, , idx$W[temp]] * booster_uptake[j]
     
     
   }

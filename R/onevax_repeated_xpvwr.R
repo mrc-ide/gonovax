@@ -29,8 +29,11 @@
 ##' @param n_diag_rec  number of diagnosis history strata
 ##' @return A list of initial conditions
 ##' @export
-initial_params_repeated_xpvwr <- function(pars, coverage_x = 1, coverage_p = 0, coverage_v = 0, 
-                                          hesgroups = 1, t = FALSE,
+initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
+                                          coverage_x = rep(1, hesgroups)/hesgroups, 
+                                          coverage_p = rep(0, hesgroups),
+                                          coverage_v = rep(0, hesgroups), 
+                                          t = FALSE,
                                           n_erlang = 1, n_diag_rec = 1) {
 
   idx <- stratum_index_repeated_xpvwr(n_erlang, n_diag_rec)
@@ -60,18 +63,23 @@ initial_params_repeated_xpvwr <- function(pars, coverage_x = 1, coverage_p = 0, 
               rep(0, n_diag_rec * n_erlang * hesgroups)
               )
 
-    stopifnot(length(cov) == n_vax)
+    stopifnot(length(cov) == n_vax * hesgroups)
     stopifnot(sum(cov) == 1)
 
-    U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+    U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax * hesgroups))
     # separate into 1:low and 2:high activity groups and by coverage
     N0 <- pars$N0 * outer(pars$q, cov)
     
     # set initial asymptomatic prevalence in each X group 
     
-    A0[, 2*seq_len(hesgroups) - 1] <- round(N0[, 2*seq_len(hesgroups) - 1] * c(pars$prev_Asl, pars$prev_Ash))
+    A0[, seq_len(hesgroups)] <- round(N0[, seq_len(hesgroups) ] * c(pars$prev_Asl, pars$prev_Ash))
     
-
+   # print("round N0")
+  #  print(round(N0))
+    
+  #  print("A0")
+  #  print(A0)
+    
     # set initial uninfecteds
     U0 <- round(N0) - A0
 
@@ -243,20 +251,25 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     diag_rec[, idx$P, ] <- (1 - r2_p) * diag_rec[, idx$P, ]
     diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
   }
+  
+  print("r2p")
+  print(r2_p)
+  print("booster uptake")
+  print(booster_uptake)
 
   u_s <- create_uptake_map_repeated_xpvwr(vos, r1, r2, r2_p, booster_uptake, idx,
-                                  n_diag_rec = n_diag_rec,
+                                  n_diag_rec = n_diag_rec, hesgroups = hesgroups,
                                   screening_or_diagnosis = "screening")
   u_d <- create_uptake_map_repeated_xpvwr(vod, r1, r2, r2_p, booster_uptake, idx,
-                                  n_diag_rec = n_diag_rec,
+                                  n_diag_rec = n_diag_rec, hesgroups = hesgroups,
                                   screening_or_diagnosis = "diagnosis")
 
   u_pn <- create_uptake_map_repeated_xpvwr(vopn, r1, r2, r2_p, booster_uptake, idx,
-                                   n_diag_rec = n_diag_rec,
+                                   n_diag_rec = n_diag_rec, hesgroups = hesgroups,
                                    screening_or_diagnosis = "screening")
 
-  w <- create_waning_map_branching(n_vax, i_v, i_w,
-                                   n_erlang / c(dur_p, dur_v, dur_revax),
+  w <- create_waning_map_branching_repeat(n_vax, i_v, i_w,
+                                   rep(n_erlang / c(dur_p, dur_v, dur_revax), each = hesgroups),
                                    n_erlang, n_diag_rec)
 
   
@@ -278,9 +291,7 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     vei = set_protection(i_v, idx, n_vax, vei_p, vei, vei_revax),
     ved = set_protection(i_v, idx, n_vax, ved_p, ved, ved_revax),
     ves = set_protection(i_v, idx, n_vax, ves_p, ves, ves_revax),
-    w = create_waning_map_branching(n_vax, i_v, i_w,
-                                    n_erlang / c(dur_p, dur_v, dur_revax),
-                                    n_erlang, n_diag_rec),
+    w = w,
     wd =  create_diagnosis_waning_map(n_vax, 1 / years_history, n_diag_rec),
     vax_t = c(0, t_stop),
     vax_y = c(1, 0),
@@ -442,12 +453,11 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
                               dur_v = 1e3, dur_p = dur_v, vea = 0, vei = 0,
                               ved = 0, ves = 0, dur_revax = dur_v,
                               vea_revax = vea, vei_revax = vei, ved_revax = ved,
-                              ves_revax = ves, vea_p = vea, vei_p = vei,
-                              ved_p = ved, ves_p = ves, vbe = 0, r1 = 0, r2 = 0,
-                              r2_p = 0, booster_uptake = mapply(function(x, y) x * y, r1, r2, SIMPLIFY = FALSE),
+                              ves_revax = ves, vea_p = vea, vei_p = vei, hesgroups = 1,
+                              ved_p = ved, ves_p = ves, vbe = 0, r1 = list(rep(0, hesgroups)), r2 = list(rep(0, hesgroups)),
+                              r2_p = list(rep(0, hesgroups)), booster_uptake = mapply(function(x, y) x * y, r1, r2, SIMPLIFY = FALSE),
                               strategy = NULL, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1, years_history = 1,
-                              hesgroups = 1) {
+                              n_erlang = 1, n_diag_rec = 1, years_history = 1) {
   
   
   print("hello")
@@ -462,8 +472,12 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
   
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p)) %in% c(1, length(gono_params))))
   
-  print("hello A")
+  print(r1)
+  
+  print("hello Allo")
   print(lengths(list(booster_uptake, r1, r2, r2_p)))
+  
+ 
   
   stopifnot(all(sapply(list(r1, r2, booster_uptake, r2_p), function(x) all(lengths(x) == hesgroups))))
   
@@ -506,7 +520,7 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
   print("hello5")
   
   ret <- Map(run_repeated_xpvwr, gono_params = gono_params, vax_params = vax_params,
-             init_params = init_params, n_erlang = n_erlang,
+             init_params = init_params, n_erlang = n_erlang, hesgroups = hesgroups,
              n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
 
   # name outputs
@@ -548,3 +562,40 @@ gen_erlang_labels_repeat <- function(n_erlang = 1, n_diag_rec = 1, hesgroups = 1
 
   return(output)
 }
+
+
+##' @name create_waning_map_branching
+##' @title Create mapping for movement between strata due to vaccine waning
+##' where waning from the partially vaccinated stratum (P) moves individuals
+##' back to a naive unvaccinated state (X), and waning from fully vaccinated
+##' stratum (V) moves individuals into a separate waned stratum (W)
+##' Note, this structure is specific to xpvwrh
+##' @param n_vax Integer denoting total number of strata
+##' @param i_v indices of strata receiving protection through vaccination
+##' @param i_w Scalar in (0, 6) denoting which stratum receives waned vaccinees
+##' @param z Scalar denoting rate of waning
+##' @param n_erlang integer giving the number of transitions that need to be
+##' made through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer giving number of diagnosis history strata
+##' @return an array of the mapping
+
+create_waning_map_branching_repeat <- function(n_vax, i_v, i_w, z, n_erlang = 1,
+                                        n_diag_rec = 1) {
+  
+  stopifnot(z > 0)
+  
+  #creates vector containing rates
+  z_erlang <- rep(z, each = n_erlang * n_diag_rec)
+  
+  # set up waning map
+  w <- array(0, dim = c(n_vax, n_vax))
+  
+  for (i in seq_along(i_v)) {
+    w[i_v[i], i_v[i]] <- -z_erlang[i]
+    w[i_w[i], i_v[i]] <- z_erlang[i]
+  }
+  
+  w
+  
+}
+
