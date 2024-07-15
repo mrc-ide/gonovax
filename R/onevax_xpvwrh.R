@@ -329,8 +329,14 @@ create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE, idx) {
 
   if (set_vbe == TRUE) {
 
-    vax_map[, idx$X[1], idx$X[1]] <-  v
-    vax_map[, idx$V[1], idx$X[1]] <- -v
+    #vax_map[, idx$X[1], idx$X[1]] <-  v
+    #vax_map[, idx$V[1], idx$X[1]] <- -v
+    
+    for (i in 1:length(idx$X)){
+      vax_map[, idx$X[i], idx$X[i]] <-  v
+      vax_map[, idx$V[i], idx$X[i]] <- -v
+    }
+    
 
   } else {
 

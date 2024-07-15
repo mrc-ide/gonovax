@@ -387,3 +387,6 @@ output(N)   <- N
 output(lambda) <- lambda
 output(phi) <- phi
 output(notifiedandattended) <- notifiedandattended
+
+
+

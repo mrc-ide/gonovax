@@ -263,7 +263,7 @@ create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake
       
     
     if (screening_or_diagnosis == "screening") {
-      temp <- i
+      temp <- k
     } else if (screening_or_diagnosis == "diagnosis") {
       
       if (i < n_diag_rec) {

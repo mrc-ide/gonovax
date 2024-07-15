@@ -26,8 +26,8 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
 
   # strata people are vaccinated (before entry) from and to
-  ret$vaccinatedfrom_vbe <- ret$X
-  ret$vaccinatedto_vbe <- ret$V1
+  ret$vaccinatedfrom_vbe <- ret$X[1]
+  ret$vaccinatedto_vbe <- ret$V1[1]
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
@@ -84,8 +84,8 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
 
   # strata people are vaccinated (before entry) from and to
-  ret$vaccinatedfrom_vbe <- ret$X
-  ret$vaccinatedto_vbe <- ret$V1
+  ret$vaccinatedfrom_vbe <- ret$X[1]
+  ret$vaccinatedto_vbe <- ret$V1[1]
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
@@ -145,8 +145,8 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
 
   # strata people are vaccinated (before entry) from and to
-  ret$vaccinatedfrom_vbe <- ret$X
-  ret$vaccinatedto_vbe <- ret$V1
+  ret$vaccinatedfrom_vbe <- ret$X[1]
+  ret$vaccinatedto_vbe <- ret$V1[1]
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
@@ -212,8 +212,8 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
 
   # strata people are vaccinated (before entry) from and to
-  ret$vaccinatedfrom_vbe <- ret$X
-  ret$vaccinatedto_vbe <- ret$V1
+  ret$vaccinatedfrom_vbe <- ret$X[1]
+  ret$vaccinatedto_vbe <- ret$V1[1]
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {
@@ -280,8 +280,8 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
   ret$diagnosedto <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec  != 1]
 
   # strata people are vaccinated (before entry) from and to
-  ret$vaccinatedfrom_vbe <- c(ret$X, ret$X)
-  ret$vaccinatedto_vbe <- c(ret$P1, ret$V1)
+  ret$vaccinatedfrom_vbe <- c(ret$X[1], ret$X[1])
+  ret$vaccinatedto_vbe <- c(ret$P1[1], ret$V1[1])
 
   # strata people are vaccinated (on screening) from and to
   if (!is.null(strategy)) {

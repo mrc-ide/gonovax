@@ -72,7 +72,7 @@ initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
     
     # set initial asymptomatic prevalence in each X group 
     
-    A0[, seq_len(hesgroups)] <- round(N0[, seq_len(hesgroups) ] * c(pars$prev_Asl, pars$prev_Ash))
+    A0[, seq_len(hesgroups)] <- N0[, seq_len(hesgroups) ] * c(pars$prev_Asl, pars$prev_Ash)
     
    # print("round N0")
   #  print(round(N0))
@@ -98,7 +98,7 @@ initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
 ##' @name vax_params_repeated_xpvwr
 ##' @title create vaccination parameters for use in onevax_xpvwrh model
 ##' @inheritParams vax_params_xvwr
-##' @param hesgroups proportion of population vaccine hesitant
+##' @param hesgroups number of hesitancy groups
 ##' @param r1 array of proportion of population offered vaccine only
 ##' accepting the first dose, becoming partially vaccinated
 ##' @param r2 array of proportion of the population who accepted the first dose 
@@ -238,6 +238,12 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   vbe_map <- create_vax_map_branching(n_vax, p$vbe, idx$vaccinatedfrom_vbe,
                                       idx$vaccinatedto_vbe, set_vbe = TRUE, idx)
+  
+  # print("vbe maps")
+  # print(idx$vaccinatedfrom_vbe)
+  # print(idx$vaccinatedto_vbe)
+  # print(vbe_map)
+  
 
   if (sum(abs(vod)) > 0) {
     #vaccination on diagnosis occuring, so need to scale down diag_rec
@@ -252,10 +258,10 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
   }
   
-  print("r2p")
-  print(r2_p)
-  print("booster uptake")
-  print(booster_uptake)
+  # print("r2p")
+  # print(r2_p)
+  # print("booster uptake")
+  # print(booster_uptake)
 
   u_s <- create_uptake_map_repeated_xpvwr(vos, r1, r2, r2_p, booster_uptake, idx,
                                   n_diag_rec = n_diag_rec, hesgroups = hesgroups,
@@ -273,9 +279,16 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
                                    n_erlang, n_diag_rec)
 
   
-  willing = c(rep(c(1, rep(0, n_diag_rec - 1)), hesgroups), 
+  willing = c(rep(c(1 / hesgroups, rep(0, n_diag_rec - 1)), hesgroups), 
               rep(0, n_vax - n_diag_rec * hesgroups))
   
+  
+  print("vbe map")
+  print(idx$vaccinatedfrom_vbe)
+  print(idx$vaccinatedto_vbe)
+  print(vbe_map)
+  
+
 
   list(n_vax   = n_vax,
     willing = willing,
@@ -337,57 +350,57 @@ create_waning_map_branching <- function(n_vax, i_v, i_w, z, n_erlang = 1,
 }
 
 
-##' @name create_vax_map_branching
-##' @title Create mapping for movement between strata due to vaccination where
-##' vaccination uptake splits off into two types (partial and full) from the
-##' naive population (X). Different to create_vax_map as this function
-##' specifically maps vbe to V (3) than P(2)
-##' @param n_vax Integer denoting total number of strata
-##' @param v 0-1 vector of length two indicating whether activity group
-##'  should be offered vaccination.
-##' @param i_e indices of strata eligible for vaccination
-##' @param i_p indices of strata vaccinated and protected
-##' @param set_vbe Boolean which indicates that vaccination is occurring at some
-##' level of uptake upon entering the model
-##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
-##' through vaccine-protected strata until that protection has waned
-##' @return an array of the mapping
-
-create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE, idx) {
-
-  # ensure vaccine input is of correct length
-  n_group <- 2
-  n_vax <- idx$n_vax
-
-  stopifnot(length(v) == n_group)
-  stopifnot(all(v %in% c(0, 1)))
-
-
-  if (length(i_e) > 0) {
-    stopifnot(max(i_e, i_p) <= n_vax)
-  }
-
-  # set up vaccination matrix
-  vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
-
-  if (set_vbe == TRUE) {
-
-    vax_map[, idx$X[1], idx$X[1]] <-  v
-    vax_map[, idx$V[1], idx$X[1]] <- -v
-
-  } else {
-
-    #repeat over stratum 1 column 1 for ease
-    for (i in seq_along(i_e)) {
-
-      vax_map[, i_e[i], i_e[i]] <-  v
-      vax_map[, i_p[i], i_e[i]] <- -v
-
-    }
-  }
-
-  vax_map
-}
+# ##' @name create_vax_map_branching
+# ##' @title Create mapping for movement between strata due to vaccination where
+# ##' vaccination uptake splits off into two types (partial and full) from the
+# ##' naive population (X). Different to create_vax_map as this function
+# ##' specifically maps vbe to V (3) than P(2)
+# ##' @param n_vax Integer denoting total number of strata
+# ##' @param v 0-1 vector of length two indicating whether activity group
+# ##'  should be offered vaccination.
+# ##' @param i_e indices of strata eligible for vaccination
+# ##' @param i_p indices of strata vaccinated and protected
+# ##' @param set_vbe Boolean which indicates that vaccination is occurring at some
+# ##' level of uptake upon entering the model
+# ##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
+# ##' through vaccine-protected strata until that protection has waned
+# ##' @return an array of the mapping
+# 
+# create_vax_map_branching <- function(n_vax, v, i_e, i_p, set_vbe = FALSE, idx) {
+# 
+#   # ensure vaccine input is of correct length
+#   n_group <- 2
+#   n_vax <- idx$n_vax
+# 
+#   stopifnot(length(v) == n_group)
+#   stopifnot(all(v %in% c(0, 1)))
+# 
+# 
+#   if (length(i_e) > 0) {
+#     stopifnot(max(i_e, i_p) <= n_vax)
+#   }
+# 
+#   # set up vaccination matrix
+#   vax_map <- array(0, dim = c(n_group, n_vax, n_vax))
+# 
+#   if (set_vbe == TRUE) {
+# 
+#     vax_map[, idx$X[1], idx$X[1]] <-  v
+#     vax_map[, idx$V[1], idx$X[1]] <- -v
+# 
+#   } else {
+# 
+#     #repeat over stratum 1 column 1 for ease
+#     for (i in seq_along(i_e)) {
+# 
+#       vax_map[, i_e[i], i_e[i]] <-  v
+#       vax_map[, i_p[i], i_e[i]] <- -v
+# 
+#     }
+#   }
+# 
+#   vax_map
+# }
 
 ##' @name run_onevax_repeated_xpvwr
 ##' @title run model with a two-dose vaccine for input parameter sets, either
