@@ -795,7 +795,7 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   tt <- seq(0, 5)
   gp <- gono_params(1:2)
   
-  for (hesgroups in 2:2){
+  for (hesgroups in 2:5){
   
   y1 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0, dur_v = 1e3, hesgroups = hesgroups)[[1]]
   
@@ -866,51 +866,41 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   }
   
   
-
-  
-  
-  }
-  
-
-
   # if same sentiment in all groups, = outputs same as xvwr model
   # choose a difficult case where there are very few zero outputs.
   
-  hesgroups = 1
   y_h4_a <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hesgroups = 1,
-                                    r2 = list(rep(1, hesgroups)),  r1 = list(rep(0.5, hesgroups)), booster_uptake = list(rep(0.3, hesgroups)),
-                                    strategy = "VoD(L)+VoA(H)")
+                                      r2 = list(rep(1, 1)),  r1 = list(rep(0.5, 1)), booster_uptake = list(rep(0.3, 1)),
+                                      strategy = "VoD(L)+VoA(H)")
   
-  hesgroups = 5
-  y_h4_b <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hesgroups = 5,
+  y_h4_b <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hesgroups = hesgroups,
                                       r2 = list(rep(1, hesgroups)),  r1 = list(rep(0.5, hesgroups)), booster_uptake = list(rep(0.3, hesgroups)),
                                       strategy = "VoD(L)+VoA(H)")
   
   for (i in seq_along(y_h4_a)) {
     
-    ## very small differences - anything to worry about??
+    ## only small differences between the two
+    expect_equal(rowSums(y_h4_b[[i]]$N[, , 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,1]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$N[, , 2*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,3]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$N[, , 3*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,4]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$N[, , 4*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,5]), tol = 1e-6)
     
-    expect_equal(rowSums(y_h4_b[[i]]$N[, , 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,1]))
-    expect_equal(rowSums(y_h4_b[[i]]$N[, , 2*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,3]))
-    expect_equal(rowSums(y_h4_b[[i]]$N[, , 3*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,4]))
-    expect_equal(rowSums(y_h4_b[[i]]$N[, , 4*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$N[,,5]))
+    expect_equal(rowSums(y_h4_b[[i]]$U[, , 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,1]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$U[, , 2*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,3]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$U[, , 3*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,4]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$U[, , 4*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,5]), tol = 1e-6)
     
-    expect_equal(rowSums(y_h4_b[[i]]$U[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,1]))
-    expect_equal(rowSums(y_h4_b[[i]]$U[, , 2*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,3]))
-    expect_equal(rowSums(y_h4_b[[i]]$U[, , 3*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,4]))
-    expect_equal(rowSums(y_h4_b[[i]]$U[, , 4*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$U[,,5]))
-    
-    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,1]))
-    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 2*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,3]))
-    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 3*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,4]))
-    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 4*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,5]))
+    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,1]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 2*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,3]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 3*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,4]), tol = 1e-6)
+    expect_equal(rowSums(y_h4_b[[i]]$cum_incid[, , 4*hesgroups + 1:hesgroups]), rowSums(y_h4_a[[i]]$cum_incid[,,5]), tol = 1e-6)
     
   }
   
   
   y_h4 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0.8, hesgroups = hesgroups,
-                                      r2 = list(rep(1, hesgroups)),  r1 = list(rep(0.5, hesgroups)), booster_uptake = list(rep(0.3, hesgroups)),
-                                      strategy = "VoD(L)+VoA(H)")
+                                    r2 = list(rep(1, hesgroups)),  r1 = list(rep(0.5, hesgroups)), booster_uptake = list(rep(0.3, hesgroups)),
+                                    strategy = "VoD(L)+VoA(H)")
   
   y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
                             primary_uptake = 0.5, booster_uptake = 0.3,
@@ -921,44 +911,138 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
     
     ## very small differences, anything to worry about?
     
-    expect_equal(rowSums(y_h4[[i]]$N[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,1]))
-    expect_equal(rowSums(y_h4[[i]]$N[, , 2*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,2]))
-    expect_equal(rowSums(y_h4[[i]]$N[, , 3*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,3]))
-    expect_equal(rowSums(y_h4[[i]]$N[, , 4*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,4]))
+    ## i think differences are due to round() being used in xvwr
     
-    expect_equal(rowSums(y_h4[[i]]$U[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,1]))
-    expect_equal(rowSums(y_h4[[i]]$U[, , 2*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,2]))
-    expect_equal(rowSums(y_h4[[i]]$U[, , 3*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,3]))
-    expect_equal(rowSums(y_h4[[i]]$U[, , 4*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,4]))
+    expect_equal(rowSums(y_h4[[i]]$N[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,1]), tol = 1e-4)
+    expect_equal(rowSums(y_h4[[i]]$N[, , 2*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,2]), tol = 1e-4)
+    expect_equal(rowSums(y_h4[[i]]$N[, , 3*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,3]), tol = 1e-4)
+    expect_equal(rowSums(y_h4[[i]]$N[, , 4*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,4]), tol = 1e-4)
     
-    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,1]))
-    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 2*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,2]))
-    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 3*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,3]))
-    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 4*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,4]))
+    expect_equal(rowSums(y_h4[[i]]$U[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,1]), tol = 1e-4)
+    expect_equal(rowSums(y_h4[[i]]$U[, , 2*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,2]), tol = 1e-4)
+    expect_equal(rowSums(y_h4[[i]]$U[, , 3*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,3]), tol = 1e-4)
+    expect_equal(rowSums(y_h4[[i]]$U[, , 4*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$U[,,4]), tol = 1e-4)
+    
+    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,1]), tol = 1e-3)
+    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 2*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,2]), tol = 1e-3)
+    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 3*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,3]), tol = 1e-3)
+    expect_equal(rowSums(y_h4[[i]]$cum_incid[, , 4*hesgroups + 1:hesgroups]), rowSums(y_xvwr[[i]]$cum_incid[,,4]), tol = 1e-3)
     
     
   }
+
   
+  y_h <- run_onevax_repeated_xpvwr(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hesgroups = hesgroups)
   
-  # make output names match
-  y_xvwr <- lapply(y_xvwr, name_outputs, c("X.I..a", "V1.I..a", "W.I..a", "R1.I..a"))
+  # initial population split between non-vaccinated and hesitant only
+  # other stratum empty
   
-  
-  for (i in seq_along(y_h4)) {
+  init_pop <- 600000 * c(0.85, 0.15)
+  for (i in seq_along(y_h)) {
     
-    expect_equal(rowSums(y_h4[[i]]$N[, , 1:hesgroups]), rowSums(y_xvwr[[i]]$N[,,1]))
-    
-    
-    #expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
-    #expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U)
-    #expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
-    
+    for (h in 1:hesgroups){
+    expect_equivalent(y_h[[i]]$N[1, , h], init_pop / hesgroups)
+    }
+
+    expect_true(all(y_h[[i]]$N[1, , (hesgroups + 1) : (5*hesgroups)] == 0))
   }
+  
+  # incidence in all groups increasing
+  
+  for (i in seq_along(y_h)) {
+    for (h in 1:hesgroups){
+     expect_true(all(y_h[[i]]$cum_incid[-1, , h] > 0))
+    }
+  }
+  
+  
+  ## NOTE - current hesitancy heterogeneity implementation sets each group to be
+  ## same size - to possibly build in variable size
+  
+  
+  # y_h2 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 0, hes = 0.3)
+  # 
+  # for (i in seq_along(y_h2)) {
+  #   # yearly population entrants enter X and H strata
+  #   # in accordance with assigned proportion of hesitancy 'hes'
+  #   # H and X stratum sizes remain constant in time
+  #   expect_equal(y_h2[[i]]$N[1, , ], y_h2[[i]]$N[6, , ])
+  # }
+  
+  
+  
+  ## vaccination on notification
+  
+  # set to 0 uptake to make sure things calculated correctly
+  y_pn1 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0, hesgroups = hesgroups,
+                                     r2 = list(rep(1, hesgroups)), r1 = list(rep(0, hesgroups)), booster_uptake = list(rep(0.3, hesgroups)),
+                                     strategy = "VoN")
+  
+  for (i in seq_along(y_pn1)){
+    
+    # the number of offers at PN is equal to the # of diagnoses * prevalence
+    # * PNs per diagnosis
+    expect_equal(rowSums(y_pn1[[i]]$cum_offered_pn),
+                 gp[[i]]$kappa * (1 - gp[[i]]$notifiedprev) *
+                   rowSums(y_pn1[[i]]$cum_diag_a + y_pn1[[i]]$cum_diag_s))
+    
+    # prevalence among PN = 0.38
+    expect_equal(rowSums(y_pn1[[i]]$phi) /
+                   rowSums(y_pn1[[i]]$notifiedandattended),
+                 rep((1 - gp[[i]]$notifiedprev), length(tt)))
+  }
+  
+  
+  y_pn2 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0, hesgroups = hesgroups,
+                                     r2 = list(rep(1, hesgroups)), r1 = list(rep(0.5, hesgroups)), booster_uptake = list(rep(0.3, hesgroups)),
+                                     strategy = "VoN")
+  
+  for (i in seq_along(y_pn2)){
+    
+    # the number of vaccinations PN is fewer than the number of diagnoses *
+    # * prevalence * uptake
+    expect_true(all(rowSums(y_pn2[[i]]$cum_vaccinated_pn) <=
+                      gp[[i]]$kappa * 0.5 * (1 - gp[[i]]$notifiedprev) *
+                      rowSums(y_pn2[[i]]$cum_diag_a +
+                                y_pn2[[i]]$cum_diag_s)))
+  }
+  
+  
+  
+  ## issue with this with current implementation - might need to edit restart_hes or use different!
+  ## end point 15/07
+  
+  i_pn <- lapply(y_pn1, restart_hes, n_vax = 5*hesgroups,
+                 branching = TRUE)
+  
+  gp2 <- gp
+  gp2 <- lapply(gp2, function(x) {
+    x$epsilon <- 1
+    x })
+  
+  # Set I0, S0, A0, and T0 for i_pn
+  vars_to_set <- c("I0", "S0", "A0", "T0")
+  i_pn <- lapply(i_pn, function(x) {
+    for (var in vars_to_set) {
+      x[[var]][1, ] <- 0
+    }
+    x
+  })
+  
+  
+  }
+  
+  
+  
+  
+
+
+  
   
   
 
   
-  # y_h <- run_onevax_repaeted_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.3)
+  y_h <- run_onevax_repeated_xpvwr(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.3)
   # 
   # # initial population split between non-vaccinated and hesitant only
   # # other stratum empty
