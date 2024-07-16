@@ -113,9 +113,11 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups == 1", {
 
 
   for (i in seq_along(y_h4)) {
-    expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N)
-    expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U)
-    expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid)
+    
+    ## note now not exactly equal - because no longer rounding to obain initial A
+    expect_equal(y_h4[[i]]$N[, , c(1, 3:5)], y_xvwr[[i]]$N, tol = 1e-3)
+    expect_equal(y_h4[[i]]$U[, , c(1, 3:5)], y_xvwr[[i]]$U, tol = 1e-3)
+    expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3:5)], y_xvwr[[i]]$cum_incid, tol = 1e-3)
 
   }
 
@@ -154,8 +156,11 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups == 1", {
 
   #complete assortativity and no infections among low risk pop
 
-  i_pn <- lapply(y_pn1, restart_hes, n_vax = 5,
-                 branching = TRUE)
+  # i_pn <- lapply(y_pn1, restart_hes, n_vax = 5,
+  #                branching = TRUE)
+  
+  
+  i_pn <- lapply(y_pn1, restart_params, n_vax = 5)
 
   gp2 <- gp
   gp2 <- lapply(gp2, function(x) {
@@ -1012,14 +1017,17 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   ## issue with this with current implementation - might need to edit restart_hes or use different!
   ## end point 15/07
   
-  i_pn <- lapply(y_pn1, restart_hes, n_vax = 5*hesgroups,
-                 branching = TRUE)
+  # i_pn <- lapply(y_pn1, restart_hes, n_vax = 5*hesgroups,
+  #                branching = TRUE)
   
+  i_pn <- lapply(y_pn1, restart_params, n_vax = 5*hesgroups)
+  
+
   gp2 <- gp
   gp2 <- lapply(gp2, function(x) {
     x$epsilon <- 1
     x })
-  
+
   # Set I0, S0, A0, and T0 for i_pn
   vars_to_set <- c("I0", "S0", "A0", "T0")
   i_pn <- lapply(i_pn, function(x) {
@@ -1030,19 +1038,306 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   })
   
   
+  #complete assortativity and no infections among low risk pop
+  
+  
+  y_pn3 <- run_onevax_repeated_xpvwr(tt, gp2, init_params = i_pn, vea = 0.5,
+                                     dur_v = 1, vbe = 0, hesgroups = hesgroups, 
+                                     r2 = list(rep(1, hesgroups)), r1 = list(rep(0.5, hesgroups)),
+                                     booster_uptake = list(rep(0.3, hesgroups)),
+                                     strategy = "VoN")
+  
+  for (i in seq_along(y_pn3)){
+    expect_true(all(y_pn3[[i]]$cum_offered_pn[, 1, ] == 0))
+    expect_true(all(y_pn3[[i]]$cum_vaccinated_pn[, 1, ] == 0))
+    expect_true(all(y_pn3[[i]]$cum_vaccinated[, 1, ] == 0))
   }
   
   
+  # Test the vaccination maps are being generated as expected
+  
+  pars <- lapply(gp[1], model_params)
+  vbe <- 1
+  p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
+  
+  n_erlang <- 1
+  idx <- stratum_index_repeated_xpvwr(n_erlang = n_erlang, hesgroups = hesgroups)
+  
+  i_eligible <- c(seq_len(hesgroups), seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))
+  expect_equal(i_eligible,  c(idx$X, idx$X, idx$P, idx$W))
+  
+  
+  i_p <- c(hesgroups + seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups), 4*hesgroups + seq_len(hesgroups))
+  expect_equal(i_p, c(idx$P[seq_len(hesgroups)], rep(idx$V[seq_len(hesgroups)], n_erlang + 1), idx$R[seq_len(hesgroups)]))
+  
+  
+  vod_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vod, i_eligible, i_p,
+                                      idx = idx)
+  vos_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vos, i_eligible, i_p,
+                                      idx = idx)
+  vbe_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vbe, i_eligible, i_p,
+                                      set_vbe = TRUE, idx = idx)
+  
+  # for vod, expect:
+  
+  for (h in 1:hesgroups){
+  
+    expect_true(unique(vod_map[, h, h] == c(1, 1)))
+    expect_true(unique(vod_map[, hesgroups + h, h] == c(-1, -1)))
+    expect_true(unique(vod_map[, 2*hesgroups + h, h] == c(-1, -1)))
+    expect_true(unique(vod_map[, hesgroups + h, hesgroups + h] == c(1, 1)))
+    expect_true(unique(vod_map[, 2*hesgroups + h, hesgroups + h] == c(-1, -1)))
+    expect_true(unique(vod_map[, 3*hesgroups + h, 3*hesgroups + h] == c(1, 1)))
+    expect_true(unique(vod_map[, 4*hesgroups + h, 3*hesgroups + h] == c(-1, -1)))
+    
+    
+  
+  }
+  
+  expect_equal(sum(vod_map[, -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups)), seq_len(hesgroups)]), 0)
+  expect_equal(sum(vod_map[, -c(hesgroups + seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups)), hesgroups + seq_len(hesgroups)]), 0)
+  expect_equal(sum(vod_map[, -c(3*hesgroups + seq_len(hesgroups), 4*hesgroups + seq_len(hesgroups)), 3*hesgroups + seq_len(hesgroups)]), 0)
+  expect_equal(sum(vod_map[, , c(2*hesgroups + seq_len(hesgroups), 4*hesgroups + seq_len(hesgroups))]), 0)
+  
+  
+  
+  ## for vos expect:
+  
+  for (h in 1:hesgroups){
+  
+  expect_true(unique(vos_map[, h, h] == c(0, 1)))
+  expect_true(unique(vos_map[, hesgroups + h, h] == c(0, -1)))
+  expect_true(unique(vos_map[, 2*hesgroups + h, h] == c(0, -1)))
+  expect_true(unique(vos_map[, hesgroups + h, hesgroups + h] == c(0, 1)))
+  expect_true(unique(vos_map[, 2*hesgroups + h, hesgroups + h] == c(0, -1)))
+  expect_true(unique(vos_map[, 3*hesgroups + h, 3*hesgroups + h] == c(0, 1)))
+  expect_true(unique(vos_map[, 4*hesgroups + h, 3*hesgroups + h] == c(0, -1)))
+  
+  }
+  
+  expect_equal(sum(vos_map[, -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups)), seq_len(hesgroups)]), 0)
+  expect_equal(sum(vos_map[, -c(hesgroups + seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups)), hesgroups + seq_len(hesgroups)]), 0)
+  expect_equal(sum(vos_map[, -c(3*hesgroups + seq_len(hesgroups), 4*hesgroups + seq_len(hesgroups)), 3*hesgroups + seq_len(hesgroups)]), 0)
+  
+  expect_equal(sum(vos_map[, , c(2*hesgroups + seq_len(hesgroups), 4*hesgroups + seq_len(hesgroups))]), 0)
+  
+  
+  ## for vbe expect
+
+  for (h in 1:hesgroups){
+  expect_true(unique(vbe_map[, h, h] == c(1, 1)))
+  expect_true(unique(vbe_map[, 2*hesgroups + h, h] == c(-1, -1)))
+  }
+  
+  expect_equal(sum(vbe_map[, -c(seq_len(hesgroups), 2*hesgroups + seq_len(hesgroups)), 1]), 0)
+  expect_equal(sum(vbe_map[, , hesgroups + seq_len(4*hesgroups)]), 0)
   
   
 
+  # test uptake maps are generated as expected
+  
+  ## note below works in the special case hesgroups == 1 but a formulation like 
+  ## this in general won't work
+  
+  # r1<- c(0.25, 0.5)
+  # r2 <- c(0.5, 0.75)
+  # r2_p <- c(0.4, 0.8)
+  # booster_uptake <- c(0.3, 0.75)
+  # 
+  #r1 r2 r2_p and booster_uptake have to be lists now 
+  
+  r1 <- list(seq_len(hesgroups)/hesgroups, rep(0.5, hesgroups))
+  r2 <- list(seq_len(hesgroups)/hesgroups, rep(0.5, hesgroups))
+  r2_p <- list(seq_len(hesgroups)/hesgroups, rep(0.8, hesgroups))
+  booster_uptake <- list(seq_len(hesgroups)/hesgroups, rep(0.8, hesgroups))
+  
+  
+  rows_list <- list(
+    c(1, 2, 3),
+    c(4, 5, 6),
+    c(7, 8, 9)
+  )
+  
+  for (i in seq_along(r1)) {
+    u <- create_uptake_map_repeated_xpvwr(vod_map, r1[[i]], r2[[i]], r2_p[[i]],
+                                          booster_uptake[[i]], idx,
+                                          screening_or_diagnosis = "diagnosis",
+                                          hesgroups = hesgroups)
+    
+    acc_vax <- u * vod_map
+    
+    for (h in 1:hesgroups){
+    
+    expect_true(unique(acc_vax[, h, h] == c(r1[[i]][h], r1[[i]][h])))
+    expect_true(unique(acc_vax[, hesgroups+h, h] == c(- (r1[[i]][h] * (1 - r2[[i]][h])),
+                                            - (r1[[i]][h] * (1 - r2[[i]][h])))))
+    expect_true(unique(acc_vax[, 2*hesgroups+h, h] == c(-r1[[i]][h] * r2[[i]][h], -r1[[i]][h] * r2[[i]][h])))
+    
+    expect_true(unique(acc_vax[, hesgroups+h, hesgroups+h] == c(r2_p[[i]][h], r2_p[[i]][h])))
+    expect_true(unique(acc_vax[, 2*hesgroups+h, hesgroups+h] == -c(r2_p[[i]][h], r2_p[[i]][h])))
+    
+    expect_true(unique(acc_vax[, 3*hesgroups+h, 3*hesgroups+h] == c(booster_uptake[[i]][h],
+                                            booster_uptake[[i]][h])))
+    expect_true(unique(acc_vax[, 4*hesgroups+h, 3*hesgroups+h] == -c(booster_uptake[[i]][h],
+                                             booster_uptake[[i]][h])))
+    
+    }
+  }
+  
+  # check VoD is working correctly --> producing the correct outputs
+  # + the vaxmaps*uptakemaps generated are doing what they think they are
+  # supposed to be doing
+  
+  
+  y3e <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
+                                   r1 = r1, r2 = r2, r2_p = r2_p,
+                                   booster_uptake = booster_uptake, hesgroups = hesgroups)
+  
+  for (i in seq_along(y3e)) {
+    
+    ## all treated in X, p or W are offered vaccination
+    expect_equal(y3e[[i]]$cum_offered[, , c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))],
+                 y3e[[i]]$cum_treated[, , c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))])
+    
+    # and no-one else
+    expect_equal(sum(y3e[[i]]$cum_offered[, , -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))]), 0)
+    
+    # uptake % of offered are vaccinated
+    
+    for (h in 1:hesgroups){
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , h] * r1[[i]][h]),
+                 rowSums(y3e[[i]]$cum_vaccinated[, , h]))
+    
+    # uptake % of 1st dose offered 2nd dose are vaccinated
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , hesgroups + h] * r2_p[[i]][h]),
+                 rowSums(y3e[[i]]$cum_vaccinated[, , hesgroups + h]))
+    
+    # uptake % of offered booster are vaccinated
+    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 3*hesgroups + h] * booster_uptake[[i]][h]),
+                 rowSums(y3e[[i]]$cum_vaccinated[, , 3*hesgroups + h]))
+    
+    }
+    
+    # and no-one else
+    expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))]), 0)
+    
+    # no-one is lost
+    expect_equal(apply(y3e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
+  }
+  
+  # check VoA is working correctly
+  y4e <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoA",
+                                   r1 = r1, r2 = r2, r2_p = r2_p, hesgroups = hesgroups,
+                                   booster_uptake = booster_uptake)
+  
+  for (i in seq_along(y4e)) {
+    
+    ## all treated or screened in X, P, or W are offered vaccination
+    expect_equal(y4e[[i]]$cum_offered[, , c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))],
+                 y4e[[i]]$cum_treated[, , c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))] +
+                   y4e[[i]]$cum_screened[, , c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))])
+    # and no-one else
+    expect_equal(sum(y4e[[i]]$cum_offered[, , -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))]), 0)
+    
+    for (h in 1:hesgroups){
+    # uptake % of offered are vaccinated
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , h] * r1[[i]][h]),
+                 rowSums(y4e[[i]]$cum_vaccinated[, , h]))
+    
+    # uptake % of 1st dose offered 2nd dose are vaccinated
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , hesgroups + h] * r2_p[[i]][h]),
+                 rowSums(y4e[[i]]$cum_vaccinated[, , hesgroups + h]))
+    
+    # uptake % of offered booster are vaccinated
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 3*hesgroups + h] * booster_uptake[[i]][h]),
+                 rowSums(y4e[[i]]$cum_vaccinated[, , 3*hesgroups + h]))
+    
+    }
+    
+    # and no-one else
+    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))]), 0)
+    
+    # no-one is lost
+    expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
+  }
+  
+  
+  # check vaccination targeting
+  y5e <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1,
+                                   strategy = "VoD(L)+VoA(H)",
+                                   r1 = r1, r2 = r2, r2_p = r2_p,
+                                   booster_uptake = booster_uptake,
+                                   hesgroups = hesgroups)
+  
+  for (i in seq_along(y5e)) {
+    ## L who are treated in X, P, or W are offered vaccination
+    expect_equal(y5e[[i]]$cum_offered[, 1, c(seq_len(hesgroups),hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))],
+                 y5e[[i]]$cum_treated[, 1, c(seq_len(hesgroups),hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))])
+    ## H who are treated or screened in X, P, or W are offered vaccination
+    expect_equal(y5e[[i]]$cum_offered[, 2, c(seq_len(hesgroups),hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))],
+                 y5e[[i]]$cum_treated[, 2, c(seq_len(hesgroups),hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))] +
+                   y5e[[i]]$cum_screened[, 2, c(seq_len(hesgroups),hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))])
+    # and no-one else
+    expect_equal(sum(y5e[[i]]$cum_offered[, , -c(seq_len(hesgroups),hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))]), 0)
+    
+    
+    for (h in 1:hesgroups){
+      # uptake % of offered are vaccinated
+      expect_equal(y5e[[i]]$cum_offered[, , h] * r1[[i]][h],
+                   y5e[[i]]$cum_vaccinated[, , h])
+      
+      # uptake % of 1st dose offered 2nd dose are vaccinated
+      expect_equal(rowSums(y5e[[i]]$cum_offered[, , hesgroups + h] * r2_p[[i]][h]),
+                   rowSums(y5e[[i]]$cum_vaccinated[, , hesgroups + h]))
+      
+      # uptake % of offered booster are vaccinated
+      expect_equal(y5e[[i]]$cum_offered[, , 3*hesgroups + h] * booster_uptake[[i]][h],
+                   y5e[[i]]$cum_vaccinated[, , 3*hesgroups + h])
+    
+    }
+    
+    # and no-one else
+    expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(seq_len(hesgroups), hesgroups + seq_len(hesgroups), 3*hesgroups + seq_len(hesgroups))]), 0)
+    
+    # no-one is lost
+    expect_equal(apply(y5e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
+    
+    
+    
+  }
 
   
   
+  # check length of uptake list must be 1 or length(gp)
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(0, hesgroups), rep(0.5,hesgroups), rep(1, hesgroups))))
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(1, hesgroups)), r2 = list(rep(0, hesgroups), rep(0.5,hesgroups), rep(1, hesgroups))))
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups, 
+                                         r1 = list(rep(1, hesgroups)), r2 = list(rep(1, hesgroups)), r2_p = list(rep(0, hesgroups), rep(0.5,hesgroups), rep(1, hesgroups))))
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(1, hesgroups)), r2 = list(rep(1, hesgroups)), booster_uptake = list(rep(0, hesgroups), rep(0.5,hesgroups), rep(1, hesgroups))))
   
 
+  ## check length of internal lists must be the unmber of hesitancy groups
   
-  y_h <- run_onevax_repeated_xpvwr(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.3)
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(1, hesgroups-1)), r2 = list(rep(1, hesgroups)), r2_p = list(rep(1, hesgroups)), booster_uptake = list(rep(1, hesgroups))))
+  
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(1, hesgroups)), r2 = list(rep(1, hesgroups)), r2_p = list(rep(1, hesgroups)), booster_uptake = list(rep(1, hesgroups))))
+  
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(1, hesgroups)), r2 = list(rep(1, hesgroups)), r2_p = list(rep(1, hesgroups-1)), booster_uptake = list(rep(1, hesgroups))))
+  
+  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VoD", hesgroups = hesgroups,
+                                         r1 = list(rep(1, hesgroups)), r2 = list(rep(1, hesgroups)), r2_p = list(rep(1, hesgroups)), booster_uptake = list(rep(1, hesgroups-1))))
+  
+  
+  ### to pick up from here after lunch
+
+  
+ # y_h <- run_onevax_repeated_xpvwr(tt, gp, vea = 0, dur_v = 1e3, vbe = 1, hes = 0.3)
   # 
   # # initial population split between non-vaccinated and hesitant only
   # # other stratum empty
@@ -1077,150 +1372,17 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   # }
   
   
- 
-  
-  
 
-  
-  # set to 0 uptake to make sure things calculated correctly
-  y_pn1 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0, hes = 0,
-                                     r2 = 1, r1 = 0, booster_uptake = 0.3,
-                                     strategy = "VoN")
-  
-  for (i in seq_along(y_pn1)){
-    
-    # the number of offers at PN is equal to the # of diagnoses * prevalence
-    # * PNs per diagnosis
-    expect_equal(rowSums(y_pn1[[i]]$cum_offered_pn),
-                 gp[[i]]$kappa * (1 - gp[[i]]$notifiedprev) *
-                   rowSums(y_pn1[[i]]$cum_diag_a + y_pn1[[i]]$cum_diag_s))
-    
-    # prevalence among PN = 0.38
-    expect_equal(rowSums(y_pn1[[i]]$phi) /
-                   rowSums(y_pn1[[i]]$notifiedandattended),
-                 rep((1 - gp[[i]]$notifiedprev), length(tt)))
-  }
-  
-  y_pn2 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, vbe = 0, hes = 0,
-                                     r2 = 1, r1 = 0.5, booster_uptake = 0.3,
-                                     strategy = "VoN")
-  
-  for (i in seq_along(y_pn2)){
-    
-    # the number of vaccinations PN is fewer than the number of diagnoses *
-    # * prevalence * uptake
-    expect_true(all(rowSums(y_pn2[[i]]$cum_vaccinated_pn) <=
-                      gp[[i]]$kappa * 0.5 * (1 - gp[[i]]$notifiedprev) *
-                      rowSums(y_pn2[[i]]$cum_diag_a +
-                                y_pn2[[i]]$cum_diag_s)))
-  }
-  
-  #complete assortativity and no infections among low risk pop
-  
-  i_pn <- lapply(y_pn1, restart_hes, n_vax = 5,
-                 branching = TRUE)
-  
-  gp2 <- gp
-  gp2 <- lapply(gp2, function(x) {
-    x$epsilon <- 1
-    x })
-  
-  # Set I0, S0, A0, and T0 for i_pn
-  vars_to_set <- c("I0", "S0", "A0", "T0")
-  i_pn <- lapply(i_pn, function(x) {
-    for (var in vars_to_set) {
-      x[[var]][1, ] <- 0
-    }
-    x
-  })
-  
-  y_pn3 <- run_onevax_repeated_xpvwr(tt, gp2, init_params = i_pn, vea = 0.5,
-                                     dur_v = 1, vbe = 0, hes = 0, r2 = 1, r1 = 0.5,
-                                     booster_uptake = 0.3,
-                                     strategy = "VoN")
-  
-  for (i in seq_along(y_pn3)){
-    expect_true(all(y_pn3[[i]]$cum_offered_pn[, 1, ] == 0))
-    expect_true(all(y_pn3[[i]]$cum_vaccinated_pn[, 1, ] == 0))
-    expect_true(all(y_pn3[[i]]$cum_vaccinated[, 1, ] == 0))
-  }
   
   
   # Test the vaccination maps are being generated as expected
   
-  pars <- lapply(gp[1], model_params)
-  vbe <- 1
-  p <- set_strategy(strategy = "VoD(L)+VoA(H)", vbe > 0)
+
   
-  n_erlang <- 1
-  idx <- stratum_index_repeated_xpvwr(n_erlang = n_erlang)
   
-  i_eligible <- c(1, 1, 2, 4)
-  expect_equal(i_eligible,  c(idx$X, idx$X, idx$P, idx$W))
+
   
-  i_p <- c(2, 3, 3, 5)
-  expect_equal(i_p, c(idx$P[1], rep(idx$V[1], n_erlang + 1), idx$R[1]))
-  
-  vod_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vod, i_eligible, i_p,
-                                      idx = idx)
-  vos_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vos, i_eligible, i_p,
-                                      idx = idx)
-  vbe_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vbe, i_eligible, i_p,
-                                      set_vbe = TRUE, idx = idx)
-  
-  # for vod, expect:
-  expect_true(unique(vod_map[, 1, 1] == c(1, 1)))
-  expect_true(unique(vod_map[, 2, 1] == c(-1, -1)))
-  expect_true(unique(vod_map[, 3, 1] == c(-1, -1)))
-  expect_true(unique(vod_map[, 2, 2] == c(1, 1)))
-  expect_true(unique(vod_map[, 3, 2] == c(-1, -1)))
-  expect_true(unique(vod_map[, 4, 4] == c(1, 1)))
-  expect_true(unique(vod_map[, 5, 4] == c(-1, -1)))
-  
-  expect_equal(sum(vod_map[, -c(1, 2, 3), 1]), 0)
-  expect_equal(sum(vod_map[, -c(2, 3), 2]), 0)
-  expect_equal(sum(vod_map[, -c(4, 5), 4]), 0)
-  
-  expect_equal(sum(vod_map[, , c(3, 5)]), 0)
-  
-  # for vos, expect:
-  expect_true(unique(vos_map[, 1, 1] == c(0, 1)))
-  expect_true(unique(vos_map[, 2, 1] == c(0, -1)))
-  expect_true(unique(vos_map[, 3, 1] == c(0, -1)))
-  expect_true(unique(vos_map[, 2, 2] == c(0, 1)))
-  expect_true(unique(vos_map[, 3, 2] == c(0, -1)))
-  expect_true(unique(vos_map[, 4, 4] == c(0, 1)))
-  expect_true(unique(vos_map[, 5, 4] == c(0, -1)))
-  
-  expect_equal(sum(vos_map[, -c(1, 2, 3), 1]), 0)
-  expect_equal(sum(vos_map[, -c(2, 3), 2]), 0)
-  expect_equal(sum(vos_map[, -c(4, 5), 4]), 0)
-  
-  expect_equal(sum(vos_map[, , c(3, 5)]), 0)
-  
-  # for vbe, expect:
-  expect_true(unique(vbe_map[, 1, 1] == c(1, 1)))
-  expect_true(unique(vbe_map[, 3, 1] == c(-1, -1)))
-  expect_equal(sum(vbe_map[, -c(1, 3), 1]), 0)
-  expect_equal(sum(vbe_map[, , 2:5]), 0)
-  
-  # test uptake maps are generated as expected
-  
-  ## note below works in the special case hesgroups == 1 but a formulation like 
-  ## this in general won't work
-  
-  # r1<- c(0.25, 0.5)
-  # r2 <- c(0.5, 0.75)
-  # r2_p <- c(0.4, 0.8)
-  # booster_uptake <- c(0.3, 0.75)
-  # 
-  #r1 r2 r2_p and booster_uptake have to be lists now 
-  
-  r1 <- list(c(0.25), c(0.5))
-  r2 <- list(c(0.25), c(0.5))
-  r2_p <- list(c(0.4), c(0.8))
-  booster_uptake <- list(c(0.4), c(0.8))
-  
+
   
   ## this doesn't work
   #r1 <- list(c(0.25, 0.5))
@@ -1229,11 +1391,6 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   #booster_uptake <- list(c(0.3, 0.75))
   
   
-  rows_list <- list(
-    c(1, 2, 3),
-    c(4, 5, 6),
-    c(7, 8, 9)
-  )
   
   ## for now set these to be one values
   # r1 <- c(0.25)
@@ -1242,147 +1399,20 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   # booster_uptake <- c(0.3)
   
   
-  for (i in seq_along(r1)) {
-    u <- create_uptake_map_repeated_xpvwr(vod_map, r1[[i]], r2[[i]], r2_p[[i]],
-                                          booster_uptake[[i]], idx,
-                                          screening_or_diagnosis = "diagnosis")
-    
-    acc_vax <- u * vod_map
-    
-    expect_true(unique(acc_vax[, 1, 1] == c(r1[[i]], r1[[i]])))
-    expect_true(unique(acc_vax[, 2, 1] == c(- (r1[[i]] * (1 - r2[[i]])),
-                                            - (r1[[i]] * (1 - r2[[i]])))))
-    expect_true(unique(acc_vax[, 3, 1] == c(-r1[[i]] * r2[[i]], -r1[[i]] * r2[[i]])))
-    
-    expect_true(unique(acc_vax[, 2, 2] == c(r2_p[[i]], r2_p[[i]])))
-    expect_true(unique(acc_vax[, 3, 2] == -c(r2_p[[i]], r2_p[[i]])))
-    
-    expect_true(unique(acc_vax[, 4, 4] == c(booster_uptake[[i]],
-                                            booster_uptake[[i]])))
-    expect_true(unique(acc_vax[, 5, 4] == -c(booster_uptake[[i]],
-                                             booster_uptake[[i]])))
-  }
+
   
   
-  # check VoD is working correctly --> producing the correct outputs
-  # + the vaxmaps*uptakemaps generated are doing what they think they are
-  # supposed to be doing
   
   
-  y3e <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoD",
-                                   r1 = r1, r2 = r2, r2_p = r2_p,
-                                   booster_uptake = booster_uptake)
   
-  for (i in seq_along(y3e)) {
-    
-    ## all treated in X, p or W are offered vaccination
-    expect_equal(y3e[[i]]$cum_offered[, , c(1, 2, 4)],
-                 y3e[[i]]$cum_treated[, , c(1, 2, 4)])
-    
-    # and no-one else
-    expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
-    
-    # uptake % of offered are vaccinated
-    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[[i]]),
-                 rowSums(y3e[[i]]$cum_vaccinated[, , 1]))
-    
-    # uptake % of 1st dose offered 2nd dose are vaccinated
-    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 2] * r2_p[[i]]),
-                 rowSums(y3e[[i]]$cum_vaccinated[, , 2]))
-    
-    # uptake % of offered booster are vaccinated
-    expect_equal(rowSums(y3e[[i]]$cum_offered[, , 4] * booster_uptake[[i]]),
-                 rowSums(y3e[[i]]$cum_vaccinated[, , 4]))
-    
-    # and no-one else
-    expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
-    
-    # no-one is lost
-    expect_equal(apply(y3e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
-  }
   
-  # check VoA is working correctly
-  y4e <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1, strategy = "VoA",
-                                   r1 = r1, r2 = r2, r2_p = r2_p,
-                                   booster_uptake = booster_uptake)
   
-  for (i in seq_along(y4e)) {
-    
-    ## all treated or screened in X, P, or W are offered vaccination
-    expect_equal(y4e[[i]]$cum_offered[, , c(1, 2, 4)],
-                 y4e[[i]]$cum_treated[, , c(1, 2, 4)] +
-                   y4e[[i]]$cum_screened[, , c(1, 2, 4)])
-    # and no-one else
-    expect_equal(sum(y4e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
-    
-    # uptake % of offered are vaccinated
-    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 1] * r1[[i]]),
-                 rowSums(y4e[[i]]$cum_vaccinated[, , 1]))
-    
-    # uptake % of 1st dose offered 2nd dose are vaccinated
-    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 2] * r2_p[[i]]),
-                 rowSums(y4e[[i]]$cum_vaccinated[, , 2]))
-    
-    # uptake % of offered booster are vaccinated
-    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 4] * booster_uptake[[i]]),
-                 rowSums(y4e[[i]]$cum_vaccinated[, , 4]))
-    # and no-one else
-    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
-    
-    # no-one is lost
-    expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
-  }
-  
-  # check vaccination targeting
-  y5e <- run_onevax_repeated_xpvwr(tt, gp, vea = 0.5, dur_v = 1,
-                                   strategy = "VoD(L)+VoA(H)",
-                                   r1 = r1, r2 = r2, r2_p = r2_p,
-                                   booster_uptake = booster_uptake)
-  
-  for (i in seq_along(y5e)) {
-    ## L who are treated in X, P, or W are offered vaccination
-    expect_equal(y5e[[i]]$cum_offered[, 1, c(1, 2, 4)],
-                 y5e[[i]]$cum_treated[, 1, c(1, 2, 4)])
-    ## H who are treated or screened in X, P, or W are offered vaccination
-    expect_equal(y5e[[i]]$cum_offered[, 2, c(1, 2, 4)],
-                 y5e[[i]]$cum_treated[, 2,  c(1, 2, 4)] +
-                   y5e[[i]]$cum_screened[, 2,  c(1, 2, 4)])
-    # and no-one else
-    expect_equal(sum(y5e[[i]]$cum_offered[, , -c(1, 2, 4)]), 0)
-    
-    # uptake % of offered are vaccinated
-    expect_equal(y5e[[i]]$cum_offered[, , 1] * r1[[i]],
-                 y5e[[i]]$cum_vaccinated[, , 1])
-    
-    # uptake % of 1st dose offered 2nd dose are vaccinated
-    expect_equal(rowSums(y5e[[i]]$cum_offered[, , 2] * r2_p[[i]]),
-                 rowSums(y5e[[i]]$cum_vaccinated[, , 2]))
-    
-    # uptake % of offered booster are vaccinated
-    expect_equal(y5e[[i]]$cum_offered[, , 4] * booster_uptake[[i]],
-                 y5e[[i]]$cum_vaccinated[, , 4])
-    
-    # and no-one else
-    expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1, 2, 4)]), 0)
-    
-    # no-one is lost
-    expect_equal(apply(y5e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
-  }
   
   ## Trystan note -> redo this and change implementation so that they are maybe a matrix?
   
   ## Trystan updated note -> this has been redone, this is now a list
   
   
-  # check length of uptake list must be 1 or length(gp)
-  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
-                                         r1 = list(c(0), c(0.5), c(1))))
-  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
-                                         r1 = 1, r2 = list(c(0), c(0.5), c(1))))
-  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
-                                         r1 = 1, r2 = 1, r2_p = list(c(0), c(0.5), c(1))))
-  expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = 1, dur_v = 1e3, strategy = "VbE",
-                                         r1 = 1, r2 = 1, booster_uptake = list(c(0), c(0.5), c(1))))
   
   # check length of vea must be 1
   expect_error(run_onevax_repeated_xpvwr(tt, gp, vea = c(0, 1, 1), dur_v = 1e3,
