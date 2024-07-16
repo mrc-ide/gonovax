@@ -346,7 +346,7 @@ stratum_index_repeated_xpvwr <- function(n_erlang = 1, n_diag_rec = 1,
   # R3.I.a, R3.II.a, R3.I.b, R3.II.b
 
 
-  print(n_diag_rec * hesgroups)
+  #print(n_diag_rec * hesgroups)
   
   ret <- list(X = 1:(n_diag_rec * hesgroups))
   

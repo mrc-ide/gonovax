@@ -92,7 +92,7 @@ run_repeated_xpvwr <- function(tt, gono_params, init_params = NULL, vax_params =
                               years_history = years_history,
                               hesgroups = hesgroups)
   
-  print("hello 6")
+  #print("hello 6")
   
   #print(pars$w)
   

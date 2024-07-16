@@ -19,7 +19,7 @@
 ##' (with different vaccine sentiments)
 ##' @param t number of years, only use when using function outside of
 ##' run_onevax_xpvwrh() to generate initial conditions for tests
-##' @param coverage_x now ARRAY of 'coverage' of non-vaccination
+##' @param coverage_x now ARRAY of size of hesitancy groups
 ##' @param coverage_p now ARRAY of partial (one-dose) vaccine coverage of 
 ##' the population already present (as a proportion)
 ##' @param coverage_v now ARRAY of two-dose vaccine coverage of 
@@ -30,7 +30,7 @@
 ##' @return A list of initial conditions
 ##' @export
 initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
-                                          coverage_x = rep(1, hesgroups)/hesgroups, 
+                                          groupsize = rep(1, hesgroups)/hesgroups, 
                                           coverage_p = rep(0, hesgroups),
                                           coverage_v = rep(0, hesgroups), 
                                           t = FALSE,
@@ -38,18 +38,24 @@ initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
 
   idx <- stratum_index_repeated_xpvwr(n_erlang, n_diag_rec)
   
-  stopifnot(length(coverage_x) == hesgroups)
+  stopifnot(length(groupsize) == hesgroups)
   stopifnot(length(coverage_p) == hesgroups)
   stopifnot(length(coverage_v) == hesgroups)
   
+  stopifnot(all(coverage_p + coverage_v < groupsize))
+  
   #print(sum(coverage_p + coverage_v))
+  
+  if (sum(groupsize) != 1){
+    stop("sum of group sizes (as proportions) must equal 1")
+  }
   
   if (sum(coverage_p + coverage_v) >= 1) {
     stop("sum of coverages must not exceed or equal 1")
   } else {
 
     n_vax <- idx$n_vax
-    x_init <- (coverage_x - coverage_p - coverage_v)
+    x_init <- (groupsize - coverage_p - coverage_v)
     p_init <- coverage_p
     v_init <- coverage_v
 
@@ -64,7 +70,10 @@ initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
               )
 
     stopifnot(length(cov) == n_vax * hesgroups)
-    stopifnot(sum(cov) == 1)
+    #stopifnot(sum(cov) == 1) # no longer works exactly because of numerical differences
+    stopifnot(all(x_init >= 0))
+    stopifnot(all(p_init >= 0))
+    stopifnot(all(v_init >= 0))
 
     U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax * hesgroups))
     # separate into 1:low and 2:high activity groups and by coverage
@@ -81,7 +90,9 @@ initial_params_repeated_xpvwr <- function(pars, hesgroups = 1,
   #  print(A0)
     
     # set initial uninfecteds
-    U0 <- round(N0) - A0
+    
+    # remove rounding - no need for it
+    U0 <- N0 - A0
 
     if (t > 0) {
       list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = t)
@@ -283,10 +294,10 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
               rep(0, n_vax - n_diag_rec * hesgroups))
   
   
-  print("vbe map")
-  print(idx$vaccinatedfrom_vbe)
-  print(idx$vaccinatedto_vbe)
-  print(vbe_map)
+  #print("vbe map")
+  #print(idx$vaccinatedfrom_vbe)
+  #print(idx$vaccinatedto_vbe)
+  #print(vbe_map)
   
 
 
@@ -473,7 +484,7 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
                               n_erlang = 1, n_diag_rec = 1, years_history = 1) {
   
   
-  print("hello")
+  #print("hello")
 
   stopifnot(all(lengths(list(vea, vei, ved, ves,
                              vea_revax, vei_revax, ved_revax, vea_p, vei_p,
@@ -485,17 +496,17 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
   
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p)) %in% c(1, length(gono_params))))
   
-  print(r1)
+  #print(r1)
   
-  print("hello Allo")
-  print(lengths(list(booster_uptake, r1, r2, r2_p)))
+  #print("hello Allo")
+  #print(lengths(list(booster_uptake, r1, r2, r2_p)))
   
  
   
   stopifnot(all(sapply(list(r1, r2, booster_uptake, r2_p), function(x) all(lengths(x) == hesgroups))))
   
-  print("hello B")
-  print(sapply(list(r1, r2, booster_uptake, r2_p), function(x) lengths(x)))
+  #print("hello B")
+  #print(sapply(list(r1, r2, booster_uptake, r2_p), function(x) lengths(x)))
   
 
   
@@ -511,26 +522,26 @@ run_onevax_repeated_xpvwr <- function(tt, gono_params, init_params = NULL,
                     MoreArgs = list(strategy = strategy,
                                     t_stop = t_stop, vbe = vbe))
   
-  print("hello2")
+ # print("hello2")
 
   if (is.null(init_params)) {
     
     
-    print("hello3")
+  #  print("hello3")
     pars <- lapply(gono_params, model_params)
 
     init_params <- lapply(pars, initial_params_repeated_xpvwr, hesgroups = hesgroups,
                           n_erlang = n_erlang, n_diag_rec = n_diag_rec)
   } else {
 
-    print("hello4")
+    #print("hello4")
     #check if init_params supplied, n_vax corresponds to the n_erlang
     # supplied to the run function
     stopifnot(length(init_params[[1]][[1]]) / 2 ==
                 hesgroups * (2 * n_diag_rec + (3 * n_diag_rec * n_erlang)))
   }
 
-  print("hello5")
+ # print("hello5")
   
   ret <- Map(run_repeated_xpvwr, gono_params = gono_params, vax_params = vax_params,
              init_params = init_params, n_erlang = n_erlang, hesgroups = hesgroups,

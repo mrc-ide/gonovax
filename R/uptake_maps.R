@@ -284,10 +284,10 @@ create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake
     ## vaccinated is given by r1 * r2
     ## idx$V[1] gives index of the top of the V erlang stack
     
-    print("temp")
-    print(temp)
-    print("idx$Vtemp")
-    print(idx$V[temp])
+    #print("temp")
+    #print(temp)
+    #print("idx$Vtemp")
+    #print(idx$V[temp])
     
     array[, idx$V[temp], k] <- array[, idx$V[temp], k] * (r1[j] * r2[j])
     
