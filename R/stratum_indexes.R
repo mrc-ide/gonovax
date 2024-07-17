@@ -49,6 +49,9 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   ret$vaccinatedfrom_vopn <- ret$X
   ret$vaccinatedto_vopn <- ret$V
+  
+  ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
 
   ret
 }
@@ -107,6 +110,9 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   ret$vaccinatedfrom_vopn <- c(ret$X, ret$W)
   ret$vaccinatedto_vopn <- c(ret$V, ret$V)
+  
+  ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
 
   ret
 }
@@ -168,6 +174,9 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   ret$vaccinatedfrom_vopn <- c(ret$X, ret$W)
   ret$vaccinatedto_vopn <- c(ret$V, ret$R)
+  
+  ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
 
   ret
 }
@@ -235,6 +244,9 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
 
   ret$vaccinatedfrom_vopn <- c(ret$X, ret$W)
   ret$vaccinatedto_vopn <- c(ret$V, ret$R)
+  
+  ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
 
   ret
 }
@@ -310,6 +322,9 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
 
   ret$vaccinatedfrom_vopn <- c(ret$X, ret$X, ret$P, ret$W)
   ret$vaccinatedto_vopn <- c(ret$P1, ret$V1, rep(ret$V1, n_erlang), ret$R)
+  
+  ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
 
   ret
 }
@@ -399,6 +414,24 @@ stratum_index_repeated_xpvwr <- function(n_erlang = 1, n_diag_rec = 1,
   
   ret$vaccinatedfrom_vopn <- c(ret$X, ret$X, ret$P, ret$W)
   ret$vaccinatedto_vopn <- c(ret$P1, ret$V1, rep(ret$V1, n_erlang), ret$R)
+  
+  
+  
+  ## hesitancy group matrix
+  ## this isn't right
+  #ret$hesgroupmatrix = as.matrix(Matrix::bdiag(replicate(hesgroups, matrix(rep(1,25), 5), simplify = FALSE)))
+  
+  
+  hesgroupmatrix = matrix(0 , n_vax, n_vax)
+  
+  for (i in 1:nrow(hesgroupmatrix)){
+    for (j in 1:nrow(hesgroupmatrix)){
+      if ( i %% hesgroups == j %% hesgroups){
+        hesgroupmatrix[i,j] = 1}
+      }
+  }
+  
+  ret$hesgroupmatrix = hesgroupmatrix
   
   ret
 }

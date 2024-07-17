@@ -24,7 +24,8 @@ Imports:
     dde (>= 1.0.1),
     furrr,
     progress (>= 1.2.0),
-    mcstate (>= 0.2.13)
+    mcstate (>= 0.2.13),
+    Matrix
 Suggests:
     testthat,
     knitr,

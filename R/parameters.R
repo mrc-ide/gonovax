@@ -31,6 +31,8 @@ gono_params <- function(n = NULL) {
   pars$kappa <- 1
 
   pars$notifiedprev <- 0.38 # default value for notified prevalence
+  
+  pars$epsilon_hes <- 0 #default value for assortativity by hesitancy
 
   pars[i]
 }

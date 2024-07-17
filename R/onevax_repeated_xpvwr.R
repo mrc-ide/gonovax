@@ -319,7 +319,8 @@ vax_params_repeated_xpvwr <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     wd =  create_diagnosis_waning_map(n_vax, 1 / years_history, n_diag_rec),
     vax_t = c(0, t_stop),
     vax_y = c(1, 0),
-    diag_rec = diag_rec
+    diag_rec = diag_rec,
+    hesgroupmatrix = idx$hesgroupmatrix
   )
 }
 

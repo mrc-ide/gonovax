@@ -58,6 +58,9 @@ Np[]    <- sum(N[i, ]) * p[i]
 ##prop_C for hesgroups
 
 
+##note this isn't quite what we actually want! to change later
+## needs to incorporate p
+
 C_hesgroup[,,] = C[i,j]*hesgroupmatrix[j,k]
 N_hesgroup[,,] = N[i,j]*hesgroupmatrix[j,k]
 
@@ -443,6 +446,7 @@ output(N)   <- N
 output(lambda) <- lambda
 output(phi) <- phi
 output(notifiedandattended) <- notifiedandattended
-
+output(prop_C_hesgroup) <- prop_C_hesgroup
+output(prop_C_hesriskgroup) <- prop_C_hesriskgroup
 
 
