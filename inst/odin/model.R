@@ -61,24 +61,24 @@ Np[]    <- sum(N[i, ]) * p[i]
 ##note this isn't quite what we actually want! to change later
 ## needs to incorporate p
 
-C_hesgroup[,,] = C[i,j]*hesgroupmatrix[j,k]
-N_hesgroup[,,] = N[i,j]*hesgroupmatrix[j,k]
+C_hesgroup[,,] = C[i,j]*hesgroupmatrix[j,k]*p[i]
+N_hesgroup[,,] = N[i,j]*hesgroupmatrix[j,k]*p[i]
 
 prop_C_hesgroup[] = sum(C_hesgroup[,,i])/sum(N_hesgroup[,,i])
 
 prop_C_hesriskgroup[,] = sum(C_hesgroup[i,,j])/sum(N_hesgroup[i,,j])
 
 
-Np_hes[,,] = N_hesgroup[i,j,k]*p[i]
+#Np_hes[,,] = N_hesgroup[i,j,k]*p[i]
 
-Np_hesgroup[] = sum(Np_hes[,,i])
-Np_hesriskgroup[,] = sum(Np_hes[i,,j])
+#Np_hesgroup[] = sum(Np_hes[,,i])
+#Np_hesriskgroup[,] = sum(Np_hes[i,,j])
 
 #C_hesgroup[,] = C[i,j]*(hesgroupmarker == hesgroupmarker[j])
 
-foi_hesgroup[] <- prop_C_hesgroup[i]* Np_hesgroup[i]/ sum(Np[])
+#foi_hesgroup[] <- prop_C_hesgroup[i]* Np_hesgroup[i]/ sum(Np[])
 
-foi_hesriskgroup[,] <- prop_C_hesriskgroup[i,j]* Np_hesriskgroup[i,j]/ sum(Np[])
+#foi_hesriskgroup[,] <- prop_C_hesriskgroup[i,j]* Np_hesriskgroup[i,j]/ sum(Np[])
 
 
 #prop_C_hesgroup[]  <- sum(C[,i]*(hesgroupmarker == hesgroupmarker[i]))/sum(N[,i]*(hesgroupmarker == hesgroupmarker[i]))
@@ -323,12 +323,12 @@ dim(hesgroupmatrix) <- c(n_vax, n_vax) # matrix with 1s denoting in same hes gro
 dim(prop_C_hesgroup) <- c(n_vax)
 dim(prop_C_hesriskgroup) <- c(n_group, n_vax)
 
-dim(Np_hes) <- c(n_group, n_vax, n_vax)
-dim(Np_hesgroup) <- c(n_vax)
-dim(Np_hesriskgroup) <- c(n_group, n_vax)
+#dim(Np_hes) <- c(n_group, n_vax, n_vax)
+#dim(Np_hesgroup) <- c(n_vax)
+#dim(Np_hesriskgroup) <- c(n_group, n_vax)
 
-dim(foi_hesgroup) <- c(n_vax)
-dim(foi_hesriskgroup) <- c(n_group, n_vax)
+#dim(foi_hesgroup) <- c(n_vax)
+#dim(foi_hesriskgroup) <- c(n_group, n_vax)
 
 
 ## Parameters

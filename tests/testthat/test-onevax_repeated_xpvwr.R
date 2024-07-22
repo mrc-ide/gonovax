@@ -800,7 +800,7 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   tt <- seq(0, 5)
   gp <- gono_params(1:2)
   
-  for (hesgroups in 5:5){
+  for (hesgroups in 2:5){
   
   y1 <- run_onevax_repeated_xpvwr(tt, gp, vea = 0, dur_v = 1e3, hesgroups = hesgroups)[[1]]
   
