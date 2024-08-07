@@ -702,7 +702,22 @@ test_that("the number of person-years exposed is as expected", {
                 cum_pye_trial_pov_odin - cum_pye_trial_pov_agg_2)
   
   expect_true(cum_pye_true_odin - cum_pye_true_agg > 
-                cum_pye_true_odin - cum_pye_true_agg_2)  
- 
+                cum_pye_true_odin - cum_pye_true_agg_2) 
   
+  # expect pye to be greater in the vaccinated > unvaccinated AND
+  # expect pye to increase by N/2 each timepoint when vaccination perfect
+
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 1, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = FALSE,
+                            n_diag_rec = n_diag_rec, N = N)
+
+   x  <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))[-1]
+   vw <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$never_diag[1]))[-1]
+
+  expect_true(all(vw > x))
+  expect_equal(diff(vw), rep(300, 4))
+
+
 })
