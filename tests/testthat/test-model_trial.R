@@ -626,7 +626,8 @@ test_that("the number of person-years exposed is as expected", {
   N <- 600
   
   idx <- stratum_index_xvw_trial(n_erlang = n_erlang, n_diag_rec = n_diag_rec)
-  
+  idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
+
   # run
   # output every 1 year 
   tt <- seq(0, 5, 1)
@@ -671,7 +672,7 @@ test_that("the number of person-years exposed is as expected", {
   cum_pye_trial_pov_agg <- cumsum(pye_trial_pov_agg)[length(tt) - 1]
   
   # for U only pye
-  pye_true_agg <- t(aggregate(y[1], "N", stratum = idx$X[1]))[, -1]
+  pye_true_agg <- t(aggregate(y[1], "U", stratum = idx$X[1]))[, -1]
   cum_pye_true_agg <- cumsum(pye_true_agg)[length(tt) - 1]
   
   expect_true(cum_pye_trial_pov_agg < cum_pye_trial_pov_odin)
@@ -688,7 +689,7 @@ test_that("the number of person-years exposed is as expected", {
   
   # for U only pye
   pye_true_agg_2 <- (t(aggregate(y_2[1],
-                                 "N", stratum = idx$X[1]))[, -1])/(1/inc)
+                                 "U", stratum = idx$X[1]))[, -1])/(1/inc)
   cum_pye_true_agg_2 <- cumsum(pye_true_agg_2)[length(tt_2) - 1]
   
   expect_true(cum_pye_trial_pov_agg_2 > cum_pye_trial_pov_agg)
@@ -714,7 +715,7 @@ test_that("the number of person-years exposed is as expected", {
                             n_diag_rec = n_diag_rec, N = N)
 
    x  <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))[-1]
-   vw <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$never_diag[1]))[-1]
+   vw <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$never_diag))[-1]
 
   expect_true(all(vw > x))
   expect_equal(diff(vw), rep(300, 4))
