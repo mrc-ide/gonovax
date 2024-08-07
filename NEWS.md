@@ -1,3 +1,6 @@
+# gonovax 0.4.20
+* person-years exposed both from the point of view of an RCT (U, I, A, S) and in the true sense (U only) are output from the model rather than calculated in post
+
 # gonovax 0.4.19
 * partner notification and vaccination on notification added into population-level model
 
