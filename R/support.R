@@ -160,16 +160,19 @@ extract_flows_trial <- function(y) {
     t(aggregate(y, "cum_diag_s", stratum = idx$never_diag))
 
   # Cumulative person-years exposure in X.I, and V.I&W.I at each time point
-  N_pr_yrs_exp_all <- list(N_person_yrs_exp_X.I = t(aggregate(y,
-                                "cum_pye_trial_pov", stratum = idx$X[1])),
-                           N_person_yrs_exp_VW.I = t(aggregate(y,
-                                "cum_pye_trial_pov", stratum = idx$never_diag)),
-                           N_person_yrs_exp_true_X.I = t(aggregate(y,
-                                "cum_pye_true", stratum = idx$X[1])),
-                           N_person_yrs_exp_true_VW.I = t(aggregate(y,
-                                "cum_pye_true", stratum = idx$never_diag)))
+  N_prsn_yrs_exp_X.I <- t(aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))
+  N_prsn_yrs_exp_VW.I <-  t(aggregate(y, "cum_pye_trial_pov",
+                                      stratum = idx$never_diag))
+  N_prsn_yrs_exp_true_X.I <- t(aggregate(y, "cum_pye_true", stratum = idx$X[1]))
+  N_prsn_yrs_exp_true_VW.I <- t(aggregate(y, "cum_pye_true",
+                                          stratum = idx$never_diag))
+
+  N_pyrs_exp_all <- list(N_person_yrs_exp_X.I = N_prsn_yrs_exp_X.I,
+                         N_person_yrs_exp_VW.I = N_prsn_yrs_exp_VW.I,
+                         N_person_yrs_exp_true_X.I = N_prsn_yrs_exp_true_X.I,
+                         N_person_yrs_exp_true_VW.I = N_prsn_yrs_exp_true_VW.I)
   #remove time = 0
-  cum_N_pyrs <- lapply(N_pr_yrs_exp_all, function(x) x[-1 ,])
+  cum_N_pyrs <- lapply(N_pyrs_exp_all, function(x) x[-1, ])
 
   #extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))

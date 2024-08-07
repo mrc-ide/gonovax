@@ -95,7 +95,7 @@ N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
 
-pye_trial[, ] <- U[i, j] + I[i ,j] + A[i ,j] + S[i ,j]
+pye_trial[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j]
 
 ## outputs
 update(cum_incid[, ])         <- cum_incid[i, j] + n_UI[i, j]
