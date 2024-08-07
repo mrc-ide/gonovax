@@ -111,6 +111,7 @@ extract_flows <- function(y) {
 ##' @export
 
 extract_flows_trial <- function(y) {
+
   # extract cumulative flows (standard)
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_incid",
                   "cum_treated", "cum_screened",
@@ -158,30 +159,17 @@ extract_flows_trial <- function(y) {
   cumulative_flows$cum_diag_s_VW_first_diag_hist <-
     t(aggregate(y, "cum_diag_s", stratum = idx$never_diag))
 
-  # Now we want person years of exposure in each timestep
-  # Person-years of exposure before first diagnosis
-  ## firstly in X (note this isn't cumulative)
-
-  # total number in X.I, and V.I&W.I at each time point
-  N_diag_hist_X <- t(aggregate(y, "N", stratum = idx$X[1]))
-  N_diag_hist_VW <- t(aggregate(y, "N", stratum = idx$never_diag))
-
-  # number in X.I and V.I&W.I undergoing treatment i.e people 'exposed' after
-  # diagnosis
-  N_diag_hist_X_T <- t(aggregate(y, "T", stratum = idx$X[1]))
-  N_diag_hist_VW_T <- t(aggregate(y, "T", stratum = idx$never_diag))
-
-  # obtain person-years exposed before first diagnosis i.e person-years in
-  # treatment don't count towards this
-  N_person_years_exposed_X <- N_diag_hist_X - N_diag_hist_X_T
-  N_person_years_exposed_VW <- N_diag_hist_VW - N_diag_hist_VW_T
-  N_pr_yrs_exp_all <- list(N_person_yrs_exp_X.I = N_person_years_exposed_X,
-                           N_person_yrs_exp_VW.I = N_person_years_exposed_VW)
+  # Cumulative person-years exposure in X.I, and V.I&W.I at each time point
+  N_pr_yrs_exp_all <- list(N_person_yrs_exp_X.I = t(aggregate(y,
+                                "cum_pye_trial_pov", stratum = idx$X[1])),
+                           N_person_yrs_exp_VW.I = t(aggregate(y,
+                                "cum_pye_trial_pov", stratum = idx$never_diag)),
+                           N_person_yrs_exp_true_X.I = t(aggregate(y,
+                                "cum_pye_true", stratum = idx$X[1])),
+                           N_person_yrs_exp_true_VW.I = t(aggregate(y,
+                                "cum_pye_true", stratum = idx$never_diag)))
   #remove time = 0
-  N_pr_yrs_exp_all <- lapply(N_pr_yrs_exp_all, function(x) x[-1, ])
-
-  #calculate cumulative person-years exposed over time
-  cum_N_pyrs <- lapply(N_pr_yrs_exp_all, function(x) apply(x, 2, cumsum))
+  cum_N_pyrs <- lapply(N_pr_yrs_exp_all, function(x) x[-1 ,])
 
   #extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
