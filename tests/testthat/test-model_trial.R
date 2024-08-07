@@ -412,26 +412,28 @@ test_that("n_erlang = n is working as expected", {
 })
 
 test_that("expected cumulative outputs are cumulative", {
-
+  
   years <- 40
   gp <- gono_params_trial(1)[1]
   tt <- seq.int(0, 40)
-
+  
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
                             stochastic = FALSE)
-
+  
   expect_true(all(diff(y[[1]]$cum_diag_a[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_incid[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_diag_s[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_treated[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1), 2, ]) > 0))
-
+  expect_true(all(diff(y[[1]]$cum_pye_trial_pov[c(years - 10, years + 1), 2, ]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_true[c(years - 10, years + 1), 2, ]) > 0))
+  
   n_diag_rec <- 2
   y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
                             vea = 0.5, vei = 0.5, ved = 0.5, ves = 0.5,
                             stochastic = FALSE, n_diag_rec = n_diag_rec)
-
+  
   expect_true(all(diff(y[[1]]$cum_diag_a[c(years - 10, years + 1), 2,
                                          c(2, 4, 6)]) > 0))
   expect_true(all(diff(y[[1]]$cum_incid[c(years - 10, years + 1),
@@ -442,7 +444,11 @@ test_that("expected cumulative outputs are cumulative", {
                                           2, c(2, 4, 6)]) > 0))
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1),
                                            2, c(2, 4, 6)]) > 0))
-
+  expect_true(all(diff(y[[1]]$cum_pye_trial_pov[c(years - 10, years + 1),
+                                                2, c(2, 4, 6)]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_true[c(years - 10, years + 1),
+                                           2, c(2, 4, 6)]) > 0))
+  
 })
 
 
