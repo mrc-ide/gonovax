@@ -34,7 +34,7 @@ n_AU[, ]     <- nu / (1 - ved[j]) * A[i, j]
 n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta * U[i, j]
-pye_trial[, ] <- U[i, j] + I[i ,j] + A[i ,j] + S[i ,j]
+pye_trial[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history
@@ -116,7 +116,7 @@ dim(cum_diag_a)          <- c(n_group, n_vax)
 dim(cum_diag_s)          <- c(n_group, n_vax)
 dim(cum_treated)         <- c(n_group, n_vax)
 dim(cum_screened)        <- c(n_group, n_vax)
-dim(cum_pye_trial_pov)   <- c(n_group, n_vax) 
+dim(cum_pye_trial_pov)   <- c(n_group, n_vax)
 dim(cum_pye_true)        <- c(n_group, n_vax)
 
 ## Parameters
