@@ -95,20 +95,23 @@ N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
 
+pye_trial[, ] <- U[i, j] + I[i ,j] + A[i ,j] + S[i ,j]
 
 ## outputs
-update(cum_incid[, ])      <- cum_incid[i, j] + n_UI[i, j]
-update(cum_diag_a[, ])     <- cum_diag_a[i, j] + n_AT[i, j]
-update(cum_diag_s[, ])     <- cum_diag_s[i, j] + n_ST[i, j]
-update(cum_treated[, ])    <- cum_treated[i, j] + n_TU[i, j]
-update(cum_screened[, ])   <- cum_screened[i, j] + screened[i, j]
+update(cum_incid[, ])         <- cum_incid[i, j] + n_UI[i, j]
+update(cum_diag_a[, ])        <- cum_diag_a[i, j] + n_AT[i, j]
+update(cum_diag_s[, ])        <- cum_diag_s[i, j] + n_ST[i, j]
+update(cum_treated[, ])       <- cum_treated[i, j] + n_TU[i, j]
+update(cum_screened[, ])      <- cum_screened[i, j] + screened[i, j]
+update(cum_pye_trial_pov[, ]) <- cum_pye_trial_pov[i, j] + pye_trial[i, j]
+update(cum_pye_true[, ])      <- cum_pye_true[i, j] + U[i, j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 ## Set up compartments
-## Initial states are all 0 as we will provide a state vbector
+## Initial states are all 0 as we will provide a state vector
 initial(U[, ]) <- U0[i, j]
 initial(I[, ]) <- I0[i, j]
 initial(A[, ]) <- A0[i, j]
@@ -126,6 +129,8 @@ initial(cum_diag_a[, ])     <- 0
 initial(cum_diag_s[, ])     <- 0
 initial(cum_treated[, ])    <- 0
 initial(cum_screened[, ])   <- 0
+initial(cum_pye_trial_pov[, ]) <- 0
+initial(cum_pye_true[, ]) <- 0
 
 # set up dimensions of compartments
 dim(U) <- c(n_group, n_vax)
@@ -147,6 +152,8 @@ dim(n_Sw) <- c(n_group, n_vax)
 dim(n_Tw) <- c(n_group, n_vax)
 
 dim(N)  <- c(n_group, n_vax)
+
+dim(pye_trial) <- c(n_group, n_vax)
 
 dim(n_UI)     <- c(n_group, n_vax)
 dim(n_IAS)    <- c(n_group, n_vax)
@@ -184,11 +191,13 @@ dim(Rel_T) <- c(n_group, n_vax)
 dim(r_AT) <- c(n_group, n_vax)
 dim(r_AU) <- c(n_group, n_vax)
 
-dim(cum_incid)      <- c(n_group, n_vax)
-dim(cum_diag_a)     <- c(n_group, n_vax)
-dim(cum_diag_s)     <- c(n_group, n_vax)
-dim(cum_treated)    <- c(n_group, n_vax)
-dim(cum_screened)   <- c(n_group, n_vax)
+dim(cum_incid)         <- c(n_group, n_vax)
+dim(cum_diag_a)        <- c(n_group, n_vax)
+dim(cum_diag_s)        <- c(n_group, n_vax)
+dim(cum_treated)       <- c(n_group, n_vax)
+dim(cum_screened)      <- c(n_group, n_vax)
+dim(cum_pye_trial_pov) <- c(n_group, n_vax)
+dim(cum_pye_true)      <- c(n_group, n_vax)
 
 dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
 dim(diag_rec)   <- c(n_group, n_vax, n_vax)
