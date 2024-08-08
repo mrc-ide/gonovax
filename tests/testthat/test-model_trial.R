@@ -735,6 +735,7 @@ test_that("the number of person-years exposed is as expected", {
   idx <- stratum_index_xvw_trial(n_erlang = n_erlang, n_diag_rec = n_diag_rec)
   idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
 
+
   # run
   # output every 1 year
   tt <- seq(0, 5, 1)
@@ -752,8 +753,18 @@ test_that("the number of person-years exposed is as expected", {
                               n_erlang = n_erlang,
                               stochastic = TRUE,
                               n_diag_rec = n_diag_rec, N = N)
+  
+  #
+  # for U I A S pye
+  cum_pye_trial_pov_odin <- y[[1]]$cum_pye_trial_pov[length(tt), 2, idx$X[1]]
+  cum_pye_trial_pov_odin_2 <- y_2[[1]]$cum_pye_trial_pov[length(tt_2),
+                                                         2, idx$X[1]]
+  
+  # for U only pye
+  cum_pye_true_odin <- y[[1]]$cum_pye_true[length(tt), 2, idx$X[1]]
+  cum_pye_true_odin_2 <- y_2[[1]]$cum_pye_true[length(tt_2), 2, idx$X[1]]
 
-  # expect cumulative aggregated pyes (old mehtod) to be smaller than those
+  # expect cumulative aggregated pyes (old method) to be smaller than those
   # calculated by odin as they will have missed some person-time between outputs
 
   # for UIAS pye
