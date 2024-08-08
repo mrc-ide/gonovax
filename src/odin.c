@@ -6926,12 +6926,12 @@ void model_trial_stochastic_rhs(model_trial_stochastic_internal* internal, size_
   state_next[0] = (step + 1) * internal->dt;
   for (int i = 1; i <= internal->dim_cum_pye_true_1; ++i) {
     for (int j = 1; j <= internal->dim_cum_pye_true_2; ++j) {
-      state_next[internal->offset_variable_cum_pye_true + i - 1 + internal->dim_cum_pye_true_1 * (j - 1)] = cum_pye_true[internal->dim_cum_pye_true_1 * (j - 1) + i - 1] + U[internal->dim_U_1 * (j - 1) + i - 1];
+      state_next[internal->offset_variable_cum_pye_true + i - 1 + internal->dim_cum_pye_true_1 * (j - 1)] = cum_pye_true[internal->dim_cum_pye_true_1 * (j - 1) + i - 1] + (U[internal->dim_U_1 * (j - 1) + i - 1] * internal->dt);
     }
   }
   for (int i = 1; i <= internal->dim_pye_trial_1; ++i) {
     for (int j = 1; j <= internal->dim_pye_trial_2; ++j) {
-      internal->pye_trial[i - 1 + internal->dim_pye_trial_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] + I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1];
+      internal->pye_trial[i - 1 + internal->dim_pye_trial_1 * (j - 1)] = (U[internal->dim_U_1 * (j - 1) + i - 1] + I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1]) * internal->dt;
     }
   }
   for (int i = 1; i <= internal->dim_screened_1; ++i) {

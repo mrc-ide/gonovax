@@ -95,7 +95,7 @@ N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
 
-pye_trial[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j]
+pye_trial[, ] <- (U[i, j] + I[i, j] + A[i, j] + S[i, j]) * dt
 
 ## outputs
 update(cum_incid[, ])         <- cum_incid[i, j] + n_UI[i, j]
@@ -104,7 +104,7 @@ update(cum_diag_s[, ])        <- cum_diag_s[i, j] + n_ST[i, j]
 update(cum_treated[, ])       <- cum_treated[i, j] + n_TU[i, j]
 update(cum_screened[, ])      <- cum_screened[i, j] + screened[i, j]
 update(cum_pye_trial_pov[, ]) <- cum_pye_trial_pov[i, j] + pye_trial[i, j]
-update(cum_pye_true[, ])      <- cum_pye_true[i, j] + U[i, j]
+update(cum_pye_true[, ])      <- cum_pye_true[i, j] + (U[i, j] * dt)
 
 # aggregated time series for fitting mcmc
 output(tot_treated) <- sum(cum_treated)
