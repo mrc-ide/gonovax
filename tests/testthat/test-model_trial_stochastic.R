@@ -914,7 +914,7 @@ test_that("the number of person-years exposed is as expected", {
 
   expect_true(cum_pye_trial_pov_odin - cum_pye_trial_pov_agg >
                 cum_pye_trial_pov_odin - cum_pye_trial_pov_agg_2)
-  
+
   expect_true(cum_pye_true_odin - cum_pye_true_agg >
                 cum_pye_true_odin - cum_pye_true_agg_2)
 
