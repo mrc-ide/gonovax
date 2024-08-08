@@ -337,6 +337,9 @@ test_that("expected cumulative outputs are cumulative", {
   expect_true(all(diff(y[[1]]$cum_diag_s[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_treated[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1), 2, ]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_trial_pov[c(years - 10, years + 1),
+                                                2, ]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_true[c(years - 10, years + 1), 2, ]) > 0))
 
   set.seed(1)
   n_diag_rec <- 2
@@ -354,7 +357,10 @@ test_that("expected cumulative outputs are cumulative", {
                                           2, c(2, 4, 6)]) > 0))
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1),
                                            2, c(2, 4, 6)]) > 0))
-
+  expect_true(all(diff(y[[1]]$cum_pye_trial_pov[c(years - 10, years + 1),
+                                                2, c(2, 4, 6)]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_true[c(years - 10, years + 1),
+                                           2, c(2, 4, 6)]) > 0))
 })
 
 
@@ -822,3 +828,109 @@ test_that("for n_diag_rec > 1, when lambda = 0,
             expect_true(all(rowSums(y[[1]]$N[, 1, ]) == 0))
 
           })
+
+test_that("the number of person-years exposed is as expected", {
+
+  # Previous method of aggregating over UIAS or U to get time individuals
+  # spent exposed, underestimated pyes as values depended on how often
+  # the model was output. Increasing frequency of output improved estimates.
+  # The new ODE in odin model code should get around this by summing
+  # the pye spent in UIAS or U over continuous time, and can be output directly
+  # from the model result as 'cum_pye_trial_pov' or 'cum_pye_true'
+
+  set.seed(1)
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  n_diag_rec <- 2
+  N <- 600
+
+  idx <- stratum_index_xvw_trial(n_erlang = n_erlang, n_diag_rec = n_diag_rec)
+  idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
+
+
+  # run
+  # output every 1 year
+  tt <- seq(0, 5, 1)
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
+
+  # output every 20th of a year
+  inc <- 0.05
+  tt_2 <- seq(0, 5, inc)
+  y_2 <- run_onevax_xvw_trial(tt = tt_2, gp, dur = 1e100000000,
+                              vea = 0, vei = 0, ved = 0, ves = 0,
+                              n_erlang = n_erlang,
+                              stochastic = TRUE,
+                              n_diag_rec = n_diag_rec, N = N)
+
+  #
+  # for U I A S pye
+  cum_pye_trial_pov_odin <- y[[1]]$cum_pye_trial_pov[length(tt), 2, idx$X[1]]
+  cum_pye_trial_pov_odin_2 <- y_2[[1]]$cum_pye_trial_pov[length(tt_2),
+                                                         2, idx$X[1]]
+
+  # for U only pye
+  cum_pye_true_odin <- y[[1]]$cum_pye_true[length(tt), 2, idx$X[1]]
+  cum_pye_true_odin_2 <- y_2[[1]]$cum_pye_true[length(tt_2), 2, idx$X[1]]
+
+  # expect cumulative aggregated pyes (old method) to be smaller than those
+  # calculated by odin as they will have missed some person-time between outputs
+
+  # for UIAS pye
+  pye_trial_pov_agg <- t(aggregate(y[1], "N", stratum = idx$X[1]))[, -1]
+  cum_pye_trial_pov_agg <- cumsum(pye_trial_pov_agg)[length(tt) - 1]
+
+  # for U only pye
+  pye_true_agg <- t(aggregate(y[1], "U", stratum = idx$X[1]))[, -1]
+  cum_pye_true_agg <- cumsum(pye_true_agg)[length(tt) - 1]
+  ########### a few orders of magnitude larger on RHS?  multiply by dt?
+  expect_true(cum_pye_trial_pov_agg < cum_pye_trial_pov_odin)
+  expect_true(cum_pye_true_agg < cum_pye_true_odin)
+
+  # expect aggregated pyes to be greater when outputs are more frequent
+  # note: outputs here divided by 1/inc because individuals are only
+  # contributing 1/inc'th of person-time (not a year)
+
+  # for UIAS pye
+  pye_trial_pov_agg_2 <- (t(aggregate(y_2[1],
+                                      "N",
+                                      stratum = idx$X[1]))[, -1]) / (1 / inc)
+  cum_pye_trial_pov_agg_2 <- cumsum(pye_trial_pov_agg_2)[length(tt_2) - 1]
+
+  # for U only pye
+  pye_true_agg_2 <- (t(aggregate(y_2[1],
+                                 "U", stratum = idx$X[1]))[, -1]) / (1 / inc)
+  cum_pye_true_agg_2 <- cumsum(pye_true_agg_2)[length(tt_2) - 1]
+
+  expect_true(cum_pye_trial_pov_agg_2 > cum_pye_trial_pov_agg)
+  expect_true(cum_pye_true_agg_2 > cum_pye_true_agg)
+
+  # expect pye calculated through aggregation over UIAS/U when output more
+  # frequently to tend to pyes calculated through odin
+  # as a check that odin output is closer to the 'actual' amount of pyes exposed
+
+  expect_true(cum_pye_trial_pov_odin - cum_pye_trial_pov_agg >
+                cum_pye_trial_pov_odin - cum_pye_trial_pov_agg_2)
+  
+  expect_true(cum_pye_true_odin - cum_pye_true_agg >
+                cum_pye_true_odin - cum_pye_true_agg_2)
+
+  # expect pye to be greater in the vaccinated > unvaccinated AND
+  # expect pye to increase by N/2 each timepoint when vaccination perfect
+
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 1, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
+
+  x  <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))[-1]
+  vw <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$never_diag))[-1]
+
+  expect_true(all(vw > x))
+  expect_equal(diff(vw), rep(300, 4))
+
+})
