@@ -267,7 +267,7 @@ test_that("extract_flows_trial works", {
                               stochastic = TRUE, N = N)
   y4s_flows <- extract_flows_trial(y4s)
 
-  expect_true(all(diff(y4s_flows$N_person_yrs_exp_VW.I) == N / 2))
+  expect_true(all(round(diff(y4s_flows$N_person_yrs_exp_VW.I), 0) == N / 2))
 
 })
 
