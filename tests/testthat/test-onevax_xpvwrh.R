@@ -154,7 +154,7 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   #complete assortativity and no infections among low risk pop
 
-  i_pn <- lapply(y_pn1, restart_hes, n_vax = 6,
+  i_pn <- lapply(y_pn1, restart_hes,
                  branching = TRUE)
 
   gp2 <- gp
@@ -459,15 +459,15 @@ test_that("run_onevax_xpvwrh works correctly", {
   ## test restart with hesitancy is working
 
   y8 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3)
-  i_p <- lapply(y8, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE)
+  i_p <- lapply(y8, restart_hes, hes = 0.5, branching = TRUE)
   y_hesres <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0, dur_v = 1e3,
                                 hes = 0.5)
 
   n_erlang <- 2
   y_erlang <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3,
                                 n_erlang = n_erlang)
-  i_p <- lapply(y_erlang, restart_hes, n_vax = (6 + (n_erlang - 1) * 3),
-                hes = 0.5, branching = TRUE)
+  i_p <- lapply(X = y_erlang, restart_hes, hes = 0.5, n_erlang = n_erlang,
+                branching = TRUE)
   y_hesres_erlang <- run_onevax_xpvwrh(tt, gp, init_params = i_p, vea = 0,
                                        dur_v = 1e3, hes = 0.5,
                                        n_erlang = n_erlang)
@@ -548,13 +548,29 @@ test_that("run_onevax_xpvwrh works correctly", {
 
   y9 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5)
 
-  expect_error(lapply(y9, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
+  expect_error(lapply(y9, restart_hes, hes = 0.5, branching = TRUE))
+
+  # same for if n_erlang > 1
+
+  y9_er <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, hes = 0.5,
+                             n_erlang = 2)
+
+  expect_error(lapply(y9, restart_hes, hes = 0.5, branching = TRUE,
+                      n_erlang = 2))
 
   # restart_hes gives error if baseline model run provided contains vaccinated
 
   y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
 
-  expect_error(lapply(y10, restart_hes, n_vax = 6, hes = 0.5, branching = TRUE))
+  expect_error(lapply(y10, restart_hes, hes = 0.5, branching = TRUE))
+  
+  # same for if n_erlang > 1
+
+  y10_er <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1,
+                              n_erlang = 2)
+
+  expect_error(lapply(y10_er, restart_hes, hes = 0.5, branching = TRUE,
+                      n_erlang = 2))
 
   # check booster_uptake defaults to r1r2 primary uptake
   y_r1r2_only <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1,
@@ -993,7 +1009,7 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
                               dur_revax = 1e10,
                               strategy = "VoD(L)+VoA(H)")
 
-  i_p <- lapply(y_long, restart_hes, n_vax = idx$n_vax,
+  i_p <- lapply(y_long, restart_hes,
                 branching = TRUE)
   tt <- seq(0, 5)
 
