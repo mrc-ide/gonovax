@@ -37,6 +37,7 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 ##' @return cumulative and incident flows
 ##' @export
 extract_flows_xpvwrh <- function(y) {
+
   # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
                   "cum_vaccinated", "cum_vbe")
