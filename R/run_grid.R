@@ -231,7 +231,6 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                                     uptake_second_dose, cost_params,
                                     disc_rate, vea, vea_p) {
 
-
   strata <- dimnames(y[[1]]$N)[[3]]
   n_erlang <- sum(grepl(pattern = "V", strata)) # count erlangs
 
