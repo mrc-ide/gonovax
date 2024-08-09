@@ -174,11 +174,11 @@ extract_flows_trial <- function(y) {
 
   # incidence across all diagnosis history
   cumulative_flows$cum_incid_X_all_diag_hist <-
-    t(aggregate(y, "cum_incid", stratum = idx$X))  
+    t(aggregate(y, "cum_incid", stratum = idx$X))
 
   # incidence across all diagnosis history
   cumulative_flows$cum_incid_VW_all_diag_hist <-
-    t(aggregate(y, "cum_incid", stratum = c(idx$V, idx$W)))  
+    t(aggregate(y, "cum_incid", stratum = c(idx$V, idx$W)))
 
   #  asymptomatic diagnoses across all X
   cumulative_flows$cum_diag_a_X_all_diaghist <-
