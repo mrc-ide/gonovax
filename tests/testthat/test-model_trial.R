@@ -660,7 +660,7 @@ test_that("for n_diag_rec > 1, the number diagnosed = the number recorded", {
 
   expect_true(all(y[[1]]$T[, , c(1, 4, 7)] == 0))
 
-          })
+})
 
 test_that("no asymptomatic diagnoses recorded when asymp_recorded = FALSE", {
 

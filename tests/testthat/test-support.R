@@ -466,7 +466,7 @@ test_that("adjust_baseline is working as expected", {
   # no vaccine uptake = nobody in P, V, W, or R
   y0 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 4, r1 = 0,
                           r2 = 0, strategy = "VoD")
-  
+
   y0_adj <- adjust_baseline(y0, y)
 
   #expect y0 to have absence of people in P, V, W and R but y0_adjust to have
