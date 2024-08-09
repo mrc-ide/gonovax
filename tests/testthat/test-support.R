@@ -219,6 +219,8 @@ test_that("extract_flows_trial works", {
 
   #for n_diag_rec > 1, cumulative diagnoses in first diagnosis history strata
   #is < diagnoses across all diagnosis history strata
+  #and the same for cumulative incidence
+
   #stochastic
   expect_true(all(y2s_flows$cum_diag_a_X_first_diag_hist
                   < y2s_flows$cum_diag_a_X_all_diaghist))
@@ -228,6 +230,10 @@ test_that("extract_flows_trial works", {
                   < y2s_flows$cum_diag_s_X_all_diaghist))
   expect_true(all(y2s_flows$cum_diag_s_VW_first_diag_hist
                   < y2s_flows$cum_diag_s_VW_all_diaghist))
+  expect_true(all(y2s_flows$cum_incid_X_first_diag_hist
+                  < y2s_flows$cum_incid_X_all_diaghist))
+  expect_true(all(y2s_flows$cum_incid_VW_first_diag_hist
+                  < y2s_flows$cum_incid_VW_all_diaghist))
 
   #deterministic - no migration to diagnosis history strata so first diagnosis
   #history strata should = number diagnoses across all diagnosis history
@@ -239,6 +245,10 @@ test_that("extract_flows_trial works", {
                   < y2d_flows$cum_diag_s_X_all_diaghist))
   expect_true(all(y2d_flows$cum_diag_s_VW_first_diag_hist
                   < y2d_flows$cum_diag_s_VW_all_diaghist))
+  expect_true(all(y2d_flows$cum_incid_X_first_diag_hist
+                  < y2d_flows$cum_incid_X_all_diaghist))
+  expect_true(all(y2d_flows$cum_incid_VW_first_diag_hist
+                  < y2d_flows$cum_incid_VW_all_diaghist))
 
   #n_erlang > 1, n_diag_rec > 1
   n_diag_rec <- 2

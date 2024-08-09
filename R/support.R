@@ -163,6 +163,23 @@ extract_flows_trial <- function(y) {
   idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
 
   ## extract strata separately
+
+  # incidence in first diagnosis history X
+  cumulative_flows$cum_incid_X_first_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = idx$X[1]))
+
+  # incidence in first diagnosis history V+W
+  cumulative_flows$cum_incid_VW_first_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = idx$never_diag))
+
+  # incidence across all diagnosis history
+  cumulative_flows$cum_incid_X_all_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = idx$X))  
+
+  # incidence across all diagnosis history
+  cumulative_flows$cum_incid_VW_all_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = c(idx$V, idx$W)))  
+
   #  asymptomatic diagnoses across all X
   cumulative_flows$cum_diag_a_X_all_diaghist <-
     t(aggregate(y, "cum_diag_a", stratum = idx$X))
