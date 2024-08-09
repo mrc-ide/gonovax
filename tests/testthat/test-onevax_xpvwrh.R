@@ -563,7 +563,7 @@ test_that("run_onevax_xpvwrh works correctly", {
   y10 <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1)
 
   expect_error(lapply(y10, restart_hes, hes = 0.5, branching = TRUE))
-  
+
   # same for if n_erlang > 1
 
   y10_er <- run_onevax_xpvwrh(tt, gp, vea = 0, dur_v = 1e3, vbe = 1,
