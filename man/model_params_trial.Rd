@@ -12,7 +12,8 @@ model_params_trial(
   p_v = 0,
   n_erlang = 1,
   N = 6e+05,
-  n_diag_rec = 1
+  n_diag_rec = 1,
+  asymp_recorded = TRUE
 )
 }
 \arguments{
@@ -38,6 +39,10 @@ stratum, allowing tracking of diagnosis history. e.g for a n_diag_rec = 2
 and erlang = 1, there will be X.I, X.II, V1.I, V1.II, W.I, W.II strata.
 Where '.I' corresponds to never-diagnosed individuals and '.II' is for
 individuals diagnosed at least once.}
+
+\item{asymp_recorded}{logical indicating if the trial screens for and
+records asymptomatic diagnosis. If FALSE, asymptomatic infected individuals
+undergoing treatment do not move diagnosis history stratum}
 }
 \value{
 A list of inputs to the model many of which are fixed and

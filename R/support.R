@@ -37,26 +37,62 @@ aggregate <- function(x, what, as_incid = FALSE, stratum = NULL,
 ##' @return cumulative and incident flows
 ##' @export
 extract_flows_xpvwrh <- function(y) {
+
   # extract cumulative flows
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_treated", "cum_screened",
                   "cum_vaccinated", "cum_vbe")
   cumulative_flows <- lapply(flow_names, function(x) t(aggregate(y, x)))
   names(cumulative_flows) <- flow_names
 
+  strata <- dimnames(y[[1]]$N)[[3]] # extract strata names
+  n_erlang <- sum((grepl("V", strata))) # count erlang
+
+  idx <- stratum_index_xpvwrh(n_erlang)
+
   ## extract vaccinations and revaccinations separately
   # primary vaccinated = everyone vaccinated from X(1) regardless of # doses
   cumulative_flows$cum_primary_total <-
-    t(aggregate(y, "cum_vaccinated", stratum = 1))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$X))
 
   # partial to full = everyone vaccinated from P(2)
   # in earlier models this will be V, we expect this to be 0
   cumulative_flows$cum_part_to_full <-
-    t(aggregate(y, "cum_vaccinated", stratum = 2))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$P))
 
   # revaccinated = everyone vaccinated from W(4), note does not include
   # vaccination of individuals in X who have waned from P
   cumulative_flows$cum_revaccinated <-
-    t(aggregate(y, "cum_vaccinated", stratum = 4))
+    t(aggregate(y, "cum_vaccinated", stratum = idx$W))
+
+  ######################
+  #X = 1, P = 2, V = 3, W = 4, R = 5, H = 6, (for n_erlang = 1)
+  # extract asymptomatic and symptomatic diagnoses in vaccinated (P,V,R)
+  # and unvaccinated strata separately (X,W)
+
+  #asymptomatic, unvax
+  cumulative_flows$cum_diag_a_xwh <-
+    t(aggregate(y, "cum_diag_a", stratum = c(idx$X, idx$W, idx$H)))
+
+  #symptomatic, unvax
+  cumulative_flows$cum_diag_s_xwh <-
+    t(aggregate(y, "cum_diag_s", stratum = c(idx$X, idx$W, idx$H)))
+
+  #asymptomatic, all-vax
+  cumulative_flows$cum_diag_a_pvr <-
+    t(aggregate(y, "cum_diag_a", stratum = c(idx$P, idx$V, idx$R)))
+
+  #symptomatic, all-vax
+  cumulative_flows$cum_diag_s_pvr <-
+    t(aggregate(y, "cum_diag_s", stratum = c(idx$P, idx$V, idx$R)))
+
+  #total, unvax (cumulative treated will be a bit different to the sum of a & s)
+  # unvax
+  cumulative_flows$cum_diag_t_xwh <-
+    cumulative_flows$cum_diag_a_xwh + cumulative_flows$cum_diag_s_xwh
+
+  # all-vax
+  cumulative_flows$cum_diag_t_pvr <-
+    cumulative_flows$cum_diag_a_pvr + cumulative_flows$cum_diag_s_pvr
 
   # extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
@@ -111,6 +147,7 @@ extract_flows <- function(y) {
 ##' @export
 
 extract_flows_trial <- function(y) {
+
   # extract cumulative flows (standard)
   flow_names <- c("cum_diag_a", "cum_diag_s", "cum_incid",
                   "cum_treated", "cum_screened",
@@ -126,6 +163,23 @@ extract_flows_trial <- function(y) {
   idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
 
   ## extract strata separately
+
+  # incidence in first diagnosis history X
+  cumulative_flows$cum_incid_X_first_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = idx$X[1]))
+
+  # incidence in first diagnosis history V+W
+  cumulative_flows$cum_incid_VW_first_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = idx$never_diag))
+
+  # incidence across all diagnosis history
+  cumulative_flows$cum_incid_X_all_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = idx$X))
+
+  # incidence across all diagnosis history
+  cumulative_flows$cum_incid_VW_all_diag_hist <-
+    t(aggregate(y, "cum_incid", stratum = c(idx$V, idx$W)))
+
   #  asymptomatic diagnoses across all X
   cumulative_flows$cum_diag_a_X_all_diaghist <-
     t(aggregate(y, "cum_diag_a", stratum = idx$X))
@@ -158,30 +212,20 @@ extract_flows_trial <- function(y) {
   cumulative_flows$cum_diag_s_VW_first_diag_hist <-
     t(aggregate(y, "cum_diag_s", stratum = idx$never_diag))
 
-  # Now we want person years of exposure in each timestep
-  # Person-years of exposure before first diagnosis
-  ## firstly in X (note this isn't cumulative)
+  # Cumulative person-years exposure in X.I, and V.I&W.I at each time point
+  N_prsn_yrs_exp_X.I <- t(aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))
+  N_prsn_yrs_exp_VW.I <-  t(aggregate(y, "cum_pye_trial_pov",
+                                      stratum = idx$never_diag))
+  N_prsn_yrs_exp_true_X.I <- t(aggregate(y, "cum_pye_true", stratum = idx$X[1]))
+  N_prsn_yrs_exp_true_VW.I <- t(aggregate(y, "cum_pye_true",
+                                          stratum = idx$never_diag))
 
-  # total number in X.I, and V.I&W.I at each time point
-  N_diag_hist_X <- t(aggregate(y, "N", stratum = idx$X[1]))
-  N_diag_hist_VW <- t(aggregate(y, "N", stratum = idx$never_diag))
-
-  # number in X.I and V.I&W.I undergoing treatment i.e people 'exposed' after
-  # diagnosis
-  N_diag_hist_X_T <- t(aggregate(y, "T", stratum = idx$X[1]))
-  N_diag_hist_VW_T <- t(aggregate(y, "T", stratum = idx$never_diag))
-
-  # obtain person-years exposed before first diagnosis i.e person-years in
-  # treatment don't count towards this
-  N_person_years_exposed_X <- N_diag_hist_X - N_diag_hist_X_T
-  N_person_years_exposed_VW <- N_diag_hist_VW - N_diag_hist_VW_T
-  N_pr_yrs_exp_all <- list(N_person_yrs_exp_X.I = N_person_years_exposed_X,
-                           N_person_yrs_exp_VW.I = N_person_years_exposed_VW)
+  N_pyrs_exp_all <- list(N_person_yrs_exp_X.I = N_prsn_yrs_exp_X.I,
+                         N_person_yrs_exp_VW.I = N_prsn_yrs_exp_VW.I,
+                         N_person_yrs_exp_true_X.I = N_prsn_yrs_exp_true_X.I,
+                         N_person_yrs_exp_true_VW.I = N_prsn_yrs_exp_true_VW.I)
   #remove time = 0
-  N_pr_yrs_exp_all <- lapply(N_pr_yrs_exp_all, function(x) x[-1, ])
-
-  #calculate cumulative person-years exposed over time
-  cum_N_pyrs <- lapply(N_pr_yrs_exp_all, function(x) apply(x, 2, cumsum))
+  cum_N_pyrs <- lapply(N_pyrs_exp_all, function(x) x[-1, ])
 
   #extract annual flows
   flows <- lapply(cumulative_flows, function(x) apply(x, 2, diff))
@@ -277,6 +321,37 @@ name_outputs <- function(res, strata_names) {
   dimnames(res$eta) <- list(NULL, group_names)
 
   res
+}
+
+##' @name adjust_baseline
+##' @title adjust model run in absence of vaccination so diagnoses are
+##' spread across vaccine protected and non-vaccine protected strata as if
+##' the rate of movement was the same as in an equivalent model run in the
+##' presence of vaccination
+##' @param baseline A model run in the absence of vaccine uptake
+##' @param y A model run in the presence of vaccine uptake
+##' @return An adjusted baseline in which 'a' and 's' diagnoses in the baseline
+##' are divided across vaccine protected and non-vaccine protected strata
+##' allowing comparison of model runs with of baselines by vaccine-status
+##' @export
+adjust_baseline <- function(baseline, y) {
+  Map(adjust_baseline_one, baseline, y)
+}
+
+adjust_baseline_one <- function(baseline, y) {
+  # create an array in the same dimensions as y$N, where each entry is the
+  # modelled proportion in each stratum for each risk group at time t
+  # i.e. summing across strata will give 1: apply(prop_N, c(1, 2), sum)
+  prop_N <-  y$N / array(apply(y$N, c(1, 2), sum), dim(y$N))
+
+  # identify states that are compartments [time, group, strata]
+  idx_state <- which(lengths(lapply(baseline, dim)) == 3)
+  # distribute individuals in the baseline across strata in the same proportion
+  # as in the model run
+  adjusted_states <- lapply(baseline[idx_state],
+                            function(state) c(state[, , 1]) * prop_N)
+  replace(baseline, idx_state, adjusted_states)
+
 }
 
 ##' @name gen_labels

@@ -272,6 +272,39 @@ test_that("VEd behaves as expected ", {
   expect_true(all(unlist(y) >= 0))
   expect_true(all(round(rowSums(y[[1]]$N)) == params$N0))
 
+  ###########
+  # VEd = 1 rate of natural clearance (nu) is equal to the rate of care seeking
+  # (mu)
+  # if same number of people start in A as in S and parameters
+  # lambda and eta = 0 (i.e other routes into A & S and out of A respectively)
+  # the rate of movement of people A -> U and S -> T in 'V' should be the same
+
+  # replace lambda, eta = 0
+  elements_to_replace <- c("eta", "lambda")
+  for (element in elements_to_replace) {
+    gp[[1]][[element]] <- 0
+  }
+
+  # set starting conditions
+  pars <- c(demographic_params_trial(N = 600), gp)
+  n_vax <- 3
+  U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
+
+  #half of population in A0 and half in S0
+  #everyone begins vaccinated
+  N0 <- pars$N0 * outer(pars$q, c(0, 1, 0))
+  A0 <- pars$N0 * outer(pars$q, c(0, 0.5, 0))
+  S0 <- pars$N0 * outer(pars$q, c(0, 0.5, 0))
+
+  init_params <- list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0)
+
+  y2 <- run_onevax_xvw_trial(tt = seq(0, 5), gono_params = gp,
+                             initial_params_trial = list(init_params),
+                             vea = 0, vei = 0, ved = 1, ves = 0,
+                             dur = 1e99, stochastic = TRUE)
+
+  expect_equal(y2[[1]]$A[, , 2], y2[[1]]$S[, , 2]) # 2 = V stratum
+
 })
 
 
@@ -337,6 +370,9 @@ test_that("expected cumulative outputs are cumulative", {
   expect_true(all(diff(y[[1]]$cum_diag_s[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_treated[c(years - 10, years + 1), 2, ]) > 0))
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1), 2, ]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_trial_pov[c(years - 10, years + 1),
+                                                2, ]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_true[c(years - 10, years + 1), 2, ]) > 0))
 
   set.seed(1)
   n_diag_rec <- 2
@@ -354,7 +390,10 @@ test_that("expected cumulative outputs are cumulative", {
                                           2, c(2, 4, 6)]) > 0))
   expect_true(all(diff(y[[1]]$cum_screened[c(years - 10, years + 1),
                                            2, c(2, 4, 6)]) > 0))
-
+  expect_true(all(diff(y[[1]]$cum_pye_trial_pov[c(years - 10, years + 1),
+                                                2, c(2, 4, 6)]) > 0))
+  expect_true(all(diff(y[[1]]$cum_pye_true[c(years - 10, years + 1),
+                                           2, c(2, 4, 6)]) > 0))
 })
 
 
@@ -751,52 +790,61 @@ test_that("for n_diag_rec > 1, total N summed over X or V+W is
 
           })
 
-test_that("for n_diag_rec > 1, the number treated = the number recorded
-          as diagnosed", {
+test_that("for n_diag_rec > 1,  the number diagnosed = the number recorded", {
 
-            gp <- gono_params_trial(1)[1]
-            n_erlang <- 1
-            tt <- seq.int(0, 5)
-            set.seed(1)
-            n_diag_rec <- 2
-            N <- 6e+05
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 5)
+  set.seed(1)
+  n_diag_rec <- 2
+  N <- 6e+05
 
-            #no waning for simplicity
-            y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
-                                      vea = 0, vei = 0, ved = 0, ves = 0,
-                                      n_erlang = n_erlang,
-                                      stochastic = TRUE,
-                                      n_diag_rec = n_diag_rec, N = N)
+  #no waning for simplicity
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
 
-            # number treated in '.I' becomes the number in '.II'
-            expect_true(all(y[[1]]$cum_treated[, 2, 1] == y[[1]]$N[, 2, 2]))
-            expect_true(all(y[[1]]$cum_treated[, 2, 3] == y[[1]]$N[, 2, 4]))
-            expect_true(all(y[[1]]$cum_treated[, 2, 5] == y[[1]]$N[, 2, 6]))
+  # number diagnosed in '.I' becomes the number in '.II'
+  expect_true(all(round(y[[1]]$cum_diag_a[, 2, 1] +
+                          y[[1]]$cum_diag_s[, 2, 1]) ==
+                    round(y[[1]]$N[, 2, 2])))
+  expect_true(all(round(y[[1]]$cum_diag_a[, 2, 3] +
+                          y[[1]]$cum_diag_s[, 2, 3]) ==
+                    round(y[[1]]$N[, 2, 4])))
+  expect_true(all(round(y[[1]]$cum_diag_a[, 2, 5] +
+                          y[[1]]$cum_diag_s[, 2, 5]) ==
+                    round(y[[1]]$N[, 2, 6])))
 
-            n_diag_rec <- 3
+  n_diag_rec <- 3
 
-            y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
-                                      vea = 0, vei = 0, ved = 0, ves = 0,
-                                      n_erlang = n_erlang,
-                                      stochastic = TRUE,
-                                      n_diag_rec = n_diag_rec, N = N)
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
 
-            # number treated each year in '.I' becomes the N gained in '.II'
-            # AND
-            # '.III' diagnosis history strata for that year
-            # (because some people could get diagnosed twice in one year)
-            # and number treated in '.II' becomes the number in '.III'
-            # diagnosis history
+  # number diagnosed each year in '.I' becomes the N gained in '.II' &
+  # '.III' diagnosis history strata for that year
+  # (because some people could get diagnosed twice in one year)
+  # and number treated in '.II' becomes the number in '.III' diagnosis
+  # history
+  expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 1] +
+                               y[[1]]$cum_diag_s[, 2, 1])) ==
+                    round(diff(rowSums(y[[1]]$N[, 2, 2:3])))))
+  expect_true(all(round(diff(y[[1]]$cum_diag_a[, 2, 2] +
+                               y[[1]]$cum_diag_s[, 2, 2])) ==
+                    round(diff(y[[1]]$N[, 2, 3]))))
 
-            expect_true(all(diff(y[[1]]$cum_treated[, 2, 1]) ==
-                              diff(rowSums(y[[1]]$N[, 2, 2:3]))))
-            expect_true(all(diff(y[[1]]$cum_treated[, 2, 2]) ==
-                              diff(y[[1]]$N[, 2, 3])))
+  #as movement into next diagnosis history stratum occurs upon those
+  #entering T, expect T in .I to be empty for all time
+  #(recorded move to T in .II and so on so we don't expect these to be
+  #empty)
 
-            diff(y[[1]]$cum_treated[, 2, 1])
-            diff(rowSums(y[[1]]$N[, 2, 2:3]))
+  expect_true(all(y[[1]]$T[, , c(1, 4, 7)] == 0))
 
-          })
+})
 
 test_that("for n_diag_rec > 1, when lambda = 0,
           diagnosis history strata > '.I' are empty", {
@@ -822,3 +870,171 @@ test_that("for n_diag_rec > 1, when lambda = 0,
             expect_true(all(rowSums(y[[1]]$N[, 1, ]) == 0))
 
           })
+
+test_that("no asymptomatic diagnoses recorded when asymp_recorded = FALSE", {
+
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  tt <- seq.int(0, 5)
+  n_diag_rec <- 2
+  N <- 6e+05
+
+  #no waning for simplicity
+  y_symp_only <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                                      vea = 0, vei = 0, ved = 0, ves = 0,
+                                      n_erlang = n_erlang,
+                                      stochastic = TRUE,
+                                      n_diag_rec = n_diag_rec, N = N,
+                                      asymp_recorded = FALSE)
+
+  y_symp_asymp <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                                       vea = 0, vei = 0, ved = 0, ves = 0,
+                                       n_erlang = n_erlang,
+                                       stochastic = TRUE,
+                                       n_diag_rec = n_diag_rec, N = N)
+  #(asymp_recorded defaults to TRUE)
+
+  #when asymptomatic diagnoses not recorded, fewer individuals move to the
+  #next diagnoses history stratum (.II) so stratum X.I & V.I will have larger
+  #N for asymp_recorded = FALSE
+  expect_true(all(y_symp_only[[1]]$N[-1, 2, c(1, 3)] >
+                    y_symp_asymp[[1]]$N[-1, 2, c(1, 3)]))
+
+  #asymptomatic individuals move to treatment but are not recorded in the trial
+  #i.e number diagnosed in .I is not the same as the number gained in .II
+  #when asymp_recorded = FALSE
+  expect_true(all(round(y_symp_only[[1]]$cum_diag_a[-1, 2, 1] +
+                          y_symp_only[[1]]$cum_diag_s[-1, 2, 1]) !=
+                    round(y_symp_only[[1]]$N[-1, 2, 2])))
+  expect_true(all(round(y_symp_only[[1]]$cum_diag_a[-1, 2, 3] +
+                          y_symp_only[[1]]$cum_diag_s[-1, 2, 3]) !=
+                    round(y_symp_only[[1]]$N[-1, 2, 4])))
+
+  #T.I is no longer empty when asymp_recorded  = FALSE
+  expect_true(all(y_symp_asymp[[1]]$T[-1, 2, c(1, 3)] == 0))
+  expect_true(all(y_symp_only[[1]]$T[-1, 2, c(1, 3)] != 0))
+
+  #number asymptomatic diagnoses = number entering T.I
+  #(no recovery to U so we can keep track of entrance into T)
+  gp[[1]][["rho"]] <- 0
+  y_symp_only_ze_rho <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                                             vea = 0, vei = 0, ved = 0, ves = 0,
+                                             n_erlang = n_erlang,
+                                             stochastic = TRUE,
+                                             n_diag_rec = n_diag_rec, N = N,
+                                             asymp_recorded = FALSE)
+
+  expect_true(all(round(diff(y_symp_only_ze_rho[[1]]$cum_diag_a[, 2, 1])) ==
+                    round(diff(y_symp_only_ze_rho[[1]]$T[, 2, 1]))))
+
+  #number symptomatic diagnoses = number entering .II
+  expect_true(all(round(y_symp_only_ze_rho[[1]]$cum_diag_s[, 2, 1])
+                  == round(y_symp_only_ze_rho[[1]]$N[, 2, 2])))
+
+})
+
+test_that("the number of person-years exposed is as expected", {
+
+  # Previous method of aggregating over UIAS or U to get time individuals
+  # spent exposed, underestimated pyes as values depended on how often
+  # the model was output. Increasing frequency of output improved estimates.
+  # The new ODE in odin model code should get around this by summing
+  # the pye spent in UIAS or U over continuous time, and can be output directly
+  # from the model result as 'cum_pye_trial_pov' or 'cum_pye_true'
+
+  set.seed(1)
+  gp <- gono_params_trial(1)[1]
+  n_erlang <- 1
+  n_diag_rec <- 2
+  N <- 600
+
+  idx <- stratum_index_xvw_trial(n_erlang = n_erlang, n_diag_rec = n_diag_rec)
+  idx$never_diag <- seq(idx$V[1], by = n_diag_rec, length.out = n_erlang + 1)
+
+
+  # run
+  # output every 1 year
+  tt <- seq(0, 5, 1)
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 0, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
+
+  # output every 20th of a year
+  inc <- 0.05
+  tt_2 <- seq(0, 5, inc)
+  y_2 <- run_onevax_xvw_trial(tt = tt_2, gp, dur = 1e100000000,
+                              vea = 0, vei = 0, ved = 0, ves = 0,
+                              n_erlang = n_erlang,
+                              stochastic = TRUE,
+                              n_diag_rec = n_diag_rec, N = N)
+
+  #
+  # for U I A S pye
+  cum_pye_trial_pov_odin <- y[[1]]$cum_pye_trial_pov[length(tt), 2, idx$X[1]]
+  cum_pye_trial_pov_odin_2 <- y_2[[1]]$cum_pye_trial_pov[length(tt_2),
+                                                         2, idx$X[1]]
+
+  # for U only pye
+  cum_pye_true_odin <- y[[1]]$cum_pye_true[length(tt), 2, idx$X[1]]
+  cum_pye_true_odin_2 <- y_2[[1]]$cum_pye_true[length(tt_2), 2, idx$X[1]]
+
+  # expect cumulative aggregated pyes (old method) to be smaller than those
+  # calculated by odin as they will have missed some person-time between outputs
+
+  # for UIAS pye
+  pye_trial_pov_agg <- t(aggregate(y[1], "N", stratum = idx$X[1]))[, -1]
+  cum_pye_trial_pov_agg <- cumsum(pye_trial_pov_agg)[length(tt) - 1]
+
+  # for U only pye
+  pye_true_agg <- t(aggregate(y[1], "U", stratum = idx$X[1]))[, -1]
+  cum_pye_true_agg <- cumsum(pye_true_agg)[length(tt) - 1]
+  ########### a few orders of magnitude larger on RHS?  multiply by dt?
+  expect_true(cum_pye_trial_pov_agg < cum_pye_trial_pov_odin)
+  expect_true(cum_pye_true_agg < cum_pye_true_odin)
+
+  # expect aggregated pyes to be greater when outputs are more frequent
+  # note: outputs here divided by 1/inc because individuals are only
+  # contributing 1/inc'th of person-time (not a year)
+
+  # for UIAS pye
+  pye_trial_pov_agg_2 <- (t(aggregate(y_2[1],
+                                      "N",
+                                      stratum = idx$X[1]))[, -1]) / (1 / inc)
+  cum_pye_trial_pov_agg_2 <- cumsum(pye_trial_pov_agg_2)[length(tt_2) - 1]
+
+  # for U only pye
+  pye_true_agg_2 <- (t(aggregate(y_2[1],
+                                 "U", stratum = idx$X[1]))[, -1]) / (1 / inc)
+  cum_pye_true_agg_2 <- cumsum(pye_true_agg_2)[length(tt_2) - 1]
+
+  expect_true(cum_pye_trial_pov_agg_2 > cum_pye_trial_pov_agg)
+  expect_true(cum_pye_true_agg_2 > cum_pye_true_agg)
+
+  # expect pye calculated through aggregation over UIAS/U when output more
+  # frequently to tend to pyes calculated through odin
+  # as a check that odin output is closer to the 'actual' amount of pyes exposed
+
+  expect_true(cum_pye_trial_pov_odin - cum_pye_trial_pov_agg >
+                cum_pye_trial_pov_odin - cum_pye_trial_pov_agg_2)
+
+  expect_true(cum_pye_true_odin - cum_pye_true_agg >
+                cum_pye_true_odin - cum_pye_true_agg_2)
+
+  # expect pye to be greater in the vaccinated > unvaccinated AND
+  # expect pye to increase by N/2 each timepoint when vaccination perfect
+
+  y <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e100000000,
+                            vea = 1, vei = 0, ved = 0, ves = 0,
+                            n_erlang = n_erlang,
+                            stochastic = TRUE,
+                            n_diag_rec = n_diag_rec, N = N)
+
+  x  <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))[-1]
+  vw <- (aggregate(y, "cum_pye_trial_pov", stratum = idx$never_diag))[-1]
+
+  expect_true(all(vw > x))
+  expect_equal(diff(vw), rep(300, 4))
+
+})

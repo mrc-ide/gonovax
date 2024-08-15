@@ -528,9 +528,9 @@ test_that("compare baseline xpvwrh works as expected", {
   # cumulative doses of different types calculated correctly
   # sum of vbe, primary and revaccination doses = all doses
 
-  y <- run_onevax_xvwrh(tt, gp, vea = 1, dur = 1,
-                        primary_uptake = 1, booster_uptake = 0.5,
-                        strategy = "VoD")
+  y <- run_onevax_xpvwrh(tt, gp, vea = 1, dur_v = 1,
+                         r1 = 1, r2 = 1, booster_uptake = 0.5,
+                         strategy = "VoD")
   z <- compare_baseline_xpvwrh(y, bl, uptake_first_dose = 1,
                                uptake_second_dose = 1,
                                cp, 0,

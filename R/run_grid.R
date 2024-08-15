@@ -74,9 +74,9 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' @title compare model runs with vaccination to a baseline run for the
 ##' branching XPVWRH model where both partial and full vaccination have a
 ##' given level of efficacy
-##' @param y list of model runs, e.g. created by `run_onevax_xvwv`, each list
+##' @param y list of model runs, e.g. created by `run_onevax_xpvwrh`, each list
 ##' entry refers to a different parameter set
-##' @param baseline list of baseline runs e.g. created by `run_onevax_xvwv`.
+##' @param baseline list of baseline runs e.g. created by `run_onevax_xpvwrh`.
 ##' Should be same length as `y`
 ##' @param cost_params list of cost effectiveness parameters, containing entries
 ##' `qaly_loss_per_diag_s`, `unit_cost_manage_symptomatic`,
@@ -202,30 +202,57 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##' given timepoint. Given as the sum of the products of the number of partially
 ##' and fully vaccinated individuals and the one dose and two dose vaccine
 ##' efficacies respectively.
+##' `inc_diag_a_xwh` = annual number of asymptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_diag_s_xwh` = annual number of symptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_diag_t_xwh` = annual number of total diagnoses in non-vaccine
+##' protected strata compared to an adjusted baseline
+##' `inc_diag_a_pvr` = annual number of asymptomatic diagnoses in vaccine
+##' protected strata compared to an adjusted baseline
+##' `inc_diag_s_pvr` = annual number of symptomatic diagnoses in vaccine
+##'  protected strata compared to an adjusted baseline
+##' `inc_diag_t_pvr` = annual number of total diagnoses in vaccine protected
+##' strata compared to an adjusted baseline
+##' `inc_cum_diag_a_xwh` = cumulative number of asymptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_cum_diag_s_xwh` = cumulative number of symptomatic diagnoses in non-
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_cum_diag_t_xwh` = cumulative number of total diagnoses in non-vaccine
+##' protected strata compared to an adjusted baseline
+##' `inc_cum_diag_a_pvr` = cumulative number of asymptomatic diagnoses in
+##' vaccine protected strata compared to an adjusted baseline
+##' `inc_cum_diag_s_pvr` = cumulative number of symptomatic diagnoses in vaccine
+##'  protected strata compared to an adjusted baseline
+##' `inc_cum_diag_t_pvr` = cumulative number of total diagnoses in vaccine
+##' protected strata compared to an adjusted baseline
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                                     uptake_second_dose, cost_params,
                                     disc_rate, vea, vea_p) {
+
+  strata <- dimnames(y[[1]]$N)[[3]]
+  n_erlang <- sum(grepl(pattern = "V", strata)) # count erlangs
 
   ## compare run to baseline
   flows <- extract_flows_xpvwrh(y)
   ret <- Map(`-`, flows, baseline[names(flows)])
   names(ret) <- paste0("inc_", names(flows))
   ret <- c(flows, ret)
+  idx <- stratum_index_xpvwrh(n_erlang)
+  idx$full <- c(idx$V, idx$R)
+  idx$vaccinated <- c(idx$P, idx$V, idx$R)
 
   ## extract number under vaccine protection
   vacsnap <- list()
   # fully vaccine protected, snapshot of N in: V(3) and R(5)
-  vacsnap$vacprotec_full <-
-    t(aggregate(y, "N", stratum = c(3, 5)))
+  vacsnap$vacprotec_full <- t(aggregate(y, "N", stratum = idx$full))
 
   # partially vaccine protected, snapshot of N in: P(2)
-  vacsnap$vacprotec_part <-
-    t(aggregate(y, "N", stratum = 2))
+  vacsnap$vacprotec_part <- t(aggregate(y, "N", stratum = idx$P))
 
   # vaccine protected total, snapshot of N in: P(2), V(3), R(5)
-  vacsnap$vacprotec_total <-
-    t(aggregate(y, "N", stratum = c(2, 3, 5)))
+  vacsnap$vacprotec_total <- t(aggregate(y, "N", stratum = idx$vaccinated))
 
   # remove t = 0, so object dimensions for prevalence measures match those for
   # annual and cumulative flows
@@ -317,7 +344,17 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ## output present value of cases averted
   ret$pv_cases_averted <- calc_pv(-ret$inc_treated, disc_rate)
 
+  ## output cumulative diagnoses for symp, asymp, and vax vs non vax strata
+  ret$inc_cum_diag_a_xwh <- apply(ret$inc_diag_a_xwh, 2, cumsum)
+  ret$inc_cum_diag_s_xwh <- apply(ret$inc_diag_s_xwh, 2, cumsum)
+  ret$inc_cum_diag_t_xwh <- apply(ret$inc_diag_t_xwh, 2, cumsum)
+
+  ret$inc_cum_diag_a_pvr <- apply(ret$inc_diag_a_pvr, 2, cumsum)
+  ret$inc_cum_diag_s_pvr <- apply(ret$inc_diag_s_pvr, 2, cumsum)
+  ret$inc_cum_diag_t_pvr <- apply(ret$inc_diag_t_pvr, 2, cumsum)
+
   ret
+
 }
 
 ##' @name compare_baseline
