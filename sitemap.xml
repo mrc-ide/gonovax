@@ -1,234 +1,81 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/articles/getting_started.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/aggregate.html</loc>
-  </url>
-  <url>
-    <loc>/reference/compare.html</loc>
-  </url>
-  <url>
-    <loc>/reference/compare_baseline.html</loc>
-  </url>
-  <url>
-    <loc>/reference/compare_baseline_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/compare_basic.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_diagnosis_waning_map.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_uptake_map.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_uptake_map_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_uptake_map_xvw.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_uptake_map_xvwr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_uptake_map_xvwv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_vax_map.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_vax_map_branching.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_waning_map.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_waning_map_branching.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_waning_map_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dbetabinom.html</loc>
-  </url>
-  <url>
-    <loc>/reference/extract_flows.html</loc>
-  </url>
-  <url>
-    <loc>/reference/extract_flows_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/extract_flows_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gen_erlang_labels.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gen_labels.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gen_trial_labels.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gono_params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gono_params_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gonovax_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gonovax_year.html</loc>
-  </url>
-  <url>
-    <loc>/reference/gonovax_year_as_year.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/initial_params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/initial_params_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/initial_params_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/initial_params_xvw_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/initial_params_xvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/mcmc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/mcmc_combine.html</loc>
-  </url>
-  <url>
-    <loc>/reference/mcmc_thin.html</loc>
-  </url>
-  <url>
-    <loc>/reference/model.html</loc>
-  </url>
-  <url>
-    <loc>/reference/model_params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/model_params_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/model_params_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/restart_hes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/restart_params.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_grid.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_onevax_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_onevax_xvw.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_onevax_xvw_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_onevax_xvwr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_onevax_xvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_onevax_xvwv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/run_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/set_protection.html</loc>
-  </url>
-  <url>
-    <loc>/reference/set_strategy.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratum_index_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratum_index_xvw.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratum_index_xvw_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratum_index_xvwr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratum_index_xvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stratum_index_xvwv.html</loc>
-  </url>
-  <url>
-    <loc>/reference/transform.html</loc>
-  </url>
-  <url>
-    <loc>/reference/transform_fixed.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params0.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params_xpvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params_xvw.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params_xvw_trial.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params_xvwr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params_xvwrh.html</loc>
-  </url>
-  <url>
-    <loc>/reference/vax_params_xvwv.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/getting_started.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/adjust_baseline.html</loc></url>
+<url><loc>/reference/aggregate.html</loc></url>
+<url><loc>/reference/compare.html</loc></url>
+<url><loc>/reference/compare_baseline.html</loc></url>
+<url><loc>/reference/compare_baseline_xpvwrh.html</loc></url>
+<url><loc>/reference/compare_basic.html</loc></url>
+<url><loc>/reference/create_diagnosis_waning_map.html</loc></url>
+<url><loc>/reference/create_uptake_map.html</loc></url>
+<url><loc>/reference/create_uptake_map_xpvwrh.html</loc></url>
+<url><loc>/reference/create_uptake_map_xvw.html</loc></url>
+<url><loc>/reference/create_uptake_map_xvwr.html</loc></url>
+<url><loc>/reference/create_uptake_map_xvwv.html</loc></url>
+<url><loc>/reference/create_vax_map.html</loc></url>
+<url><loc>/reference/create_vax_map_branching.html</loc></url>
+<url><loc>/reference/create_waning_map.html</loc></url>
+<url><loc>/reference/create_waning_map_branching.html</loc></url>
+<url><loc>/reference/create_waning_map_trial.html</loc></url>
+<url><loc>/reference/dbetabinom.html</loc></url>
+<url><loc>/reference/extract_flows.html</loc></url>
+<url><loc>/reference/extract_flows_trial.html</loc></url>
+<url><loc>/reference/extract_flows_xpvwrh.html</loc></url>
+<url><loc>/reference/gen_erlang_labels.html</loc></url>
+<url><loc>/reference/gen_labels.html</loc></url>
+<url><loc>/reference/gen_trial_labels.html</loc></url>
+<url><loc>/reference/gono_params.html</loc></url>
+<url><loc>/reference/gono_params_trial.html</loc></url>
+<url><loc>/reference/gonovax_data.html</loc></url>
+<url><loc>/reference/gonovax_year.html</loc></url>
+<url><loc>/reference/gonovax_year_as_year.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/initial_params.html</loc></url>
+<url><loc>/reference/initial_params_trial.html</loc></url>
+<url><loc>/reference/initial_params_xpvwrh.html</loc></url>
+<url><loc>/reference/initial_params_xvw_trial.html</loc></url>
+<url><loc>/reference/initial_params_xvwrh.html</loc></url>
+<url><loc>/reference/mcmc.html</loc></url>
+<url><loc>/reference/mcmc_combine.html</loc></url>
+<url><loc>/reference/mcmc_thin.html</loc></url>
+<url><loc>/reference/model.html</loc></url>
+<url><loc>/reference/model_params.html</loc></url>
+<url><loc>/reference/model_params_trial.html</loc></url>
+<url><loc>/reference/model_params_xpvwrh.html</loc></url>
+<url><loc>/reference/restart_hes.html</loc></url>
+<url><loc>/reference/restart_params.html</loc></url>
+<url><loc>/reference/run.html</loc></url>
+<url><loc>/reference/run_grid.html</loc></url>
+<url><loc>/reference/run_onevax_xpvwrh.html</loc></url>
+<url><loc>/reference/run_onevax_xvw.html</loc></url>
+<url><loc>/reference/run_onevax_xvw_trial.html</loc></url>
+<url><loc>/reference/run_onevax_xvwr.html</loc></url>
+<url><loc>/reference/run_onevax_xvwrh.html</loc></url>
+<url><loc>/reference/run_onevax_xvwv.html</loc></url>
+<url><loc>/reference/run_trial.html</loc></url>
+<url><loc>/reference/run_xpvwrh.html</loc></url>
+<url><loc>/reference/set_protection.html</loc></url>
+<url><loc>/reference/set_strategy.html</loc></url>
+<url><loc>/reference/stratum_index_xpvwrh.html</loc></url>
+<url><loc>/reference/stratum_index_xvw.html</loc></url>
+<url><loc>/reference/stratum_index_xvw_trial.html</loc></url>
+<url><loc>/reference/stratum_index_xvwr.html</loc></url>
+<url><loc>/reference/stratum_index_xvwrh.html</loc></url>
+<url><loc>/reference/stratum_index_xvwv.html</loc></url>
+<url><loc>/reference/transform.html</loc></url>
+<url><loc>/reference/transform_fixed.html</loc></url>
+<url><loc>/reference/vax_params0.html</loc></url>
+<url><loc>/reference/vax_params_xpvwrh.html</loc></url>
+<url><loc>/reference/vax_params_xvw.html</loc></url>
+<url><loc>/reference/vax_params_xvw_trial.html</loc></url>
+<url><loc>/reference/vax_params_xvwr.html</loc></url>
+<url><loc>/reference/vax_params_xvwrh.html</loc></url>
+<url><loc>/reference/vax_params_xvwv.html</loc></url>
 </urlset>
+
