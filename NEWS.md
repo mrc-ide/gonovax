@@ -1,4 +1,7 @@
 # gonovax 0.4.20
+* person years exposed from the point of view of a non-screening RCT (U, I, A, S, AND T) added
+
+# gonovax 0.4.20
 * person-years exposed both from the point of view of an RCT (U, I, A, S) and in the true sense (U only) are output from the model rather than calculated in post
 
 # gonovax 0.4.19
