@@ -349,7 +349,7 @@ test_that("extract_flows_trial works", {
   y4s_flows <- extract_flows_trial(y4s)
 
   expect_true(all(round(diff(y4s_flows$N_person_yrs_exp_VW.I), 0) == N / 2))
-  
+
   #if there is only one diagnosis history stratum, the number of non-screening
   #trial person years increases yearly by the number of people in the trial arm
   #each year regardless of vaccination (because it counts people in U -> T) i.e
@@ -369,7 +369,7 @@ test_that("extract_flows_trial works", {
   expect_true(all(round(diff(y5d_flows$N_person_yrs_exp_noscreen_X.I),
                         3) == N / 2))
   expect_true(all(y5d_flows$N_person_yrs_exp_noscreen_VW.I >
-                y5d_flows$N_person_yrs_exp_VW.I))
+                    y5d_flows$N_person_yrs_exp_VW.I))
   expect_true(all(y5d_flows$N_person_yrs_exp_noscreen_X.I >
                     y5d_flows$N_person_yrs_exp_X.I))
 
