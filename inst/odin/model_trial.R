@@ -37,6 +37,7 @@ n_ST[, ]     <- mu * S[i, j]
 n_TU[, ]     <- rho * T[i, j]
 screened[, ] <- eta * U[i, j]
 pye_trial[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j]
+pye_noscreen_trial[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
 # mechanism to record number of times infected by moving diagnosed
 # individuals into stratum with the relevant diagnosis history
@@ -60,6 +61,7 @@ deriv(cum_diag_s[, ])            <- n_ST[i, j]
 deriv(cum_treated[, ])           <- n_TU[i, j]
 deriv(cum_screened[, ])          <- screened[i, j]
 deriv(cum_pye_trial_pov[, ]) <- pye_trial[i, j]
+deriv(cum_pye_noscreen_trial_pov[, ]) <- pye_noscreen_trial[i, j]
 deriv(cum_pye_true[, ])      <- U[i, j]
 
 # aggregated time series for fitting mcmc
@@ -86,6 +88,7 @@ initial(cum_diag_s[, ])     <- 0
 initial(cum_treated[, ])    <- 0
 initial(cum_screened[, ])   <- 0
 initial(cum_pye_trial_pov[, ]) <- 0
+initial(cum_pye_noscreen_trial_pov[, ]) <- 0
 initial(cum_pye_true[, ]) <- 0
 
 # set up dimensions of compartments
@@ -110,6 +113,7 @@ dim(n_ST)       <- c(n_group, n_vax)
 dim(n_TU)       <- c(n_group, n_vax)
 dim(screened)   <- c(n_group, n_vax)
 dim(pye_trial)  <- c(n_group, n_vax)
+dim(pye_noscreen_trial)  <- c(n_group, n_vax)
 dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
 dim(diag_rec_a)   <- c(n_group, n_vax, n_vax)
 dim(diag_rec_s)   <- c(n_group, n_vax, n_vax)
@@ -120,6 +124,7 @@ dim(cum_diag_s)          <- c(n_group, n_vax)
 dim(cum_treated)         <- c(n_group, n_vax)
 dim(cum_screened)        <- c(n_group, n_vax)
 dim(cum_pye_trial_pov)   <- c(n_group, n_vax)
+dim(cum_pye_noscreen_trial_pov)   <- c(n_group, n_vax)
 dim(cum_pye_true)        <- c(n_group, n_vax)
 
 ## Parameters
