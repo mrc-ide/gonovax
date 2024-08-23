@@ -216,12 +216,19 @@ extract_flows_trial <- function(y) {
   N_prsn_yrs_exp_X.I <- t(aggregate(y, "cum_pye_trial_pov", stratum = idx$X[1]))
   N_prsn_yrs_exp_VW.I <-  t(aggregate(y, "cum_pye_trial_pov",
                                       stratum = idx$never_diag))
+  N_prsn_yrs_exp_noscreen_X.I <- t(aggregate(y, "cum_pye_noscreen_trial_pov", stratum = idx$X[1]))
+  N_prsn_yrs_exp_noscreen_VW.I <-  t(aggregate(y, "cum_pye_noscreen_trial_pov",
+                                      stratum = idx$never_diag))
   N_prsn_yrs_exp_true_X.I <- t(aggregate(y, "cum_pye_true", stratum = idx$X[1]))
   N_prsn_yrs_exp_true_VW.I <- t(aggregate(y, "cum_pye_true",
                                           stratum = idx$never_diag))
 
   N_pyrs_exp_all <- list(N_person_yrs_exp_X.I = N_prsn_yrs_exp_X.I,
                          N_person_yrs_exp_VW.I = N_prsn_yrs_exp_VW.I,
+                         N_person_yrs_exp_noscreen_X.I =
+                           N_prsn_yrs_exp_noscreen_X.I,
+                         N_person_yrs_exp_noscreen_VW.I =
+                           N_prsn_yrs_exp_noscreen_VW.I,
                          N_person_yrs_exp_true_X.I = N_prsn_yrs_exp_true_X.I,
                          N_person_yrs_exp_true_VW.I = N_prsn_yrs_exp_true_VW.I)
   #remove time = 0
