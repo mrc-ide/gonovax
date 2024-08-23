@@ -349,6 +349,46 @@ test_that("extract_flows_trial works", {
   y4s_flows <- extract_flows_trial(y4s)
 
   expect_true(all(round(diff(y4s_flows$N_person_yrs_exp_VW.I), 0) == N / 2))
+  
+  #if there is only one diagnosis history stratum, the number of non-screening
+  #trial person years increases yearly by the number of people in the trial arm
+  #each year regardless of vaccination (because it counts people in U -> T) i.e
+  #everyone - and non-screening trial PYE > regular screening trial PYE as
+  #the latter doesn't include people in T
+
+  N <- 600
+  n_diag_rec <- 1
+  y5d <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                              vea = 0.5, vei = 0, ved = 0, ves = 0,
+                              n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                              stochastic = FALSE, N = N)
+  y5d_flows <- extract_flows_trial(y5d)
+
+  expect_true(all(round(diff(y5d_flows$N_person_yrs_exp_noscreen_VW.I),
+                        3) == N / 2))
+  expect_true(all(round(diff(y5d_flows$N_person_yrs_exp_noscreen_X.I),
+                        3) == N / 2))
+  expect_true(all(y5d_flows$N_person_yrs_exp_noscreen_VW.I >
+                y5d_flows$N_person_yrs_exp_VW.I))
+  expect_true(all(y5d_flows$N_person_yrs_exp_noscreen_X.I >
+                    y5d_flows$N_person_yrs_exp_X.I))
+
+  #stochastic
+  set.seed(1)
+  y5s <- run_onevax_xvw_trial(tt = tt, gp, dur = 1e3,
+                              vea = 0.5, vei = 0, ved = 0, ves = 0,
+                              n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+                              stochastic = TRUE, N = N)
+  y5s_flows <- extract_flows_trial(y5s)
+
+  expect_true(all(round(diff(y5s_flows$N_person_yrs_exp_noscreen_VW.I),
+                        3) == N / 2))
+  expect_true(all(round(diff(y5s_flows$N_person_yrs_exp_noscreen_X.I),
+                        3) == N / 2))
+  expect_true(all(y5s_flows$N_person_yrs_exp_noscreen_VW.I >
+                    y5s_flows$N_person_yrs_exp_VW.I))
+  expect_true(all(y5s_flows$N_person_yrs_exp_noscreen_X.I >
+                    y5s_flows$N_person_yrs_exp_X.I))
 
 })
 
