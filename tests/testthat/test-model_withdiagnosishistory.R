@@ -208,8 +208,10 @@ test_that("the foi is calculated correctly", {
     foi_L <- pL * beta * (eps * CL / NL + foi_cross)
     foi_H <- pH * beta * (eps * CH / NH + foi_cross)
 
-    expect_equal(y$lambda[, 1], foi_L)
-    expect_equal(y$lambda[, 2], foi_H)
+    for (j in 1:3){
+    expect_equal(y$lambda[, 1,j], foi_L)
+    expect_equal(y$lambda[, 2,j], foi_H)
+    }
   }
 })
 
@@ -948,7 +950,7 @@ test_that("can initialise after time 0", {
 
     expect_equivalent(y1$U[y1$t >= 5, , , drop = FALSE], y2$U,
                       tol = 0.1)
-    expect_equivalent(y1$lambda[y1$t >= 5, , drop = FALSE], y2$lambda,
+    expect_equivalent(y1$lambda[y1$t >= 5, , , drop = FALSE], y2$lambda,
                       tol = 1e-5)
 
   }

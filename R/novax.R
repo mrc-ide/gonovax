@@ -33,7 +33,8 @@ vax_params0 <- function(n_diag_rec = 1, years_history = 1) {
        wd = create_diagnosis_waning_map(n_vax, 1 / years_history, n_diag_rec),
        D = 0,
        vax_t = c(0, 99),
-       vax_y = c(0, 0))
+       vax_y = c(0, 0),
+       hesgroupmatrix = matrix(1 , n_vax, n_vax) )
 }
 
 
@@ -52,6 +53,15 @@ vax_params0_repeat <- function(n_diag_rec = 1, years_history = 1, hesgroups = 1)
   
   willing <- rep(0, n_diag_rec*hesgroups)
   willing[2*(1:n_diag_rec)-1] <- 1
+  
+  hesgroupmatrix = matrix(0 , n_vax, n_vax)
+  
+  for (i in 1:nrow(hesgroupmatrix)){
+    for (j in 1:nrow(hesgroupmatrix)){
+      if ( i %% hesgroups == j %% hesgroups){
+        hesgroupmatrix[i,j] = 1}
+    }
+  }
   
   v <- array(0, dim = c(n_group, n_vax, n_vax))
   list(n_vax = n_diag_rec,
@@ -72,5 +82,6 @@ vax_params0_repeat <- function(n_diag_rec = 1, years_history = 1, hesgroups = 1)
        wd = create_diagnosis_waning_map(n_vax, 1 / years_history, n_diag_rec * hesgroups),
        D = 0,
        vax_t = c(0, 99),
-       vax_y = c(0, 0))
+       vax_y = c(0, 0),
+       hesgroupmatrix = hesgroupmatrix)
 }
