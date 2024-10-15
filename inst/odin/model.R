@@ -72,7 +72,7 @@ lambda[,] <- p[i] * beta * (epsilon * epsilon_hes * prop_C_hesriskgroup[i,j]  +
                               (1 - epsilon) * (1 - epsilon_hes) * sum(foi_LH[]) )
 
 
-n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
+n_UI[, ]     <- lambda[i,j] * (1 - vea[j]) * U[i, j]
 n_AT[, ]     <- eta[i] * A[i, j]
 n_AU[, ] <- if (mu == 0) nu * A[i, j] else
   (nu * mu) / ((ved[j] * nu + (1 - ved[j]) * mu)) * A[i, j]
