@@ -53,8 +53,23 @@ C[, ] <- (1 - vei[j]) * (I[i, j] + A[i, j] + S[i, j])
 prop_C[] <- sum(C[i, ]) / sum(N[i, ])
 Np[]    <- sum(N[i, ]) * p[i]
 
+
+
+## C by hes group and N by hes group
+C_hesgroup[,,] = C[i,j]*hesgroupmatrix[j,k]*p[i]
+N_hesgroup[,,] = N[i,j]*hesgroupmatrix[j,k]*p[i]
+
+prop_C_hesgroup[] = sum(C_hesgroup[,,i])/sum(N_hesgroup[,,i])
+prop_C_hesriskgroup[,] = sum(C_hesgroup[i,,j])/sum(N_hesgroup[i,,j])
+
+
 foi_LH[] <- prop_C[i] * Np[i] / sum(Np[])
-lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
+#lambda[] <- p[i] * beta * (epsilon * prop_C[i] + (1 - epsilon) * sum(foi_LH[]))
+
+lambda[,] <- p[i] * beta * (epsilon * epsilon_hes * prop_C_hesriskgroup[i,j]  + 
+                              epsilon * (1 - epsilon_hes) * prop_C[i] +
+                              (1 - epsilon) * epsilon_hes * prop_C_hesgroup[j] +
+                              (1 - epsilon) * (1 - epsilon_hes) * sum(foi_LH[]) )
 
 
 n_UI[, ]     <- lambda[i] * (1 - vea[j]) * U[i, j]
@@ -186,6 +201,9 @@ A0[, ] <- user()
 S0[, ] <- user()
 T0[, ] <- user()
 
+hesgroupmatrix[,] <- user()
+
+
 initial(cum_incid[, ])       <- 0
 initial(cum_diag_a[, ])      <- 0
 initial(cum_diag_s[, ])      <- 0
@@ -226,7 +244,9 @@ dim(entrants) <- c(n_group, n_vax)
 dim(Np)     <- n_group
 dim(prop_C) <- n_group
 dim(foi_LH) <- n_group
-dim(lambda) <- n_group
+#dim(lambda) <- n_group
+dim(lambda) <- c(n_group, n_vax)
+
 
 dim(n_UI)     <- c(n_group, n_vax)
 dim(n_AT)     <- c(n_group, n_vax)
@@ -274,6 +294,13 @@ dim(cum_entrants) <- c(n_group, n_vax)
 dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
 dim(diag_rec)   <- c(n_group, n_vax, n_vax)
 
+dim(C_hesgroup) <- c(n_group, n_vax, n_vax)
+dim(N_hesgroup) <- c(n_group, n_vax, n_vax)
+dim(hesgroupmatrix) <- c(n_vax, n_vax) # matrix with 1s denoting in same hes group
+dim(prop_C_hesgroup) <- c(n_vax)
+dim(prop_C_hesriskgroup) <- c(n_group, n_vax)
+
+
 
 ## Parameters
 p[]     <- user() # Partner change rate in group L/H
@@ -294,6 +321,8 @@ rho       <- user() # Rate of recovery after treatment
 
 kappa     <- user() # proportion of eligible PN contacts actually notified
 notifiedprev <- user() # prevalence among PN individuals
+
+epsilon_hes <- user()
 
 ## vaccination parameters
 # vaccination routes
@@ -388,3 +417,5 @@ output(N)   <- N
 output(lambda) <- lambda
 output(phi) <- phi
 output(notifiedandattended) <- notifiedandattended
+output(prop_C_hesgroup) <- prop_C_hesgroup
+output(prop_C_hesriskgroup) <- prop_C_hesriskgroup
