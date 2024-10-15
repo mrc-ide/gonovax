@@ -218,3 +218,105 @@ create_uptake_map_xpvwrh <- function(array, r1, r2, r2_p, booster_uptake,
   # cancel those in the vos and vod arrays = incorrect vaccination
   abs(array)
 }
+
+##' @name create_uptake_map_repeated_xpvwr
+##' @title Creates uptake mapping for the branching XPVWRH model where
+##' individuals can move from unvaccinated (X) to vaccinated (V) or partially
+##' vaccinated (P) as well as revaccinated from waned (W) to (R) and, and
+##' partially vaccinated (P) to fully vaccianted (V). The former
+##' reflects the specific indices which are chosen for assigning uptakes.
+##' @param array a vaccine map array of dimensions n_group by n_vax by n_vax
+##' generated through create_vax_map_branching()
+##' @param r1 proportion of population offered vaccine only accepting the first
+##' dose, becoming partially vaccinated
+##' @param r2 proportion of the population who accepted the first dose of the
+##' vaccine who go on to accept the second dose, becoming fully vaccinated
+##' @param booster_uptake proportion of the formerly fully vaccinated, waned
+##' population who accept a booster vaccination dose
+##' @param r2_p proportion of partially vaccinated individuals who receive
+##' a second dose when returning to the clinic due to screening or illness
+##' @param idx list containing indices of all X, P, V, W, R & H strata and n_vax
+##' through vaccine-protected strata until that protection has waned
+##' @param n_diag_rec integer for the number of diagnosis history substrata
+##' @param screening_or_diagnosis string indicating screening or diagnosis
+##' @return an array of the uptakes of same dimensions
+
+create_uptake_map_repeated_xpvwr <- function(array, r1, r2, r2_p, booster_uptake,
+                                             idx, n_diag_rec = 1, hesgroups = 1,
+                                             screening_or_diagnosis) {
+  
+  
+  hesgroups <- length(r1) 
+  
+  
+  for (j in 1:hesgroups){
+    
+    for (i in 1:n_diag_rec) {
+      
+      # note, these indices are specific to the branching pattern of xpvwrh
+      ## individuals in X accept vaccination of the 1st dose at an uptake of r1
+      
+      k <- (j - 1) * n_diag_rec + i 
+      
+      
+      if (screening_or_diagnosis == "screening") {
+        temp <- k
+      } else if (screening_or_diagnosis == "diagnosis") {
+        
+        if (i < n_diag_rec) {
+          
+          
+          temp <- k + 1
+        } else {
+          temp <- k
+        }
+      } else {
+        print("uptake map type not specified.")
+      }
+      
+      array[, k, k] <- array[, k, k] * r1[j]
+      
+      ## individuals entering V (fully vaccinated) also then accept
+      ## vaccination with the 2nd dose at an uptake of r2 so the proportion fully
+      ## vaccinated is given by r1 * r2
+      ## idx$V[1] gives index of the top of the V erlang stack
+      
+      #print("temp")
+      #print(temp)
+      #print("idx$Vtemp")
+      #print(idx$V[temp])
+      
+      array[, idx$V[temp], k] <- array[, idx$V[temp], k] * (r1[j] * r2[j])
+      
+      ## individuals entering P (partially vaccinated) do not then accept
+      ## vaccination with the 2nd dose so proportion partially vaccinated is
+      ## given by r1 * (1 - r2), where 1 - r2 is the proportion not accepting the
+      ## 2nd dose given they have recieved the 1st dose
+      ## idx$P[1] gives index of the top of the P erlang stack
+      array[, idx$P[temp], k] <- array[, idx$P[temp], k] * (r1[j] * (1 - r2[j]))
+      
+      
+      ## individuals with only the 1st dose can later accept vaccination with the
+      ## 2nd dose at an uptake of r2_p
+      ## idx$P gives indices for all P erlang strata, r2_p applies to all equally
+      array[, , idx$P[temp]] <- array[, , idx$P[temp]] * r2_p[j]
+      
+      ## individuals who were fully vaccinated and whose immunity has waned (W)
+      ## can accept vaccination with a single booster dose at an uptake of
+      ## booster_uptake
+      ## idx$W gives the the index for (W)
+      array[, , idx$W[temp]] <- array[, , idx$W[temp]] * booster_uptake[j]
+      
+      
+    }
+    
+  }
+  
+  
+  
+  
+  
+  # values must be positive - otherwise negative values in this array will
+  # cancel those in the vos and vod arrays = incorrect vaccination
+  abs(array)
+}
