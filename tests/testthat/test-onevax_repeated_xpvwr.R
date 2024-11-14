@@ -1630,9 +1630,14 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   
   ## assortativity makes no difference when vaccine has no effect
   
-  y_assort <- run_onevax_repeated_xpvwr(tt, gp_assort, r1 = list( (0: (hesgroups-1))/(hesgroups)), r2 = list(rep(0.5, hesgroups)), vea = 0, hesgroups = hesgroups, strategy = "VoD")
-  expect_equal(sum(y_assort[[1]]$cum_incid), sum(y_assort[[2]]$cum_incid), tol = 1e-9)
+  y_assort <- run_onevax_repeated_xpvwr(tt, gp_assort, r1 = list( (0: (hesgroups-1))/(hesgroups)), r2 = list(rep(0.5, hesgroups)), vea = 0, hesgroups = hesgroups, strategy = NULL)
+  expect_equal(sum(y_assort[[1]]$cum_incid), sum(y_assort[[2]]$cum_incid), reltol = 1e-9)
   
+
+  
+  y_assort <- run_onevax_repeated_xpvwr(tt, gp_assort, r1 = list( (0: (hesgroups-1))/(hesgroups)), r2 = list(rep(0.5, hesgroups)), vea = 0, hesgroups = hesgroups, strategy = "VoD")
+  expect_equal(sum(y_assort[[1]]$cum_incid), sum(y_assort[[2]]$cum_incid), reltol = 1e-9)
+  print( paste0("difference ", hesgroups, " is: ", sum(y_assort[[1]]$cum_incid) - sum(y_assort[[2]]$cum_incid)))
   
   ## but assortativity does make a difference when a vaccine has an effect
   y_assort_2 <- run_onevax_repeated_xpvwr(tt, gp_assort, r1 = list( (0: (hesgroups-1))/(hesgroups)), r2 = list(rep(0.5, hesgroups)), vea = 1, hesgroups = hesgroups, strategy = "VoD")
@@ -1874,7 +1879,7 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
   # check booster_uptake defaults to r1r2 primary uptake
   
   
-})
+#})
 
 
 
@@ -2211,3 +2216,7 @@ test_that("run_onevax_repeated_xpvwr works correctly, with hesgroups > 1", {
 # 
 # 
 # })
+
+  }
+  
+  })
