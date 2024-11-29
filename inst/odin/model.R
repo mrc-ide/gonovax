@@ -185,7 +185,7 @@ deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
 output(tot_treated)  <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
-output(incidence_rate[,]) <- lambda[i,j] * (1 - vea[j])
+output(incidence_rate[]) <- sum(n_UI[, i])/sum(U[,i])
 
 # output time-varying params for checking
 output(beta) <- beta
@@ -249,7 +249,7 @@ dim(foi_LH) <- n_group
 #dim(lambda) <- n_group
 dim(lambda) <- c(n_group, n_vax)
 
-dim(incidence_rate) <- c(n_group, n_vax)
+dim(incidence_rate) <- c(n_vax)
 
 
 dim(n_UI)     <- c(n_group, n_vax)
