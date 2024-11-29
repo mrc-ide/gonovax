@@ -122,21 +122,23 @@ n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 
 # vaccination
 ## time-varying switch
-vax_switch <- interpolate(vax_t, vax_y, "constant")
+vax_switch_1 <- interpolate(vax_t, vax_y, "constant")
+vax_switch_2 <- 1
+vax_switch_3 <- 1
 
 ## Number offered / accepting vaccine
 ## at screening
-n_oos[, , ] <- vos[i, j, k] * screened[i, k] * vax_switch
+n_oos[, , ] <- vos[i, j, k] * screened[i, k] * vax_switch_1
 n_vos[, , ] <- n_oos[i, j, k] * u_s[i, j, k]
 ## on diagnosis
-n_ood[, , ] <- vod[i, j, k] * n_TU[i, k] * vax_switch
+n_ood[, , ] <- vod[i, j, k] * n_TU[i, k] * vax_switch_2
 n_vod[, , ] <- n_ood[i, j, k] * u_d[i, j, k]
 ## on entry - no switch as background rate, adolescent uptake included in vbe
 n_obe[, , ] <- vbe[i, j, k] * entrants[i, k]
 n_vbe[, , ] <- n_obe[i, j, k] * u_vbe
 
 # on partner notification
-n_oopn[, , ] <- vopn[i, j, k] * phi[i, k] * vax_switch
+n_oopn[, , ] <- vopn[i, j, k] * phi[i, k] * vax_switch_3
 n_vopn[, , ] <- n_oopn[i, j, k] * u_pn[i, j, k]
 
 
@@ -183,6 +185,8 @@ deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
 output(tot_treated)  <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
+output(incidence_rate[,]) <- lambda[i,j] * (1 - vea[j])
+
 # output time-varying params for checking
 output(beta) <- beta
 output(eta) <- eta
@@ -223,8 +227,6 @@ initial(cum_offered_vbe[, ]) <- 0
 
 initial(cum_entrants[, ]) <- 0
 
-
-
 # set up dimensions of compartments
 dim(U) <- c(n_group, n_vax)
 dim(I) <- c(n_group, n_vax)
@@ -246,6 +248,8 @@ dim(prop_C) <- n_group
 dim(foi_LH) <- n_group
 #dim(lambda) <- n_group
 dim(lambda) <- c(n_group, n_vax)
+
+dim(incidence_rate) <- c(n_group, n_vax)
 
 
 dim(n_UI)     <- c(n_group, n_vax)
