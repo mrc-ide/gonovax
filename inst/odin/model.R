@@ -180,12 +180,13 @@ deriv(cum_entrants[, ]) <- entrants[i, j]
 deriv(cum_offered_pn[, ])     <- n_oopn[i, j, j]
 deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
 
+deriv(cum_lifeyears_U[,]) <- U[i,j]
 
 # aggregated time series for fitting mcmc
 output(tot_treated)  <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
-output(incidence_rate[, ]) <- sum(n_UI[, i])/sum(U[,i])
+#output(incidence_rate[, ]) <- sum(n_UI[, i])/sum(U[,i])
 
 # output time-varying params for checking
 output(beta) <- beta
@@ -220,6 +221,7 @@ initial(cum_vaccinated_screen[, ])  <- 0
 initial(cum_offered_pn[, ])  <- 0
 initial(cum_vaccinated_pn[, ])  <- 0
 
+initial(cum_lifeyears_U[, ])  <- 0
 
 
 initial(cum_vbe[, ])         <- 0
@@ -249,7 +251,7 @@ dim(foi_LH) <- n_group
 #dim(lambda) <- n_group
 dim(lambda) <- c(n_group, n_vax)
 
-dim(incidence_rate) <- c(1, n_vax)
+#dim(incidence_rate) <- c(1, n_vax)
 
 
 dim(n_UI)     <- c(n_group, n_vax)
@@ -288,6 +290,9 @@ dim(cum_vaccinated_screen)  <- c(n_group, n_vax)
 
 dim(cum_offered_pn)     <- c(n_group, n_vax)
 dim(cum_vaccinated_pn)  <- c(n_group, n_vax)
+
+dim(cum_lifeyears_U)  <- c(n_group, n_vax)
+
 
 dim(cum_vbe)         <- c(n_group, n_vax)
 dim(cum_offered_vbe) <- c(n_group, n_vax)
