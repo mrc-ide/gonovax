@@ -123,11 +123,8 @@ n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 # vaccination
 ## time-varying switch
 vax_switch_1 <- interpolate(vax_t, vax_y, "constant")
-vax_switch_2 <- vax_switch_1
-vax_switch_3 <- vax_switch_1
-
-#vax_switch_2 <- 1
-#vax_switch_3 <- 1
+vax_switch_2 <- 1
+vax_switch_3 <- 1
 
 ## Number offered / accepting vaccine
 ## at screening
