@@ -179,6 +179,23 @@ vaccine protected strata compared to an adjusted baseline
  protected strata compared to an adjusted baseline
 `inc_cum_diag_t_pvr` = cumulative number of total diagnoses in vaccine
 protected strata compared to an adjusted baseline
+`percentage_cases_avert` = percentage of cases avoided in each time-point
+compared to a baseline of no vaccination when cases are counted as
+successful treatment
+`cum_percentage_cases_avert`= percentage of cases avoided cumulatively
+across all timepoints compared to a baseline of no vaccination when cases
+are counted as successful treatment
+`percentage_diag_avert` = percentage of cases avoided in each time-point
+compared to a baseline of no vaccination when cases are counted as
+the sum of all diagnoses
+`cum_percentage_diags_avert`= percentage of cases avoided cumulatively
+across all timepoints compared to a baseline of no vaccination when cases
+are counted as the sum of all diagnoses
+`inc_diag_t` = total number of diagnoses in each time point
+`inc_cum_diag_t` = cumulative total number of diagnoses over time
+`inc_cum_diag_a` = cumulative number of asymptomatic diagnoses over time
+`inc_cum_diag_s` = cumulative number of symptomatic diagnoses over time
+`pv_num_vaccinations` = present value cumulative number of vaccinations
 }
 \description{
 compare model runs with vaccination to a baseline run for the

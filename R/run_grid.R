@@ -226,6 +226,24 @@ run_grid  <- function(gono_params, init_params, cost_params,
 ##'  protected strata compared to an adjusted baseline
 ##' `inc_cum_diag_t_pvr` = cumulative number of total diagnoses in vaccine
 ##' protected strata compared to an adjusted baseline
+##' `percentage_cases_avert` = percentage of cases avoided in each time-point
+##' compared to a baseline of no vaccination when cases are counted as
+##' successful treatment
+##' `cum_percentage_cases_avert`= percentage of cases avoided cumulatively
+##' across all timepoints compared to a baseline of no vaccination when cases
+##' are counted as successful treatment
+##' `percentage_diag_avert` = percentage of cases avoided in each time-point
+##' compared to a baseline of no vaccination when cases are counted as
+##' the sum of all diagnoses
+##' `cum_percentage_diags_avert`= percentage of cases avoided cumulatively
+##' across all timepoints compared to a baseline of no vaccination when cases
+##' are counted as the sum of all diagnoses
+##' `inc_diag_t` = total number of diagnoses in each time point
+##' `inc_cum_diag_t` = cumulative total number of diagnoses over time
+##' `inc_cum_diag_a` = cumulative number of asymptomatic diagnoses over time
+##' `inc_cum_diag_s` = cumulative number of symptomatic diagnoses over time
+##' `pv_num_vaccinations` = present value cumulative number of vaccinations
+##'
 ##' @export
 compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
                                     uptake_second_dose, cost_params,
@@ -352,6 +370,35 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   ret$inc_cum_diag_a_pvr <- apply(ret$inc_diag_a_pvr, 2, cumsum)
   ret$inc_cum_diag_s_pvr <- apply(ret$inc_diag_s_pvr, 2, cumsum)
   ret$inc_cum_diag_t_pvr <- apply(ret$inc_diag_t_pvr, 2, cumsum)
+
+  ret$inc_cum_diag_a <- apply(ret$inc_diag_a, 2, cumsum)
+  ret$inc_cum_diag_s <- apply(ret$inc_diag_s, 2, cumsum)
+  ret$inc_cum_diag_t <- ret$inc_cum_diag_a + ret_inc_cum_diag_s
+
+  ## output discounted number of individuals vaccinated for
+  ## value per vaccination calculation in post
+  ret$pv_num_vaccinations <- calc_pv(ret$inc_vaccinated, disc_rate)
+
+  ## output the percentage of cases averted compared to the baseline
+  ## so standardised across parameter sets
+
+  # if 'cases' assumed to be the number treated T -> U transitions
+  diff <- ret$inc_treated
+  diff_cum <- ret$inc_cum_treated 
+  # or if assumed to be the number diagnoses i.e A and S -> T transitions
+  ret$inc_diag_t <- ret$inc_diag_a + ret$inc_diag_s
+  diff_diag <- ret$inc_diag_t
+  diff_cum_diag <- ret$inc_cum_diag_t
+  # baseline values of all
+  total <- baseline$treated
+  total_cum <- baseline$cum_treated
+  total_diag <- baseline$diag_a + baseline$diag_s
+  total_diag_cum <- baseline$cum_diag_a + baseline$cum_diag_s
+
+  ret$percentage_cases_avert <- (abs(diff)/total * 100)
+  ret$percentage_diag_avert <- (abs(diff_diag)/total_diag * 100)
+  ret$cum_percentage_cases_avert <- (abs(diff_cum)/total_cum * 100)
+  ret$cum_percentage_diag_avert <- (abs(diff_diag_cum)/total_diag_cum * 100)
 
   ret
 
