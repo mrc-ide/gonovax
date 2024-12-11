@@ -34,7 +34,9 @@ vax_params0 <- function(n_diag_rec = 1, years_history = 1) {
        D = 0,
        vax_t = c(0, 99),
        vax_y = c(0, 0),
-       hesgroupmatrix = matrix(1 , n_vax, n_vax) )
+       hesgroupmatrix = matrix(1 , n_vax, n_vax) ,
+       stratum_doses = rep(0, n_vax)
+  )
 }
 
 

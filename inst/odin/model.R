@@ -142,6 +142,11 @@ n_oopn[, , ] <- vopn[i, j, k] * phi[i, k] * vax_switch_3
 n_vopn[, , ] <- n_oopn[i, j, k] * u_pn[i, j, k]
 
 
+## numbers vaccinated and number of doses
+n_vac[, ] <- n_vos[i,j,j] + n_vod[i,j,j] + n_vbe[i,j,j] + n_vopn[i,j,j]
+n_doses[,,] <- if (j == k) 0 else -1*(n_vos[i,j,k] + n_vod[i,j,k] + n_vbe[i,j,k] + n_vopn[i,j,k])*stratum_doses[j]
+
+
 # waning
 wU[, , ] <- w[j, k] * U[i, k]
 wI[, , ] <- w[j, k] * I[i, k]
@@ -187,6 +192,11 @@ output(tot_treated)  <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 #output(incidence_rate[, ]) <- sum(n_UI[, i])/sum(U[,i])
+
+
+output(case_rate) <- sum(n_UI[, ])
+output(vacc_rate) <- sum(n_vac[, ])
+output(dose_rate) <- sum(n_doses[,,])
 
 # output time-varying params for checking
 output(beta) <- beta
@@ -360,7 +370,7 @@ wd[, ]   <- user() # Waning of diagnosis map
 
 diag_rec[, , ] <- user()  ## recording diagnosis history mapping
 
-
+stratum_doses[] <- user()
 
 
 ## par dimensions
@@ -399,12 +409,19 @@ dim(n_vod) <- c(n_group, n_vax, n_vax)
 
 dim(n_vopn) <- c(n_group, n_vax, n_vax)
 
+dim(n_vac) <- c(n_group, n_vax)
+dim(n_doses) <- c(n_group, n_vax, n_vax)
+
+dim(stratum_doses) <- c(n_vax)
+
 
 dim(n_obe) <- c(n_group, n_vax, n_vax)
 dim(n_oos) <- c(n_group, n_vax, n_vax)
 dim(n_ood) <- c(n_group, n_vax, n_vax)
 
 dim(n_oopn) <- c(n_group, n_vax, n_vax)
+
+
 
 
 dim(wU)   <- c(n_group, n_vax, n_vax)
@@ -428,3 +445,5 @@ output(phi) <- phi
 output(notifiedandattended) <- notifiedandattended
 output(prop_C_hesgroup) <- prop_C_hesgroup
 output(prop_C_hesriskgroup) <- prop_C_hesriskgroup
+
+

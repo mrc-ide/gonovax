@@ -51,6 +51,9 @@ stratum_index_xvw <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vopn <- ret$V
   
   ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
+  ret$stratum_doses = numeric(length = n_vax)
+  ret$stratum_doses[ret$V] = 2
 
   ret
 }
@@ -111,6 +114,9 @@ stratum_index_xvwv <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vopn <- c(ret$V, ret$V)
   
   ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
+  ret$stratum_doses = numeric(length = n_vax)
+  ret$stratum_doses[ret$V] = 2
 
   ret
 }
@@ -174,6 +180,11 @@ stratum_index_xvwr <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vopn <- c(ret$V, ret$R)
   
   ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
+  ret$stratum_doses = numeric(length = n_vax)
+  ret$stratum_doses[ret$V] = 2
+  ret$stratum_doses[ret$R] = 1
+  
 
   ret
 }
@@ -243,6 +254,10 @@ stratum_index_xvwrh <- function(n_erlang = 1, n_diag_rec = 1, strategy = NULL) {
   ret$vaccinatedto_vopn <- c(ret$V, ret$R)
   
   ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
+  ret$stratum_doses = numeric(length = n_vax)
+  ret$stratum_doses[ret$V] = 2
+  ret$stratum_doses[ret$R] = 1
 
   ret
 }
@@ -320,6 +335,11 @@ stratum_index_xpvwrh <- function(n_erlang = 1, n_diag_rec = 1,
   ret$vaccinatedto_vopn <- c(ret$P1, ret$V1, rep(ret$V1, n_erlang), ret$R)
   
   ret$hesgroupmatrix = matrix(1 , n_vax, n_vax)
+  
+  ret$stratum_doses = numeric(length = n_vax)
+  ret$stratum_doses[ret$P] = 1
+  ret$stratum_doses[ret$V] = 2
+  ret$stratum_doses[ret$R] = 1
 
   ret
 }
@@ -424,6 +444,11 @@ stratum_index_repeated_xpvwr <- function(n_erlang = 1, n_diag_rec = 1,
   }
   
   ret$hesgroupmatrix = hesgroupmatrix
+  
+  ret$stratum_doses = numeric(length = n_vax)
+  ret$stratum_doses[ret$P] = 1
+  ret$stratum_doses[ret$V] = 2
+  ret$stratum_doses[ret$R] = 1
   
   ret
 }
