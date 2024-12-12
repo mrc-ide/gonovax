@@ -373,7 +373,7 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
 
   ret$inc_cum_diag_a <- apply(ret$inc_diag_a, 2, cumsum)
   ret$inc_cum_diag_s <- apply(ret$inc_diag_s, 2, cumsum)
-  ret$inc_cum_diag_t <- ret$inc_cum_diag_a + ret_inc_cum_diag_s
+  ret$inc_cum_diag_t <- ret$inc_cum_diag_a + ret$inc_cum_diag_s
 
   ## output discounted number of individuals vaccinated for
   ## value per vaccination calculation in post
@@ -384,21 +384,23 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
 
   # if 'cases' assumed to be the number treated T -> U transitions
   diff <- ret$inc_treated
-  diff_cum <- ret$inc_cum_treated 
+  diff_cum <- ret$inc_cum_treated
   # or if assumed to be the number diagnoses i.e A and S -> T transitions
   ret$inc_diag_t <- ret$inc_diag_a + ret$inc_diag_s
   diff_diag <- ret$inc_diag_t
-  diff_cum_diag <- ret$inc_cum_diag_t
+  diff_diag_cum <- ret$inc_cum_diag_t
   # baseline values of all
   total <- baseline$treated
   total_cum <- baseline$cum_treated
   total_diag <- baseline$diag_a + baseline$diag_s
+  baseline$cum_diag_a <- apply(baseline$diag_a, 2, cumsum)
+  baseline$cum_diag_s <- apply(baseline$diag_s, 2, cumsum)
   total_diag_cum <- baseline$cum_diag_a + baseline$cum_diag_s
 
-  ret$percentage_cases_avert <- (abs(diff)/total * 100)
-  ret$percentage_diag_avert <- (abs(diff_diag)/total_diag * 100)
-  ret$cum_percentage_cases_avert <- (abs(diff_cum)/total_cum * 100)
-  ret$cum_percentage_diag_avert <- (abs(diff_diag_cum)/total_diag_cum * 100)
+  ret$percentage_cases_avert <- (abs(diff) / total * 100)
+  ret$percentage_diag_avert <- (abs(diff_diag) / total_diag * 100)
+  ret$cum_percentage_cases_avert <- (abs(diff_cum) / total_cum * 100)
+  ret$cum_percentage_diag_avert <- (abs(diff_diag_cum) / total_diag_cum * 100)
 
   ret
 
