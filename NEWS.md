@@ -1,3 +1,6 @@
+# gonovax 0.4.22
+* percentage cases averted and cumulative inc. asymptomatic and symptomatic diagnoses are output from compare_baseline_xpvwrh
+
 # gonovax 0.4.21
 * person years exposed from the point of view of a non-screening RCT (U, I, A, S, AND T) added
 

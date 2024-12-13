@@ -545,6 +545,112 @@ test_that("compare baseline xpvwrh works as expected", {
 
   expect_equal(s, t)
 
+  ## test new outputs are correct ###################
+  gp <- gono_params(1:2)
+  ip <- lapply(run_onevax_xpvwrh(0:1, gp), restart_params)
+  tt <- 1:4
+  # baseline
+  bl <- extract_flows_xpvwrh(run_onevax_xpvwrh(tt, gp, ip))
+  blv <- rep(list(bl), 4)
+  cp <- list(qaly_loss_per_diag_s = c(0.002, 0.001),
+             unit_cost_manage_symptomatic = c(98, 99),
+             unit_cost_manage_asymptomatic = c(93, 94),
+             unit_cost_screen_uninfected = c(70, 71))
+  r2 <- 0
+  r1 <- 0
+  #vbe = 0.5 with a vaccine of vea = 0.5 efficacy no waning
+  y <- run_onevax_xpvwrh(tt, gp, ip, vea = 0.5, dur_v = 1e99, vbe = 0.5,
+                         r1 = r1, r2 = r2)
+  yy <- extract_flows_xpvwrh(y)
+  z <- compare_baseline_xpvwrh(y, bl, r1, r2, cp, 0.35,
+                               vea = 0.5, vea_p = 0.5)
+
+  # check all percentages of cases averted are between 0 and 100
+  expect_true(all(z$percentage_cases_avert >= 0 &
+                    z$percentage_cases_avert <= 100))
+  expect_true(all(z$cum_percentage_cases_avert >= 0 &
+                    z$cum_percentage_cases_avert <= 100))
+  expect_true(all(z$percentage_diag_avert >= 0 &
+                    z$percentage_diag_avert <= 100))
+  expect_true(all(z$cum_percentage_diag_avert >= 0 &
+                    z$cum_percentage_diag_avert <= 100))
+
+  # for vaccine with vea activity % cases averted are positive
+  # inc. treated is negative for vax run - baseline run
+  expect_true(all(z$inc_cum_treated < 0))
+  expect_true(all(z$inc_cum_diag_t < 0))
+  # so % cases averted is positive
+  expect_true(all(z$percentage_cases_avert > 0))
+  expect_true(all(z$percentage_diag_avert > 0))
+
+  # total inc diagnoses are correct
+  expect_equal(z$inc_diag_t, (z$inc_diag_a + z$inc_diag_s))
+
+  for (i in 1:2){
+    # cumulative outputs are cumulative
+    expect_equal(sum(z$inc_diag_t[, i]), sum(z$inc_cum_diag_t[3, i]))
+    expect_equal(sum(z$inc_diag_a[, i]), sum(z$inc_cum_diag_a[3, i]))
+    expect_equal(sum(z$inc_diag_s[, i]), sum(z$inc_cum_diag_s[3, i]))
+  }
+
+  #when discounting present value number of vaccinations < number of
+  #vaccinations
+  expect_true(all(z$pv_num_vaccinations < z$inc_cum_vaccinated))
+
+  # expect that if vaccine is harmful and so increases number of cases in
+  # the vaccinated run, then the percentage cases averted is negative
+  # i.e when ves is 0.5 and we expect a heightened prevalence
+  y_harm <- run_onevax_xpvwrh(tt, gp, ip, ves = 0.5, dur_v = 1e99, vbe = 0.5,
+                              r1 = r1, r2 = r2)
+  yy_harm <- extract_flows_xpvwrh(y_harm)
+  z_harm <- compare_baseline_xpvwrh(y_harm, bl, r1, r2, cp, 0.35,
+                                    vea = 0, vea_p = 0)
+
+  expect_true(all(z_harm$cum_percentage_cases_avert[max(tt) - 1, ] < 0))
+
+  # if #treated is negative value for averted should be positive and vice versa
+  # so expect all values in the relationship vector to be negative
+  cum_treated <- z_harm$inc_cum_treated
+  treated <- z_harm$inc_treated
+  cum_diag <- z_harm$inc_cum_diag_t
+  diag <- z_harm$inc_diag_t
+  cum_averted <- z_harm$cum_percentage_cases_avert
+  averted <- z_harm$percentage_cases_avert
+  cum_diag_averted <- z_harm$cum_percentage_diag_avert
+  diag_averted <- z_harm$percentage_diag_avert
+
+  relationship_cum_treated <- cum_treated * cum_averted
+  relationship_treated <- treated * averted
+  relationship_cum_diag <- cum_diag * cum_diag_averted
+  relationship_diag <- diag * diag_averted
+
+  expect_true(all(relationship_cum_treated <= 0))
+  expect_true(all(relationship_treated <= 0))
+  expect_true(all(relationship_cum_diag <= 0))
+  expect_true(all(relationship_diag <= 0))
+
+  # repeat for non-harmful vaccine where cases averted positive (vea = 0.5)
+  expect_true(all(z$cum_percentage_cases_avert[max(tt) - 1, ] > 0))
+
+  cum_treated <- z$inc_cum_treated
+  treated <- z$inc_treated
+  cum_diag <- z$inc_cum_diag_t
+  diag <- z$inc_diag_t
+  cum_averted <- z$cum_percentage_cases_avert
+  averted <- z$percentage_cases_avert
+  cum_diag_averted <- z$cum_percentage_diag_avert
+  diag_averted <- z$percentage_diag_avert
+
+  relationship_cum_treated <- cum_treated * cum_averted
+  relationship_treated <- treated * averted
+  relationship_cum_diag <- cum_diag * cum_diag_averted
+  relationship_diag <- diag * diag_averted
+
+  expect_true(all(relationship_cum_treated <= 0))
+  expect_true(all(relationship_treated <= 0))
+  expect_true(all(relationship_cum_diag <= 0))
+  expect_true(all(relationship_diag <= 0))
+
 })
 ###############################################################################
 test_that("compare baseline works as expected", {
