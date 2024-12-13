@@ -397,10 +397,10 @@ compare_baseline_xpvwrh <- function(y, baseline, uptake_first_dose,
   baseline$cum_diag_s <- apply(baseline$diag_s, 2, cumsum)
   total_diag_cum <- baseline$cum_diag_a + baseline$cum_diag_s
 
-  ret$percentage_cases_avert <- (abs(diff) / total * 100)
-  ret$percentage_diag_avert <- (abs(diff_diag) / total_diag * 100)
-  ret$cum_percentage_cases_avert <- (abs(diff_cum) / total_cum * 100)
-  ret$cum_percentage_diag_avert <- (abs(diff_diag_cum) / total_diag_cum * 100)
+  ret$percentage_cases_avert <- (-(diff) / total * 100)
+  ret$percentage_diag_avert <- (-(diff_diag) / total_diag * 100)
+  ret$cum_percentage_cases_avert <- (-(diff_cum) / total_cum * 100)
+  ret$cum_percentage_diag_avert <- (-(diff_diag_cum) / total_diag_cum * 100)
 
   ret
 
