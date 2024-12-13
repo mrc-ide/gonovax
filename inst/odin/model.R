@@ -194,7 +194,7 @@ output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 #output(incidence_rate[, ]) <- sum(n_UI[, i])/sum(U[,i])
 
 
-output(case_rate) <- sum(n_UI[, ])
+output(case_rate) <- sum(n_AT[, ]) + sum(n_ST[, ])
 output(vacc_rate) <- sum(n_vac[, ])
 output(dose_rate) <- sum(n_doses[,,])
 

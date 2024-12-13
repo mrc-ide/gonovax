@@ -4422,8 +4422,8 @@ void model_rhs(model_internal* internal, double t, double * state, double * dsta
     for (int i = 1; i <= internal->dim_omega_C_withdiag_rg; ++i) {
       internal->omega_C_withdiag_rg[i - 1] = odin_sum2(internal->omega_C_withdiag, 0, internal->dim_omega_C_withdiag_1, i - 1, i, internal->dim_omega_C_withdiag_1);
     }
+    output[2] = odin_sum2(internal->n_AT, 0, internal->dim_n_AT_1, 0, internal->dim_n_AT_2, internal->dim_n_AT_1) + odin_sum2(internal->n_ST, 0, internal->dim_n_ST_1, 0, internal->dim_n_ST_2, internal->dim_n_ST_1);
     memcpy(output + internal->offset_output_lambda, internal->lambda, internal->dim_lambda * sizeof(double));
-    output[2] = odin_sum2(internal->n_UI, 0, internal->dim_n_UI_1, 0, internal->dim_n_UI_2, internal->dim_n_UI_1);
     for (int i = 1; i <= internal->dim_xi_1; ++i) {
       for (int j = 1; j <= internal->dim_xi_2; ++j) {
         internal->xi[i - 1 + internal->dim_xi_1 * (j - 1)] = internal->notifiedprev * internal->kappa * internal->omega_C_withdiag_rg[i - 1] * internal->prop_CCsubgroup[internal->dim_prop_CCsubgroup_1 * (j - 1) + i - 1];
@@ -4482,6 +4482,11 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
   for (int i = 1; i <= internal->dim_N_1; ++i) {
     for (int j = 1; j <= internal->dim_N_2; ++j) {
       internal->N[i - 1 + internal->dim_N_1 * (j - 1)] = U[internal->dim_U_1 * (j - 1) + i - 1] + I[internal->dim_I_1 * (j - 1) + i - 1] + A[internal->dim_A_1 * (j - 1) + i - 1] + S[internal->dim_S_1 * (j - 1) + i - 1] + T[internal->dim_T_1 * (j - 1) + i - 1];
+    }
+  }
+  for (int i = 1; i <= internal->dim_n_ST_1; ++i) {
+    for (int j = 1; j <= internal->dim_n_ST_2; ++j) {
+      internal->n_ST[i - 1 + internal->dim_n_ST_1 * (j - 1)] = internal->mu * S[internal->dim_S_1 * (j - 1) + i - 1];
     }
   }
   for (int i = 1; i <= internal->dim_n_TU_1; ++i) {
@@ -4578,6 +4583,11 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
       internal->lambda[i - 1 + internal->dim_lambda_1 * (j - 1)] = internal->p[i - 1] * beta * (internal->epsilon * internal->epsilon_hes * internal->prop_C_hesriskgroup[internal->dim_prop_C_hesriskgroup_1 * (j - 1) + i - 1] + internal->epsilon * (1 - internal->epsilon_hes) * internal->prop_C[i - 1] + (1 - internal->epsilon) * internal->epsilon_hes * internal->prop_C_hesgroup[j - 1] + (1 - internal->epsilon) * (1 - internal->epsilon_hes) * odin_sum1(internal->foi_LH, 0, internal->dim_foi_LH));
     }
   }
+  for (int i = 1; i <= internal->dim_n_AT_1; ++i) {
+    for (int j = 1; j <= internal->dim_n_AT_2; ++j) {
+      internal->n_AT[i - 1 + internal->dim_n_AT_1 * (j - 1)] = internal->eta[i - 1] * A[internal->dim_A_1 * (j - 1) + i - 1];
+    }
+  }
   for (int i = 1; i <= internal->dim_omega_C_withdiag_1; ++i) {
     for (int j = 1; j <= internal->dim_omega_C_withdiag_2; ++j) {
       internal->omega_C_withdiag[i - 1 + internal->dim_omega_C_withdiag_1 * (j - 1)] = internal->omega_C[internal->dim_omega_C_1 * (j - 1) + i - 1] * (internal->mu * odin_sum2(S, i - 1, i, 0, internal->dim_S_2, internal->dim_S_1) + internal->eta[i - 1] * odin_sum2(A, i - 1, i, 0, internal->dim_A_2, internal->dim_A_1));
@@ -4603,17 +4613,13 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
       }
     }
   }
-  for (int i = 1; i <= internal->dim_n_UI_1; ++i) {
-    for (int j = 1; j <= internal->dim_n_UI_2; ++j) {
-      internal->n_UI[i - 1 + internal->dim_n_UI_1 * (j - 1)] = internal->lambda[internal->dim_lambda_1 * (j - 1) + i - 1] * (1 - internal->vea[j - 1]) * U[internal->dim_U_1 * (j - 1) + i - 1];
-    }
-  }
   for (int i = 1; i <= internal->dim_omega_C_withdiag_rg; ++i) {
     internal->omega_C_withdiag_rg[i - 1] = odin_sum2(internal->omega_C_withdiag, 0, internal->dim_omega_C_withdiag_1, i - 1, i, internal->dim_omega_C_withdiag_1);
   }
   for (int i = 1; i <= internal->dim_omega_U_withdiag_rg; ++i) {
     internal->omega_U_withdiag_rg[i - 1] = odin_sum2(internal->omega_U_withdiag, 0, internal->dim_omega_U_withdiag_1, i - 1, i, internal->dim_omega_U_withdiag_1);
   }
+  output[2] = odin_sum2(internal->n_AT, 0, internal->dim_n_AT_1, 0, internal->dim_n_AT_2, internal->dim_n_AT_1) + odin_sum2(internal->n_ST, 0, internal->dim_n_ST_1, 0, internal->dim_n_ST_2, internal->dim_n_ST_1);
   memcpy(output + internal->offset_output_lambda, internal->lambda, internal->dim_lambda * sizeof(double));
   for (int i = 1; i <= internal->dim_n_vos_1; ++i) {
     for (int j = 1; j <= internal->dim_n_vos_2; ++j) {
@@ -4622,7 +4628,6 @@ void model_output_dde(size_t n_eq, double t, double * state, size_t n_output, do
       }
     }
   }
-  output[2] = odin_sum2(internal->n_UI, 0, internal->dim_n_UI_1, 0, internal->dim_n_UI_2, internal->dim_n_UI_1);
   for (int i = 1; i <= internal->dim_phi_1; ++i) {
     for (int j = 1; j <= internal->dim_phi_2; ++j) {
       internal->phi[i - 1 + internal->dim_phi_1 * (j - 1)] = (1 - internal->notifiedprev) * internal->kappa * internal->omega_U_withdiag_rg[i - 1] * internal->prop_UUsubgroup[internal->dim_prop_UUsubgroup_1 * (j - 1) + i - 1];
