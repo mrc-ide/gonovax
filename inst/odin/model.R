@@ -188,19 +188,19 @@ deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
 deriv(cum_lifeyears_U[,]) <- U[i,j]
 
 # aggregated time series for fitting mcmc
-output(tot_treated)  <- sum(cum_treated)
-output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
+#output(tot_treated)  <- sum(cum_treated)
+#output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 #output(incidence_rate[, ]) <- sum(n_UI[, i])/sum(U[,i])
 
 
 output(case_rate) <- sum(n_AT[, ]) + sum(n_ST[, ])
-output(vacc_rate) <- sum(n_vac[, ])
+#output(vacc_rate) <- sum(n_vac[, ])
 output(dose_rate) <- sum(n_doses[,,])
 
 # output time-varying params for checking
-output(beta) <- beta
-output(eta) <- eta
+#output(beta) <- beta
+#output(eta) <- eta
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vbector
@@ -440,10 +440,10 @@ dim(wdS)   <- c(n_group, n_vax, n_vax)
 dim(wdT)   <- c(n_group, n_vax, n_vax)
 
 output(N)   <- N
-output(lambda) <- lambda
-output(phi) <- phi
-output(notifiedandattended) <- notifiedandattended
-output(prop_C_hesgroup) <- prop_C_hesgroup
-output(prop_C_hesriskgroup) <- prop_C_hesriskgroup
+#output(lambda) <- lambda
+#output(phi) <- phi
+#output(notifiedandattended) <- notifiedandattended
+#output(prop_C_hesgroup) <- prop_C_hesgroup
+#output(prop_C_hesriskgroup) <- prop_C_hesriskgroup
 
 
