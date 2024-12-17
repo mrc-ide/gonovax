@@ -26,15 +26,10 @@ eta[2] <- eta_h
 
 ## Core equations for transitions between compartments:
 
-# deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
-#   n_AU[i, j] + n_TU[i, j] - sum(n_diag_rec[i, j, ])  + sum(wU[i, j, ]) -
-#   sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ]) -
-#   sum(n_vopn[i, j, ])  + sum(wdU[i, j, ])
-
 deriv(U[, ]) <- entrants[i, j] - n_UI[i, j] - exr * U[i, j] +
   n_AU[i, j] + n_TU[i, j] - sum(n_diag_rec[i, j, ])  + sum(wU[i, j, ]) -
-  - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ]) -
-  + sum(wdU[i, j, ])
+  sum(n_vbe[i, j, ]) - sum(n_vod[i, j, ]) - sum(n_vos[i, j, ]) -
+  sum(n_vopn[i, j, ])  + sum(wdU[i, j, ])
 
 deriv(I[, ]) <- n_UI[i, j] - (sigma + exr) * I[i, j] + sum(wI[i, j, ]) +
   sum(wdI[i, j, ])
@@ -89,34 +84,34 @@ screened[, ] <- eta[i] * U[i, j]
 
 #Calculations required for partner notification
 
-# Cp[] <- sum(C[i, ]) * p[i]
-# Up[] <- sum(U[i, ]) * p[i]
-# 
-# omega_C[, ] <- (1 - epsilon) * Cp[j] / sum(Cp[]) + (if (i == j) epsilon else 0)
-# omega_U[, ] <- (1 - epsilon) * Up[j] / sum(Up[]) + (if (i == j) epsilon else 0)
-# prop_UUsubgroup[, ] <- U[i, j] / sum(U[i, ])
-# prop_CCsubgroup[, ] <- C[i, j] / sum(C[i, ])
-# 
-# omega_U_withdiag[, ] <- omega_U[i, j] * (mu * sum(S[i, ]) + eta[i] *
-#                                            sum(A[i, ]))
-# omega_C_withdiag[, ] <- omega_C[i, j] * (mu * sum(S[i, ]) + eta[i] *
-#                                            sum(A[i, ]))
-# 
-# omega_U_withdiag_rg[] <- sum(omega_U_withdiag[, i])
-# omega_C_withdiag_rg[] <- sum(omega_C_withdiag[, i])
+Cp[] <- sum(C[i, ]) * p[i]
+Up[] <- sum(U[i, ]) * p[i]
+
+omega_C[, ] <- (1 - epsilon) * Cp[j] / sum(Cp[]) + (if (i == j) epsilon else 0)
+omega_U[, ] <- (1 - epsilon) * Up[j] / sum(Up[]) + (if (i == j) epsilon else 0)
+prop_UUsubgroup[, ] <- U[i, j] / sum(U[i, ])
+prop_CCsubgroup[, ] <- C[i, j] / sum(C[i, ])
+
+omega_U_withdiag[, ] <- omega_U[i, j] * (mu * sum(S[i, ]) + eta[i] *
+                                           sum(A[i, ]))
+omega_C_withdiag[, ] <- omega_C[i, j] * (mu * sum(S[i, ]) + eta[i] *
+                                           sum(A[i, ]))
+
+omega_U_withdiag_rg[] <- sum(omega_U_withdiag[, i])
+omega_C_withdiag_rg[] <- sum(omega_C_withdiag[, i])
 
 #new simplified way
 
 #notifications to uninfected
-# phi[, ] <- (1 - notifiedprev) * kappa * omega_U_withdiag_rg[i] *
-#   prop_UUsubgroup[i, j]
-# 
-# #notifcations to infected
-# xi[, ] <- notifiedprev * kappa * omega_C_withdiag_rg[i] * prop_CCsubgroup[i, j]
-# 
-# 
-# notifiedandattended[, ] <- if (phi[i, j] + xi[i, j] > 0)
-#   phi[i, j] + xi[i, j] else 0
+phi[, ] <- (1 - notifiedprev) * kappa * omega_U_withdiag_rg[i] *
+  prop_UUsubgroup[i, j]
+
+#notifcations to infected
+xi[, ] <- notifiedprev * kappa * omega_C_withdiag_rg[i] * prop_CCsubgroup[i, j]
+
+
+notifiedandattended[, ] <- if (phi[i, j] + xi[i, j] > 0)
+  phi[i, j] + xi[i, j] else 0
 
 
 # mechanism to record number of times infected by moving diagnosed
@@ -129,7 +124,7 @@ n_diag_rec[, , ] <- diag_rec[i, j, k] * n_TU[i, k]
 ## time-varying switch
 vax_switch_1 <- interpolate(vax_t, vax_y, "constant")
 vax_switch_2 <- 1
-#vax_switch_3 <- 1
+vax_switch_3 <- 1
 
 ## Number offered / accepting vaccine
 ## at screening
@@ -138,19 +133,18 @@ n_vos[, , ] <- n_oos[i, j, k] * u_s[i, j, k]
 ## on diagnosis
 n_ood[, , ] <- vod[i, j, k] * n_TU[i, k] * vax_switch_2
 n_vod[, , ] <- n_ood[i, j, k] * u_d[i, j, k]
-# ## on entry - no switch as background rate, adolescent uptake included in vbe
-# n_obe[, , ] <- vbe[i, j, k] * entrants[i, k]
-# n_vbe[, , ] <- n_obe[i, j, k] * u_vbe
-# 
-# # on partner notification
-# n_oopn[, , ] <- vopn[i, j, k] * phi[i, k] * vax_switch_3
-# n_vopn[, , ] <- n_oopn[i, j, k] * u_pn[i, j, k]
+## on entry - no switch as background rate, adolescent uptake included in vbe
+n_obe[, , ] <- vbe[i, j, k] * entrants[i, k]
+n_vbe[, , ] <- n_obe[i, j, k] * u_vbe
+
+# on partner notification
+n_oopn[, , ] <- vopn[i, j, k] * phi[i, k] * vax_switch_3
+n_vopn[, , ] <- n_oopn[i, j, k] * u_pn[i, j, k]
 
 
 ## numbers vaccinated and number of doses
-#n_vac[, ] <- n_vos[i,j,j] + n_vod[i,j,j] # + n_vbe[i,j,j] + n_vopn[i,j,j]
-#n_doses[,,] <- if (j == k) 0 else -1*(n_vos[i,j,k] + n_vod[i,j,k] + n_vbe[i,j,k] + n_vopn[i,j,k])*stratum_doses[j]
-n_doses[,,] <- if (j == k) 0 else -1*(n_vos[i,j,k] + n_vod[i,j,k])*stratum_doses[j]
+n_vac[, ] <- n_vos[i,j,j] + n_vod[i,j,j] + n_vbe[i,j,j] + n_vopn[i,j,j]
+n_doses[,,] <- if (j == k) 0 else -1*(n_vos[i,j,k] + n_vod[i,j,k] + n_vbe[i,j,k] + n_vopn[i,j,k])*stratum_doses[j]
 
 
 # waning
@@ -178,18 +172,18 @@ deriv(cum_diag_a[, ])      <- n_AT[i, j]
 deriv(cum_diag_s[, ])      <- n_ST[i, j]
 deriv(cum_treated[, ])     <- n_TU[i, j]
 deriv(cum_screened[, ])    <- screened[i, j]
-deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] #+
-  #n_obe[i, j, j] + n_oopn[i, j, j]
-deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] #+
-  #n_vbe[i, j, j] + n_vopn[i, j, j]
+deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] +
+  n_obe[i, j, j] + n_oopn[i, j, j]
+deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] +
+  n_vbe[i, j, j] + n_vopn[i, j, j]
 deriv(cum_vaccinated_screen[, ])  <- n_vos[i, j, j]
 
-#deriv(cum_vbe[, ])         <- n_vbe[i, j, j]
-#deriv(cum_offered_vbe[, ]) <- n_obe[i, j, j]
-#deriv(cum_entrants[, ]) <- entrants[i, j]
+deriv(cum_vbe[, ])         <- n_vbe[i, j, j]
+deriv(cum_offered_vbe[, ]) <- n_obe[i, j, j]
+deriv(cum_entrants[, ]) <- entrants[i, j]
 
-#deriv(cum_offered_pn[, ])     <- n_oopn[i, j, j]
-#deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
+deriv(cum_offered_pn[, ])     <- n_oopn[i, j, j]
+deriv(cum_vaccinated_pn[, ])  <- n_vopn[i, j, j]
 
 deriv(cum_lifeyears_U[,]) <- U[i,j]
 
@@ -234,16 +228,16 @@ initial(cum_offered[, ])     <- 0
 initial(cum_vaccinated[, ])  <- 0
 initial(cum_vaccinated_screen[, ])  <- 0
 
-# initial(cum_offered_pn[, ])  <- 0
-# initial(cum_vaccinated_pn[, ])  <- 0
+initial(cum_offered_pn[, ])  <- 0
+initial(cum_vaccinated_pn[, ])  <- 0
 
 initial(cum_lifeyears_U[, ])  <- 0
 
 
-# initial(cum_vbe[, ])         <- 0
-# initial(cum_offered_vbe[, ]) <- 0
-# 
-# initial(cum_entrants[, ]) <- 0
+initial(cum_vbe[, ])         <- 0
+initial(cum_offered_vbe[, ]) <- 0
+
+initial(cum_entrants[, ]) <- 0
 
 # set up dimensions of compartments
 dim(U) <- c(n_group, n_vax)
@@ -278,20 +272,20 @@ dim(n_TU)     <- c(n_group, n_vax)
 dim(screened) <- c(n_group, n_vax)
 
 #quantities added for PN
-# dim(Up) <- n_group
-# dim(Cp)     <- n_group
-# dim(omega_U) <- c(n_group, n_group)
-# dim(omega_C) <- c(n_group, n_group)
-# dim(omega_U_withdiag) <- c(n_group, n_group)
-# dim(omega_C_withdiag) <- c(n_group, n_group)
-# dim(omega_U_withdiag_rg) <- n_group
-# dim(omega_C_withdiag_rg) <- n_group
-# dim(prop_UUsubgroup) <- c(n_group, n_vax)
-# dim(prop_CCsubgroup) <- c(n_group, n_vax)
-# dim(phi) <- c(n_group, n_vax)
-# dim(xi) <- c(n_group, n_vax)
+dim(Up) <- n_group
+dim(Cp)     <- n_group
+dim(omega_U) <- c(n_group, n_group)
+dim(omega_C) <- c(n_group, n_group)
+dim(omega_U_withdiag) <- c(n_group, n_group)
+dim(omega_C_withdiag) <- c(n_group, n_group)
+dim(omega_U_withdiag_rg) <- n_group
+dim(omega_C_withdiag_rg) <- n_group
+dim(prop_UUsubgroup) <- c(n_group, n_vax)
+dim(prop_CCsubgroup) <- c(n_group, n_vax)
+dim(phi) <- c(n_group, n_vax)
+dim(xi) <- c(n_group, n_vax)
 
-# dim(notifiedandattended) <- c(n_group, n_vax)
+dim(notifiedandattended) <- c(n_group, n_vax)
 
 
 dim(cum_incid)       <- c(n_group, n_vax)
@@ -304,16 +298,16 @@ dim(cum_vaccinated)  <- c(n_group, n_vax)
 dim(cum_vaccinated_screen)  <- c(n_group, n_vax)
 
 
-# dim(cum_offered_pn)     <- c(n_group, n_vax)
-# dim(cum_vaccinated_pn)  <- c(n_group, n_vax)
+dim(cum_offered_pn)     <- c(n_group, n_vax)
+dim(cum_vaccinated_pn)  <- c(n_group, n_vax)
 
 dim(cum_lifeyears_U)  <- c(n_group, n_vax)
 
 
-#dim(cum_vbe)         <- c(n_group, n_vax)
-#dim(cum_offered_vbe) <- c(n_group, n_vax)
+dim(cum_vbe)         <- c(n_group, n_vax)
+dim(cum_offered_vbe) <- c(n_group, n_vax)
 
-#dim(cum_entrants) <- c(n_group, n_vax)
+dim(cum_entrants) <- c(n_group, n_vax)
 
 
 dim(n_diag_rec) <- c(n_group, n_vax, n_vax)
@@ -344,17 +338,17 @@ nu        <- user() # Rate of natural recovery from asymptomatic infection
 mu        <- user() # Rate of treatment seeking
 rho       <- user() # Rate of recovery after treatment
 
-# kappa     <- user() # proportion of eligible PN contacts actually notified
-# notifiedprev <- user() # prevalence among PN individuals
+kappa     <- user() # proportion of eligible PN contacts actually notified
+notifiedprev <- user() # prevalence among PN individuals
 
 epsilon_hes <- user()
 
 ## vaccination parameters
 # vaccination routes
-#vbe[, , ] <- user() # vaccine map before entry
+vbe[, , ] <- user() # vaccine map before entry
 vos[, , ] <- user() # vaccine map on screening
 vod[, , ] <- user() # vaccine map on diagnosis
-#vopn[, , ] <- user() # vaccine map on partner notification
+vopn[, , ] <- user() # vaccine map on partner notification
 
 # vaccine effects
 vea[] <- user() # efficacy against acquisition
@@ -362,10 +356,10 @@ ved[] <- user() # efficacy against duration of infection
 ves[] <- user() # efficacy against symptoms
 vei[] <- user() # efficacy against infectiousness
 
-#u_vbe    <- user() # uptake of VbE
+u_vbe    <- user() # uptake of VbE
 u_d[, , ]  <- user() # Uptake matrix for diagnosis
 u_s[, , ]  <- user() # Uptake matrix for screening
-#u_pn[, , ]  <- user() # Uptake matrix for PN
+u_pn[, , ]  <- user() # Uptake matrix for PN
 
 
 w[, ]    <- user() # Waning map
@@ -392,10 +386,10 @@ dim(ved)  <- n_vax
 dim(ves)  <- n_vax
 dim(vei)  <- n_vax
 dim(willing) <- n_vax
-#dim(vbe)   <- c(n_group, n_vax, n_vax)
+dim(vbe)   <- c(n_group, n_vax, n_vax)
 dim(vod)   <- c(n_group, n_vax, n_vax)
 dim(vos)   <- c(n_group, n_vax, n_vax)
-#dim(vopn)   <- c(n_group, n_vax, n_vax)
+dim(vopn)   <- c(n_group, n_vax, n_vax)
 
 
 dim(w)     <- c(n_vax, n_vax)
@@ -403,29 +397,29 @@ dim(w)     <- c(n_vax, n_vax)
 
 dim(u_d)     <- c(n_group, n_vax, n_vax)
 dim(u_s)     <- c(n_group, n_vax, n_vax)
-#dim(u_pn)     <- c(n_group, n_vax, n_vax)
+dim(u_pn)     <- c(n_group, n_vax, n_vax)
 
 
 dim(vax_t) <- user()
 dim(vax_y) <- user()
 
-#dim(n_vbe) <- c(n_group, n_vax, n_vax)
+dim(n_vbe) <- c(n_group, n_vax, n_vax)
 dim(n_vos) <- c(n_group, n_vax, n_vax)
 dim(n_vod) <- c(n_group, n_vax, n_vax)
 
-#dim(n_vopn) <- c(n_group, n_vax, n_vax)
+dim(n_vopn) <- c(n_group, n_vax, n_vax)
 
-#dim(n_vac) <- c(n_group, n_vax)
+dim(n_vac) <- c(n_group, n_vax)
 dim(n_doses) <- c(n_group, n_vax, n_vax)
 
 dim(stratum_doses) <- c(n_vax)
 
 
-#dim(n_obe) <- c(n_group, n_vax, n_vax)
+dim(n_obe) <- c(n_group, n_vax, n_vax)
 dim(n_oos) <- c(n_group, n_vax, n_vax)
 dim(n_ood) <- c(n_group, n_vax, n_vax)
 
-#dim(n_oopn) <- c(n_group, n_vax, n_vax)
+dim(n_oopn) <- c(n_group, n_vax, n_vax)
 
 
 
