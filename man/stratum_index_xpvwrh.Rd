@@ -2,9 +2,12 @@
 % Please edit documentation in R/stratum_indexes.R
 \name{stratum_index_xpvwrh}
 \alias{stratum_index_xpvwrh}
+\alias{stratum_index_xpvwrh_trackvt}
 \title{Generate the indices of all xpvwrh strata}
 \usage{
 stratum_index_xpvwrh(n_erlang = 1, n_diag_rec = 1, strategy = NULL)
+
+stratum_index_xpvwrh_trackvt(n_erlang = 1, n_diag_rec = 1, strategy = NULL)
 }
 \arguments{
 \item{n_erlang}{integer giving the number of transitions that need to be
@@ -16,7 +19,11 @@ made through vaccine-protected strata until that protection has waned}
 }
 \value{
 A list of strata with their indicies
+
+A list of strata with their indicies
 }
 \description{
+Generate the indices of all xpvwrh strata
+
 Generate the indices of all xpvwrh strata
 }
