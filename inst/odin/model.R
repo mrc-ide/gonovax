@@ -148,6 +148,7 @@ deriv(cum_incid[, ])       <- n_UI[i, j]
 deriv(cum_diag_a[, ])      <- n_AT[i, j]
 deriv(cum_diag_s[, ])      <- n_ST[i, j]
 deriv(cum_treated[, ])     <- n_TU[i, j]
+deriv(cum_natrecover[, ])      <- n_AU[i, j]
 deriv(cum_screened[, ])    <- screened[i, j]
 deriv(cum_phi[,]) <- phi[i,j]
 deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] +
@@ -191,6 +192,8 @@ initial(cum_diag_a[, ])      <- 0
 initial(cum_diag_s[, ])      <- 0
 initial(cum_treated[, ])     <- 0
 initial(cum_screened[, ])    <- 0
+initial(cum_natrecover[, ])    <- 0
+
 initial(cum_phi[, ])    <- 0
 initial(cum_offered[, ])     <- 0
 initial(cum_vaccinated[, ])  <- 0
@@ -257,6 +260,7 @@ dim(cum_incid)       <- c(n_group, n_vax)
 dim(cum_diag_a)      <- c(n_group, n_vax)
 dim(cum_diag_s)      <- c(n_group, n_vax)
 dim(cum_treated)     <- c(n_group, n_vax)
+dim(cum_natrecover)  <- c(n_group, n_vax)
 dim(cum_screened)    <- c(n_group, n_vax)
 dim(cum_phi)    <- c(n_group, n_vax)
 dim(cum_offered)     <- c(n_group, n_vax)
