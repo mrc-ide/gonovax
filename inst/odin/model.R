@@ -150,7 +150,7 @@ deriv(cum_diag_s[, ])      <- n_ST[i, j]
 deriv(cum_treated[, ])     <- n_TU[i, j]
 deriv(cum_natrecover[, ])      <- n_AU[i, j]
 deriv(cum_screened[, ])    <- screened[i, j]
-deriv(cum_phi[,]) <- phi[i,j]
+deriv(cum_phi[, ]) <- phi[i, j]
 deriv(cum_offered[, ])     <- n_oos[i, j, j] + n_ood[i, j, j] +
   n_obe[i, j, j] + n_oopn[i, j, j]
 deriv(cum_vaccinated[, ])  <- n_vos[i, j, j] + n_vod[i, j, j] +

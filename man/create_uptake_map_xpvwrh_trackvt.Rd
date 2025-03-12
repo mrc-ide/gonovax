@@ -30,6 +30,9 @@ dose, becoming partially vaccinated}
 \item{r2}{proportion of the population who accepted the first dose of the
 vaccine who go on to accept the second dose, becoming fully vaccinated}
 
+\item{r1_p}{proportion of partially vaccinated individuals who receive
+a >=1 dose when returning to the clinic due to screening or illness}
+
 \item{r2_p}{proportion of partially vaccinated individuals who receive
 a second dose when returning to the clinic due to screening or illness}
 

@@ -54,6 +54,12 @@ run_onevax_xpvwrh_trackvt(
 
 \item{init_params}{A list of starting conditions}
 
+\item{dur_va}{duration of time spent in Va stratum after completing a round
+of primary vaccination (fully vaccinated, accepting first and second dose)}
+
+\item{dur_vb}{duration of time spent in Vb stratum after completing a round
+of primary vaccination (fully vaccinated, accepting first and second dose)}
+
 \item{dur_p}{duration of time spent in the P stratum, partially vaccinated
 (accepting only the first dose)}
 
@@ -68,6 +74,14 @@ efficacy of the vaccine against duration (between 0-1)}
 
 \item{ves}{scalar or numeric vector with same length as `gono_params` giving
 efficacy of the vaccine against symptoms (between 0-1)}
+
+\item{dur_revaxa}{duration of time spent in Ra stratum after completing a
+round of primary vaccination (fully vaccinated, accepting first
+and second dose)}
+
+\item{dur_revaxb}{duration of time spent in Rb stratum after completing a
+round of primary vaccination (fully vaccinated, accepting first
+and second dose)}
 
 \item{vea_revax}{scalar or numeric vector with same length as `gono_params`
 giving efficacy of revaccination against acquisition, default to same as
@@ -109,9 +123,11 @@ symptoms (between 0-1)}
  dose of the vaccine who go on to accept the second dose, becoming fully
  vaccinated}
 
-\item{r2_p}{scalar or numeric vector with same length as 'gono_params'
-giving proportion of partially vaccinated individuals who later receive
-a second dose when returning to the clinic due to screening or illness}
+\item{r1_p}{proportion of partially vaccinated individuals who receive
+>= one dose when returning to the clinic due to screening or illness}
+
+\item{r2_p}{proportion of partially vaccinated individuals who receive
+two doses when returning to the clinic due to screening or illness}
 
 \item{booster_uptake}{scalar or numeric vector with same length as
 'gono_params' giving proportion of population undertaking booster
@@ -132,12 +148,6 @@ through vaccine-protected strata until that protection has waned}
 \item{n_diag_rec}{integer for the number of diagnosis history substrata}
 
 \item{years_history}{number of years that diagnosis history is recorded for}
-
-\item{dur_revax}{scalar or numeric vector with same length as `gono_params`
-giving duration of protection for revaccination, default to same as primary}
-
-\item{dur_v}{duration of time spent in V stratum after completing a round of
-primary vaccination (fully vaccinated, accepting first and second dose)}
 }
 \value{
 A list of transformed model outputs

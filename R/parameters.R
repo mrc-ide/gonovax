@@ -506,7 +506,7 @@ model_params_xpvwrh <- function(gono_params = NULL,
 
 
 ##' @name model_params_xpvwrh_trackvt
-##' @title Parameters for the dualvax model
+##' @title Parameters for the xpvrwrh model tracking time since vaccination
 ##' @param gono_params A dataframe of natural history parameters
 ##' @param demographic_params A dataframe of demographic parameters
 ##' @param vax_params A vector of vaccination params
@@ -521,23 +521,23 @@ model_params_xpvwrh <- function(gono_params = NULL,
 ##'   just before the model is run.
 ##' @export
 model_params_xpvwrh_trackvt <- function(gono_params = NULL,
-                                demographic_params = NULL,
-                                init_params = NULL,
-                                vax_params = NULL,
-                                n_erlang = 1,
-                                n_diag_rec = 1, years_history = 1) {
-  
+                                        demographic_params = NULL,
+                                        init_params = NULL,
+                                        vax_params = NULL,
+                                        n_erlang = 1,
+                                        n_diag_rec = 1, years_history = 1) {
+
   gono_params <- gono_params %||% gono_params(1)[[1]]
   demographic_params <- demographic_params %||% demographic_params()
   ret <- c(demographic_params, gono_params)
-  
+
   if (is.null(vax_params) == FALSE) {  #evaluates to TRUE if vax_params supplied
-    
+
     stopifnot(unique(dim(vax_params$w)) ==
                 3 * n_diag_rec + 5 * n_diag_rec * n_erlang)
-    
+
   } else {
-    
+
     #also add in diag_rec if vax_params not supplied
     vax_params <- vax_params0(n_diag_rec = n_diag_rec,
                               years_history = years_history)
@@ -547,15 +547,15 @@ model_params_xpvwrh_trackvt <- function(gono_params = NULL,
     } else {
       i_diag <- seq_len(n_vax)[seq_len(n_vax) %% n_diag_rec != 0]
     }
-    
+
     vax_params$diag_rec <- create_vax_map(n_vax, c(1, 1), i_diag,
                                           seq_len(n_vax)
                                           [seq_len(n_vax) %% n_diag_rec != 1])
   }
-  
-  
+
+
   cov <- c(1, rep(0, vax_params$n_vax - 1))
   init_params <- init_params %||% initial_params(ret, vax_params$n_vax, cov)
-  
+
   c(ret, init_params, vax_params)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/parameters.R
 \name{model_params_xpvwrh_trackvt}
 \alias{model_params_xpvwrh_trackvt}
-\title{Parameters for the dualvax model}
+\title{Parameters for the xpvrwrh model tracking time since vaccination}
 \usage{
 model_params_xpvwrh_trackvt(
   gono_params = NULL,
@@ -37,5 +37,5 @@ A list of inputs to the model many of which are fixed and
   just before the model is run.
 }
 \description{
-Parameters for the dualvax model
+Parameters for the xpvrwrh model tracking time since vaccination
 }

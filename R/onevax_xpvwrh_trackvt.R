@@ -27,8 +27,9 @@
 ##' @param n_diag_rec  number of diagnosis history strata
 ##' @return A list of initial conditions
 ##' @export
-initial_params_xpvwrh_trackvt <- function(pars, coverage_p = 0, coverage_v = 0, hes = 0,
-                                  t = FALSE, n_erlang = 1, n_diag_rec = 1) {
+initial_params_xpvwrh_trackvt <- function(pars, coverage_p = 0, coverage_v = 0,
+                                          hes = 0, t = FALSE, n_erlang = 1,
+                                          n_diag_rec = 1) {
 
   idx <- stratum_index_xpvwrh_trackvt(n_erlang, n_diag_rec)
 
@@ -47,16 +48,15 @@ initial_params_xpvwrh_trackvt <- function(pars, coverage_p = 0, coverage_v = 0, 
     p_init <- willing * coverage_p
     v_init <- willing * coverage_v
 
-    ## X[1], P[n_erlang], V[n_erlang], W[1], R[n_erlang], H[1]
-    
-    ## X[1]. P[n_erland], Va[n_erlang], Vb[n_erlang], W[1], Ra[n_erlang], Rb[n_erlang], H[n_erlang]
-    cov <- c(x_init, rep(0, n_diag_rec - 1), 
+    ## X[1]. P[n_erlang], Va[n_erlang], Vb[n_erlang], W[1], Ra[n_erlang],
+    ## Rb[n_erlang], H[n_erlang]
+    cov <- c(x_init, rep(0, n_diag_rec - 1),
              p_init, rep(0, n_diag_rec * n_erlang - 1),
              v_init, rep(0, n_diag_rec * n_erlang - 1),
-             rep(0, n_diag_rec*n_erlang),
+             rep(0, n_diag_rec * n_erlang),
              rep(0, n_diag_rec),
              rep(0, n_diag_rec * n_erlang),
-             rep(0, n_diag_rec * n_erlang), 
+             rep(0, n_diag_rec * n_erlang),
              hes, rep(0, n_diag_rec - 1))
 
     stopifnot(length(cov) == n_vax)
@@ -95,14 +95,16 @@ initial_params_xpvwrh_trackvt <- function(pars, coverage_p = 0, coverage_v = 0, 
 ##' dose, becoming partially vaccinated
 ##' @param r2 proportion of the population who accepted the first dose of the
 ##' vaccine who go on to accept the second dose, becoming fully vaccinated
-##' @param dur_va duration of time spent in Va stratum after completing a round of
-##' primary vaccination (fully vaccinated, accepting first and second dose)
-##' @param dur_vb duration of time spent in Vb stratum after completing a round of
-##' primary vaccination (fully vaccinated, accepting first and second dose)
-##' @param dur_revaxa duration of time spent in Ra stratum after completing a round of
-##' primary vaccination (fully vaccinated, accepting first and second dose)
-##' @param dur_revaxb duration of time spent in Rb stratum after completing a round of
-##' primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_va duration of time spent in Va stratum after completing a round
+##'  of primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_vb duration of time spent in Vb stratum after completing a round
+##'  of primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_revaxa duration of time spent in Ra stratum after completing a
+##' round of primary vaccination (fully vaccinated, accepting first
+##' and second dose)
+##' @param dur_revaxb duration of time spent in Rb stratum after completing a
+##' round of primary vaccination (fully vaccinated, accepting first
+##' and second dose)
 ##' @param dur_p duration of time spent in the P stratum, partially vaccinated
 ##' (accepting only the first dose)
 ##' @param vea_p scalar indicating efficacy of partial vaccination against
@@ -123,13 +125,16 @@ initial_params_xpvwrh_trackvt <- function(pars, coverage_p = 0, coverage_v = 0, 
 ##' @param years_history number of years that diagnosis history is recorded for
 ##' @return A list parameters in the model input format
 vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
-                              vea_revax = vea, vei_revax = vei, ved_revax = ved,
-                              ves_revax = ves, vea_p = vea, vei_p = vei,
-                              ved_p = ved, ves_p = ves, dur_va = 1e3, dur_vb = 1,
-                              dur_p = dur_va, dur_revaxa = dur_va, dur_revaxb = 1,  r1 = 0, r2 = 0,
-                              r1_p = 0, r2_p = 0, booster_uptake = r1 * r2,
-                              strategy = NULL, vbe = 0, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1, years_history = 1) {
+                                      vea_revax = vea, vei_revax = vei,
+                                      ved_revax = ved, ves_revax = ves,
+                                      vea_p = vea, vei_p = vei, ved_p = ved,
+                                      ves_p = ves, dur_va = 1e3, dur_vb = 1,
+                                      dur_p = dur_va, dur_revaxa = dur_va,
+                                      dur_revaxb = 1, r1 = 0, r2 = 0, r1_p = 0,
+                                      r2_p = 0, booster_uptake = r1 * r2,
+                                      strategy = NULL, vbe = 0, t_stop = 99,
+                                      hes = 0, n_erlang = 1, n_diag_rec = 1,
+                                      years_history = 1) {
 
   assert_scalar_unit_interval(vea_p)
   assert_scalar_unit_interval(vei_p)
@@ -197,7 +202,7 @@ vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
   # strata individuals wane to
 
-  i_w <- c(idx$P[-(1:n_diag_rec)], idx$X, 
+  i_w <- c(idx$P[-(1:n_diag_rec)], idx$X,
            idx$Va[-(1:n_diag_rec)], idx$Vb[1:n_diag_rec],
            idx$Vb[-(1:n_diag_rec)], idx$W,
            idx$Ra[-(1:n_diag_rec)], idx$Rb[1:n_diag_rec],
@@ -229,24 +234,28 @@ vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 
     diag_rec[, idx$X, ] <- (1 - r1) * diag_rec[, idx$X, ]
     diag_rec[, idx$P, ] <- (1 - r1_p) * diag_rec[, idx$P, ]
-    diag_rec[, idx$Vb, ] <- (1-booster_uptake) * diag_rec[, idx$Vb, ]
+    diag_rec[, idx$Vb, ] <- (1 - booster_uptake) * diag_rec[, idx$Vb, ]
     diag_rec[, idx$W, ] <- (1 - booster_uptake) * diag_rec[, idx$W, ]
-    diag_rec[, idx$Rb, ] <- (1 - booster_uptake)* diag_rec[, idx$Rb, ]
+    diag_rec[, idx$Rb, ] <- (1 - booster_uptake) * diag_rec[, idx$Rb, ]
   }
 
-  u_s <- create_uptake_map_xpvwrh_trackvt(vos, r1, r2, r1_p, r2_p, booster_uptake, idx,
-                                  n_diag_rec = n_diag_rec,
-                                  screening_or_diagnosis = "screening")
-  u_d <- create_uptake_map_xpvwrh_trackvt(vod, r1, r2, r1_p, r2_p, booster_uptake, idx,
-                                  n_diag_rec = n_diag_rec,
-                                  screening_or_diagnosis = "diagnosis")
+  u_s <- create_uptake_map_xpvwrh_trackvt(vos, r1, r2, r1_p, r2_p,
+                                          booster_uptake, idx,
+                                          n_diag_rec = n_diag_rec,
+                                          screening_or_diagnosis = "screening")
+  u_d <- create_uptake_map_xpvwrh_trackvt(vod, r1, r2, r1_p, r2_p,
+                                          booster_uptake,
+                                          idx, n_diag_rec = n_diag_rec,
+                                          screening_or_diagnosis = "diagnosis")
 
-  u_pn <- create_uptake_map_xpvwrh_trackvt(vopn, r1, r2, r1_p, r2_p, booster_uptake, idx,
-                                   n_diag_rec = n_diag_rec,
-                                   screening_or_diagnosis = "screening")
+  u_pn <- create_uptake_map_xpvwrh_trackvt(vopn, r1, r2, r1_p, r2_p,
+                                           booster_uptake, idx,
+                                           n_diag_rec = n_diag_rec,
+                                           screening_or_diagnosis = "screening")
 
   w <- create_waning_map_branching(n_vax, i_v, i_w,
-                                   n_erlang / c(dur_p, dur_va, dur_vb, dur_revaxa, dur_revaxb),
+                                   n_erlang / c(dur_p, dur_va, dur_vb,
+                                                dur_revaxa, dur_revaxb),
                                    n_erlang, n_diag_rec)
 
 
@@ -268,7 +277,8 @@ vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
     ved = set_protection_trackvt(i_v, idx, n_vax, ved_p, ved, ved_revax),
     ves = set_protection_trackvt(i_v, idx, n_vax, ves_p, ves, ves_revax),
     w = create_waning_map_branching(n_vax, i_v, i_w,
-                                    n_erlang / c(dur_p, dur_va, dur_vb, dur_revaxa, dur_revaxb),
+                                    n_erlang / c(dur_p, dur_va, dur_vb,
+                                                 dur_revaxa, dur_revaxb),
                                     n_erlang, n_diag_rec),
     wd =  create_diagnosis_waning_map(n_vax, 1 / years_history, n_diag_rec),
     vax_t = c(0, t_stop),
@@ -300,10 +310,16 @@ vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @param ves_revax scalar or numeric vector with same length as `gono_params`
 ##'  giving efficacy of revaccination against symptoms, default to same as
 ##'  primary
-##' @param dur_revax scalar or numeric vector with same length as `gono_params`
-##'  giving duration of protection for revaccination, default to same as primary
-##' @param dur_v duration of time spent in V stratum after completing a round of
-##' primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_va duration of time spent in Va stratum after completing a round
+##'  of primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_vb duration of time spent in Vb stratum after completing a round
+##'  of primary vaccination (fully vaccinated, accepting first and second dose)
+##' @param dur_revaxa duration of time spent in Ra stratum after completing a
+##' round of primary vaccination (fully vaccinated, accepting first
+##' and second dose)
+##' @param dur_revaxb duration of time spent in Rb stratum after completing a
+##' round of primary vaccination (fully vaccinated, accepting first
+##' and second dose)
 ##' @param dur_p duration of time spent in the P stratum, partially vaccinated
 ##' (accepting only the first dose)
 ##' @param hes Proportion of individuals in the population who are vaccine
@@ -323,9 +339,10 @@ vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##'  'gono_params' giving proportion of the population who accepted the first
 ##'   dose of the vaccine who go on to accept the second dose, becoming fully
 ##'   vaccinated
-##' @param r2_p scalar or numeric vector with same length as 'gono_params'
-##' giving proportion of partially vaccinated individuals who later receive
-##' a second dose when returning to the clinic due to screening or illness
+##' @param r1_p proportion of partially vaccinated individuals who receive
+##' >= one dose when returning to the clinic due to screening or illness
+##' @param r2_p proportion of partially vaccinated individuals who receive
+##' two doses when returning to the clinic due to screening or illness
 ##' @param booster_uptake scalar or numeric vector with same length as
 ##'  'gono_params' giving proportion of population undertaking booster
 ##'  vaccination after primary vaccination protection has waned.
@@ -338,26 +355,32 @@ vax_params_xpvwrh_trackvt <- function(vea = 0, vei = 0, ved = 0, ves = 0,
 ##' @return A list of transformed model outputs
 ##' @export
 run_onevax_xpvwrh_trackvt <- function(tt, gono_params, init_params = NULL,
-                              dur_va = 1e3, dur_vb = 1, dur_p = dur_va, vea = 0, vei = 0,
-                              ved = 0, ves = 0, dur_revaxa = dur_va, dur_revaxb = 1,
-                              vea_revax = vea, vei_revax = vei, ved_revax = ved,
-                              ves_revax = ves, vea_p = vea, vei_p = vei,
-                              ved_p = ved, ves_p = ves, vbe = 0, r1 = 0, r2 = 0, r1_p = 0,
-                              r2_p = 0, booster_uptake = (r1 * r2),
-                              strategy = NULL, t_stop = 99, hes = 0,
-                              n_erlang = 1, n_diag_rec = 1, years_history = 1) {
+                                      dur_va = 1e3, dur_vb = 1, dur_p = dur_va,
+                                      vea = 0, vei = 0, ved = 0, ves = 0,
+                                      dur_revaxa = dur_va, dur_revaxb = 1,
+                                      vea_revax = vea, vei_revax = vei,
+                                      ved_revax = ved, ves_revax = ves,
+                                      vea_p = vea, vei_p = vei, ved_p = ved,
+                                      ves_p = ves, vbe = 0, r1 = 0, r2 = 0,
+                                      r1_p = 0, r2_p = 0,
+                                      booster_uptake = (r1 * r2),
+                                      strategy = NULL, t_stop = 99, hes = 0,
+                                      n_erlang = 1, n_diag_rec = 1,
+                                      years_history = 1) {
 
   stopifnot(all(lengths(list(booster_uptake, r1, r2, r2_p, vea, vei, ved, ves,
                              vea_revax, vei_revax, ved_revax, vea_p, vei_p,
                              ves_p, ved_p, dur_va, dur_vb, dur_p, ves_revax,
-                             dur_revaxa, dur_revaxb)) %in% c(1, length(gono_params))))
+                             dur_revaxa, dur_revaxb)) %in%
+                  c(1, length(gono_params))))
 
-  vax_params <- Map(vax_params_xpvwrh_trackvt, r1 = r1, r2 = r2, r1_p = r1_p, r2_p = r2_p,
-                    booster_uptake = booster_uptake, dur_va = dur_va, dur_vb = dur_vb,
-                    vea = vea, vei = vei, ved = ved, ves = ves,
-                    vea_p = vea_p, vei_p = vei_p, ved_p = ved_p, ves_p = ves_p,
-                    dur_revaxa = dur_revaxa, dur_revaxb = dur_revaxb, dur_p = dur_p,
-                    vea_revax = vea_revax, vei_revax = vei_revax,
+  vax_params <- Map(vax_params_xpvwrh_trackvt, r1 = r1, r2 = r2, r1_p = r1_p,
+                    r2_p = r2_p, booster_uptake = booster_uptake,
+                    dur_va = dur_va, dur_vb = dur_vb,
+                    vea = vea, vei = vei, ved = ved, ves = ves, vea_p = vea_p,
+                    vei_p = vei_p, ved_p = ved_p, ves_p = ves_p,
+                    dur_revaxa = dur_revaxa, dur_revaxb = dur_revaxb,
+                    dur_p = dur_p, vea_revax = vea_revax, vei_revax = vei_revax,
                     ved_revax = ved_revax, ves_revax = ves_revax, hes = hes,
                     n_erlang = n_erlang, n_diag_rec = n_diag_rec,
                     years_history = years_history,
@@ -377,12 +400,14 @@ run_onevax_xpvwrh_trackvt <- function(tt, gono_params, init_params = NULL,
                 3 * n_diag_rec + (5 * n_diag_rec * n_erlang))
   }
 
-  ret <- Map(run_xpvwrh_trackvt, gono_params = gono_params, vax_params = vax_params,
-             init_params = init_params, n_erlang = n_erlang,
-             n_diag_rec = n_diag_rec, MoreArgs = list(tt = tt))
+  ret <- Map(run_xpvwrh_trackvt, gono_params = gono_params,
+             vax_params = vax_params, init_params = init_params,
+             n_erlang = n_erlang, n_diag_rec = n_diag_rec,
+             MoreArgs = list(tt = tt))
 
   # name outputs
-  ret <- lapply(ret, name_outputs, gen_erlang_labels_trackvt(n_erlang, n_diag_rec))
+  ret <- lapply(ret, name_outputs,
+                gen_erlang_labels_trackvt(n_erlang, n_diag_rec))
   ret
 }
 
@@ -405,12 +430,17 @@ gen_erlang_labels_trackvt <- function(n_erlang = 1, n_diag_rec = 1) {
   diag_hist <- paste0(".", as.roman(seq_len(n_diag_rec)))
 
   output <- c(paste0("X", diag_hist),
-              paste0("P", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
-              paste0("Va", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
-              paste0("Vb", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
+              paste0("P", rep(seq_len(n_erlang), each = n_diag_rec),
+                     diag_hist),
+              paste0("Va", rep(seq_len(n_erlang), each = n_diag_rec),
+                     diag_hist),
+              paste0("Vb", rep(seq_len(n_erlang), each = n_diag_rec),
+                     diag_hist),
               paste0("W", diag_hist),
-              paste0("Ra", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
-              paste0("Rb", rep(seq_len(n_erlang), each = n_diag_rec), diag_hist),
+              paste0("Ra", rep(seq_len(n_erlang), each = n_diag_rec),
+                     diag_hist),
+              paste0("Rb", rep(seq_len(n_erlang), each = n_diag_rec),
+                     diag_hist),
               paste0("H", diag_hist))
 
   return(output)

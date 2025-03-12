@@ -35,7 +35,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   }
 
   # check this is still the case when hesitancy > 0
-  y2.1 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 1, hes = 0.5)
+  y2.1 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 1,
+                                    hes = 0.5)
 
   for (i in seq_along(y2.1)) {
     expect_equal(diff(rowSums(y2.1[[i]]$cum_vaccinated[, , 1])), rep((12e3) / 2,
@@ -49,14 +50,14 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # expect error if inputs are not of length 1 or equal to length of params
 
   uptake <- c(0, 2.5, 0.5, 0.75, 1)
-  expect_error(y <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 1,
-                                      primary_uptake = uptake))
+  expect_error(y <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3,
+                                              vbe = 1, primary_uptake = uptake))
 
   # check can restart
   init_params <- lapply(y2, restart_params)
   y3 <- run_onevax_xpvwrh_trackvt(seq(max(tt), length.out = 2, by = 1),
-                          gp, init_params,
-                          vea = 0, dur_va = 1e3, vbe = 1)
+                                  gp, init_params, vea = 0, dur_va = 1e3,
+                                  vbe = 1)
   for (i in seq_along(y2)) {
     expect_equal(y2[[i]]$U[length(tt), , ], y3[[i]]$U[1, , ])
     expect_equal(y2[[i]]$I[length(tt), , ], y3[[i]]$I[1, , ])
@@ -65,7 +66,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
     expect_equal(y2[[i]]$T[length(tt), , ], y3[[i]]$T[1, , ])
   }
 
-  y_h <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 1, hes = 0.3)
+  y_h <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 1,
+                                   hes = 0.3)
 
   # initial population split between non-vaccinated and hesitant only
   # other stratum empty
@@ -81,7 +83,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
     expect_true(all(y_h[[i]]$cum_incid[-1, , 8] > 0))
   }
 
-  y_h2 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 0, hes = 0.3)
+  y_h2 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 0,
+                                    hes = 0.3)
 
   for (i in seq_along(y_h2)) {
     # yearly population entrants enter X and H strata
@@ -102,29 +105,35 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # if time eligible in vb and rb is very same and
   # if proportion hesitant is 0%, = outputs same as xvwr model
   # choose a difficult case where there are very few zero outputs.
-  y_h4 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, dur_vb = 1e-15, dur_revaxb = 1e-15, vbe = 0.8, hes = 0,
-                            r2 = 1, r1 = 0.5, booster_uptake = 0.3,
-                            strategy = "VoD(L)+VoA(H)")
+  y_h4 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1,
+                                    dur_vb = 1e-15, dur_revaxb = 1e-15,
+                                    vbe = 0.8, hes = 0, r2 = 1, r1 = 0.5,
+                                    booster_uptake = 0.3,
+                                    strategy = "VoD(L)+VoA(H)")
   y_xvwr <- run_onevax_xvwr(tt, gp, vea = 0.5, dur = 1, vbe = 0.8,
                             primary_uptake = 0.5, booster_uptake = 0.3,
                             strategy = "VoD(L)+VoA(H)")
   # make output names match
   y_xvwr <- lapply(y_xvwr, name_outputs, c("X.I", "Va1.I", "W.I", "Ra1.I"))
 
-  #note not *exactly* equal because individuals still need to pass through Va2 and Ra2
-  
+  #note not *exactly* equal because individuals still need to pass through
+  ## Va2 and Ra2
+
   for (i in seq_along(y_h4)) {
-    expect_equal(y_h4[[i]]$N[, , c(1, 3 ,5,6)], y_xvwr[[i]]$N, tolerance = 1e-4)
-    expect_equal(y_h4[[i]]$U[, , c(1, 3, 5,6)], y_xvwr[[i]]$U, tolerance = 1e-4)
-    expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3,5,6)], y_xvwr[[i]]$cum_incid, tolerance = 1e-4)
+    expect_equal(y_h4[[i]]$N[, , c(1, 3, 5, 6)], y_xvwr[[i]]$N,
+                 tolerance = 1e-4)
+    expect_equal(y_h4[[i]]$U[, , c(1, 3, 5, 6)], y_xvwr[[i]]$U,
+                 tolerance = 1e-4)
+    expect_equal(y_h4[[i]]$cum_incid[, , c(1, 3, 5, 6)], y_xvwr[[i]]$cum_incid,
+                 tolerance = 1e-4)
 
   }
 
-  
+
   # set to 0 uptake to make sure things calculated correctly
-  y_pn1 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, vbe = 0, hes = 0,
-                             r2 = 1, r1 = 0, booster_uptake = 0.3,
-                             strategy = "VoN")
+  y_pn1 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, vbe = 0,
+                                     hes = 0, r2 = 1, r1 = 0,
+                                     booster_uptake = 0.3, strategy = "VoN")
 
   for (i in seq_along(y_pn1)){
 
@@ -140,9 +149,9 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
                  rep((1 - gp[[i]]$notifiedprev), length(tt)))
   }
 
-  y_pn2 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, vbe = 0, hes = 0,
-                             r2 = 1, r1 = 0.5, booster_uptake = 0.3,
-                             strategy = "VoN")
+  y_pn2 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, vbe = 0,
+                                     hes = 0, r2 = 1, r1 = 0.5,
+                                     booster_uptake = 0.3, strategy = "VoN")
 
   for (i in seq_along(y_pn2)){
 
@@ -174,9 +183,9 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   })
 
   y_pn3 <- run_onevax_xpvwrh_trackvt(tt, gp2, init_params = i_pn, vea = 0.5,
-                             dur_va = 1, vbe = 0, hes = 0, r2 = 1, r1 = 0.5,
-                             booster_uptake = 0.3,
-                             strategy = "VoN")
+                                     dur_va = 1, vbe = 0, hes = 0, r2 = 1,
+                                     r1 = 0.5, booster_uptake = 0.3,
+                                     strategy = "VoN")
 
   for (i in seq_along(y_pn3)){
     expect_true(all(y_pn3[[i]]$cum_offered_pn[, 1, ] == 0))
@@ -197,8 +206,9 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   i_eligible <- c(1, 1, 2, 4, 5, 7)
   expect_equal(i_eligible,  c(idx$X, idx$X, idx$P, idx$Vb, idx$W, idx$Rb))
 
-  i_p <- c(2, 3, 3, 6,6,6)
-  expect_equal(i_p, c(idx$P[1], rep(idx$V[1], n_erlang + 1), rep(idx$Ra[1], 3*n_erlang)))
+  i_p <- c(2, 3, 3, 6, 6, 6)
+  expect_equal(i_p, c(idx$P[1], rep(idx$V[1], n_erlang + 1), rep(idx$Ra[1],
+                                                                 3 * n_erlang)))
 
   vod_map <- create_vax_map_branching(n_vax = idx$n_vax, p$vod, i_eligible, i_p,
                                       idx = idx)
@@ -208,7 +218,7 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
                                       set_vbe = TRUE, idx = idx)
 
   # for vod, expect:
-  
+
   expect_true(unique(vod_map[, 1, 1] == c(1, 1))) # move out of unvaccinated
   expect_true(unique(vod_map[, 2, 1] == c(-1, -1))) # move from X to P
   expect_true(unique(vod_map[, 3, 1] == c(-1, -1))) # from from X to Va
@@ -220,17 +230,17 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   expect_true(unique(vod_map[, 6, 5] == c(-1, -1))) # from W to Ra
   expect_true(unique(vod_map[, 7, 7] == c(1, 1))) # move out of Rb
   expect_true(unique(vod_map[, 6, 7] == c(-1, -1))) # from Rb to Ra
-  
+
   expect_equal(sum(vod_map[, -c(1, 2, 3), 1]), 0)
   expect_equal(sum(vod_map[, -c(2, 3), 2]), 0)
   expect_equal(sum(vod_map[, -c(4, 6), 4]), 0)
   expect_equal(sum(vod_map[, -c(5, 6), 5]), 0)
   expect_equal(sum(vod_map[, -c(7, 6), 7]), 0)
-  
+
   expect_equal(sum(vod_map[, , c(3, 6, 8)]), 0)
 
   # for vos, expect:
-  
+
   expect_true(unique(vos_map[, 1, 1] == c(0, 1))) # move out of unvaccinated
   expect_true(unique(vos_map[, 2, 1] == c(0, -1))) # move from X to P
   expect_true(unique(vos_map[, 3, 1] == c(0, -1))) # from from X to Va
@@ -242,15 +252,15 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   expect_true(unique(vos_map[, 6, 5] == c(0, -1))) # from W to Ra
   expect_true(unique(vos_map[, 7, 7] == c(0, 1))) # move out of Rb
   expect_true(unique(vos_map[, 6, 7] == c(0, -1))) # from Rb to Ra
-  
+
   expect_equal(sum(vos_map[, -c(1, 2, 3), 1]), 0)
   expect_equal(sum(vos_map[, -c(2, 3), 2]), 0)
   expect_equal(sum(vos_map[, -c(4, 6), 4]), 0)
   expect_equal(sum(vos_map[, -c(5, 6), 5]), 0)
   expect_equal(sum(vos_map[, -c(7, 6), 7]), 0)
-  
+
   expect_equal(sum(vos_map[, , c(3, 6, 8)]), 0)
-  
+
 
   # for vbe, expect:
   expect_true(unique(vbe_map[, 1, 1] == c(1, 1)))
@@ -261,14 +271,14 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # test uptake maps are generated as expected
   r1 <- c(0.25, 0.5)
   r2 <- c(0.5, 0.75)
-  r1_p <- c(1,1) ## set this to be 1 for now - fiugre out what we want to do with this later!
+  r1_p <- c(1, 1) ## set this to be 1 for now
   r2_p <- c(0.4, 0.8)
   booster_uptake <- c(0.3, 0.75)
 
   for (i in seq_along(r1)) {
-    u <- create_uptake_map_xpvwrh_trackvt(vod_map, r1[i], r2[i], r1_p[i], r2_p[i],
-                                  booster_uptake[i], idx,
-                                  screening_or_diagnosis = "diagnosis")
+    u <- create_uptake_map_xpvwrh_trackvt(vod_map, r1[i], r2[i], r1_p[i],
+                                          r2_p[i], booster_uptake[i], idx,
+                                          screening_or_diagnosis = "diagnosis")
 
     acc_vax <- u * vod_map
 
@@ -288,12 +298,12 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
                                             booster_uptake[i])))
     expect_true(unique(acc_vax[, 6, 5] == -c(booster_uptake[i],
                                              booster_uptake[i])))
-    
+
     expect_true(unique(acc_vax[, 7, 7] == c(booster_uptake[i],
                                             booster_uptake[i])))
     expect_true(unique(acc_vax[, 6, 7] == -c(booster_uptake[i],
                                              booster_uptake[i])))
-    
+
   }
 
 
@@ -301,18 +311,19 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # + the vaxmaps*uptakemaps generated are doing what they think they are
   # supposed to be doing
 
-  y3e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, strategy = "VoD",
-                           r1 = r1, r2 = r2, r1_p = r1_p, r2_p = r2_p, 
-                           booster_uptake = booster_uptake)
+  y3e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1,
+                                   strategy = "VoD", r1 = r1, r2 = r2,
+                                   r1_p = r1_p, r2_p = r2_p,
+                                   booster_uptake = booster_uptake)
 
   for (i in seq_along(y3e)) {
 
     ## all treated in X, P, Vb, W, Rb are offered vaccination
-    expect_equal(y3e[[i]]$cum_offered[, , c(1, 2, 4,5,7)],
-                 y3e[[i]]$cum_treated[, , c(1, 2, 4,5,7)])
+    expect_equal(y3e[[i]]$cum_offered[, , c(1, 2, 4, 5, 7)],
+                 y3e[[i]]$cum_treated[, , c(1, 2, 4, 5, 7)])
 
     # and no-one else
-    expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y3e[[i]]$cum_offered[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 1] * r1[i]),
@@ -329,11 +340,11 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 5] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 5]))
-    
+
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y3e[[i]]$cum_offered[, , 7] * booster_uptake[i]),
                  rowSums(y3e[[i]]$cum_vaccinated[, , 7]))
-    
+
     # and no-one else
     expect_equal(sum(y3e[[i]]$cum_vaccinated[, , -c(1, 2, 4, 5, 7)]), 0)
 
@@ -342,41 +353,42 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   }
 
   # check VoA is working correctly
-  y4e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1, strategy = "VoA",
-                           r1 = r1, r2 = r2, r1_p = r1_p, r2_p = r2_p,
-                           booster_uptake = booster_uptake)
+  y4e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1,
+                                   strategy = "VoA", r1 = r1, r2 = r2,
+                                   r1_p = r1_p, r2_p = r2_p,
+                                   booster_uptake = booster_uptake)
 
   for (i in seq_along(y4e)) {
 
     ## all treated or screened in X, P, or W are offered vaccination
-    expect_equal(y4e[[i]]$cum_offered[, , c(1, 2, 4,5,7)],
-                 y4e[[i]]$cum_treated[, , c(1, 2, 4,5,7)] +
-                   y4e[[i]]$cum_screened[, , c(1, 2, 4,5,7)])
+    expect_equal(y4e[[i]]$cum_offered[, , c(1, 2, 4, 5, 7)],
+                 y4e[[i]]$cum_treated[, , c(1, 2, 4, 5, 7)] +
+                   y4e[[i]]$cum_screened[, , c(1, 2, 4, 5, 7)])
     # and no-one else
-    expect_equal(sum(y4e[[i]]$cum_offered[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y4e[[i]]$cum_offered[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 1] * r1[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 1]))
 
     # uptake % of 1st dose offered 2nd dose are vaccinated
-    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 2] * r1_p[i]*r2_p[i]),
+    expect_equal(rowSums(y4e[[i]]$cum_offered[, , 2] * r1_p[i] * r2_p[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 2]))
 
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 4] * booster_uptake[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 4]))
-    
+
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 5] * booster_uptake[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 5]))
-    
+
     # uptake % of offered booster are vaccinated
     expect_equal(rowSums(y4e[[i]]$cum_offered[, , 7] * booster_uptake[i]),
                  rowSums(y4e[[i]]$cum_vaccinated[, , 7]))
-    
+
     # and no-one else
-    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y4e[[i]]$cum_vaccinated[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # no-one is lost
     expect_equal(apply(y4e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
@@ -384,81 +396,86 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
 
   # check vaccination targeting
   y5e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0.5, dur_va = 1,
-                           strategy = "VoD(L)+VoA(H)",
-                           r1 = r1, r2 = r2, r1_p = r1_p, r2_p = r2_p,
-                           booster_uptake = booster_uptake)
+                                   strategy = "VoD(L)+VoA(H)", r1 = r1, r2 = r2,
+                                   r1_p = r1_p, r2_p = r2_p,
+                                   booster_uptake = booster_uptake)
 
   for (i in seq_along(y5e)) {
     ## L who are treated in X, P, or W are offered vaccination
-    expect_equal(y5e[[i]]$cum_offered[, 1, c(1, 2, 4,5,7)],
-                 y5e[[i]]$cum_treated[, 1, c(1, 2, 4,5,7)])
+    expect_equal(y5e[[i]]$cum_offered[, 1, c(1, 2, 4, 5, 7)],
+                 y5e[[i]]$cum_treated[, 1, c(1, 2, 4, 5, 7)])
     ## H who are treated or screened in X, P, or W are offered vaccination
-    expect_equal(y5e[[i]]$cum_offered[, 2, c(1, 2, 4,5,7)],
-                 y5e[[i]]$cum_treated[, 2,  c(1, 2, 4,5,7)] +
-                   y5e[[i]]$cum_screened[, 2,  c(1, 2, 4,5,7)])
+    expect_equal(y5e[[i]]$cum_offered[, 2, c(1, 2, 4, 5, 7)],
+                 y5e[[i]]$cum_treated[, 2,  c(1, 2, 4, 5, 7)] +
+                   y5e[[i]]$cum_screened[, 2,  c(1, 2, 4, 5, 7)])
     # and no-one else
-    expect_equal(sum(y5e[[i]]$cum_offered[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y5e[[i]]$cum_offered[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(y5e[[i]]$cum_offered[, , 1] * r1[i],
                  y5e[[i]]$cum_vaccinated[, , 1])
 
     # uptake % of 1st dose offered 2nd dose are vaccinated
-    expect_equal(rowSums(y5e[[i]]$cum_offered[, , 2] *  r1_p[i]*r2_p[i]),
+    expect_equal(rowSums(y5e[[i]]$cum_offered[, , 2] *  r1_p[i] * r2_p[i]),
                  rowSums(y5e[[i]]$cum_vaccinated[, , 2]))
 
     # uptake % of offered booster are vaccinated
     expect_equal(y5e[[i]]$cum_offered[, , 4] * booster_uptake[i],
                  y5e[[i]]$cum_vaccinated[, , 4])
-    
+
     expect_equal(y5e[[i]]$cum_offered[, , 5] * booster_uptake[i],
                  y5e[[i]]$cum_vaccinated[, , 5])
 
     expect_equal(y5e[[i]]$cum_offered[, , 7] * booster_uptake[i],
                  y5e[[i]]$cum_vaccinated[, , 7])
-    
+
     # and no-one else
-    expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y5e[[i]]$cum_vaccinated[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # no-one is lost
     expect_equal(apply(y5e[[i]]$N, 1, sum), rep(6e5, 6), tolerance = 1e-5)
   }
 
   # check length of uptake vector must be 1 or length(gp)
-  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3, strategy = "VbE",
-                                 r1 = c(0, 0.5, 1)))
-  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3, strategy = "VbE",
-                                 r1 = 1, r2 = c(0, 0.5, 1)))
-  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3, strategy = "VbE",
-                                 r1 = 1, r2 = 1, r2_p = c(0, 0.5, 1)))
-  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3, strategy = "VbE",
-                                 r1 = 1, r2 = 1, booster_uptake = c(0, 0.5, 1)))
+  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3,
+                                         strategy = "VbE", r1 = c(0, 0.5, 1)))
+  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3,
+                                         strategy = "VbE", r1 = 1,
+                                         r2 = c(0, 0.5, 1)))
+  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3,
+                                         strategy = "VbE", r1 = 1, r2 = 1,
+                                         r2_p = c(0, 0.5, 1)))
+  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3,
+                                         strategy = "VbE", r1 = 1, r2 = 1,
+                                         booster_uptake = c(0, 0.5, 1)))
 
   # check length of vea must be 1
   expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = c(0, 1, 1), dur_va = 1e3,
-                                 strategy = "VbE", r1 = 1))
+                                         strategy = "VbE", r1 = 1))
   # check length of dur_v must be 1
-  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = c(0, 1e2, 1e3),
-                                 strategy = "VbE", r1 = 1))
+  expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1,
+                                         dur_va = c(0, 1e2, 1e3),
+                                         strategy = "VbE", r1 = 1))
   # check length of dur_p must be 1
   expect_error(run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e3,
-                                 dur_p = c(0, 1e2, 1e3),
-                                 strategy = "VbE", r1 = 1))
+                                         dur_p = c(0, 1e2, 1e3),
+                                         strategy = "VbE", r1 = 1))
   ## test revax is working
-  y6e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e-10, dur_vb = 1e-10, dur_revaxa = 1e10,
-                           strategy = "VoD(L)+VoA(H)",
-                           r1 = r1, r2 = r2, r1_p = r1_p, r2_p = r2_p,
-                           booster_uptake = booster_uptake)
+  y6e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 1, dur_va = 1e-10,
+                                   dur_vb = 1e-10, dur_revaxa = 1e10,
+                                   strategy = "VoD(L)+VoA(H)", r1 = r1, r2 = r2,
+                                   r1_p = r1_p, r2_p = r2_p,
+                                   booster_uptake = booster_uptake)
   for (i in seq_along(y6e)) {
     ## L who are treated in X, P, or W are offered vaccination
-    expect_equal(y6e[[i]]$cum_offered[, 1, c(1, 2, 4,5,7)],
-                 y6e[[i]]$cum_treated[, 1, c(1, 2, 4,5,7)])
+    expect_equal(y6e[[i]]$cum_offered[, 1, c(1, 2, 4, 5, 7)],
+                 y6e[[i]]$cum_treated[, 1, c(1, 2, 4, 5, 7)])
     ## H who are treated or screened in X, P, or W are offered vaccination
-    expect_equal(y6e[[i]]$cum_offered[, 2, c(1, 2, 4,5,7)],
-                 y6e[[i]]$cum_treated[, 2,  c(1, 2, 4,5,7)] +
-                   y6e[[i]]$cum_screened[, 2,  c(1, 2, 4,5,7)])
+    expect_equal(y6e[[i]]$cum_offered[, 2, c(1, 2, 4, 5, 7)],
+                 y6e[[i]]$cum_treated[, 2,  c(1, 2, 4, 5, 7)] +
+                   y6e[[i]]$cum_screened[, 2,  c(1, 2, 4, 5, 7)])
     # and no-one else
-    expect_equal(sum(y6e[[i]]$cum_offered[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y6e[[i]]$cum_offered[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(y6e[[i]]$cum_offered[, , 1] * r1[i],
@@ -477,31 +494,30 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
     expect_equal(sum(y6e[[i]]$N[, , 4]), 0, tolerance = 1e-5)
 
     # efficacy is perfect
-    expect_equal(sum(y6e[[i]]$cum_incid[, , c(2, 3, 4, 6,7)]), 0)
+    expect_equal(sum(y6e[[i]]$cum_incid[, , c(2, 3, 4, 6, 7)]), 0)
     expect_true(all(y6e[[i]]$cum_incid[-1, , c(1, 5)] > 0))
   }
 
   y7e <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, vea_revax = 1, dur_va = 1,
-                           strategy = "VoD(L)+VoA(H)",
-                           r1 = r1, r2 = r2, r1_p = r1_p, r2_p = r2_p,
-                           booster_uptake = booster_uptake,
-                           hes = 0.3)
+                                   strategy = "VoD(L)+VoA(H)", r1 = r1, r2 = r2,
+                                   r1_p = r1_p, r2_p = r2_p,
+                                   booster_uptake = booster_uptake, hes = 0.3)
 
   for (i in seq_along(y7e)) {
     ## L who are treated in X, P, or W are offered vaccination
-    expect_equal(y7e[[i]]$cum_offered[, 1, c(1, 2, 4,5,7)],
-                 y7e[[i]]$cum_treated[, 1, c(1, 2, 4,5,7)])
+    expect_equal(y7e[[i]]$cum_offered[, 1, c(1, 2, 4, 5, 7)],
+                 y7e[[i]]$cum_treated[, 1, c(1, 2, 4, 5, 7)])
     ## H who are treated or screened in X, P or W are offered vaccination
-    expect_equal(y7e[[i]]$cum_offered[, 2, c(1, 2, 4,5,7)],
-                 y7e[[i]]$cum_treated[, 2,  c(1, 2, 4,5,7)] +
-                   y7e[[i]]$cum_screened[, 2,  c(1, 2, 4,5,7)])
+    expect_equal(y7e[[i]]$cum_offered[, 2, c(1, 2, 4, 5, 7)],
+                 y7e[[i]]$cum_treated[, 2,  c(1, 2, 4, 5, 7)] +
+                   y7e[[i]]$cum_screened[, 2,  c(1, 2, 4, 5, 7)])
     # and no-one else
-    expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 2, 4,5,7)]), 0)
+    expect_equal(sum(y7e[[i]]$cum_offered[, , -c(1, 2, 4, 5, 7)]), 0)
 
     # uptake % of offered are vaccinated
     expect_equal(y7e[[i]]$cum_offered[, , 1] * r1[i],
                  y7e[[i]]$cum_vaccinated[, , 1])
-    expect_equal(y7e[[i]]$cum_offered[, , 2] * r1_p[i]*r2_p[i],
+    expect_equal(y7e[[i]]$cum_offered[, , 2] * r1_p[i] * r2_p[i],
                  y7e[[i]]$cum_vaccinated[, , 2])
     expect_equal(y7e[[i]]$cum_offered[, , 4] * booster_uptake[i],
                  y7e[[i]]$cum_vaccinated[, , 4])
@@ -511,26 +527,26 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
                  y7e[[i]]$cum_vaccinated[, , 7])
 
     # efficacy is perfect in R
-    expect_equal(sum(y7e[[i]]$cum_incid[, , c(6,7)]), 0)
+    expect_equal(sum(y7e[[i]]$cum_incid[, , c(6, 7)]), 0)
     # but not in XPWVH
-    expect_true(all(y7e[[i]]$cum_incid[-1, , -c(6,7)] > 0))
+    expect_true(all(y7e[[i]]$cum_incid[-1, , -c(6, 7)] > 0))
   }
 
   ## test restart with hesitancy is working
 
   y8 <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3)
   i_p <- lapply(y8, restart_hes, hes = 0.5, branching = TRUE)
-  y_hesres <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = i_p, vea = 0, dur_va = 1e3,
-                                hes = 0.5)
+  y_hesres <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = i_p, vea = 0,
+                                        dur_va = 1e3, hes = 0.5)
 
   n_erlang <- 2
   y_erlang <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3,
-                                n_erlang = n_erlang)
+                                        n_erlang = n_erlang)
   i_p <- lapply(X = y_erlang, restart_hes, hes = 0.5, n_erlang = n_erlang,
                 branching = TRUE)
-  y_hesres_erlang <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = i_p, vea = 0,
-                                       dur_va = 1e3, hes = 0.5,
-                                       n_erlang = n_erlang)
+  y_hesres_erlang <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = i_p,
+                                               vea = 0, dur_va = 1e3, hes = 0.5,
+                                               n_erlang = n_erlang)
 
 
 
@@ -613,7 +629,7 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # same for if n_erlang > 1
 
   y9_er <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, hes = 0.5,
-                             n_erlang = 2)
+                                     n_erlang = 2)
 
   expect_error(lapply(y9_er, restart_hes, hes = 0.5, branching = TRUE,
                       n_erlang = 2))
@@ -627,25 +643,26 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # same for if n_erlang > 1
 
   y10_er <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e3, vbe = 1,
-                              n_erlang = 2)
+                                      n_erlang = 2)
 
   expect_error(lapply(y10_er, restart_hes, hes = 0.5, branching = TRUE,
                       n_erlang = 2))
 
   # check booster_uptake defaults to r1r2 primary uptake
   y_r1r2_only <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1,
-                                   r1 = 0.8, r2 = 0.5,
-                                   strategy = "VoD(L)+VoA(H)")
+                                           r1 = 0.8, r2 = 0.5,
+                                           strategy = "VoD(L)+VoA(H)")
 
   y_r1r2_boost <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1,
-                                    r1 = 0.8, r2 = 0.5,
-                                    booster_uptake = 0.4,
-                                    strategy = "VoD(L)+VoA(H)")
+                                            r1 = 0.8, r2 = 0.5,
+                                            booster_uptake = 0.4,
+                                            strategy = "VoD(L)+VoA(H)")
 
   expect_equal(y_r1r2_only, y_r1r2_boost)
 
   # When everyone receives one dose (r2 = 0), V, W R, H all empty
-  y11 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0, dur_va = 1, strategy = "VoD")
+  y11 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0, dur_va = 1,
+                                   strategy = "VoD")
 
   for (i in seq_along(y11)) {
 
@@ -658,7 +675,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # When everyone receives two doses straight away (r1*r2 = 1),
   # P and H all empty
 
-  y12 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 1, dur_va = 1, strategy = "VoD")
+  y12 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 1, dur_va = 1,
+                                   strategy = "VoD")
 
   for (i in seq_along(y12)) {
 
@@ -672,7 +690,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # and durations are the same
   # then N should be the same for P and V
 
-  y13 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, dur_va = 1, strategy = "VoD")
+  y13 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, dur_va = 1,
+                                   strategy = "VoD")
 
   for (i in seq_along(y13)) {
     expect_equal(y13[[i]]$N[, , 2], y13[[i]]$N[, , 3])
@@ -684,8 +703,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   }
 
   # test vex_p work independently of vex
-  y14 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, dur_va = 1,vea_p = 1,
-                           strategy = "VoD")
+  y14 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, dur_va = 1,
+                                   vea_p = 1, strategy = "VoD")
 
   # incidence in V but no incidence in P as vea_p = 1
   # individuals present in both
@@ -700,34 +719,31 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # test vea_p defaults to vea
 
   y_vea_only <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, vea = 0.5,
-                                  strategy = "VoD")
+                                          strategy = "VoD")
   y_vea_veap <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, vea = 0.5,
-                                  vea_p = 0.5, strategy = "VoD")
+                                          vea_p = 0.5, strategy = "VoD")
 
   expect_equal(y_vea_only, y_vea_veap)
 
   # when vea, vea_p and vea_revax = 1 there is no incidence
-  
-  ## THIS TEST NEEDS ADJUSTED - NO VINCIDENCE BECAUSE NO VACCINATION!
-  ## now adjusted!
 
   y_no_incid <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 1, r2 = 0.5, vea = 1,
                                           strategy = "VoD")
 
   for (i in seq_along(y_no_incid)) {
-    expect_equal(sum(y_no_incid[[i]]$cum_incid[, , -c(1,5)]), 0)
+    expect_equal(sum(y_no_incid[[i]]$cum_incid[, , -c(1, 5)]), 0)
   }
 
   # check initial params generated correctly when coverage is specified
   pars <- lapply(gp[1], model_params)
-  init_1 <- initial_params_xpvwrh_trackvt(pars[[1]],
-                                  coverage_p = 0.25, coverage_v = 0.25)
+  init_1 <- initial_params_xpvwrh_trackvt(pars[[1]], coverage_p = 0.25,
+                                          coverage_v = 0.25)
 
   # expect same number starting in P as in Va
   expect_equal(init_1$U0[, 2], init_1$U0[, 3])
 
-  init_2 <- initial_params_xpvwrh_trackvt(pars[[1]],
-                                  coverage_p = 0.5, coverage_v = 0.25)
+  init_2 <- initial_params_xpvwrh_trackvt(pars[[1]], coverage_p = 0.5,
+                                          coverage_v = 0.25)
 
   # expect double starting in P as in V
   expect_equal((init_2$U0[, 2]), init_2$U0[, 3] * 2)
@@ -735,19 +751,19 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # expect error if sum of coverages and hes is greater than 1
 
   expect_error(initial_params_xpvwrh_trackvt(pars[[1]], coverage_p = 0.5,
-                                     coverage_v = 0.5, hes = 0.5))
+                                             coverage_v = 0.5, hes = 0.5))
 
   # expect error if sum of coverages is 100%
   # (if total coverage is 100%, no asymptomatic infection is seeded)
 
   expect_error(initial_params_xpvwrh_trackvt(pars[[1]], coverage_p = 0.5,
-                                     coverage_v = 0.5))
+                                             coverage_v = 0.5))
 
   # tests correct number of individuals are moving to V and to P
   # duration is large for v and p so assuming no waning
 
   y15 <- run_onevax_xpvwrh_trackvt(tt, gp, r1 = 0.5, r2 = 0.5, dur_va = 1e90,
-                           strategy = "VoD")
+                                   strategy = "VoD")
 
   # number getting vaccinated from X (timepoint 2 as all is 0 in timepoint 1)
   cum_vac <- sum(y15[[1]]$cum_vaccinated[2, , 1])
@@ -774,8 +790,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   # should see individuals accumulating in X, decreasing in P
 
   pars <- lapply(gp[1], model_params)
-  ip <- lapply(pars, initial_params_xpvwrh_trackvt, coverage_p = 0.99999999999999,
-               t = 5)
+  ip <- lapply(pars, initial_params_xpvwrh_trackvt,
+               coverage_p = 0.99999999999999, t = 5)
 
   y16 <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip, dur_p = 1e-90)
 
@@ -795,8 +811,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
 
   ip <- lapply(pars, initial_params_xpvwrh_trackvt, coverage_p = 0.9,
                t = 5)
-  y_p <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip, r2_p = 1, r1_p = 1, dur_va = 1e100,
-                           strategy = "VoD(L)+VoA(H)")
+  y_p <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip, r2_p = 1, r1_p = 1,
+                                   dur_va = 1e100, strategy = "VoD(L)+VoA(H)")
 
   # 0.9 * population starts in P
   # no vaccination from X, and others
@@ -809,8 +825,8 @@ test_that("run_onevax_xpvwrh_trackvt works correctly", {
   expect_true(unique(rowSums(y_p[[i]]$N[-1, , 3]) > 0))
 
   # test individuals still wane to W
-  ip <- lapply(pars, initial_params_xpvwrh_trackvt, coverage_v = 0.99999999999999,
-               t = 5)
+  ip <- lapply(pars, initial_params_xpvwrh_trackvt,
+               coverage_v = 0.99999999999999, t = 5)
   y17 <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip, dur_va = 1e-90)
 
   # entire population starts in V then wanes to W and stays there
@@ -850,24 +866,26 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   # correct number of erlang compartments in run function
 
   y <- run_onevax_xpvwrh_trackvt(tt, gono_params = gono_params()[1], vea = 0,
-                         dur_va = 1e3, n_erlang = 3, r1 = 0.5,
-                         r2 = 0.1, booster_uptake = 1,
-                         strategy = "VoD(L)+VoA(H)")
+                                 dur_va = 1e3, n_erlang = 3, r1 = 0.5,
+                                 r2 = 0.1, booster_uptake = 1,
+                                 strategy = "VoD(L)+VoA(H)")
   expect_true(dim(y[[1]]$N)[3] == 18)
 
   # everything defaults to the n_vax = xpvwrh format when n_erlang = 1 or
   # not supplied
   y <- run_onevax_xpvwrh_trackvt(tt, gono_params = gono_params()[1], vea = 0,
-                         dur_va = 1e3, r1 = 0.5, r2 = 0.1, booster_uptake = 1,
-                         strategy = "VoD(L)+VoA(H)")
+                                 dur_va = 1e3, r1 = 0.5, r2 = 0.1,
+                                 booster_uptake = 1, strategy = "VoD(L)+VoA(H)")
   expect_true(dim(y[[1]]$N)[3] == 8)
 
   # expect error if n_erlang supplied to run function doesn't match initial
   # conditions
-  expect_error(run_onevax_xpvwrh_trackvt(tt, gono_params = gono_params()[1], vea = 0,
-                                 dur_va = 0.1, booster_uptake = 1,
-                                 strategy = "VoD(L)+VoA(H)",
-                                 init_params = list(n_erlang_2), n_erlang = 3))
+  expect_error(run_onevax_xpvwrh_trackvt(tt, gono_params = gono_params()[1],
+                                         vea = 0, dur_va = 0.1,
+                                         booster_uptake = 1,
+                                         strategy = "VoD(L)+VoA(H)",
+                                         init_params = list(n_erlang_2),
+                                         n_erlang = 3))
 
   # all erlang compartments are protected
   # vea = 1 no on gets infected
@@ -876,11 +894,10 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   n_erlang <- 2
   idx <- stratum_index_xpvwrh_trackvt(n_erlang)
   y <- run_onevax_xpvwrh_trackvt(tt, gono_params = gp, vea = 1, vea_p = 1,
-                         vea_revax = 1,
-                         dur_va = 1e3, r1 = 0.5,
-                         r2 = 0.1, booster_uptake = 1,
-                         strategy = "VoD(L)+VoA(H)",
-                         n_erlang = n_erlang)
+                                 vea_revax = 1, dur_va = 1e3, r1 = 0.5,
+                                 r2 = 0.1, booster_uptake = 1,
+                                 strategy = "VoD(L)+VoA(H)",
+                                 n_erlang = n_erlang)
 
   # people are vaccinated (indiviudals exist in P1-P2, V1-V2, R1-R2)
   for (i in 1:12) {
@@ -897,7 +914,8 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   expect_true(all(y[[1]]$cum_incid[-1, , 10] == 0))  #Ra2
   expect_true(all(y[[1]]$cum_incid[-1, , 11] == 0))  #Rb1
   expect_true(all(y[[1]]$cum_incid[-1, , 12] == 0))  #Rb2
-  expect_true(all(y[[1]]$cum_incid[-1, , c(idx$P, idx$Va,idx$Vb, idx$Ra, idx$Rb)] == 0))
+  expect_true(all(y[[1]]$cum_incid[-1, , c(idx$P, idx$Va, idx$Vb, idx$Ra,
+                                           idx$Rb)] == 0))
 
   # and non-vaccinated do get infected
   expect_true(all(y[[1]]$cum_incid[-1, , 1] > 0)) #X
@@ -914,11 +932,12 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   n_erlang <- 2
   idx <- stratum_index_xpvwrh_trackvt(n_erlang)
 
-  i_eligible <- c(1, 1, 2, 3, 6,7, 8, 11, 12)
+  i_eligible <- c(1, 1, 2, 3, 6, 7, 8, 11, 12)
   expect_equal(i_eligible, c(idx$X, idx$X, idx$P, idx$Vb, idx$W, idx$Rb))
 
-  i_p <- c(2, 4, 4, 4, 9,9,9,9,9)
-  expect_equal(i_p, c(idx$P[1], rep(idx$Va[1], n_erlang + 1), rep(idx$Ra[1], 2*n_erlang+1)))
+  i_p <- c(2, 4, 4, 4, 9, 9, 9, 9, 9)
+  expect_equal(i_p, c(idx$P[1], rep(idx$Va[1], n_erlang + 1),
+                      rep(idx$Ra[1], 2 * n_erlang + 1)))
 
   vod_map <- create_vax_map_branching(n_vax = n_vax, p$vod, i_eligible,
                                       i_p, idx = idx)
@@ -996,7 +1015,7 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
 
   # everything is entirely 0 when not in i_eligible strata
   expect_equal(sum(vod_map[, , c(idx$Va, idx$Ra, idx$H)]), 0)
-  
+
   # for vbe, expect:
   expect_true(unique(vbe_map[, idx$X, idx$X] == c(1, 1)))
   expect_true(unique(vbe_map[, idx$Va[1], idx$X] == c(-1, -1)))
@@ -1011,10 +1030,10 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   booster_uptake <- c(0.3, 0.75)
 
   for (i in seq_along(r1)) {
-    u <- create_uptake_map_xpvwrh_trackvt(vod_map, r1[i], r2[i], r1_p[i], r2_p[i],
-                                  booster_uptake[i],
-                                  idx = idx,
-                                  screening_or_diagnosis = "diagnosis")
+    u <- create_uptake_map_xpvwrh_trackvt(vod_map, r1[i], r2[i], r1_p[i],
+                                          r2_p[i], booster_uptake[i],
+                                          idx = idx,
+                                          screening_or_diagnosis = "diagnosis")
 
     # vaccination mapping multiplied by corresponding uptake % mapping
     acc_vax <- u * vod_map
@@ -1026,47 +1045,52 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
                                                        - (r1[i] *
                                                             (1 - r2[i])))))
     expect_true(unique(acc_vax[, idx$Va[1], idx$X] == c(-r1[i] * r2[i],
-                                                       -r1[i] * r2[i])))
+                                                        -r1[i] * r2[i])))
 
     # uptakes from P1 and P2 to V are at the expected values
     expect_true(unique(acc_vax[, idx$P[1], idx$P[1]] == c(r2_p[i],
                                                           r2_p[i])))
     expect_true(unique(acc_vax[, idx$Va[1], idx$P[1]] == -c(r2_p[i],
-                                                           r2_p[i])))
+                                                            r2_p[i])))
 
     expect_true(unique(acc_vax[, idx$P[2], idx$P[2]] == c(r2_p[i],
                                                           r2_p[i])))
     expect_true(unique(acc_vax[, idx$Va[1], idx$P[2]] == -c(r2_p[i],
-                                                           r2_p[i])))
+                                                            r2_p[i])))
 
     # uptakes from W to R1 are at the expected values
-    
-    expect_true(unique(acc_vax[, idx$Vb[1], idx$Vb[1]] == c(booster_uptake[i],
-                                                    booster_uptake[i])))
-    expect_true(unique(acc_vax[, idx$Ra[1], idx$Vb[1]] == -c(booster_uptake[i],
-                                                        booster_uptake[i])))
-    
-    expect_true(unique(acc_vax[, idx$Vb[2], idx$Vb[2]] == c(booster_uptake[i],
-                                                            booster_uptake[i])))
-    expect_true(unique(acc_vax[, idx$Ra[1], idx$Vb[2]] == -c(booster_uptake[i],
-                                                            booster_uptake[i])))
-    
-    expect_true(unique(acc_vax[, idx$W, idx$W] == c(booster_uptake[i],
-                                                    booster_uptake[i])))
-    expect_true(unique(acc_vax[, idx$Ra[1], idx$W] == -c(booster_uptake[i],
-                                                        booster_uptake[i])))
-    
-    expect_true(unique(acc_vax[, idx$Rb[1], idx$Rb[1]] == c(booster_uptake[i],
-                                                            booster_uptake[i])))
-    expect_true(unique(acc_vax[, idx$Ra[1], idx$Rb[1]] == -c(booster_uptake[i],
-                                                             booster_uptake[i])))
-    
-    expect_true(unique(acc_vax[, idx$Rb[2], idx$Rb[2]] == c(booster_uptake[i],
-                                                            booster_uptake[i])))
-    expect_true(unique(acc_vax[, idx$Ra[1], idx$Rb[2]] == -c(booster_uptake[i],
-                                                             booster_uptake[i])))
-    
-    
+
+    expect_true(unique(acc_vax[, idx$Vb[1], idx$Vb[1]] ==
+                         c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Ra[1], idx$Vb[1]] ==
+                         -c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Vb[2], idx$Vb[2]] ==
+                         c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Ra[1], idx$Vb[2]] ==
+                         -c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$W, idx$W] ==
+                         c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Ra[1], idx$W] ==
+                         -c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Rb[1], idx$Rb[1]] ==
+                         c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Ra[1], idx$Rb[1]] ==
+                         -c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Rb[2], idx$Rb[2]] ==
+                         c(booster_uptake[i], booster_uptake[i])))
+
+    expect_true(unique(acc_vax[, idx$Ra[1], idx$Rb[2]] ==
+                         -c(booster_uptake[i], booster_uptake[i])))
+
+
   }
 
   # people wane as expected
@@ -1075,7 +1099,8 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
                  coverage_v = 0.99999999999999,
                  n_erlang = 2, t = FALSE)
 
-  y_v <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip_v, dur_va = 5, dur_vb = 5, n_erlang = 2)
+  y_v <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip_v, dur_va = 5,
+                                   dur_vb = 5, n_erlang = 2)
 
   # people in V1, V2, W
   expect_true(all(y_v[[1]]$N[-1, , c(idx$Va, idx$Vb, idx$W)] > 0))
@@ -1091,24 +1116,25 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
                 sum(rowSums(y_v[[1]]$N[, , idx$Va[2]])))
   expect_true(sum(rowSums(y_v[[1]]$N[, , idx$Va[2]])) >
                 sum(rowSums(y_v[[1]]$N[, , idx$Vb[1]])))
-  
+
   expect_true(sum(rowSums(y_v[[1]]$N[, , idx$Vb[1]])) >
                 sum(rowSums(y_v[[1]]$N[, , idx$Vb[2]])))
-  
+
   expect_true(sum(rowSums(y_v[[1]]$N[, , idx$Vb[2]])) >
                 sum(rowSums(y_v[[1]]$N[, , idx$W])))
 
   # entire population starts in P1 and wanes through P2 to X only
   # ( + no further vaccination)
-  ip_p <- lapply(pars, initial_params_xpvwrh_trackvt, coverage_p = 0.99999999999999,
-                 n_erlang = 2, t = FALSE)
+  ip_p <- lapply(pars, initial_params_xpvwrh_trackvt,
+                 coverage_p = 0.99999999999999, n_erlang = 2, t = FALSE)
   y_p <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = ip_p, n_erlang = 2)
 
   # people in X, P1, P2
   expect_true(all(y_p[[1]]$N[-1, , c(idx$X, idx$P)] > 0))
 
   # no one in V1, V2, W, R1 or R2
-  expect_true(all(y_p[[1]]$N[, , c(idx$Va, idx$Vb, idx$W, idx$Ra, idx$Rb)] ==  0))
+  expect_true(all(y_p[[1]]$N[, ,
+                             c(idx$Va, idx$Vb, idx$W, idx$Ra, idx$Rb)] ==  0))
 
   # people are flowing from P1(2) -> P2(3)
   expect_true(sum(rowSums(y_p[[1]]$N[, , idx$P[1]])) >
@@ -1123,11 +1149,11 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   # people to converge in R1
 
   tt <- seq(0, 100)
-  y_long <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e-10, dur_vb = 1e-10, 
-                              n_erlang = n_erlang,
-                              r1 = 1, r2 = 1, booster_uptake = 1,
-                              dur_revaxa = 1e10,
-                              strategy = "VoD(L)+VoA(H)")
+  y_long <- run_onevax_xpvwrh_trackvt(tt, gp, vea = 0, dur_va = 1e-10,
+                                      dur_vb = 1e-10, n_erlang = n_erlang,
+                                      r1 = 1, r2 = 1, booster_uptake = 1,
+                                      dur_revaxa = 1e10,
+                                      strategy = "VoD(L)+VoA(H)")
 
   i_p <- lapply(y_long, restart_hes,
                 branching = TRUE)
@@ -1135,17 +1161,18 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
 
   # run model with most people in W + R1
   y_r <- run_onevax_xpvwrh_trackvt(tt, gp, init_params = i_p, r1 = 0, r2 = 0,
-                           dur_va = 1e-10, dur_vb = 1e-10, dur_revaxa = 10, n_erlang = n_erlang)
+                                   dur_va = 1e-10, dur_vb = 1e-10,
+                                   dur_revaxa = 10, n_erlang = n_erlang)
 
   # when lots of people start revaccinated and (almost) none start
   # primarily vaccinated, people flow from R1 -> R2
 
   expect_true(sum(rowSums(y_r[[1]]$N[, , idx$Ra[1]])) >
                 sum(rowSums(y_r[[1]]$N[, , idx$Ra[2]])))
-  
+
   expect_true(sum(rowSums(y_r[[1]]$N[, , idx$Ra[2]])) >
                 sum(rowSums(y_r[[1]]$N[, , idx$Rb[1]])))
-  
+
   expect_true(sum(rowSums(y_r[[1]]$N[, , idx$Rb[1]])) >
                 sum(rowSums(y_r[[1]]$N[, , idx$Rb[2]])))
 
@@ -1160,7 +1187,7 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
     i_v <- c(idx$P, idx$Va, idx$Vb, idx$R)
 
     p_vec <- set_protection_trackvt(i_v = i_v, idx = idx, n_vax = idx$n_vax,
-                            ve_p = 0.5, ve = 0.75, ve_revax = 1)
+                                    ve_p = 0.5, ve = 0.75, ve_revax = 1)
 
     expect_equal(p_vec[idx$P], rep(0.5, n_erlang))
     expect_equal(p_vec[idx$Va], rep(0.75, n_erlang))
@@ -1177,12 +1204,13 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   idx <- stratum_index_xpvwrh_trackvt(n_erlang = n_erlang)
 
   # i_v and i_w generated in the same way as in vax_params function
-  i_v <- c(idx$P, 
-           idx$Va, 
-           idx$Vb, 
+  i_v <- c(idx$P,
+           idx$Va,
+           idx$Vb,
            idx$Ra,
            idx$Rb)
-  i_w <- c(idx$P[-1], idx$X, 
+
+  i_w <- c(idx$P[-1], idx$X,
            idx$Va[-1], idx$Vb[1],
            idx$Vb[-1], idx$W,
            idx$Ra[-1], idx$Rb[1],
@@ -1191,15 +1219,13 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   # set durations
   dur_p <- 1e03
   dur_va <- 2e03
-  
   dur_vb <- 1
-  
   dur_revaxa <- 3e03
-  
   dur_revaxb <- 2
 
   w <- create_waning_map_branching(idx$n_vax, i_v, i_w,
-                                   n_erlang / c(dur_p, dur_va, dur_vb, dur_revaxa, dur_revaxb),
+                                   n_erlang / c(dur_p, dur_va, dur_vb,
+                                                dur_revaxa, dur_revaxb),
                                    n_erlang)
 
   # width and height of waning map are both equal to n_vax
@@ -1221,7 +1247,7 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   expect_true(all(w[idx$Va[3], idx$Va[2]] ==  n_erlang / dur_va))
   expect_true(all(w[idx$Va[3], idx$Va[3]] == -n_erlang / dur_va))
   expect_true(all(w[idx$Vb[1],    idx$Va[3]] ==  n_erlang / dur_va))
-  
+
   expect_true(all(w[idx$Vb[1], idx$Vb[1]] == -n_erlang / dur_vb))
   expect_true(all(w[idx$Vb[2], idx$Vb[1]] ==  n_erlang / dur_vb))
   expect_true(all(w[idx$Vb[2], idx$Vb[2]] == -n_erlang / dur_vb))
@@ -1244,6 +1270,4 @@ test_that("run_onevax_xpvwrh_trackvt works when n_erlang > 1", {
   expect_true(all(w[idx$Rb[3], idx$Rb[3]] == -n_erlang / dur_revaxb))
   expect_true(all(w[idx$W,    idx$Rb[3]] ==  n_erlang / dur_revaxb))
 
-  
-  
 })

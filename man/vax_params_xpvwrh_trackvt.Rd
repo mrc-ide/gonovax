@@ -73,20 +73,22 @@ duration (between 0-1)}
 \item{ves_p}{scalar indicating efficacy of partial vaccination against
 symptoms (between 0-1)}
 
-\item{dur_va}{duration of time spent in Va stratum after completing a round of
-primary vaccination (fully vaccinated, accepting first and second dose)}
+\item{dur_va}{duration of time spent in Va stratum after completing a round
+of primary vaccination (fully vaccinated, accepting first and second dose)}
 
-\item{dur_vb}{duration of time spent in Vb stratum after completing a round of
-primary vaccination (fully vaccinated, accepting first and second dose)}
+\item{dur_vb}{duration of time spent in Vb stratum after completing a round
+of primary vaccination (fully vaccinated, accepting first and second dose)}
 
 \item{dur_p}{duration of time spent in the P stratum, partially vaccinated
 (accepting only the first dose)}
 
-\item{dur_revaxa}{duration of time spent in Ra stratum after completing a round of
-primary vaccination (fully vaccinated, accepting first and second dose)}
+\item{dur_revaxa}{duration of time spent in Ra stratum after completing a
+round of primary vaccination (fully vaccinated, accepting first
+and second dose)}
 
-\item{dur_revaxb}{duration of time spent in Rb stratum after completing a round of
-primary vaccination (fully vaccinated, accepting first and second dose)}
+\item{dur_revaxb}{duration of time spent in Rb stratum after completing a
+round of primary vaccination (fully vaccinated, accepting first
+and second dose)}
 
 \item{r1}{proportion of population offered vaccine only accepting the first
 dose, becoming partially vaccinated}
