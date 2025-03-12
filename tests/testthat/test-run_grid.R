@@ -109,8 +109,6 @@ test_that("compare baseline xpvwrh works as expected", {
   cet_20k <- calc_cet(2e4, cost)
   cet_30k <- calc_cet(3e4, cost)
 
-  
-  
   expect_equivalent(cet_20k,
                     matrix(c(0.762513348510373, 2.45450640004958,
                              4.99544894499636, 0.690487829848825,
