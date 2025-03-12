@@ -1,3 +1,6 @@
+# gonovax 0.4.23
+* add in 'trackvt' (track time since vaccination) version of xpvwrh - which separates V and R into two strata each, and individuals in the second V and R strata are vaccine eligible
+
 # gonovax 0.4.22
 * percentage cases averted and cumulative inc. asymptomatic and symptomatic diagnoses are output from compare_baseline_xpvwrh
 
