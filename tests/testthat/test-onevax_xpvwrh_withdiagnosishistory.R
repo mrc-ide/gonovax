@@ -1660,8 +1660,9 @@ test_that("run_onevax_xpvwrh works when n_erlang > 1", {
     # people are flowing from P1(2) -> P2(3)
 
     for (e in 1:(n_erlang - 1)) {
-      expect_true(sum(rowSums(y_p[[1]]$N[, , idx$P[e]])) >
-                    sum(rowSums(y_p[[1]]$N[, , idx$P[e + 1]])))
+      expect_true(sum(rowSums(y_p[[1]]$N[, ,
+                                         idx$P[(e - 1) * n_diag_rec + 1]])) >
+                    sum(rowSums(y_p[[1]]$N[, , idx$P[e * n_diag_rec + 1]])))
     }
 
     # people also wane from R1 and R2
