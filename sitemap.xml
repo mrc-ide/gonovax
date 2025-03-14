@@ -15,6 +15,7 @@
 <url><loc>/reference/create_diagnosis_waning_map.html</loc></url>
 <url><loc>/reference/create_uptake_map.html</loc></url>
 <url><loc>/reference/create_uptake_map_xpvwrh.html</loc></url>
+<url><loc>/reference/create_uptake_map_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/create_uptake_map_xvw.html</loc></url>
 <url><loc>/reference/create_uptake_map_xvwr.html</loc></url>
 <url><loc>/reference/create_uptake_map_xvwv.html</loc></url>
@@ -28,6 +29,7 @@
 <url><loc>/reference/extract_flows_trial.html</loc></url>
 <url><loc>/reference/extract_flows_xpvwrh.html</loc></url>
 <url><loc>/reference/gen_erlang_labels.html</loc></url>
+<url><loc>/reference/gen_erlang_labels_trackvt.html</loc></url>
 <url><loc>/reference/gen_labels.html</loc></url>
 <url><loc>/reference/gen_trial_labels.html</loc></url>
 <url><loc>/reference/gono_params.html</loc></url>
@@ -39,6 +41,7 @@
 <url><loc>/reference/initial_params.html</loc></url>
 <url><loc>/reference/initial_params_trial.html</loc></url>
 <url><loc>/reference/initial_params_xpvwrh.html</loc></url>
+<url><loc>/reference/initial_params_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/initial_params_xvw_trial.html</loc></url>
 <url><loc>/reference/initial_params_xvwrh.html</loc></url>
 <url><loc>/reference/mcmc.html</loc></url>
@@ -48,11 +51,13 @@
 <url><loc>/reference/model_params.html</loc></url>
 <url><loc>/reference/model_params_trial.html</loc></url>
 <url><loc>/reference/model_params_xpvwrh.html</loc></url>
+<url><loc>/reference/model_params_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/restart_hes.html</loc></url>
 <url><loc>/reference/restart_params.html</loc></url>
 <url><loc>/reference/run.html</loc></url>
 <url><loc>/reference/run_grid.html</loc></url>
 <url><loc>/reference/run_onevax_xpvwrh.html</loc></url>
+<url><loc>/reference/run_onevax_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/run_onevax_xvw.html</loc></url>
 <url><loc>/reference/run_onevax_xvw_trial.html</loc></url>
 <url><loc>/reference/run_onevax_xvwr.html</loc></url>
@@ -60,9 +65,12 @@
 <url><loc>/reference/run_onevax_xvwv.html</loc></url>
 <url><loc>/reference/run_trial.html</loc></url>
 <url><loc>/reference/run_xpvwrh.html</loc></url>
+<url><loc>/reference/run_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/set_protection.html</loc></url>
+<url><loc>/reference/set_protection_trackvt.html</loc></url>
 <url><loc>/reference/set_strategy.html</loc></url>
 <url><loc>/reference/stratum_index_xpvwrh.html</loc></url>
+<url><loc>/reference/stratum_index_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/stratum_index_xvw.html</loc></url>
 <url><loc>/reference/stratum_index_xvw_trial.html</loc></url>
 <url><loc>/reference/stratum_index_xvwr.html</loc></url>
@@ -72,6 +80,7 @@
 <url><loc>/reference/transform_fixed.html</loc></url>
 <url><loc>/reference/vax_params0.html</loc></url>
 <url><loc>/reference/vax_params_xpvwrh.html</loc></url>
+<url><loc>/reference/vax_params_xpvwrh_trackvt.html</loc></url>
 <url><loc>/reference/vax_params_xvw.html</loc></url>
 <url><loc>/reference/vax_params_xvw_trial.html</loc></url>
 <url><loc>/reference/vax_params_xvwr.html</loc></url>

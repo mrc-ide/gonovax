@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gonovax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.22</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.23</span>
       </span>
     </div>
 
@@ -91,6 +91,10 @@
         </td>
         <td><p>Creates uptake mapping for the branching XPVWRH model where individuals can move from unvaccinated (X) to vaccinated (V) or partially vaccinated (P) as well as revaccinated from waned (W) to (R) and, and partially vaccinated (P) to fully vaccianted (V). The former reflects the specific indices which are chosen for assigning uptakes.</p></td>
       </tr><tr><td>
+          <p><code><a href="create_uptake_map_xpvwrh_trackvt.html">create_uptake_map_xpvwrh_trackvt()</a></code> </p>
+        </td>
+        <td><p>Creates uptake mapping for the branching XPVWRH model where individuals can move from unvaccinated (X) to vaccinated (V) or partially vaccinated (P) as well as revaccinated from waned (W) to (R) and, and partially vaccinated (P) to fully vaccianted (V). The former reflects the specific indices which are chosen for assigning uptakes.</p></td>
+      </tr><tr><td>
           <p><code><a href="create_uptake_map_xvw.html">create_uptake_map_xvw()</a></code> </p>
         </td>
         <td><p>Creates uptake mapping array with dimensions n_group x n_vax x n_vax and assigns the relevant primary uptake and booster uptake values defined by the user.</p></td>
@@ -143,6 +147,10 @@
         </td>
         <td><p>generates the appropriate strata labels for the number of strata in the model, which depends on the value given to n_erlang</p></td>
       </tr><tr><td>
+          <p><code><a href="gen_erlang_labels_trackvt.html">gen_erlang_labels_trackvt()</a></code> </p>
+        </td>
+        <td><p>generates the appropriate strata labels for the number of strata in the model, which depends on the value given to n_erlang</p></td>
+      </tr><tr><td>
           <p><code><a href="gen_labels.html">gen_labels()</a></code> </p>
         </td>
         <td><p>generates the appropriate strata labels for the number of strata in the model, which depends on the value given to n_erlang and diagnosis history levels desired (n_diag_rec)</p></td>
@@ -183,6 +191,10 @@
         </td>
         <td><p>Initial conditions for the model</p></td>
       </tr><tr><td>
+          <p><code><a href="initial_params_xpvwrh_trackvt.html">initial_params_xpvwrh_trackvt()</a></code> </p>
+        </td>
+        <td><p>Initial conditions for the model</p></td>
+      </tr><tr><td>
           <p><code><a href="initial_params_xvw_trial.html">initial_params_xvw_trial()</a></code> </p>
         </td>
         <td><p>Initial conditions for the model in a vaccine trial</p></td>
@@ -219,6 +231,10 @@
         </td>
         <td><p>Parameters for the dualvax model</p></td>
       </tr><tr><td>
+          <p><code><a href="model_params_xpvwrh_trackvt.html">model_params_xpvwrh_trackvt()</a></code> </p>
+        </td>
+        <td><p>Parameters for the xpvrwrh model tracking time since vaccination</p></td>
+      </tr><tr><td>
           <p><code><a href="restart_hes.html">restart_hes()</a></code> </p>
         </td>
         <td><p>uses XPVWRH model run in the absence of vaccination or hesitancy. Saves down the number of individuals in each compartment, and moves a given proportion (hes) of them from the X to the H strata to generate new initial conditions in the presence of hesitancy.</p></td>
@@ -236,6 +252,10 @@
         <td><p>run model from equilibrium with single vaccine at the input efficacy / duration grid locations for n parameter sets</p></td>
       </tr><tr><td>
           <p><code><a href="run_onevax_xpvwrh.html">run_onevax_xpvwrh()</a></code> </p>
+        </td>
+        <td><p>run model with a two-dose vaccine for input parameter sets, either from initialisation or from equilibrium, those with waned vaccines are eligible for revaccination (R), and return to the R stratum, those with waned partial vaccines return to the unvaccinated stratum (X) and considered immunologically naive. A user defined proportion of the population is vaccine hesitant and is never vaccinated. Full acciantion (V) with 2 doses gives maximum protection whereas partial vaccination with 1 dose (P) gives less. Individuals can get 2 doses either by committing in X or upon visiting a clinic in P.</p></td>
+      </tr><tr><td>
+          <p><code><a href="run_onevax_xpvwrh_trackvt.html">run_onevax_xpvwrh_trackvt()</a></code> </p>
         </td>
         <td><p>run model with a two-dose vaccine for input parameter sets, either from initialisation or from equilibrium, those with waned vaccines are eligible for revaccination (R), and return to the R stratum, those with waned partial vaccines return to the unvaccinated stratum (X) and considered immunologically naive. A user defined proportion of the population is vaccine hesitant and is never vaccinated. Full acciantion (V) with 2 doses gives maximum protection whereas partial vaccination with 1 dose (P) gives less. Individuals can get 2 doses either by committing in X or upon visiting a clinic in P.</p></td>
       </tr><tr><td>
@@ -267,7 +287,15 @@
         </td>
         <td><p>Run odin model of gonorrhoea with or without vaccination</p></td>
       </tr><tr><td>
+          <p><code><a href="run_xpvwrh_trackvt.html">run_xpvwrh_trackvt()</a></code> </p>
+        </td>
+        <td><p>Run odin model of gonorrhoea with or without vaccination</p></td>
+      </tr><tr><td>
           <p><code><a href="set_protection.html">set_protection()</a></code> </p>
+        </td>
+        <td><p>generates vector which tells the model which strata are under vaccine protection and what the value of protection for that strata is</p></td>
+      </tr><tr><td>
+          <p><code><a href="set_protection_trackvt.html">set_protection_trackvt()</a></code> </p>
         </td>
         <td><p>generates vector which tells the model which strata are under vaccine protection and what the value of protection for that strata is</p></td>
       </tr><tr><td>
@@ -278,6 +306,10 @@
           <p><code><a href="stratum_index_xpvwrh.html">stratum_index_xpvwrh()</a></code> </p>
         </td>
         <td><p>Generate the indices of all xpvwrh strata</p></td>
+      </tr><tr><td>
+          <p><code><a href="stratum_index_xpvwrh_trackvt.html">stratum_index_xpvwrh_trackvt()</a></code> </p>
+        </td>
+        <td><p>Generate the indices of all xpvwrh strata trcaking time since vacc</p></td>
       </tr><tr><td>
           <p><code><a href="stratum_index_xvw.html">stratum_index_xvw()</a></code> </p>
         </td>
@@ -312,6 +344,10 @@
         <td><p>create vaccination parameters for use in novax model (null)</p></td>
       </tr><tr><td>
           <p><code><a href="vax_params_xpvwrh.html">vax_params_xpvwrh()</a></code> </p>
+        </td>
+        <td><p>create vaccination parameters for use in onevax_xpvwrh model</p></td>
+      </tr><tr><td>
+          <p><code><a href="vax_params_xpvwrh_trackvt.html">vax_params_xpvwrh_trackvt()</a></code> </p>
         </td>
         <td><p>create vaccination parameters for use in onevax_xpvwrh model</p></td>
       </tr><tr><td>
