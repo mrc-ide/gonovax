@@ -48,8 +48,8 @@ initial_params_xpvwrh_trackvt <- function(pars, coverage_p = 0, coverage_v = 0,
     p_init <- willing * coverage_p
     v_init <- willing * coverage_v
 
-    ## X[1]. P[n_erlang], Va[n_erlang], Vb[n_erlang], W[1], Ra[n_erlang],
-    ## Rb[n_erlang], H[n_erlang]
+    ## X[n_diag_rec]. P[n_erlang x n_diag_rec], Va[n_erlang x n_diag_rec], Vb[n_erlang x n_diag_rec], W[1 x n_diag_rec], Ra[n_erlang x n_diag_rec],
+    ## Rb[n_erlang x n_diag_rec], H[n_diag_rec]
     cov <- c(x_init, rep(0, n_diag_rec - 1),
              p_init, rep(0, n_diag_rec * n_erlang - 1),
              v_init, rep(0, n_diag_rec * n_erlang - 1),
