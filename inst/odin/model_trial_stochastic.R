@@ -7,13 +7,13 @@
 ## 3: Waned
 
 n_group <- 2
-n_vax   <- user(1)
+n_vax <- parameter(1)
 
 ## adding timesteps
-steps_per_year <- 365
-dt <- 1 / steps_per_year
-initial(time) <- 0
-update(time) <- (step + 1) * dt
+#steps_per_year <- 365
+#dt <- 1 / steps_per_year
+#initial(time) <- 0
+#update(time) <- (step + 1) * dt
 
 # individual probabilities of transitioning between infection states
 r_AT[, ] <- eta
@@ -28,11 +28,11 @@ p_A_ext[, ] <- 1 - exp(-(r_AT[i, j] + r_AU[i, j] - D[j]) * dt)
 p_T_ext[, ] <- 1 - exp(-(rho - D[j]) * dt)
 
 # draws from binomial distribution for numbers exiting compartments
-n_U_ext[, ] <- rbinom(U[i, j], p_U_ext[i, j])
-n_I_ext[, ] <- rbinom(I[i, j], p_I_ext[i, j])
-n_S_ext[, ] <- rbinom(S[i, j], p_S_ext[i, j])
-n_A_ext[, ] <- rbinom(A[i, j], p_A_ext[i, j])
-n_T_ext[, ] <- rbinom(T[i, j], p_T_ext[i, j])
+n_U_ext[, ] <- Binomial(U[i, j], p_U_ext[i, j])
+n_I_ext[, ] <- Binomial(I[i, j], p_I_ext[i, j])
+n_S_ext[, ] <- Binomial(S[i, j], p_S_ext[i, j])
+n_A_ext[, ] <- Binomial(A[i, j], p_A_ext[i, j])
+n_T_ext[, ] <- Binomial(T[i, j], p_T_ext[i, j])
 
 #Relative probabilities of infection transition vs vaccine transition
 Rel_U[, ] <- if ((lambda * (1 - vea[j]) - D[j]) == 0) 0 else
@@ -46,23 +46,23 @@ Rel_A[, ] <- if (r_AT[i, j] + r_AU[i, j] - D[j] == 0) 0 else
 Rel_T[, ] <- if (rho - D[j] == 0) 0 else  rho / (rho - D[j])
 
 #draw numbers changing between specific compartments
-n_UI[, ] <- rbinom(n_U_ext[i, j], Rel_U[i, j])
+n_UI[, ] <- Binomial(n_U_ext[i, j], Rel_U[i, j])
 n_Uw[, ] <- n_U_ext[i, j] - n_UI[i, j]
 
-n_IAS[, ] <- rbinom(n_I_ext[i, j], Rel_I[i, j])
+n_IAS[, ] <- Binomial(n_I_ext[i, j], Rel_I[i, j])
 n_Iw[, ] <- n_I_ext[i, j] - n_IAS[i, j]
-n_IA[, ] <- rbinom(n_IAS[i, j], 1 - (1 - ves[j]) * psi)
+n_IA[, ] <- Binomial(n_IAS[i, j], 1 - (1 - ves[j]) * psi)
 n_IS[, ] <- n_IAS[i, j] - n_IA[i, j]
 
-n_ST[, ] <- rbinom(n_S_ext[i, j], Rel_S[i, j])
+n_ST[, ] <- Binomial(n_S_ext[i, j], Rel_S[i, j])
 n_Sw[, ] <- n_S_ext[i, j] - n_ST[i, j]
 
-n_AUT[, ] <- rbinom(n_A_ext[i, j], Rel_A[i, j])
+n_AUT[, ] <- Binomial(n_A_ext[i, j], Rel_A[i, j])
 n_Aw[, ] <- n_A_ext[i, j] - n_AUT[i, j]
-n_AT[, ] <- rbinom(n_AUT[i, j], r_AT[i, j] / (r_AT[i, j] + r_AU[i, j]))
+n_AT[, ] <- Binomial(n_AUT[i, j], r_AT[i, j]/(r_AT[i, j] + r_AU[i, j]))
 n_AU[, ] <- n_AUT[i, j] - n_AT[i, j]
 
-n_TU[, ] <- rbinom(n_T_ext[i, j], Rel_T[i, j])
+n_TU[, ] <- Binomial(n_T_ext[i, j], Rel_T[i, j])
 n_Tw[, ] <- n_T_ext[i, j] - n_TU[i, j]
 
 
@@ -92,9 +92,9 @@ update(T[, ]) <- T[i, j] + n_ST[i, j] + n_AT[i, j] - n_TU[i, j] +
   sum(wT[i, j, ]) - sum(n_diag_rec[i, j, ])
 
 ## Update population size
-N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
+#N[, ] <- U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]
 
-screened[, ] <- rbinom(U[i, j], 1 - exp(-eta *  dt))
+screened[, ] <- Binomial(U[i, j], 1 - exp(-eta * dt))
 
 pye_trial[, ] <- (U[i, j] + I[i, j] + A[i, j] + S[i, j]) * dt
 pye_noscreen_trial[, ] <- (U[i, j] + I[i, j] + A[i, j] + S[i, j] + T[i, j]) * dt
@@ -111,8 +111,10 @@ update(cum_pye_noscreen_trial_pov[, ]) <- cum_pye_noscreen_trial_pov[i, j] +
 update(cum_pye_true[, ])      <- cum_pye_true[i, j] + (U[i, j] * dt)
 
 # aggregated time series for fitting mcmc
-output(tot_treated) <- sum(cum_treated)
-output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
+initial(tot_treated) <- 0
+initial(tot_attended) <- 0
+update(tot_treated) <- sum(cum_treated)
+update(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vector
@@ -122,11 +124,16 @@ initial(A[, ]) <- A0[i, j]
 initial(S[, ]) <- S0[i, j]
 initial(T[, ]) <- T0[i, j]
 
-U0[, ] <- user()
-I0[, ] <- user()
-A0[, ] <- user()
-S0[, ] <- user()
-T0[, ] <- user()
+initial(N[, ]) <- U0[i, j] + I0[i, j] + A0[i, j] + S0[i, j] + T0[i, j]
+
+update(N[,]) <- N[i,j] + sum(wU[i, j, ]) + sum(wI[i, j, ])  + sum(wA[i, j, ]) + sum(wS[i, j, ]) + sum(wT[i, j, ]) - sum(n_diag_rec[i, j, ])
+
+
+U0 <- parameter()
+I0 <- parameter()
+A0 <- parameter()
+S0 <- parameter()
+T0 <- parameter()
 
 initial(cum_incid[, ])      <- 0
 initial(cum_diag_a[, ])     <- 0
@@ -211,25 +218,25 @@ dim(diag_rec_a)   <- c(n_group, n_vax, n_vax)
 dim(diag_rec_s)   <- c(n_group, n_vax, n_vax)
 
 ## Parameters
-eta       <- user()
-sigma     <- user()
-psi       <- user()
-nu        <- user()
-mu        <- user()
-rho       <- user()
-lambda    <- user()
+eta <- parameter()
+sigma <- parameter()
+psi <- parameter()
+nu <- parameter()
+mu <- parameter()
+rho <- parameter()
+lambda <- parameter()
 
 # vaccine effects
-vea[] <- user() # efficacy against acquisition
-ved[] <- user() # efficacy against duration of infection
-ves[] <- user() # efficacy against symptoms
+vea <- parameter()
+ved <- parameter()
+ves <- parameter()
 
 # mapping
-w[, ]    <- user()
-D[] <- user()
+w <- parameter()
+D <- parameter()
 
-diag_rec_a[, , ] <- user()
-diag_rec_s[, , ] <- user()
+diag_rec_a <- parameter()
+diag_rec_s <- parameter()
 
 ## par dimensions
 dim(vea)  <- n_vax
@@ -244,5 +251,3 @@ dim(wI)   <- c(n_group, n_vax, n_vax)
 dim(wA)   <- c(n_group, n_vax, n_vax)
 dim(wS)   <- c(n_group, n_vax, n_vax)
 dim(wT)   <- c(n_group, n_vax, n_vax)
-
-output(N) <- N

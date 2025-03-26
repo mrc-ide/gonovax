@@ -20,7 +20,9 @@ Encoding: UTF-8
 LazyData: true
 Language: en-GB
 Imports: 
-    odin (>= 1.1.0),
+    odin2 (>= 0.3.1),
+    dust2 (>= 0.3.2),
+    monty (>= 0.3.2),
     dde (>= 1.0.1),
     furrr,
     progress (>= 1.2.0),
@@ -31,7 +33,10 @@ Suggests:
     rmarkdown
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
+LinkingTo: cpp11, dust2, monty
 Remotes:
-    mrc-ide/odin,
+    mrc-ide/dust2,
+    mrc-ide/odin2,
+    mrc-ide/monty,
     mrc-ide/dde,
     mrc-ide/mcstate

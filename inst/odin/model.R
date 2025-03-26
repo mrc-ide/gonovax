@@ -12,12 +12,12 @@
 ## When a branching model is used such as XPVWRH (2:P, 3:v, 4:W, 5:R, 6:H)
 
 n_group <- 2
-n_vax   <- user(1)
+n_vax <- parameter(1)
 
 ## calibrate time-varying parameters
 # tt runs from t0 = 2009, to t10 = 2019
-tt[] <- user()
-dim(tt) <- user()
+tt <- parameter()
+dim(tt) <- parameter(rank = 1)
 beta  <- interpolate(tt, beta_t,  "linear")
 eta_l <- interpolate(tt, eta_l_t, "linear")
 eta_h <- interpolate(tt, eta_h_t, "linear")
@@ -169,8 +169,8 @@ output(tot_treated)  <- sum(cum_treated)
 output(tot_attended) <- sum(cum_treated) + sum(cum_screened)
 
 # output time-varying params for checking
-output(beta) <- beta
-output(eta) <- eta
+output(beta) <- TRUE
+output(eta) <- TRUE
 
 ## Set up compartments
 ## Initial states are all 0 as we will provide a state vbector
@@ -180,11 +180,11 @@ initial(A[, ]) <- A0[i, j]
 initial(S[, ]) <- S0[i, j]
 initial(T[, ]) <- T0[i, j]
 
-U0[, ] <- user()
-I0[, ] <- user()
-A0[, ] <- user()
-S0[, ] <- user()
-T0[, ] <- user()
+U0 <- parameter()
+I0 <- parameter()
+A0 <- parameter()
+S0 <- parameter()
+T0 <- parameter()
 
 initial(cum_incid[, ])       <- 0
 initial(cum_diag_a[, ])      <- 0
@@ -279,51 +279,51 @@ dim(diag_rec)   <- c(n_group, n_vax, n_vax)
 
 
 ## Parameters
-p[]     <- user() # Partner change rate in group L/H
-q[]     <- user() # Proportion in group L/H
+p <- parameter()
+q <- parameter()
 
-willing[] <- user() # Proportion willing to be vaccinated
-enr       <- user() # Rate of entry into population
-exr       <- user() # Rate of exit from population
-beta_t[]  <- user() # Time-varying rate of transmission
-eta_l_t[] <- user() # Time-varying rate of screening in group L
-eta_h_t[] <- user() # Time-varying rate of screening in group H
-epsilon   <- user() # Level of assortative mixing
-sigma     <- user() # Rate of developing symptoms
-psi       <- user() # Proportion of infections that develop symptoms
-nu        <- user() # Rate of natural recovery from asymptomatic infection
-mu        <- user() # Rate of treatment seeking
-rho       <- user() # Rate of recovery after treatment
+willing <- parameter()
+enr <- parameter()
+exr <- parameter()
+beta_t <- parameter()
+eta_l_t <- parameter()
+eta_h_t <- parameter()
+epsilon <- parameter()
+sigma <- parameter()
+psi <- parameter()
+nu <- parameter()
+mu <- parameter()
+rho <- parameter()
 
-kappa     <- user() # proportion of eligible PN contacts actually notified
-notifiedprev <- user() # prevalence among PN individuals
+kappa <- parameter()
+notifiedprev <- parameter()
 
 ## vaccination parameters
 # vaccination routes
-vbe[, , ] <- user() # vaccine map before entry
-vos[, , ] <- user() # vaccine map on screening
-vod[, , ] <- user() # vaccine map on diagnosis
-vopn[, , ] <- user() # vaccine map on partner notification
+vbe <- parameter()
+vos <- parameter()
+vod <- parameter()
+vopn <- parameter()
 
 # vaccine effects
-vea[] <- user() # efficacy against acquisition
-ved[] <- user() # efficacy against duration of infection
-ves[] <- user() # efficacy against symptoms
-vei[] <- user() # efficacy against infectiousness
+vea <- parameter()
+ved <- parameter()
+ves <- parameter()
+vei <- parameter()
 
-u_vbe    <- user() # uptake of VbE
-u_d[, , ]  <- user() # Uptake matrix for diagnosis
-u_s[, , ]  <- user() # Uptake matrix for screening
-u_pn[, , ]  <- user() # Uptake matrix for PN
+u_vbe <- parameter()
+u_d <- parameter()
+u_s <- parameter()
+u_pn <- parameter()
 
 
-w[, ]    <- user() # Waning map
-vax_t[]  <- user()
-vax_y[]  <- user()
+w <- parameter()
+vax_t <- parameter()
+vax_y <- parameter()
 
-wd[, ]   <- user() # Waning of diagnosis map
+wd <- parameter()
 
-diag_rec[, , ] <- user()  ## recording diagnosis history mapping
+diag_rec <- parameter()
 
 
 
@@ -355,8 +355,8 @@ dim(u_s)     <- c(n_group, n_vax, n_vax)
 dim(u_pn)     <- c(n_group, n_vax, n_vax)
 
 
-dim(vax_t) <- user()
-dim(vax_y) <- user()
+dim(vax_t) <- parameter(rank = 1)
+dim(vax_y) <- parameter(rank = 1)
 
 dim(n_vbe) <- c(n_group, n_vax, n_vax)
 dim(n_vos) <- c(n_group, n_vax, n_vax)
@@ -387,7 +387,7 @@ dim(wdA)   <- c(n_group, n_vax, n_vax)
 dim(wdS)   <- c(n_group, n_vax, n_vax)
 dim(wdT)   <- c(n_group, n_vax, n_vax)
 
-output(N)   <- N
-output(lambda) <- lambda
-output(phi) <- phi
-output(notifiedandattended) <- notifiedandattended
+output(N) <- TRUE
+output(lambda) <- TRUE
+output(phi) <- TRUE
+output(notifiedandattended) <- TRUE

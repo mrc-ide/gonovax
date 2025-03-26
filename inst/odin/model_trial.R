@@ -7,7 +7,7 @@
 ## 3: Waned
 
 n_group <- 2
-n_vax   <- user(1)
+n_vax <- parameter(1)
 
 ## Core equations for transitions between compartments:
 
@@ -76,11 +76,11 @@ initial(A[, ]) <- A0[i, j]
 initial(S[, ]) <- S0[i, j]
 initial(T[, ]) <- T0[i, j]
 
-U0[, ] <- user()
-I0[, ] <- user()
-A0[, ] <- user()
-S0[, ] <- user()
-T0[, ] <- user()
+U0 <- parameter()
+I0 <- parameter()
+A0 <- parameter()
+S0 <- parameter()
+T0 <- parameter()
 
 initial(cum_incid[, ])      <- 0
 initial(cum_diag_a[, ])     <- 0
@@ -129,24 +129,24 @@ dim(cum_pye_true)        <- c(n_group, n_vax)
 
 ## Parameters
 
-eta       <- user()
+eta <- parameter()
 
-sigma     <- user()
-psi       <- user()
-nu        <- user()
-mu        <- user()
-rho       <- user()
-lambda    <- user()
+sigma <- parameter()
+psi <- parameter()
+nu <- parameter()
+mu <- parameter()
+rho <- parameter()
+lambda <- parameter()
 
 # vaccine effects
-vea[] <- user() # efficacy against acquisition
-ved[] <- user() # efficacy against duration of infection
-ves[] <- user() # efficacy against symptoms
+vea <- parameter()
+ved <- parameter()
+ves <- parameter()
 
 #mapping
-w[, ]    <- user()
-diag_rec_a[, , ] <- user()
-diag_rec_s[, , ] <- user()
+w <- parameter()
+diag_rec_a <- parameter()
+diag_rec_s <- parameter()
 
 ## par dimensions
 
@@ -162,4 +162,4 @@ dim(wA)   <- c(n_group, n_vax, n_vax)
 dim(wS)   <- c(n_group, n_vax, n_vax)
 dim(wT)   <- c(n_group, n_vax, n_vax)
 
-output(N)   <- N
+output(N) <- TRUE
