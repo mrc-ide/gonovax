@@ -1,3 +1,5 @@
+#' @useDynLib gonovax, .registration = TRUE
+
 ##' @name aggregate
 ##' @title aggregate model runs by vaccination group x vaccine strata
 ##' @param x a transformed model run output
