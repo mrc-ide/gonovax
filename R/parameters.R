@@ -156,21 +156,23 @@ initial_params <- function(pars, n_vax = 1, coverage = 1) {
 restart_params <- function(y, n_vax = NULL) {
   dim_y <- dim(y[["U"]])
 
-  i_t <- dim_y[1]
-  n_vax <- n_vax %||% dim_y[3]
+  i_t <- dim_y[3]
+  n_vax <- n_vax %||% dim_y[2]
 
-  n_vax_input <- dim_y[3]
+  n_vax_input <- dim_y[2]
   i_vax <- seq_len(min(n_vax,  n_vax_input))
 
   U0 <- I0 <- A0 <- S0 <- T0 <- array(0, c(2, n_vax))
   # set compartments in each group
-  U0[, i_vax] <- y$U[i_t, , i_vax]
-  I0[, i_vax] <- y$I[i_t, , i_vax]
-  A0[, i_vax] <- y$A[i_t, , i_vax]
-  S0[, i_vax] <- y$S[i_t, , i_vax]
-  T0[, i_vax] <- y$T[i_t, , i_vax]
+  U0[, i_vax] <- y$U[, i_vax, i_t]
+  I0[, i_vax] <- y$I[, i_vax, i_t]
+  A0[, i_vax] <- y$A[, i_vax, i_t]
+  S0[, i_vax] <- y$S[, i_vax, i_t]
+  T0[, i_vax] <- y$T[, i_vax, i_t]
+  
+  ## temporary solution - replace t = y$t[i_t] with t = i_t-1
 
-  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = y$t[i_t])
+  list(U0 = U0, I0 = I0, A0 = A0, S0 = S0, T0 = T0, t = i_t-1)
 }
 
 
